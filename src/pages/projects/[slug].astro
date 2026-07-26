@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tag from '../../components/Tag.astro';
+import QuoteSlider from '../../components/QuoteSlider.astro';
+import NextProject from '../../components/NextProject.astro';
+import { getPublishedProjects, getProject, type Project } from '../../data/projects';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return getPublishedProjects().map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
+---
+
+<BaseLayout title={`${site.name} · ${project.title}`} description={project.summary}>
+  <article class="case">
+    <header class="case__hero">
+      <div class="case__meta">
+        <span class="case__year">{project.year}</span>
+        <div class="case__tags">
+          {project.tags.map((tag) => <Tag label={tag} />)}
+        </div>
+      </div>
+      <h1 class="display-title case__title">{project.title}</h1>
+      <p class="case__summary body-text">{project.summary}</p>
+    </header>
+
+    <div class="case__cover">
+      <img src={project.cover} alt={`${project.title} cover`} loading="eager" />
+    </div>
+
+    {
+      project.sections.map((section) => (
+        <section class="case__section">
+          <h2 class="section-title">{section.title}</h2>
+          <div class="case__copy">
+            {section.paragraphs.map((p) => (
+              <p class="body-text">{p}</p>
+            ))}
+          </div>
+          {section.images && section.images.length > 0 && (
+            <div class="case__gallery" data-gallery-slider>
+              {section.images.map((src, i) => (
+                <figure class="case__figure">
+                  <img src={src} alt={`${section.title} visual ${i + 1}`} loading="lazy" />
+                </figure>
+              ))}
+            </div>
+          )}
+        </section>
+      ))
+    }
+
+    {project.quotes && project.quotes.length > 0 && <QuoteSlider quotes={project.quotes} />}
+
+    {
+      project.note && (
+        <p class="case__note body-text">{project.note}</p>
+      )
+    }
+
+    {next && next.href && <NextProject project={next} />}
+  </article>
+</BaseLayout>
+
+<style>
+  .case__hero {
+    padding: var(--space-12) var(--page-pad-x) var(--space-8);
+    max-width: 920px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .case__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .case__year {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .case__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .case__title {
+    text-transform: uppercase;
+  }
+
+  .case__summary {
+    max-width: 720px;
+  }
+
+  .case__cover {
+    padding: 0 16px 48px;
+  }
+
+  .case__cover img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  .case__section {
+    padding: 24px var(--page-pad-x) 40px;
+    max-width: 920px;
+  }
+
+  .case__section .section-title {
+    margin-bottom: 20px;
+  }
+
+  .case__copy {
+    display: grid;
+    gap: 1em;
+  }
+
+  .case__gallery {
+    margin-top: 28px;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    cursor: grab;
+  }
+
+  .case__gallery.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .case__figure {
+    flex: 0 0 min(80vw, 640px);
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  .case__figure img {
+    width: 100%;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  .case__note {
+    padding: 16px var(--page-pad-x) 32px;
+    max-width: 920px;
+    color: var(--color-text-soft);
+  }
+
+  @media (max-width: 768px) {
+    .case__hero,
+    .case__section,
+    .case__note {
+      padding-inline: 16px;
+    }
+
+    .case__cover {
+      padding-inline: 12px;
+    }
+  }
+</style>
+
+<script>
+  function initGallerySliders() {
+    document.querySelectorAll<HTMLElement>('[data-gallery-slider]').forEach((el) => {
+      if (el.dataset.ready === 'true') return;
+      el.dataset.ready = 'true';
+
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+
+      el.addEventListener('pointerdown', (e) => {
+        isDown = true;
+        el.classList.add('is-dragging');
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+      });
+      el.addEventListener('pointerup', () => {
+        isDown = false;
+        el.classList.remove('is-dragging');
+      });
+      el.addEventListener('pointerleave', () => {
+        isDown = false;
+        el.classList.remove('is-dragging');
+      });
+      el.addEventListener('pointermove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - el.offsetLeft;
+        el.scrollLeft = scrollLeft - (x - startX) * 1.1;
+      });
+    });
+  }
+
+  initGallerySliders();
+  document.addEventListener('astro:page-load', initGallerySliders);
+</script>

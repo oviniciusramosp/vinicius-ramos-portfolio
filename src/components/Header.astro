@@ -1,0 +1,88 @@
+---
+import { site } from '../data/site';
+import Button from './Button.astro';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Primary">
+    <a class="logo" href="/">{site.name}</a>
+    <div class="nav-links">
+      {
+        site.nav.map((item) => (
+          <Button
+            href={item.href}
+            label={item.label}
+            active={pathname === item.href || pathname.startsWith(item.href + '/')}
+          />
+        ))
+      }
+    </div>
+  </nav>
+  <div class="nav-border" aria-hidden="true"></div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-7);
+    height: var(--nav-height);
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(var(--blur-nav));
+    -webkit-backdrop-filter: blur(var(--blur-nav));
+  }
+
+  .logo {
+    font-family: var(--font-display-regular);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    letter-spacing: var(--ls-logo);
+    text-transform: uppercase;
+    color: var(--color-text);
+    transition: color var(--duration-base) var(--ease-smooth);
+    white-space: nowrap;
+  }
+
+  .logo:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-8);
+  }
+
+  .nav-border {
+    height: 1px;
+    width: 100%;
+    background: var(--color-border);
+  }
+
+  @media (max-width: 640px) {
+    .site-nav {
+      padding: 10px 16px;
+    }
+
+    .logo {
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      gap: var(--space-3);
+    }
+  }
+</style>

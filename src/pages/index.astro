@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { site } from '../data/site';
+import { getHomeProjects } from '../data/projects';
+
+const projects = getHomeProjects();
+---
+
+<BaseLayout title={site.title} showBanner>
+  <section class="hero">
+    <div class="hero__inner">
+      <h1 class="hero__title display-title">{site.hero.title}</h1>
+      <p class="hero__bio body-text">{site.hero.bio}</p>
+    </div>
+  </section>
+
+  <ProjectGrid projects={projects} />
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: var(--space-12) var(--page-pad-x) var(--space-10);
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: var(--space-7);
+    max-width: 720px;
+  }
+
+  .hero__title {
+    max-width: 12ch;
+  }
+
+  .hero__bio {
+    max-width: 620px;
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 48px 16px 32px;
+    }
+  }
+</style>

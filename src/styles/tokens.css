@@ -1,0 +1,96 @@
+/* Design tokens mapped from viniciusramos.com (Framer, Jul 2026) */
+
+:root {
+  /* Colors */
+  --color-bg: #000000;
+  --color-surface: #131219;
+  --color-surface-elevated: #17161d;
+  --color-text: #ffffff;
+  --color-text-muted: #4b485e;
+  --color-text-soft: rgba(255, 255, 255, 0.75);
+  --color-accent: #008fff;
+  --color-accent-alt: #0099ff;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.2);
+  --color-overlay: rgba(23, 22, 29, 0.8);
+  --color-white-05: rgba(255, 255, 255, 0.05);
+  --color-white-10: rgba(255, 255, 255, 0.1);
+  --color-tag-bg: rgba(0, 0, 0, 0.35);
+  --color-input-bg: rgba(255, 255, 255, 0.05);
+  --color-input-border: rgba(255, 255, 255, 0.12);
+
+  /* Typography */
+  --font-display: "Blatant Bold", "Arial Black", Impact, sans-serif;
+  --font-display-regular: "Blatant Regular", "Arial", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans-alt: "IBM Plex Sans", system-ui, sans-serif;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 15px;
+  --text-base: 16px;
+  --text-lg: 22px;
+  --text-xl: 28px;
+  --text-2xl: 42px;
+  --text-3xl: 60px;
+
+  --lh-tight: 0.95;
+  --lh-snug: 1.2;
+  --lh-body: 1.7;
+
+  --ls-logo: 0.4px;
+  --ls-tight: -0.02em;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+  --space-10: 48px;
+  --space-11: 64px;
+  --space-12: 86px;
+
+  --page-pad-x: clamp(16px, 6vw, 250px);
+  --page-pad-x-sm: clamp(16px, 4vw, 48px);
+  --content-max: 1200px;
+  --nav-height: 64px;
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-pill: 50px;
+  --radius-btn: 30px;
+  --radius-sm: 8px;
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.44, 0, 0.56, 1);
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 450ms;
+
+  /* Shadows / effects */
+  --blur-nav: 20px;
+  --card-image-scale: 1.02;
+  --card-image-scale-hover: 1.08;
+}
+
+@font-face {
+  font-family: "Blatant Regular";
+  src: url("https://framerusercontent.com/assets/Wi8dceeJlSBRhcSm143p7kV7v8.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Blatant Bold";
+  src: url("https://framerusercontent.com/assets/i8gGDOKt3lcZFXyq5Kw3yA49GqY.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}

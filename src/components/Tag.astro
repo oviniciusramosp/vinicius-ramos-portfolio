@@ -1,0 +1,37 @@
+---
+interface Props {
+  label: string;
+  tone?: 'default' | 'accent';
+}
+
+const { label, tone = 'default' } = Astro.props;
+---
+
+<span class:list={['tag', `tag--${tone}`]}>{label}</span>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--color-text);
+    background: var(--color-tag-bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .tag--accent {
+    color: var(--color-accent);
+    border-color: rgba(0, 143, 255, 0.35);
+    background: rgba(0, 143, 255, 0.08);
+  }
+</style>

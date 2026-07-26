@@ -1,0 +1,178 @@
+---
+import type { ProjectQuote } from '../data/projects';
+
+interface Props {
+  quotes: ProjectQuote[];
+}
+
+const { quotes } = Astro.props;
+// Duplicate for seamless-feeling track on wide screens
+const track = [...quotes, ...quotes];
+---
+
+{
+  quotes.length > 0 && (
+    <section class="quote-slider" aria-label="Testimonials">
+      <div class="quote-slider__fade quote-slider__fade--left" aria-hidden="true" />
+      <div class="quote-slider__fade quote-slider__fade--right" aria-hidden="true" />
+
+      <div class="quote-slider__viewport" data-quote-slider>
+        <div class="quote-slider__track">
+          {track.map((quote, i) => (
+            <article class="quote-card" aria-hidden={i >= quotes.length ? 'true' : undefined}>
+              <p class="quote-card__text">{quote.text}</p>
+              <footer class="quote-card__meta">
+                <strong class="quote-card__author">{quote.author}</strong>
+                <span class="quote-card__role">{quote.role}</span>
+              </footer>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .quote-slider {
+    position: relative;
+    width: 100%;
+    padding: 48px 0;
+    overflow: hidden;
+  }
+
+  .quote-slider__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-inline: clamp(16px, 10vw, 220px);
+  }
+
+  .quote-slider__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .quote-slider__viewport.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .quote-slider__track {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    padding-block: 8px;
+  }
+
+  .quote-card {
+    flex: 0 0 min(80vw, 640px);
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 280px;
+    padding: 8px 0;
+  }
+
+  .quote-card__text {
+    font-family: var(--font-body);
+    font-size: clamp(16px, 1.6vw, 20px);
+    line-height: 1.55;
+    color: var(--color-text);
+    white-space: pre-line;
+  }
+
+  .quote-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .quote-card__author {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-text);
+  }
+
+  .quote-card__role {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .quote-slider__fade {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(48px, 8vw, 105px);
+    z-index: 2;
+  }
+
+  .quote-slider__fade--left {
+    left: 0;
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  .quote-slider__fade--right {
+    right: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);
+  }
+</style>
+
+<script>
+  function initQuoteSliders() {
+    document.querySelectorAll<HTMLElement>('[data-quote-slider]').forEach((viewport) => {
+      if (viewport.dataset.ready === 'true') return;
+      viewport.dataset.ready = 'true';
+
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+
+      const onDown = (e: PointerEvent) => {
+        isDown = true;
+        viewport.classList.add('is-dragging');
+        startX = e.pageX - viewport.offsetLeft;
+        scrollLeft = viewport.scrollLeft;
+        viewport.setPointerCapture?.(e.pointerId);
+      };
+
+      const onUp = () => {
+        isDown = false;
+        viewport.classList.remove('is-dragging');
+      };
+
+      const onMove = (e: PointerEvent) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - viewport.offsetLeft;
+        const walk = (x - startX) * 1.15;
+        viewport.scrollLeft = scrollLeft - walk;
+      };
+
+      viewport.addEventListener('pointerdown', onDown);
+      viewport.addEventListener('pointerleave', onUp);
+      viewport.addEventListener('pointerup', onUp);
+      viewport.addEventListener('pointermove', onMove);
+
+      // Touch-friendly wheel → horizontal
+      viewport.addEventListener(
+        'wheel',
+        (e) => {
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            viewport.scrollLeft += e.deltaY;
+          }
+        },
+        { passive: true },
+      );
+    });
+  }
+
+  initQuoteSliders();
+  document.addEventListener('astro:page-load', initQuoteSliders);
+</script>

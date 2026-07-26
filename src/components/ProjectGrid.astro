@@ -1,0 +1,120 @@
+---
+import type { Project } from '../data/projects';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section class="project-grid" aria-label="Selected work">
+  {
+    projects.map((project) => (
+      <div class:list={['project-grid__cell', `is-${project.size}`]}>
+        <ProjectCard project={project} />
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 16px;
+    width: 100%;
+  }
+
+  .project-grid__cell {
+    min-width: 0;
+  }
+
+  /* Bento layout approximating the Framer homepage grid */
+  .is-lg {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .is-tall {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+
+  .is-wide {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .is-sm,
+  .is-md {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .project-grid__cell :global(.project-card) {
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .is-lg :global(.project-card),
+  .is-tall :global(.project-card) {
+    min-height: 448px;
+  }
+
+  .is-wide :global(.project-card),
+  .is-sm :global(.project-card),
+  .is-md :global(.project-card) {
+    min-height: 220px;
+  }
+
+  @media (max-width: 1024px) {
+    .project-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .is-lg,
+    .is-wide {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .is-tall,
+    .is-sm,
+    .is-md {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .is-lg :global(.project-card),
+    .is-tall :global(.project-card),
+    .is-wide :global(.project-card),
+    .is-sm :global(.project-card),
+    .is-md :global(.project-card) {
+      min-height: 280px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .is-lg,
+    .is-wide,
+    .is-tall,
+    .is-sm,
+    .is-md {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .project-grid__cell :global(.project-card) {
+      min-height: 240px !important;
+    }
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout title={`${site.name} · Contact`}>
+  <section class="contact">
+    <h1 class="display-title contact__title">SAY HI</h1>
+
+    <!--
+      Static GitHub Pages: form posts via Formspree / Getform / your endpoint.
+      Replace action with your form endpoint before going live.
+    -->
+    <form
+      class="contact-form"
+      action="https://formspree.io/f/your-form-id"
+      method="POST"
+    >
+      <label class="field">
+        <span class="field__label">Name</span>
+        <input class="field__input" type="text" name="name" required autocomplete="name" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Email</span>
+        <input
+          class="field__input"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Message</span>
+        <textarea class="field__input field__input--area" name="message" rows="6" required
+        ></textarea>
+      </label>
+
+      <div class="contact-form__actions">
+        <Button type="submit" label="Submit" variant="submit" />
+      </div>
+    </form>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    padding: var(--space-12) var(--page-pad-x) var(--space-10);
+    max-width: 720px;
+  }
+
+  .contact__title {
+    margin-bottom: 48px;
+  }
+
+  .contact-form {
+    display: grid;
+    gap: 24px;
+  }
+
+  .field {
+    display: grid;
+    gap: 10px;
+  }
+
+  .field__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-input-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
+    outline: none;
+    transition:
+      border-color var(--duration-base) var(--ease-smooth),
+      background-color var(--duration-base) var(--ease-smooth);
+  }
+
+  .field__input:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .field__input:focus {
+    border-color: var(--color-accent);
+    background: rgba(0, 143, 255, 0.06);
+  }
+
+  .field__input--area {
+    resize: vertical;
+    min-height: 140px;
+  }
+
+  .contact-form__actions {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .contact {
+      padding: 48px 16px 32px;
+    }
+  }
+</style>

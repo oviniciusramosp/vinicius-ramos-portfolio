@@ -1,0 +1,167 @@
+---
+import type { Project } from '../data/projects';
+import Tag from './Tag.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const isLink = Boolean(project.href) && !project.soon;
+const TagEl = isLink ? 'a' : 'div';
+const attrs = isLink ? { href: project.href } : {};
+---
+
+<TagEl
+  class:list={['project-card', `project-card--${project.size}`, project.soon && 'is-soon']}
+  {...attrs}
+  aria-label={`${project.title}${project.soon ? ' (coming soon)' : ''}`}
+>
+  <div class="project-card__media">
+    <img
+      class="project-card__image"
+      src={project.cover}
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="project-card__overlay" aria-hidden="true"></div>
+  </div>
+
+  <div class="project-card__content">
+    <h2 class="project-card__title">{project.title}</h2>
+    <div class="project-card__tags">
+      {project.tags.map((tag) => <Tag label={tag} />)}
+      {project.soon && <Tag label="SOON" tone="accent" />}
+    </div>
+  </div>
+</TagEl>
+
+<style>
+  .project-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    color: var(--color-text);
+    isolation: isolate;
+    min-height: 220px;
+    cursor: default;
+  }
+
+  a.project-card {
+    cursor: pointer;
+  }
+
+  .project-card--lg {
+    min-height: 448px;
+  }
+
+  .project-card--tall {
+    min-height: 448px;
+  }
+
+  .project-card--wide {
+    min-height: 220px;
+  }
+
+  .project-card--sm,
+  .project-card--md {
+    min-height: 220px;
+  }
+
+  .project-card__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .project-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(var(--card-image-scale));
+    transition: transform var(--duration-slow) var(--ease-smooth);
+  }
+
+  .project-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(23, 22, 29, 0.05) 0%,
+      rgba(23, 22, 29, 0.55) 55%,
+      rgba(23, 22, 29, 0.85) 100%
+    );
+    opacity: 0.65;
+    transition:
+      opacity var(--duration-base) var(--ease-smooth),
+      backdrop-filter var(--duration-base) var(--ease-smooth);
+  }
+
+  .project-card__content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    padding: 24px;
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity var(--duration-base) var(--ease-smooth),
+      transform var(--duration-base) var(--ease-smooth);
+  }
+
+  .project-card__title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.2vw, var(--text-xl));
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+
+  .project-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Hover — mapped from Framer card variants */
+  .project-card:hover .project-card__image,
+  .project-card:focus-visible .project-card__image {
+    transform: scale(var(--card-image-scale-hover));
+  }
+
+  .project-card:hover .project-card__overlay,
+  .project-card:focus-visible .project-card__overlay {
+    opacity: 1;
+    background: var(--color-overlay);
+    backdrop-filter: blur(2px);
+  }
+
+  .project-card.is-soon {
+    cursor: default;
+  }
+
+  .project-card:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 768px) {
+    .project-card,
+    .project-card--lg,
+    .project-card--tall,
+    .project-card--wide,
+    .project-card--sm,
+    .project-card--md {
+      min-height: 260px;
+    }
+  }
+</style>

@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { resume } from '../data/resume';
+import { site } from '../data/site';
+---
+
+<BaseLayout title={`${site.name} · Resume`}>
+  <article class="resume">
+    <header class="resume__hero">
+      <h1 class="display-title">{resume.name}</h1>
+      <p class="resume__role">{resume.role}</p>
+      <p class="resume__location">{resume.location}</p>
+    </header>
+
+    <section class="resume__intro">
+      {resume.intro.map((p) => <p class="body-text">{p}</p>)}
+    </section>
+
+    <section class="resume__block">
+      <h2 class="section-title">Main Work Experience</h2>
+      <ul class="experience-list">
+        {
+          resume.experience.map((job) => (
+            <li class="experience-item">
+              <p class="experience-item__period">{job.period}</p>
+              <h3 class="experience-item__title">{job.title}</h3>
+              <p class="body-text">{job.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="resume__block">
+      <h2 class="section-title">Skills</h2>
+      <ul class="skill-list">
+        {resume.skills.main.map((skill) => <li>-> {skill}</li>)}
+      </ul>
+      <p class="skills-other-label">Other Skills:</p>
+      <ul class="skill-list">
+        {resume.skills.other.map((skill) => <li>-> {skill}</li>)}
+      </ul>
+    </section>
+
+    <section class="resume__block">
+      <h2 class="section-title">Education</h2>
+      <ul class="education-list">
+        {
+          resume.education.map((item) => (
+            <li class="education-item">
+              <p class="education-item__period">{item.period}</p>
+              <p class="education-item__school">{item.school}</p>
+              <p class="education-item__detail">{item.detail}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .resume {
+    padding: var(--space-12) var(--page-pad-x) var(--space-10);
+    max-width: 860px;
+  }
+
+  .resume__hero {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .resume__role {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: 300;
+    color: var(--color-accent);
+  }
+
+  .resume__location {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .resume__intro {
+    display: grid;
+    gap: 1em;
+    margin-bottom: 56px;
+  }
+
+  .resume__block {
+    margin-bottom: 56px;
+  }
+
+  .resume__block .section-title {
+    margin-bottom: 28px;
+  }
+
+  .experience-list,
+  .education-list {
+    display: grid;
+    gap: 36px;
+  }
+
+  .experience-item,
+  .education-item {
+    display: grid;
+    gap: 10px;
+  }
+
+  .experience-item__period,
+  .education-item__period {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .experience-item__title,
+  .education-item__school {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .education-item__detail {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-soft);
+  }
+
+  .skill-list {
+    display: grid;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+  }
+
+  .skills-other-label {
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .resume {
+      padding: 48px 16px 32px;
+    }
+  }
+</style>

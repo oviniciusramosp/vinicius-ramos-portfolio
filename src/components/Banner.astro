@@ -1,0 +1,29 @@
+---
+import { site } from '../data/site';
+---
+
+{
+  site.banner && (
+    <div class="dev-banner" role="status">
+      <p class="dev-banner__text">{site.banner}</p>
+    </div>
+  )
+}
+
+<style>
+  .dev-banner {
+    width: 100%;
+    background: var(--color-surface);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dev-banner__text {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-soft);
+    text-align: center;
+  }
+</style>

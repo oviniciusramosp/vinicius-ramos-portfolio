@@ -1,0 +1,85 @@
+---
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const letters = project.title.split('');
+---
+
+<section class="next-project">
+  <p class="next-project__label">NEXT PROJECT</p>
+  <a class="next-project__link" href={project.href ?? `/projects/${project.slug}`} data-framer-name="LinkNextProject">
+    <h2 class="next-project__title" aria-label={project.title}>
+      {
+        letters.map((letter) =>
+          letter === ' ' ? (
+            <span class="next-project__space">&nbsp;</span>
+          ) : (
+            <span class="next-project__letter">{letter}</span>
+          ),
+        )
+      }
+    </h2>
+  </a>
+</section>
+
+<style>
+  .next-project {
+    padding: 64px var(--page-pad-x) 48px;
+    text-align: center;
+  }
+
+  .next-project__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.08em;
+  }
+
+  .next-project__link {
+    display: inline-block;
+  }
+
+  .next-project__title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 8vw, var(--text-3xl));
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: #000;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.85);
+    transition: color var(--duration-fast) ease-in-out;
+  }
+
+  .next-project__letter,
+  .next-project__space {
+    display: inline-block;
+    transition: color var(--duration-fast) ease-in-out;
+  }
+
+  /* Hover mapped from Framer LinkNextProject snippet */
+  .next-project__link:hover .next-project__title,
+  .next-project__link:focus-visible .next-project__title {
+    color: #fff;
+    -webkit-text-stroke: 1px white;
+  }
+
+  .next-project__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 8px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .next-project {
+      padding-inline: 16px;
+    }
+  }
+</style>
