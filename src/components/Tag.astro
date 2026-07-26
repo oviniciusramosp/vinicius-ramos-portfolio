@@ -1,37 +1,142 @@
 ---
 interface Props {
   label: string;
-  tone?: 'default' | 'accent';
+  tone?: 'default' | 'accent' | 'soon';
+  /**
+   * `solid` — always visible (case-study meta, default).
+   * `reveal` — hidden until project-card hover (homepage grid).
+   */
+  variant?: 'reveal' | 'solid';
 }
 
-const { label, tone = 'default' } = Astro.props;
+const { label, tone = 'default', variant = 'solid' } = Astro.props;
 ---
 
-<span class:list={['tag', `tag--${tone}`]}>{label}</span>
+<span class:list={['tag', `tag--${tone}`, `tag--${variant}`]}>
+  <span class="tag__glass" aria-hidden="true"></span>
+  <span class="tag__label">{label}</span>
+</span>
 
 <style>
+  /*
+   * Default = solid / always visible (case studies, static UI).
+   * Only `.tag--reveal` starts invisible and appears on card hover.
+   */
   .tag {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 6px 12px;
-    border-radius: var(--radius-pill);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
+    border-radius: 50px;
+    isolation: isolate;
+    overflow: hidden;
+    color: #ffffff;
+    border: 1px solid var(--color-text-muted);
+    background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  .tag__glass {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: transparent;
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+  }
+
+  .tag__label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 12px;
     font-weight: 400;
-    line-height: 1;
-    letter-spacing: 0;
+    line-height: 0.95;
+    letter-spacing: 1px;
     white-space: nowrap;
-    color: var(--color-text);
-    background: var(--color-tag-bg);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .tag--accent {
     color: var(--color-accent);
-    border-color: rgba(0, 143, 255, 0.35);
-    background: rgba(0, 143, 255, 0.08);
+    border-color: rgba(0, 143, 255, 0.4);
+  }
+
+  .tag--soon {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  /* —— Reveal (homepage cards only) —— */
+  .tag--reveal {
+    color: transparent;
+    border-color: transparent;
+    background-color: transparent;
+    transition:
+      color 0.38s cubic-bezier(0.44, 0, 0.56, 1),
+      border-color 0.38s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .tag--reveal .tag__glass {
+    background-color: transparent;
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    transition:
+      background-color 0.38s cubic-bezier(0.44, 0, 0.56, 1),
+      backdrop-filter 0.38s cubic-bezier(0.44, 0, 0.56, 1),
+      -webkit-backdrop-filter 0.38s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  /* Appear on card hover / magnetic / focus */
+  :global(.project-card-shell:hover) .tag--reveal,
+  :global(.project-card-shell:focus-within) .tag--reveal,
+  :global(.project-card-shell.is-magnetic) .tag--reveal {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  :global(.project-card-shell:hover) .tag--reveal .tag__glass,
+  :global(.project-card-shell:focus-within) .tag--reveal .tag__glass,
+  :global(.project-card-shell.is-magnetic) .tag--reveal .tag__glass {
+    background-color: rgba(12, 12, 16, 0.45);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  :global(.project-card-shell:hover) .tag--reveal.tag--accent,
+  :global(.project-card-shell:focus-within) .tag--reveal.tag--accent,
+  :global(.project-card-shell.is-magnetic) .tag--reveal.tag--accent {
+    color: #008fff;
+    border-color: rgba(0, 143, 255, 0.4);
+  }
+
+  :global(.project-card-shell:hover) .tag--reveal.tag--accent .tag__glass,
+  :global(.project-card-shell:focus-within) .tag--reveal.tag--accent .tag__glass,
+  :global(.project-card-shell.is-magnetic) .tag--reveal.tag--accent .tag__glass {
+    background-color: rgba(0, 28, 56, 0.5);
+  }
+
+  /* Touch / small screens: reveal tags always on */
+  @media (max-width: 768px) {
+    .tag--reveal {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .tag--reveal .tag__glass {
+      background-color: rgba(12, 12, 16, 0.45);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+    }
+
+    .tag--reveal.tag--accent {
+      color: #008fff;
+      border-color: rgba(0, 143, 255, 0.4);
+    }
+
+    .tag--reveal.tag--accent .tag__glass {
+      background-color: rgba(0, 28, 56, 0.5);
+    }
   }
 </style>

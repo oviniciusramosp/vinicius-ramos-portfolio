@@ -12,17 +12,76 @@ export type ProjectQuote = {
   role: string;
 };
 
+/** Case-study media item (Framer Image / gallery cell) */
+export type CaseImage = {
+  src: string;
+  alt: string;
+  fit?: 'cover' | 'contain';
+  /** CSS aspect-ratio value, e.g. '0.8' or '1.24' */
+  aspect?: string;
+  /** Hide on narrow viewports (matches Framer hidden-* variants) */
+  hideOn?: 'mobile';
+};
+
+export type CaseBentoCell =
+  | {
+      kind: 'image';
+      src: string;
+      alt: string;
+      /** grid span in 4-col bento */
+      span?: '1x1' | '2x1' | '2x2';
+      fit?: 'cover' | 'contain';
+      /** padded surface (icons / logos) */
+      padded?: boolean;
+      /** Tiled background texture (Framer background-image repeat) */
+      texture?: string;
+    }
+  | {
+      kind: 'caption';
+      text: string;
+      span?: '1x1' | '2x1' | '2x2';
+      /** Tiled pattern under the chat UI stack */
+      texture?: string;
+      /** Lottie JSON URL (live Framer Lottie module) */
+      lottie?: string;
+      lottieSpeed?: number;
+    };
+
+/**
+ * Ordered case-study body blocks — mirrors Framer section order
+ * (Hero + meta live outside blocks).
+ */
+export type CaseBlock =
+  | { type: 'bento'; cells: CaseBentoCell[] }
+  | { type: 'section'; title?: string; paragraphs: string[] }
+  | {
+      type: 'gallery';
+      layout: 'pair' | 'triple' | 'single' | 'social';
+      images: CaseImage[];
+    };
+
 export type Project = {
   slug: string;
   title: string;
   year: string;
   tags: string[];
   summary: string;
+  /** Back image layer (Framer ImageBg) */
   cover: string;
+  /** Front image layer (Framer Image) — dual-layer parallax when set */
+  coverFront?: string;
+  /** object-fit: Fit Image = contain, Fill Image = cover */
+  imageFit?: 'cover' | 'contain';
   size: ProjectSize;
   href?: string;
   soon?: boolean;
+  /**
+   * Legacy flat sections (used when `blocks` is absent).
+   * Prefer `blocks` for full case studies with interleaved media.
+   */
   sections: ProjectSection[];
+  /** Full case-study layout (text + galleries in source order) */
+  blocks?: CaseBlock[];
   quotes?: ProjectQuote[];
   nextSlug?: string;
   note?: string;
@@ -38,10 +97,14 @@ export const projects: Project[] = [
     tags: ['AI', 'WEB'],
     summary:
       'Led the design of key tools at Staircase, leveraging AI and advanced APIs to streamline the traditionally lengthy American mortgage process to less than 48 hours.',
+    // Homepage card layers (Framer ImageBg + Image)
     cover: `${FRAMER}/iVkogMvFCsOuQA0VY6Tr7Yrzpk.png?lossless=1&width=1800&height=1831`,
+    coverFront: `${FRAMER}/ricuZuBUmCFzZWQDKTgk8KrzySU.png?lossless=1&width=1800&height=1831`,
+    imageFit: 'contain',
     size: 'lg',
     href: '/projects/staircase',
     nextSlug: 'hp-printables',
+    // Flat fallback if a consumer ignores `blocks`
     sections: [
       {
         title: 'Role',
@@ -67,6 +130,179 @@ export const projects: Project[] = [
         ],
       },
     ],
+    /**
+     * Live Framer order (/projects/staircase):
+     * ImagesFull bento → Role → UJ01 → listings pair → UJ02 → ChatMTG triple
+     * → UJ03 → Calc+PreApproval → UJ04 → Challenges → social triple → Quotes → Thanks
+     * Breakpoints (Framer): mobile ≤809 · tablet 810–1193 · desktop ≥1194 · xl ≥1536
+     */
+    blocks: [
+      {
+        type: 'bento',
+        cells: [
+          {
+            kind: 'image',
+            src: `${FRAMER}/0jPwP3iwXhNkSupZVjEOqBVqeso.png?width=1800&height=2244`,
+            alt: 'Staircase apps running in two iPhones',
+            span: '2x2',
+            fit: 'contain',
+          },
+          {
+            kind: 'caption',
+            text: 'Let me evaluate your documents…',
+            span: '1x1',
+            // Live ImagesFull caption cell — tiled micro-logo texture + Lottie
+            texture: `${FRAMER}/cDegCjCjwxmASK5CnPBQbOgT6g.svg?width=24&height=24`,
+            lottie: 'https://lottie.host/09a82d30-8b79-493c-83c0-03055e85af99/NsRCuSepGP.json',
+            lottieSpeed: 0.75,
+          },
+          {
+            kind: 'image',
+            src: `${FRAMER}/5yTt4aAXl4XoI4fy7vsYAM4tM.svg?width=144&height=144`,
+            alt: 'Staircase custom icons',
+            span: '1x1',
+            fit: 'contain',
+            padded: true,
+          },
+          {
+            kind: 'image',
+            src: `${FRAMER}/GkbdAK27mFflSYo4k4N6lwlLHs.jpg?width=1200&height=788`,
+            alt: 'Staircase Listings App running on a MacBook',
+            span: '2x2',
+            fit: 'contain',
+          },
+          {
+            kind: 'image',
+            src: `${FRAMER}/QPkE0yspjGvXRPAlFc4q2fxznw.svg?width=598&height=137`,
+            alt: 'Partner logos',
+            span: '2x1',
+            fit: 'contain',
+            padded: true,
+          },
+        ],
+      },
+      {
+        type: 'section',
+        title: 'Role',
+        paragraphs: [
+          'I joined Staircase in 2021 as a Designer and also took on the role of Product Manager while developing internal tools. From 2023 onwards, I focused on the company’s B2B and B2C products.',
+          'My role involved creating a process where components are generated from Figma without any code development, writing automated tests, and publishing functional applications. Key projects included ChatMTG, the Rate Calculator, the digital PreApproval Letter, and the Listings tool.',
+        ],
+      },
+      {
+        type: 'section',
+        title: 'User Journey and Products',
+        paragraphs: [
+          'Users begin their journey with the **Listings** tool, a platform with a simplified, minimalist user experience similar to Airbnb. Here, they can browse properties, apply for PreApproval through ChatMTG, contact an agent, or schedule home visits.',
+          'The Listings tool also uses AI to select the best photos, organize them, and generate standardized descriptions for properties. Staircase differentiates itself by offering lower rates through reduced intermediaries, thereby lowering costs.',
+        ],
+      },
+      {
+        type: 'gallery',
+        layout: 'pair',
+        images: [
+          {
+            src: `${FRAMER}/hSrf3zxGl1C12bVkqmZC1NlC8.jpg?width=1600&height=1410`,
+            alt: 'Staircase Listings property interface',
+            fit: 'cover',
+            aspect: '0.8',
+          },
+          {
+            src: `${FRAMER}/rcoyAGVi09pKjlKxTL66IpGBDR8.jpg?width=1342&height=1367`,
+            alt: 'Staircase Listings product detail',
+            fit: 'cover',
+            aspect: '0.8',
+          },
+        ],
+      },
+      {
+        type: 'section',
+        paragraphs: [
+          'The **Chat MTG** serves as a mortgage-focused AI chatbot, similar to Chat GPT, where users can input their data, ask questions, and determine their loan eligibility. Traditionally, obtaining a pre-approval letter from a bank can take several days or weeks, but Chat MTG reduces this process to mere minutes.',
+        ],
+      },
+      {
+        type: 'gallery',
+        layout: 'triple',
+        images: [
+          {
+            src: `${FRAMER}/hL18ARQAfH1coQ8Vy84Ycs6TTME.png?width=800&height=1646`,
+            alt: 'Chat MTG conversation screen',
+            fit: 'cover',
+            aspect: '0.486',
+          },
+          {
+            src: `${FRAMER}/orzZ7ixQxU4cl7oTAJiEgErIuUc.png?width=800&height=1646`,
+            alt: 'Chat MTG eligibility screen',
+            fit: 'cover',
+            aspect: '0.486',
+          },
+          {
+            src: `${FRAMER}/5PfcG5Ci0rDG6fUTXGB6sbfgqCU.png?width=800&height=1646`,
+            alt: 'Chat MTG results screen',
+            fit: 'cover',
+            aspect: '0.486',
+            hideOn: 'mobile',
+          },
+        ],
+      },
+      {
+        type: 'section',
+        paragraphs: [
+          'Once the user completes the Chat MTG process, they receive a **PreApproval**, which is a digital version of traditional pre-approval letters. This digital format is not only more convenient but also promotes Staircase, as users can easily share it with others involved in their mortgage process.',
+        ],
+      },
+      {
+        type: 'gallery',
+        layout: 'single',
+        images: [
+          {
+            src: `${FRAMER}/USSwtHSRdlcNalKsW2UEaRLDzhE.jpg?width=1800&height=1453`,
+            alt: 'Rate Calculator and digital PreApproval letter',
+            fit: 'cover',
+            aspect: '1.239',
+          },
+        ],
+      },
+      {
+        type: 'section',
+        paragraphs: [
+          'During Open Houses, visitors use the **Rate Calculator** to sign up and calculate their mortgage rates on the spot. This tool helps users quickly check their eligibility and see potential rates, enhancing their experience and engagement with the Staircase platform.',
+        ],
+      },
+      {
+        type: 'section',
+        title: 'Challenges and Impact',
+        paragraphs: [
+          'Collaborating closely with the CEO and CTO, we set and achieved daily goals in a high-pressure environment. This required managing tight deadlines and adapting quickly to new information. Additionally, I worked with branding from an external company, which posed challenges in aligning with accessibility standards for digital interfaces. These experiences significantly enhanced my leadership skills, resilience, and ability to take on multiple roles, including Product Manager, Product Designer, test writer, and app developer.',
+        ],
+      },
+      {
+        type: 'gallery',
+        layout: 'social',
+        images: [
+          {
+            src: `${FRAMER}/Dwip1xnuBSofqNv6IhmDRLPXA4.jpeg?width=1024&height=1280`,
+            alt: 'Staircase social media creative 1',
+            fit: 'cover',
+            aspect: '0.8',
+          },
+          {
+            src: `${FRAMER}/vnhZ06nmmh3N1JBiSdcDyAClGic.jpeg?width=1024&height=1280`,
+            alt: 'Staircase social media creative 2',
+            fit: 'cover',
+            aspect: '0.8',
+            hideOn: 'mobile',
+          },
+          {
+            src: `${FRAMER}/5cE2nYL0OJBworIwQvxnWN7DeqI.jpeg?width=1024&height=1280`,
+            alt: 'Staircase social media creative 3',
+            fit: 'cover',
+            aspect: '0.8',
+          },
+        ],
+      },
+    ],
     quotes: [
       {
         text: "Throughout our collaboration, Vini consistently demonstrated a deep understanding of user needs and a keen eye for detail. He approaches every project with enthusiasm and professionalism, and always goes above and beyond to deliver exceptional results. He brings fresh and innovative ideas to the table, while still adhering to project requirements and timelines.\n\nIn addition to his design skills, Vini also took on the role of project manager, and he excelled in this area. Despite it not being his primary role, Vini's project management skills were second to none in our company.",
@@ -89,6 +325,7 @@ export const projects: Project[] = [
     summary:
       'Redesigned the Print, Play & Learn website to create an engaging platform for printable content, allowing users to easily find and print materials such as games, coloring pages, holiday cards, children’s exercises, and more.',
     cover: `${FRAMER}/OHYUgJmxWxj1mumTybM6nJORSwg.png?lossless=1&width=764&height=819`,
+    imageFit: 'cover',
     size: 'lg',
     href: '/projects/hp-printables',
     nextSlug: 'vibecheck',
@@ -149,6 +386,8 @@ export const projects: Project[] = [
     summary:
       'During a hackathon at AE Studio, the internal tool Vibecheck was created for AI sentiment analysis. As part of the hiring process, I redesigned Vibecheck, suggested improvements, and created user stories, leading to my employment at AE Studio.',
     cover: `${FRAMER}/RcO3ablF3ttKN5S5n2hEDr1uAk.png?lossless=1&width=2000&height=1367`,
+    coverFront: `${FRAMER}/ntRLXi5jcnvMoVnIUpn7S0GqSI.png?lossless=1&width=2000&height=1367`,
+    imageFit: 'cover',
     size: 'sm',
     href: '/projects/vibecheck',
     nextSlug: 'intermex',
@@ -188,6 +427,8 @@ export const projects: Project[] = [
     tags: ['GAS PUMP OS', 'A11Y'],
     summary: 'Accessibility-focused work on the Gilbarco gas pump operating system.',
     cover: `${FRAMER}/fPPrfYc8utPH5PTgQv1X8WZxXU.png?lossless=1&width=1200&height=1395`,
+    coverFront: `${FRAMER}/4EsOv8e8x37Rm0559UWwJRTQ.png?lossless=1&width=1200&height=1395`,
+    imageFit: 'cover',
     size: 'sm',
     soon: true,
     sections: [],
@@ -200,6 +441,7 @@ export const projects: Project[] = [
     summary:
       'Led the design of the Intermex app, developed its design system, and ensured the app was fully accessible (a11y compliant), facilitating money transfers from the U.S. to Latin America and the Caribbean, focusing on users with limited tech knowledge.',
     cover: `${FRAMER}/KDJ8dI9G4pR5XgWWFsyJ5N6I8bs.png?width=1210&height=2060`,
+    imageFit: 'contain',
     size: 'tall',
     href: '/projects/intermex',
     nextSlug: 'booking',
@@ -247,6 +489,7 @@ export const projects: Project[] = [
     tags: ['BRAND'],
     summary: 'Brand design work for Moove.',
     cover: `${FRAMER}/288F11Mf2MRtONk3A1SH2NOA.svg?width=1844&height=1392`,
+    imageFit: 'cover',
     size: 'wide',
     soon: true,
     sections: [],
@@ -258,6 +501,8 @@ export const projects: Project[] = [
     tags: ['VISION PRO'],
     summary: 'Spatial computing concept for Bubble on Apple Vision Pro.',
     cover: `${FRAMER}/GYdQIKFo1opDQy8FHD7lExMvak.png?lossless=1&width=2000&height=1500`,
+    coverFront: `${FRAMER}/ZjzIWZpe69g6ShfSlQK9Mh16zcQ.png?width=2000&height=1500`,
+    imageFit: 'cover',
     size: 'lg',
     soon: true,
     sections: [],
@@ -270,6 +515,7 @@ export const projects: Project[] = [
     summary:
       'Conducted a design critique and redesign concept of the Booking.com app’s search flow, focusing on enhancing usability and visual harmony by addressing inconsistencies and improving the overall user experience.',
     cover: `${FRAMER}/OBLjNMv2ereMgmyMWjWgMY2gX3s.png?width=1090&height=754`,
+    imageFit: 'contain',
     size: 'wide',
     href: '/projects/booking',
     nextSlug: 'staircase',

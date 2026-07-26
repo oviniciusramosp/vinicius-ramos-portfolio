@@ -9,7 +9,7 @@ Source: live Framer site (published Jul 25, 2026). Inspected via HTML, search in
 | `/` | Live | Home + project bento grid |
 | `/resume` | Live | Full CV |
 | `/contact` | Live | SAY HI form |
-| `/projects/staircase` | Live | Full case study + quotes slider |
+| `/projects/staircase` | Live | Full case study: bento hero + interleaved galleries + quotes |
 | `/projects/hp-printables` | Live | Full case study + quotes |
 | `/projects/vibecheck` | Live | Full case study |
 | `/projects/intermex` | Live | Full case study (homepage card not always linked) |
@@ -94,9 +94,9 @@ Fonts hosted: Blatant via Framer assets; Inter + IBM Plex via Google Fonts.
 ## Hover inventory
 
 1. **Project cards**  
-   - Rest: title/tags **hidden** (TextLayer opacity 0); image scale ~1.02  
-   - Hover: TextLayer opacity 1; Backdrop `rgba(0,0,0,0.7)` + Blur 18px;  
-     image “backs away” to scale ~0.8 + saturate 1.56  
+   - Rest: title/tags **hidden**; image scale 1  
+   - Hover: title/tags fade in; light gradient scrim (no heavy blur);  
+     image **scale-up ~1.08** (MPParallaxView-style depth)  
    - Magnetic `withOffset` range **3** on shell  
    - Internal parallax: image (back) less travel, title/tags (front) more  
    - All show/hide via ~420ms transitions  
@@ -147,13 +147,55 @@ Fonts hosted: Blatant via Framer assets; Inter + IBM Plex via Google Fonts.
 - Not a carousel on desktop: **CSS bento grid** (4 columns, variable row spans)
 - Collapses to 2 → 1 columns on smaller breakpoints
 
+## Case study: Staircase (`/projects/staircase`)
+
+Source: live Framer HTML + CSS (Jul 25, 2026). **Breakpoints:** mobile ≤809 · tablet 810–1193 · desktop ≥1194 · xl ≥1536.
+
+### Content order (Framer names)
+
+1. **Hero** — year `2023`, tags `AI`/`WEB`, title, summary  
+2. **ImagesFull** (bento 4×3 desktop)  
+   - `Staircase01` — dual iPhones (`0jPwP3iw…`, contain, span 2×2)  
+   - Caption chip — “Let me evaluate your documents…”  
+   - `Staircase02` — custom icons SVG (`5yTt4aAX…`, padded)  
+   - `Staircase04` — Listings on MacBook (`GkbdAK27…`, contain, span 2×2)  
+   - `Staircase05` — partner logos SVG (`QPkE0ysp…`, span 2×1)  
+3. **SectionRole** — title + 2 paragraphs  
+4. **SectionUserJourney01** — “User Journey and Products” + Listings copy  
+5. **Listings pair** (`Post5_Large` / `Post4_Large`) — `hSrf3zxG…`, `rcoyAGVi…` · 2-col, aspect ~0.8  
+6. **SectionUserJourney02** — Chat MTG paragraph  
+7. **ImagesMoodBoard / chtmtg01×3** — phone screens (`hL18ARQA…`, `orzZ7ixQ…`, `5PfcG5Ci…`) · 3-col desktop, 2-col tablet, 3rd hidden on mobile  
+8. **SectionUserJourney03** — PreApproval paragraph  
+9. **Calc+PreApproval** — single image (`USSwtHSR…`, max-width 900, aspect ~1.24)  
+10. **SectionUserJourney04** — Rate Calculator paragraph  
+11. **SectionFinalDeliverable** — “Challenges and Impact”  
+12. **ImagesSocialMedia** — 3 creatives (`Dwip1xnu…`, `vnhZ06nm…`, `5cE2nYL0…`) · 3-col desktop, middle hidden on mobile  
+13. **SectionQuotes** — Guido + Alonso  
+14. **SectionThanks** — branding note  
+15. **SectionNext** → HP Printables  
+
+### Section padding (live)
+
+| BP | Hero | Text sections | Media rows |
+|----|------|---------------|------------|
+| Desktop | `125px 250px 48px` | `48px 250px` | `16px 250px` (bento shell `16px` full-bleed max 1920) |
+| Tablet | `125px 64px 48px` | `48px 64px` | `16px 64px` |
+| Mobile | `80px 16px 24px` | `24px 16px` | `16px` |
+| XL | `144px 240px 48px` · width 1536 | `48px 240px` | `16px 240px` |
+
+### Data model
+
+- Case studies with interleaved media use `project.blocks` (`bento` | `section` | `gallery`).  
+- Projects without `blocks` keep legacy `sections` + single `case__cover`.
+
 ## Rebuild mapping
 
 | Live (Framer) | Rebuild |
 |---------------|---------|
 | Desktop nav | `Header.astro` + `Button.astro` |
 | Project cell | `ProjectCard.astro` |
-| ImagesFull grid | `ProjectGrid.astro` |
+| ImagesFull grid (home) | `ProjectGrid.astro` |
+| ImagesFull / galleries (case) | `projects/[slug].astro` + `blocks` in `projects.ts` |
 | SectionQuotes | `QuoteSlider.astro` |
 | LinkNextProject | `NextProject.astro` |
 | Content | `src/data/*.ts` |

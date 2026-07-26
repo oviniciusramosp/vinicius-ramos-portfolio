@@ -1,44 +1,39 @@
 /**
- * Internal card layer parallax (MPParallaxView-inspired).
+ * Multi-layer card parallax (Framer dual-image + MPParallaxView depth).
  *
- * Combines with magnetic withOffset on the shell:
- * - Shell / whole card: magnetic range 3 (existing)
- * - Image (back): moves less / slightly opposite → depth “far”
- * - Content (front): moves more with the pointer → depth “near”
+ * Hierarchy (far → near):
+ * - img-back / img-mid — close to each other (subtle relative drift)
+ * - front (title/tags) — clearly stronger so text reads as nearer
  *
- * Depth offsets use the same Framer normalize formula:
- *   factor = clamp(mouse / half, -1, 1) * range
- * with smaller ranges than the shell magnetic.
- *
- * @see https://github.com/DroidsOnRoids/MPParallaxView
+ * Same normalize as withOffset: clamp(mouse/half, -1, 1) * range
+ * Spring: stiffness 300, damping 30
  */
 
 const STIFFNESS = 300;
 const DAMPING = 30;
 const MASS = 1;
 
-/** Extra px range for internal layers (subtle; shell already moves ±3) */
-const BACK_RANGE = 6;
-const FRONT_RANGE = 10;
+/** Image layers stay near each other; text stands out more. */
+const RANGES = {
+  'img-back': 5,
+  'img-mid': 7,
+  front: 18,
+} as const;
 
-type LayerState = {
+type Depth = keyof typeof RANGES;
+
+type Axis = { t: number; c: number; v: number };
+
+type Layer = {
+  el: HTMLElement;
+  depth: Depth;
+  x: Axis;
+  y: Axis;
+};
+
+type CardState = {
   shell: HTMLElement;
-  back: HTMLElement | null;
-  front: HTMLElement | null;
-  // back
-  btx: number;
-  bty: number;
-  bx: number;
-  by: number;
-  bvx: number;
-  bvy: number;
-  // front
-  ftx: number;
-  fty: number;
-  fx: number;
-  fy: number;
-  fvx: number;
-  fvy: number;
+  layers: Layer[];
   hovering: boolean;
   raf: number;
   last: number;
@@ -67,68 +62,64 @@ function factors(shell: HTMLElement, clientX: number, clientY: number) {
   const cx = rect.width / 2;
   const cy = rect.height / 2;
   if (cx <= 0 || cy <= 0) return { nx: 0, ny: 0 };
-  const mx = clientX - rect.x - cx;
-  const my = clientY - rect.y - cy;
   return {
-    nx: clamp(mx / cx, -1, 1),
-    ny: clamp(my / cy, -1, 1),
+    nx: clamp((clientX - rect.x - cx) / cx, -1, 1),
+    ny: clamp((clientY - rect.y - cy) / cy, -1, 1),
   };
 }
 
-function applyLayer(el: HTMLElement | null, x: number, y: number) {
-  if (!el) return;
-  if (Math.abs(x) < 0.02 && Math.abs(y) < 0.02) {
+function applyLayer(layer: Layer) {
+  const { el, x, y } = layer;
+  if (Math.abs(x.c) < 0.02 && Math.abs(y.c) < 0.02) {
     el.style.transform = '';
     return;
   }
-  el.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0)`;
+  el.style.transform = `translate3d(${x.c.toFixed(3)}px, ${y.c.toFixed(3)}px, 0)`;
 }
 
-function tick(state: LayerState, now: number) {
+function tick(state: CardState, now: number) {
   const dt = Math.min(0.032, (now - state.last) / 1000 || 1 / 60);
   state.last = now;
 
-  const bx = springStep(state.bx, state.btx, state.bvx, dt);
-  const by = springStep(state.by, state.bty, state.bvy, dt);
-  state.bx = bx.value;
-  state.bvx = bx.velocity;
-  state.by = by.value;
-  state.bvy = by.velocity;
+  let moving = state.hovering;
 
-  const fx = springStep(state.fx, state.ftx, state.fvx, dt);
-  const fy = springStep(state.fy, state.fty, state.fvy, dt);
-  state.fx = fx.value;
-  state.fvx = fx.velocity;
-  state.fy = fy.value;
-  state.fvy = fy.velocity;
+  for (const layer of state.layers) {
+    const sx = springStep(layer.x.c, layer.x.t, layer.x.v, dt);
+    const sy = springStep(layer.y.c, layer.y.t, layer.y.v, dt);
+    layer.x.c = sx.value;
+    layer.x.v = sx.velocity;
+    layer.y.c = sy.value;
+    layer.y.v = sy.velocity;
+    applyLayer(layer);
 
-  applyLayer(state.back, state.bx, state.by);
-  applyLayer(state.front, state.fx, state.fy);
+    if (
+      Math.abs(layer.x.v) > 0.01 ||
+      Math.abs(layer.y.v) > 0.01 ||
+      Math.abs(layer.x.c - layer.x.t) > 0.02 ||
+      Math.abs(layer.y.c - layer.y.t) > 0.02
+    ) {
+      moving = true;
+    }
+  }
 
-  const still =
-    state.hovering ||
-    Math.abs(state.bvx) > 0.01 ||
-    Math.abs(state.bvy) > 0.01 ||
-    Math.abs(state.fvx) > 0.01 ||
-    Math.abs(state.fvy) > 0.01 ||
-    Math.abs(state.bx - state.btx) > 0.02 ||
-    Math.abs(state.fx - state.ftx) > 0.02;
-
-  if (!state.hovering && !still) {
-    applyLayer(state.back, 0, 0);
-    applyLayer(state.front, 0, 0);
+  if (!state.hovering && !moving) {
+    for (const layer of state.layers) {
+      layer.x = { t: 0, c: 0, v: 0 };
+      layer.y = { t: 0, c: 0, v: 0 };
+      applyLayer(layer);
+    }
     state.raf = 0;
     return;
   }
 
-  if (still) {
+  if (moving) {
     state.raf = requestAnimationFrame((t) => tick(state, t));
   } else {
     state.raf = 0;
   }
 }
 
-function start(state: LayerState) {
+function start(state: CardState) {
   if (state.raf) return;
   state.last = performance.now();
   state.raf = requestAnimationFrame((t) => tick(state, t));
@@ -138,37 +129,42 @@ function bindCard(shell: HTMLElement) {
   if (shell.dataset.cardParallaxReady === 'true') return;
   shell.dataset.cardParallaxReady = 'true';
 
-  const state: LayerState = {
+  const layers: Layer[] = [];
+  (Object.keys(RANGES) as Depth[]).forEach((depth) => {
+    shell.querySelectorAll<HTMLElement>(`[data-parallax-depth="${depth}"]`).forEach((el) => {
+      layers.push({
+        el,
+        depth,
+        x: { t: 0, c: 0, v: 0 },
+        y: { t: 0, c: 0, v: 0 },
+      });
+    });
+  });
+
+  if (!layers.length) return;
+
+  const state: CardState = {
     shell,
-    back: shell.querySelector<HTMLElement>('[data-parallax-depth="back"]'),
-    front: shell.querySelector<HTMLElement>('[data-parallax-depth="front"]'),
-    btx: 0,
-    bty: 0,
-    bx: 0,
-    by: 0,
-    bvx: 0,
-    bvy: 0,
-    ftx: 0,
-    fty: 0,
-    fx: 0,
-    fy: 0,
-    fvx: 0,
-    fvy: 0,
+    layers,
     hovering: false,
     raf: 0,
     last: performance.now(),
   };
 
-  if (!state.back && !state.front) return;
-
   const setFromEvent = (clientX: number, clientY: number) => {
     const { nx, ny } = factors(shell, clientX, clientY);
-    // Back (image): less travel → reads as farther
-    state.btx = nx * BACK_RANGE * 0.45;
-    state.bty = ny * BACK_RANGE * 0.45;
-    // Front (title/tags): more travel → nearer
-    state.ftx = nx * FRONT_RANGE;
-    state.fty = ny * FRONT_RANGE;
+    for (const layer of state.layers) {
+      const range = RANGES[layer.depth];
+      layer.x.t = nx * range;
+      layer.y.t = ny * range;
+    }
+  };
+
+  const zero = () => {
+    for (const layer of state.layers) {
+      layer.x.t = 0;
+      layer.y.t = 0;
+    }
   };
 
   shell.addEventListener('pointerenter', (e) => {
@@ -186,10 +182,7 @@ function bindCard(shell: HTMLElement) {
 
   shell.addEventListener('pointerleave', () => {
     state.hovering = false;
-    state.btx = 0;
-    state.bty = 0;
-    state.ftx = 0;
-    state.fty = 0;
+    zero();
     start(state);
   });
 }

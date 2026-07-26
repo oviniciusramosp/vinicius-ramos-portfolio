@@ -9,6 +9,11 @@ interface Props {
 const { projects } = Astro.props;
 ---
 
+<!--
+  Live Framer grid (desktop ~1440):
+  5 columns × 220px rows, gap 8px, dense packing
+  lg=2×2, tall=1×2, wide=2×1, sm=1×1
+-->
 <section class="project-grid" aria-label="Selected work">
   {
     projects.map((project) => (
@@ -22,7 +27,9 @@ const { projects } = Astro.props;
 <style>
   .project-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 220px;
+    grid-auto-flow: dense;
     gap: 8px;
     padding: 16px;
     width: 100%;
@@ -30,14 +37,21 @@ const { projects } = Astro.props;
 
   .project-grid__cell {
     min-width: 0;
+    min-height: 0;
     height: 100%;
   }
 
-  .project-grid__cell :global(.project-card-shell) {
+  .project-grid__cell :global(.project-card-shell),
+  .project-grid__cell :global(.project-card) {
     height: 100%;
+    min-height: 0;
   }
 
-  /* Bento layout approximating the Framer homepage grid */
+  /* Fill the grid track — no fixed min-heights that break dense packing */
+  .project-grid__cell :global(.project-card) {
+    min-height: 100%;
+  }
+
   .is-lg {
     grid-column: span 2;
     grid-row: span 2;
@@ -59,25 +73,42 @@ const { projects } = Astro.props;
     grid-row: span 1;
   }
 
-  .project-grid__cell :global(.project-card) {
-    height: 100%;
-    min-height: 100%;
+  /* Tablet: 3 columns, keep dense so no holes */
+  @media (max-width: 1100px) {
+    .project-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: 200px;
+    }
+
+    .is-lg {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .is-wide {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .is-tall {
+      grid-column: span 1;
+      grid-row: span 2;
+    }
+
+    .is-sm,
+    .is-md {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
   }
 
-  .is-lg :global(.project-card),
-  .is-tall :global(.project-card) {
-    min-height: 448px;
-  }
-
-  .is-wide :global(.project-card),
-  .is-sm :global(.project-card),
-  .is-md :global(.project-card) {
-    min-height: 220px;
-  }
-
-  @media (max-width: 1024px) {
+  /* Small tablet / large phone: 2 columns */
+  @media (max-width: 720px) {
     .project-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 180px;
+      padding: 12px;
+      gap: 8px;
     }
 
     .is-lg,
@@ -86,25 +117,28 @@ const { projects } = Astro.props;
       grid-row: span 1;
     }
 
-    .is-tall,
+    .is-tall {
+      grid-column: span 1;
+      grid-row: span 2;
+    }
+
     .is-sm,
     .is-md {
       grid-column: span 1;
       grid-row: span 1;
     }
 
-    .is-lg :global(.project-card),
-    .is-tall :global(.project-card),
-    .is-wide :global(.project-card),
-    .is-sm :global(.project-card),
-    .is-md :global(.project-card) {
-      min-height: 280px;
+    /* Large cards get a taller track on 2-col */
+    .is-lg {
+      grid-row: span 2;
     }
   }
 
-  @media (max-width: 640px) {
+  /* Mobile: single column */
+  @media (max-width: 480px) {
     .project-grid {
       grid-template-columns: 1fr;
+      grid-auto-rows: 220px;
       padding: 12px;
       gap: 10px;
     }
@@ -118,8 +152,16 @@ const { projects } = Astro.props;
       grid-row: span 1;
     }
 
-    .project-grid__cell :global(.project-card) {
-      min-height: 240px !important;
+    .is-lg,
+    .is-tall {
+      grid-row: span 1;
+      /* slightly taller feature cards */
+      min-height: 260px;
+    }
+
+    .is-lg :global(.project-card-shell),
+    .is-tall :global(.project-card-shell) {
+      min-height: 260px;
     }
   }
 </style>

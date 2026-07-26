@@ -1,4 +1,4 @@
-/* Soft highlight cursor — free: visible blob; on button: scale up + fade out */
+/* Soft highlight cursor */
 
 .site-cursor {
   position: fixed;
@@ -11,16 +11,46 @@
   background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
   opacity: 0;
-  will-change: transform, opacity;
+  will-change: transform, opacity, width, height, background-color, box-shadow;
   box-shadow: none;
   border: none;
   transform: translate3d(-100px, -100px, 0) scale(1);
   transform-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Smooth color morph between circle glass and white pill */
+  transition:
+    background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+    box-shadow 0.28s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
-/* While dissolving into a control — no extra chrome */
 .site-cursor.is-block {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* Desktop soon cards — solid white pill */
+.site-cursor.is-soon {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.site-cursor__label {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: #000;
+  opacity: 0;
+  pointer-events: none;
+  /* opacity driven by JS for width-coupled fade */
+  padding: 0 4px;
+  user-select: none;
 }
 
 @media (pointer: coarse) {

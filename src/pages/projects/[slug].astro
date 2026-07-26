@@ -3,7 +3,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
 import QuoteSlider from '../../components/QuoteSlider.astro';
 import NextProject from '../../components/NextProject.astro';
-import { getPublishedProjects, getProject, type Project } from '../../data/projects';
+import {
+  getPublishedProjects,
+  getProject,
+  type Project,
+  type CaseBlock,
+  type CaseImage,
+  type CaseBentoCell,
+} from '../../data/projects';
 import { site } from '../../data/site';
 
 export function getStaticPaths() {
@@ -19,45 +26,166 @@ interface Props {
 
 const { project } = Astro.props;
 const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
+const useBlocks = Boolean(project.blocks && project.blocks.length > 0);
+
+/** Render **bold** markers from case-study copy */
+function inlineHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function cellClass(cell: CaseBentoCell, index: number) {
+  const span = cell.span ?? '1x1';
+  const parts = [`case-bento__cell`, `case-bento__cell--${span}`, `case-bento__cell--i${index}`];
+  if (cell.kind === 'image' && cell.padded) parts.push('case-bento__cell--padded');
+  if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
+  return parts.join(' ');
+}
 ---
 
 <BaseLayout title={`${site.name} · ${project.title}`} description={project.summary}>
   <article class="case">
     <header class="case__hero">
-      <div class="case__meta">
-        <span class="case__year">{project.year}</span>
-        <div class="case__tags">
+      <div class="case__hero-main">
+        {/* Live Framer: year + tags share the same pill component */}
+        <div class="case__tags" data-framer-name="Tags">
+          <Tag label={project.year} />
           {project.tags.map((tag) => <Tag label={tag} />)}
         </div>
+        <h1 class="display-title case__title">{project.title}</h1>
+        <p class="case__summary body-text">{project.summary}</p>
       </div>
-      <h1 class="display-title case__title">{project.title}</h1>
-      <p class="case__summary body-text">{project.summary}</p>
     </header>
 
-    <div class="case__cover">
-      <img src={project.cover} alt={`${project.title} cover`} loading="eager" />
-    </div>
-
     {
-      project.sections.map((section) => (
-        <section class="case__section">
-          <h2 class="section-title">{section.title}</h2>
-          <div class="case__copy">
-            {section.paragraphs.map((p) => (
-              <p class="body-text">{p}</p>
-            ))}
+      useBlocks ? (
+        project.blocks!.map((block: CaseBlock) => {
+          if (block.type === 'bento') {
+            return (
+              <div class="case__media case__media--bento">
+                <div class="case-bento">
+                  {block.cells.map((cell, i) =>
+                    cell.kind === 'caption' ? (
+                      <div class={cellClass(cell, i)}>
+                        {cell.texture && (
+                          <div
+                            class="case-bento__texture"
+                            aria-hidden="true"
+                            style={`background-image: url('${cell.texture}')`}
+                          />
+                        )}
+                        <div class="case-bento__caption-stack">
+                          <div class="case-bento__chip case-bento__chip--text">
+                            <p class="case-bento__caption">{cell.text}</p>
+                          </div>
+                          {cell.lottie && (
+                            <div class="case-bento__chip case-bento__chip--lottie">
+                              <div
+                                class="case-bento__lottie"
+                                data-lottie
+                                data-src={cell.lottie}
+                                data-speed={String(cell.lottieSpeed ?? 1)}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div class={cellClass(cell, i)}>
+                        {cell.texture && (
+                          <div
+                            class="case-bento__texture"
+                            aria-hidden="true"
+                            style={`background-image: url('${cell.texture}')`}
+                          />
+                        )}
+                        <img
+                          src={cell.src}
+                          alt={cell.alt}
+                          loading="eager"
+                          style={`object-fit: ${cell.fit ?? 'cover'}`}
+                        />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          if (block.type === 'section') {
+            return (
+              <section class="case__section">
+                <div class="case__section-inner">
+                  {block.title && <h2 class="section-title">{block.title}</h2>}
+                  <div class="case__copy">
+                    {block.paragraphs.map((p) => (
+                      <p class="body-text" set:html={inlineHtml(p)} />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+
+          if (block.type === 'gallery') {
+            return (
+              <div class={`case__media case__media--${block.layout}`}>
+                <div class={`case-gallery case-gallery--${block.layout}`}>
+                  {block.images.map((img: CaseImage) => (
+                    <figure
+                      class:list={[
+                        'case-gallery__item',
+                        img.hideOn === 'mobile' && 'case-gallery__item--hide-mobile',
+                      ]}
+                      style={img.aspect ? `aspect-ratio: ${img.aspect}` : undefined}
+                    >
+                      <img
+                        src={img.src}
+                        alt={img.alt}
+                        loading="lazy"
+                        style={`object-fit: ${img.fit ?? 'cover'}`}
+                      />
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        })
+      ) : (
+        <>
+          <div class="case__cover">
+            <img src={project.cover} alt={`${project.title} cover`} loading="eager" />
           </div>
-          {section.images && section.images.length > 0 && (
-            <div class="case__gallery" data-gallery-slider>
-              {section.images.map((src, i) => (
-                <figure class="case__figure">
-                  <img src={src} alt={`${section.title} visual ${i + 1}`} loading="lazy" />
-                </figure>
-              ))}
-            </div>
-          )}
-        </section>
-      ))
+          {project.sections.map((section) => (
+            <section class="case__section">
+              <div class="case__section-inner">
+                <h2 class="section-title">{section.title}</h2>
+                <div class="case__copy">
+                  {section.paragraphs.map((p) => (
+                    <p class="body-text">{p}</p>
+                  ))}
+                </div>
+                {section.images && section.images.length > 0 && (
+                  <div class="case__gallery" data-gallery-slider>
+                    {section.images.map((src, i) => (
+                      <figure class="case__figure">
+                        <img src={src} alt={`${section.title} visual ${i + 1}`} loading="lazy" />
+                      </figure>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          ))}
+        </>
+      )
     }
 
     {project.quotes && project.quotes.length > 0 && <QuoteSlider quotes={project.quotes} />}
@@ -73,30 +201,41 @@ const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
 </BaseLayout>
 
 <style>
+  /*
+   * Case study layout — mapped from live Framer breakpoints:
+   *   mobile  ≤809px
+   *   tablet  810–1193px
+   *   desktop ≥1194px
+   *   xl      ≥1536px
+   */
+
+  .case {
+    width: 100%;
+  }
+
+  /* —— Hero —— */
   .case__hero {
-    padding: var(--space-12) var(--page-pad-x) var(--space-8);
-    max-width: 920px;
     display: grid;
+    grid-template-columns: 1fr;
     gap: 20px;
+    width: 100%;
+    padding: 80px 16px 24px;
   }
 
-  .case__meta {
+  .case__hero-main {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .case__year {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
   }
 
   .case__tags {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
   }
 
   .case__title {
@@ -107,6 +246,252 @@ const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
     max-width: 720px;
   }
 
+  /* —— Text sections —— */
+  .case__section {
+    width: 100%;
+    padding: 24px 16px;
+  }
+
+  .case__section-inner {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 920px;
+  }
+
+  /* 3-col grid on tablet+ so copy spans ~2/3 like Framer TextArea */
+  @media (min-width: 810px) {
+    .case__section-inner {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      max-width: none;
+    }
+
+    .case__section-inner > .section-title,
+    .case__section-inner > .case__copy {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .case__section-inner > .section-title,
+    .case__section-inner > .case__copy {
+      grid-column: span 2;
+    }
+  }
+
+  .case__section .section-title {
+    margin: 0;
+  }
+
+  .case__copy {
+    display: grid;
+    gap: 1em;
+  }
+
+  .case__copy :global(strong) {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* —— Media shells (galleries + bento) —— */
+  .case__media {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .case__media--bento {
+    padding: 16px;
+  }
+
+  /* —— Hero bento (ImagesFull) ——
+   * Mobile 2-col stack; tablet/desktop 4-col with named areas:
+   *   phones phones caption icons
+   *   phones phones mac     mac
+   *   partners partners mac mac
+   */
+  .case-bento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'phones phones'
+      'caption icons'
+      'mac mac'
+      'partners partners';
+    gap: 8px;
+    width: 100%;
+  }
+
+  /*
+   * Live ImagesFull cards (all 5):
+   * bg #131219 · inset border 1px #ffffff0d · radius 12 (8 mobile)
+   */
+  .case-bento__cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    background-color: var(--color-surface);
+    border: none;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  .case-bento__cell--i0 {
+    grid-area: phones;
+    min-height: 280px;
+  }
+
+  .case-bento__cell--i1 {
+    grid-area: caption;
+    min-height: 120px;
+  }
+
+  .case-bento__cell--i2 {
+    grid-area: icons;
+    min-height: 120px;
+  }
+
+  .case-bento__cell--i3 {
+    grid-area: mac;
+    min-height: 200px;
+  }
+
+  .case-bento__cell--i4 {
+    grid-area: partners;
+    min-height: 100px;
+  }
+
+  .case-bento__cell--padded {
+    padding: 15px;
+  }
+
+  /* Caption cell: texture fill + stacked UI chips (text + lottie) */
+  .case-bento__cell--caption {
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .case-bento__texture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background-repeat: repeat;
+    background-position: center;
+    background-size: 12px auto;
+    pointer-events: none;
+  }
+
+  .case-bento__caption-stack {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: min-content;
+    max-width: 85%;
+  }
+
+  .case-bento__chip {
+    background: var(--color-surface);
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px var(--color-text-muted);
+  }
+
+  .case-bento__chip--text {
+    width: 100%;
+    padding: 9px;
+  }
+
+  .case-bento__chip--lottie {
+    width: fit-content;
+    padding: 9px;
+  }
+
+  .case-bento__caption {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .case-bento__lottie {
+    width: 46px;
+    height: 21px;
+  }
+
+  .case-bento__lottie :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .case-bento__cell img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-position: center;
+  }
+
+  /* —— Galleries —— */
+  .case-gallery {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .case-gallery--pair {
+    grid-template-columns: 1fr;
+  }
+
+  .case-gallery--triple {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .case-gallery--single {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .case-gallery--single .case-gallery__item {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .case-gallery--social {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .case-gallery__item {
+    margin: 0;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+    border: none;
+  }
+
+  .case-gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-position: center;
+  }
+
+  .case-gallery__item--hide-mobile {
+    display: none;
+  }
+
+  /* Legacy single cover + horizontal slider */
   .case__cover {
     padding: 0 16px 48px;
   }
@@ -117,20 +502,6 @@ const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
     object-fit: cover;
     border-radius: var(--radius-card);
     background: var(--color-surface);
-  }
-
-  .case__section {
-    padding: 24px var(--page-pad-x) 40px;
-    max-width: 920px;
-  }
-
-  .case__section .section-title {
-    margin-bottom: 20px;
-  }
-
-  .case__copy {
-    display: grid;
-    gap: 1em;
   }
 
   .case__gallery {
@@ -163,25 +534,205 @@ const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
   }
 
   .case__note {
-    padding: 16px var(--page-pad-x) 32px;
+    padding: 24px 16px 32px;
     max-width: 920px;
     color: var(--color-text-soft);
   }
 
-  @media (max-width: 768px) {
-    .case__hero,
-    .case__section,
+  /* —— Tablet ≥810px —— */
+  @media (min-width: 810px) {
+    .case__hero {
+      padding: 125px 64px 48px;
+    }
+
+    .case__section {
+      padding: 48px 64px;
+    }
+
+    .case__media {
+      padding: 16px 64px;
+    }
+
     .case__note {
-      padding-inline: 16px;
+      padding: 48px 64px 32px;
+    }
+
+    .case-bento {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(150px, 1fr));
+      grid-template-areas:
+        'phones phones caption icons'
+        'phones phones mac mac'
+        'partners partners mac mac';
+      min-height: 460px;
+    }
+
+    .case-bento__cell {
+      border-radius: 12px;
+    }
+
+    .case-bento__cell--i0,
+    .case-bento__cell--i3 {
+      min-height: 0;
+    }
+
+    .case-bento__cell--padded {
+      padding: 20px;
+    }
+
+    .case-bento__caption-stack {
+      gap: 7px;
+    }
+
+    .case-gallery--pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .case-gallery--triple {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .case-gallery--social {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .case-gallery__item--hide-mobile {
+      display: block;
     }
 
     .case__cover {
-      padding-inline: 12px;
+      padding-inline: 64px;
+    }
+  }
+
+  /* —— Desktop ≥1194px —— */
+  @media (min-width: 1194px) {
+    .case__hero {
+      grid-template-columns: repeat(3, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 125px 250px 48px;
+    }
+
+    .case__hero-main {
+      grid-column: span 2;
+    }
+
+    .case__section {
+      padding: 48px 250px;
+    }
+
+    .case__media {
+      padding: 16px 250px;
+    }
+
+    .case__media--bento {
+      /* ImagesFull uses full width with only 16px pad on live */
+      padding: 16px;
+      max-width: 1920px;
+      margin-inline: auto;
+    }
+
+    .case-bento {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(180px, 220px));
+      grid-template-areas:
+        'phones phones caption icons'
+        'phones phones mac mac'
+        'partners partners mac mac';
+      min-height: 560px;
+    }
+
+    .case-bento__cell--padded {
+      padding: 28px;
+    }
+
+    .case-bento__caption-stack {
+      gap: 10px;
+    }
+
+    .case-bento__lottie {
+      width: 46px;
+      height: 21px;
+    }
+
+    .case-gallery--triple {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .case-gallery--social {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .case__note {
+      padding: 48px 250px 32px;
+    }
+
+    .case__cover {
+      padding-inline: 16px;
+    }
+  }
+
+  /* —— XL ≥1536px —— */
+  @media (min-width: 1536px) {
+    .case__hero {
+      width: 1536px;
+      max-width: 100%;
+      margin-inline: auto;
+      padding: 144px 240px 48px;
+    }
+
+    .case__section {
+      width: 1536px;
+      max-width: 100%;
+      margin-inline: auto;
+      padding: 48px 240px;
+    }
+
+    .case__media:not(.case__media--bento) {
+      width: 1536px;
+      max-width: 100%;
+      margin-inline: auto;
+      padding: 16px 240px;
+    }
+
+    .case__note {
+      width: 1536px;
+      max-width: 100%;
+      margin-inline: auto;
+      padding: 48px 240px 32px;
+    }
+
+    .case-bento {
+      grid-template-rows: repeat(3, 290px);
+      min-height: 886px;
+    }
+
+    .case-bento__cell--padded {
+      padding: 44px;
+    }
+  }
+
+  @media (max-width: 809.98px) {
+    .case-bento__lottie {
+      width: 33px;
+      height: 15px;
+    }
+
+    .case-bento__caption {
+      white-space: normal;
+    }
+
+    .case-bento__chip {
+      border-radius: 9px;
     }
   }
 </style>
 
 <script>
+  import lottie from 'lottie-web';
+
   function initGallerySliders() {
     document.querySelectorAll<HTMLElement>('[data-gallery-slider]').forEach((el) => {
       if (el.dataset.ready === 'true') return;
@@ -214,6 +765,30 @@ const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
     });
   }
 
-  initGallerySliders();
-  document.addEventListener('astro:page-load', initGallerySliders);
+  function initLotties() {
+    document.querySelectorAll<HTMLElement>('[data-lottie]').forEach((el) => {
+      if (el.dataset.ready === 'true') return;
+      const src = el.dataset.src;
+      if (!src) return;
+      el.dataset.ready = 'true';
+
+      const speed = Number(el.dataset.speed || '1');
+      const anim = lottie.loadAnimation({
+        container: el,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: src,
+      });
+      anim.setSpeed(Number.isFinite(speed) ? speed : 1);
+    });
+  }
+
+  function initCaseStudy() {
+    initGallerySliders();
+    initLotties();
+  }
+
+  initCaseStudy();
+  document.addEventListener('astro:page-load', initCaseStudy);
 </script>

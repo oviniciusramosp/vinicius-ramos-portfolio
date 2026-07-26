@@ -10,53 +10,92 @@ const { project } = Astro.props;
 const isLink = Boolean(project.href) && !project.soon;
 const TagEl = isLink ? 'a' : 'div';
 const attrs = isLink ? { href: project.href } : {};
+const fit = project.imageFit ?? 'cover';
+const hasFront = Boolean(project.coverFront);
+
+const tagList = [
+  ...project.tags.map((label) => ({ label, tone: 'default' as const })),
+  // SOON badge only used on mobile (see CSS); desktop uses cursor pill
+  ...(project.soon ? [{ label: 'SOON', tone: 'soon' as const }] : []),
+];
 ---
 
-<!--
-  Layers (depth, front → back):
-  1. content (title/tags) — appears on hover, strongest parallax
-  2. scrim (dark + blur)
-  3. image — “far” layer, scales down on hover
-
-  Shell: magnetic withOffset (range 3) + card multi-layer parallax
--->
 <div
-  class="project-card-shell"
+  class:list={['project-card-shell', project.soon && 'is-soon']}
   data-magnetic
   data-magnetic-range="3"
   data-card-parallax
-  data-cursor="block"
+  data-cursor={project.soon ? 'soon' : 'block'}
 >
   <TagEl
     class:list={[
       'project-card',
       `project-card--${project.size}`,
+      `project-card--fit-${fit}`,
+      hasFront && 'has-dual-image',
       project.soon && 'is-soon',
     ]}
     data-magnetic-visual
     {...attrs}
     aria-label={`${project.title}${project.soon ? ' (coming soon)' : ''}`}
   >
-    <!-- Back layer: image -->
-    <div class="project-card__media" data-parallax-depth="back">
-      <img
-        class="project-card__image"
-        src={project.cover}
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
+    <div class="project-card__media-stack" aria-hidden="true">
+      <div
+        class="project-card__layer project-card__layer--back"
+        data-parallax-depth="img-back"
+      >
+        <img
+          class="project-card__image"
+          src={project.cover}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      {
+        project.coverFront && (
+          <div
+            class="project-card__layer project-card__layer--mid"
+            data-parallax-depth="img-mid"
+          >
+            <img
+              class="project-card__image"
+              src={project.coverFront}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )
+      }
     </div>
 
-    <!-- Mid: dark scrim + blur (live Backdrop + Blur) -->
     <div class="project-card__scrim" aria-hidden="true"></div>
 
-    <!-- Front: title + tags — hidden until hover -->
+    <!--
+      Parallax layer fills the card.
+      Inner stack is ONLY as tall as the title and is grid-centered,
+      so the title is always the true visual center.
+      Tags are position:absolute under the title (out of flow).
+    -->
     <div class="project-card__content" data-parallax-depth="front">
-      <h2 class="project-card__title">{project.title}</h2>
-      <div class="project-card__tags">
-        {project.tags.map((tag) => <Tag label={tag} />)}
-        {project.soon && <Tag label="SOON" tone="accent" />}
+      <div class="project-card__stack">
+        <h2 class="project-card__title">{project.title}</h2>
+        <div class="project-card__tags">
+          {
+            tagList.map((tag, i) => (
+              <span
+                class:list={[
+                  'project-card__tag-item',
+                  tag.tone === 'soon' && 'project-card__tag-item--soon',
+                ]}
+                style={`--delay: ${80 + i * 70}ms`}
+              >
+                <Tag label={tag.label} tone={tag.tone} variant="reveal" />
+              </span>
+            ))
+          }
+        </div>
       </div>
     </div>
   </TagEl>
@@ -71,12 +110,16 @@ const attrs = isLink ? { href: project.href } : {};
 
   .project-card {
     --card-ease: cubic-bezier(0.44, 0, 0.56, 1);
-    --card-dur: 420ms;
+    --card-dur: 0.42s;
+    --tag-stagger: 0.07s;
+    --img-scale: 1.18;
+    --img-scale-hover-back: 1.24;
+    --img-scale-hover-mid: 1.22;
     position: relative;
     display: block;
     width: 100%;
     height: 100%;
-    min-height: 220px;
+    min-height: 0;
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--color-surface);
@@ -90,110 +133,188 @@ const attrs = isLink ? { href: project.href } : {};
     cursor: pointer;
   }
 
-  .project-card--lg,
-  .project-card--tall {
-    min-height: 448px;
-  }
-
-  .project-card--wide,
-  .project-card--sm,
-  .project-card--md {
-    min-height: 220px;
-  }
-
-  /* —— Back: image —— */
-  .project-card__media {
+  /* —— Images —— */
+  .project-card__media-stack {
     position: absolute;
     inset: 0;
     z-index: 0;
-    overflow: hidden;
+    display: grid;
+    grid-template: 1fr / 1fr;
     border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .project-card__layer {
+    grid-area: 1 / 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
     will-change: transform;
-    transition: transform var(--card-dur) var(--card-ease);
+  }
+
+  .project-card__layer--back {
+    z-index: 0;
+  }
+  .project-card__layer--mid {
+    z-index: 1;
   }
 
   .project-card__image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Rest: slightly large (live ~1.02). Hover: push “back” to ~0.8 */
-    transform: scale(1.02);
-    filter: saturate(1);
-    transition:
-      transform var(--card-dur) var(--card-ease),
-      filter var(--card-dur) var(--card-ease);
+    object-position: center;
+    transform: scale(var(--img-scale));
+    transform-origin: center;
+    transition: transform var(--card-dur) var(--card-ease);
+    display: block;
   }
 
-  /* —— Mid: scrim —— */
+  .project-card--fit-contain .project-card__image {
+    object-fit: contain;
+  }
+
   .project-card__scrim {
     position: absolute;
     inset: 0;
     z-index: 1;
     border-radius: inherit;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.12) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
     opacity: 0;
     pointer-events: none;
-    transition:
-      opacity var(--card-dur) var(--card-ease),
-      backdrop-filter var(--card-dur) var(--card-ease),
-      -webkit-backdrop-filter var(--card-dur) var(--card-ease);
-  }
-
-  /* —— Front: title + tags (hidden at rest) ——
-     Opacity via CSS; translate via card-parallax (no transform conflict) */
-  .project-card__content {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: var(--space-4);
-    padding: 24px;
-    opacity: 0;
-    pointer-events: none;
-    will-change: transform, opacity;
     transition: opacity var(--card-dur) var(--card-ease);
   }
 
+  /*
+   * Content fills the card and centers the STACK (title only in-flow).
+   * Parallax translate is applied to this node — layout stays centered.
+   */
+  .project-card__content {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* Only as tall as the title → place-items:center puts title at true center */
+  .project-card__stack {
+    position: relative;
+    display: block;
+    width: max-content;
+    max-width: min(100%, 90vw);
+  }
+
   .project-card__title {
+    margin: 0;
     font-family: var(--font-display);
     font-size: clamp(20px, 2.2vw, var(--text-xl));
     font-weight: 400;
     line-height: 1;
     text-transform: uppercase;
-    color: var(--color-text);
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    /* Soft contrast halo — high blur, low opacity */
+    text-shadow:
+      0 0 24px rgba(0, 0, 0, 0.35),
+      0 0 48px rgba(0, 0, 0, 0.2);
+    transition:
+      opacity var(--card-dur) var(--card-ease),
+      transform var(--card-dur) var(--card-ease);
   }
 
+  /*
+   * Tags hang under the title (absolute → no layout shift).
+   * Stack is position:relative so this anchors to the title box.
+   */
   .project-card__tags {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-top: 14px;
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: max-content;
+    transform: translateX(-50%);
+    z-index: 2;
   }
 
-  /* —— Hover / focus / magnetic active —— */
-  .project-card-shell:hover .project-card__content,
-  .project-card-shell:focus-within .project-card__content,
-  .project-card-shell.is-magnetic .project-card__content {
-    opacity: 1;
+  /* Desktop / tablet: never show SOON badge (cursor pill handles it) */
+  .project-card__tag-item--soon {
+    display: none !important;
   }
 
+  /* No opacity on tags — “fade” is color on .tag; only slide here */
+  .project-card__tag-item {
+    display: inline-flex;
+    flex-shrink: 0;
+    transform: translateY(12px);
+    transition: transform 0.38s var(--card-ease);
+    transition-delay: 0s;
+  }
+
+  /* Stagger color/blur transitions on the tag itself */
+  .project-card__tag-item :global(.tag),
+  .project-card__tag-item :global(.tag__glass) {
+    transition-delay: 0s;
+  }
+
+  /* —— Active state (hover OR magnetic) —— */
   .project-card-shell:hover .project-card__scrim,
   .project-card-shell:focus-within .project-card__scrim,
   .project-card-shell.is-magnetic .project-card__scrim {
     opacity: 1;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
   }
 
-  .project-card-shell:hover .project-card__image,
-  .project-card-shell:focus-within .project-card__image,
-  .project-card-shell.is-magnetic .project-card__image {
-    /* Live ImageBg: scale ~0.8 + saturate */
-    transform: scale(0.82);
-    filter: saturate(1.56);
+  .project-card-shell:hover .project-card__layer--back .project-card__image,
+  .project-card-shell:focus-within .project-card__layer--back .project-card__image,
+  .project-card-shell.is-magnetic .project-card__layer--back .project-card__image {
+    transform: scale(var(--img-scale-hover-back));
+  }
+
+  .project-card-shell:hover .project-card__layer--mid .project-card__image,
+  .project-card-shell:focus-within .project-card__layer--mid .project-card__image,
+  .project-card-shell.is-magnetic .project-card__layer--mid .project-card__image {
+    transform: scale(var(--img-scale-hover-mid));
+  }
+
+  .project-card-shell:hover .project-card__title,
+  .project-card-shell:focus-within .project-card__title,
+  .project-card-shell.is-magnetic .project-card__title {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .project-card-shell:hover .project-card__tag-item,
+  .project-card-shell:focus-within .project-card__tag-item,
+  .project-card-shell.is-magnetic .project-card__tag-item {
+    transform: translateY(0);
+    transition-delay: var(--delay, 80ms);
+  }
+
+  .project-card-shell:hover .project-card__tag-item :global(.tag),
+  .project-card-shell:focus-within .project-card__tag-item :global(.tag),
+  .project-card-shell.is-magnetic .project-card__tag-item :global(.tag),
+  .project-card-shell:hover .project-card__tag-item :global(.tag__glass),
+  .project-card-shell:focus-within .project-card__tag-item :global(.tag__glass),
+  .project-card-shell.is-magnetic .project-card__tag-item :global(.tag__glass) {
+    transition-delay: var(--delay, 80ms);
   }
 
   .project-card.is-soon {
@@ -206,41 +327,41 @@ const attrs = isLink ? { href: project.href } : {};
   }
 
   @media (max-width: 768px) {
-    .project-card,
-    .project-card--lg,
-    .project-card--tall,
-    .project-card--wide,
-    .project-card--sm,
-    .project-card--md {
-      min-height: 260px;
-    }
-
-    /* Touch: keep content visible (no hover) */
-    .project-card__content {
+    .project-card__title {
       opacity: 1;
       transform: none;
+      transition: none;
+    }
+
+    .project-card__tag-item {
+      transform: none;
+      transition: none;
+      transition-delay: 0s;
+    }
+
+    .project-card__tag-item :global(.tag),
+    .project-card__tag-item :global(.tag__glass) {
+      transition: none;
+      transition-delay: 0s;
+    }
+
+    /* Mobile only: solid SOON badge (cursor hidden on touch) */
+    .project-card__tag-item--soon {
+      display: inline-flex !important;
     }
 
     .project-card__scrim {
-      opacity: 0.55;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .project-card__image {
-      transform: scale(1);
-      filter: saturate(1.15);
+      opacity: 0.65;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card,
-    .project-card__media,
     .project-card__image,
     .project-card__scrim,
-    .project-card__content {
-      transition: none;
-      will-change: auto;
+    .project-card__title,
+    .project-card__tag-item {
+      transition: none !important;
+      transition-delay: 0s !important;
     }
   }
 </style>
