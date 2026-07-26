@@ -7,7 +7,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 <header class="site-header">
   <nav class="site-nav" aria-label="Primary">
-    <a class="logo" href="/">{site.name}</a>
+    <a class="logo" href="/" data-cursor="block">{site.name}</a>
     <div class="nav-links">
       {
         site.nav.map((item) => (

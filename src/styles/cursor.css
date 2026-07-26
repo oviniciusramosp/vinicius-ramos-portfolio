@@ -1,0 +1,36 @@
+/* Soft highlight cursor — free: visible blob; on button: scale up + fade out */
+
+.site-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  box-shadow: none;
+  border: none;
+  transform: translate3d(-100px, -100px, 0) scale(1);
+  transform-origin: center center;
+}
+
+/* While dissolving into a control — no extra chrome */
+.site-cursor.is-block {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (pointer: coarse) {
+  .site-cursor {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-cursor {
+    display: none !important;
+  }
+}

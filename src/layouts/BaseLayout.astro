@@ -51,5 +51,17 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
       </main>
       <Footer />
     </div>
+
+    <script>
+      import { initMagneticButtons } from '../scripts/magnetic';
+      import { initCursor } from '../scripts/cursor';
+
+      const boot = () => {
+        initMagneticButtons();
+        initCursor();
+      };
+      boot();
+      document.addEventListener('astro:page-load', boot);
+    </script>
   </body>
 </html>

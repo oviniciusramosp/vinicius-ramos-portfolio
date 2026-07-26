@@ -97,12 +97,27 @@ Fonts hosted: Blatant via Framer assets; Inter + IBM Plex via Google Fonts.
    - Image zooms inside `overflow: hidden` + 16px radius  
    - Dark glass overlay strengthens  
    - Title (Blatant) + tags (mono pills) remain on bottom  
+   - Magnetic `withOffset` (same spring 300/30), range **3** (half of buttons’ 6)  
+
 
 2. **Header logo**  
    - White → accent blue  
 
-3. **Resume / Contact / LinkedIn buttons**  
-   - Transparent + soft border → white 10% fill, stronger border  
+3. **Resume / Contact / LinkedIn buttons** (measured on live site)  
+   - Rest: transparent, **no border**, **no box-shadow**, pad `8×16`, radius `30px`  
+   - Hover fill: `rgba(255,255,255,0.1)` only  
+   - Magnetic (`withOffset` HOC):  
+     `spring = { stiffness: 300, damping: 30 }`  
+     `offset = clamp(mouse / halfSize, -1, 1) * 6` → max **±6px**  
+     Outer fixed size; inner layer gets spring `x`/`y`  
+   - **No scale**, no drop shadow, no label parallax  
+
+   - Soft cursor blob (`data-framer-name="Default"` on live):  
+     Free: 32×32, `rgba(255,255,255,0.1)`, follows mouse  
+     On button: **scale up (~2.2) + opacity → 0** — dissolves into the control  
+     (button hover fill is what remains; cursor does not stay as a morph ring)  
+     Spring stiff 300 / damp 30 (same as button offset)  
+   - Code: `src/scripts/magnetic.ts`, `src/scripts/cursor.ts`, `Button.astro`
 
 4. **Next project link** (`LinkNextProject`)  
    - Rest: black fill + white stroke  

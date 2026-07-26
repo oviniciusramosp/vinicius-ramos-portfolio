@@ -6,6 +6,8 @@ interface Props {
   active?: boolean;
   type?: 'button' | 'submit';
   external?: boolean;
+  /** Magnetic parallax matching viniciusramos.com (default true) */
+  magnetic?: boolean;
   class?: string;
 }
 
@@ -16,6 +18,7 @@ const {
   active = false,
   type = 'button',
   external = false,
+  magnetic = true,
   class: className = '',
 } = Astro.props;
 
@@ -28,63 +31,86 @@ const attrs = href
   : { type };
 ---
 
+<!--
+  Structure mirrors Framer:
+  - outer = fixed hit area (does not transform)
+  - inner visual = spring-translated layer
+-->
 <Tag
   class:list={['btn', `btn--${variant}`, active && 'is-active', className]}
+  data-magnetic={magnetic ? true : undefined}
+  data-cursor={magnetic ? 'block' : undefined}
   {...attrs}
 >
-  <span class="btn__label">{label}</span>
+  <span class="btn__visual" data-magnetic-visual>
+    <span class="btn__label">{label}</span>
+  </span>
 </Tag>
 
 <style>
   .btn {
     appearance: none;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
     min-height: 34px;
-    padding: 8px 16px;
+    padding: 0;
+    border: none;
     border-radius: var(--radius-btn);
-    border: 1px solid transparent;
     background: transparent;
     cursor: pointer;
-    transition:
-      background-color var(--duration-base) var(--ease-smooth),
-      border-color var(--duration-base) var(--ease-smooth),
-      color var(--duration-base) var(--ease-smooth),
-      transform var(--duration-fast) var(--ease-smooth);
+    text-align: center;
+    /* No box-shadow — original is shadowless */
+    box-shadow: none;
+    /* Hit area stays put; only .btn__visual moves */
+    overflow: visible;
+  }
+
+  .btn__visual {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 16px;
+    border-radius: inherit;
+    background: transparent;
+    will-change: transform;
+    transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
   }
 
   .btn__label {
+    display: block;
+    margin: 0;
+    padding: 0;
     font-family: var(--font-mono);
     font-size: var(--text-md);
     font-weight: 400;
     line-height: 1.2;
+    letter-spacing: -0.02em;
     color: var(--color-text);
-    transition: color var(--duration-base) var(--ease-smooth);
+    text-align: center;
+    white-space: nowrap;
   }
 
-  /* Ghost — Resume / Contact / LinkedIn */
-  .btn--ghost {
-    border-color: var(--color-border-strong);
+  /* Ghost — fill only, no border, no shadow (live site) */
+  .btn--ghost .btn__visual {
     background: rgba(255, 255, 255, 0);
   }
 
-  .btn--ghost:hover,
-  .btn--ghost:focus-visible {
-    background: var(--color-white-10);
-    border-color: rgba(255, 255, 255, 0.35);
+  .btn--ghost:hover .btn__visual,
+  .btn--ghost:focus-visible .btn__visual,
+  .btn--ghost.is-magnetic .btn__visual {
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  .btn--ghost.is-active {
-    background: var(--color-white-10);
-    border-color: rgba(255, 255, 255, 0.4);
+  .btn--ghost.is-active .btn__visual {
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  .btn--solid,
-  .btn--submit {
+  .btn--solid .btn__visual,
+  .btn--submit .btn__visual {
     background: var(--color-text);
-    border-color: var(--color-text);
   }
 
   .btn--solid .btn__label,
@@ -92,23 +118,33 @@ const attrs = href
     color: var(--color-bg);
   }
 
-  .btn--solid:hover,
-  .btn--solid:focus-visible,
-  .btn--submit:hover,
-  .btn--submit:focus-visible {
+  .btn--solid:hover .btn__visual,
+  .btn--solid:focus-visible .btn__visual,
+  .btn--solid.is-magnetic .btn__visual,
+  .btn--submit:hover .btn__visual,
+  .btn--submit:focus-visible .btn__visual,
+  .btn--submit.is-magnetic .btn__visual {
     background: var(--color-accent);
-    border-color: var(--color-accent);
   }
 
   .btn--solid:hover .btn__label,
   .btn--solid:focus-visible .btn__label,
+  .btn--solid.is-magnetic .btn__label,
   .btn--submit:hover .btn__label,
-  .btn--submit:focus-visible .btn__label {
+  .btn--submit:focus-visible .btn__label,
+  .btn--submit.is-magnetic .btn__label {
     color: var(--color-text);
   }
 
   .btn:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn__visual {
+      will-change: auto;
+      transition: none;
+    }
   }
 </style>

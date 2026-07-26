@@ -12,42 +12,70 @@ const TagEl = isLink ? 'a' : 'div';
 const attrs = isLink ? { href: project.href } : {};
 ---
 
-<TagEl
-  class:list={['project-card', `project-card--${project.size}`, project.soon && 'is-soon']}
-  {...attrs}
-  aria-label={`${project.title}${project.soon ? ' (coming soon)' : ''}`}
+<!--
+  withOffset structure (Framer):
+  - shell: fixed hit area, data-magnetic (+ subtler range for large cards)
+  - visual: spring x/y layer
+-->
+<div
+  class="project-card-shell"
+  data-magnetic
+  data-magnetic-range="3"
+  data-cursor="block"
 >
-  <div class="project-card__media">
-    <img
-      class="project-card__image"
-      src={project.cover}
-      alt=""
-      loading="lazy"
-      decoding="async"
-    />
-    <div class="project-card__overlay" aria-hidden="true"></div>
-  </div>
-
-  <div class="project-card__content">
-    <h2 class="project-card__title">{project.title}</h2>
-    <div class="project-card__tags">
-      {project.tags.map((tag) => <Tag label={tag} />)}
-      {project.soon && <Tag label="SOON" tone="accent" />}
+  <TagEl
+    class:list={[
+      'project-card',
+      `project-card--${project.size}`,
+      project.soon && 'is-soon',
+    ]}
+    data-magnetic-visual
+    {...attrs}
+    aria-label={`${project.title}${project.soon ? ' (coming soon)' : ''}`}
+  >
+    <div class="project-card__media">
+      <img
+        class="project-card__image"
+        src={project.cover}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="project-card__overlay" aria-hidden="true"></div>
     </div>
-  </div>
-</TagEl>
+
+    <div class="project-card__content">
+      <h2 class="project-card__title">{project.title}</h2>
+      <div class="project-card__tags">
+        {project.tags.map((tag) => <Tag label={tag} />)}
+        {project.soon && <Tag label="SOON" tone="accent" />}
+      </div>
+    </div>
+  </TagEl>
+</div>
 
 <style>
+  .project-card-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    /* Hit area stays put; visual can translate ±range without layout shift */
+  }
+
   .project-card {
     position: relative;
     display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--color-surface);
     color: var(--color-text);
     isolation: isolate;
-    min-height: 220px;
     cursor: default;
+    will-change: transform;
   }
 
   a.project-card {
@@ -110,11 +138,6 @@ const attrs = isLink ? { href: project.href } : {};
     justify-content: flex-end;
     gap: var(--space-4);
     padding: 24px;
-    opacity: 1;
-    transform: translateY(0);
-    transition:
-      opacity var(--duration-base) var(--ease-smooth),
-      transform var(--duration-base) var(--ease-smooth);
   }
 
   .project-card__title {
@@ -132,14 +155,14 @@ const attrs = isLink ? { href: project.href } : {};
     gap: var(--space-2);
   }
 
-  /* Hover — mapped from Framer card variants */
-  .project-card:hover .project-card__image,
-  .project-card:focus-visible .project-card__image {
+  /* Hover media — keep image zoom independent of magnetic offset */
+  .project-card-shell:hover .project-card__image,
+  .project-card-shell:focus-within .project-card__image {
     transform: scale(var(--card-image-scale-hover));
   }
 
-  .project-card:hover .project-card__overlay,
-  .project-card:focus-visible .project-card__overlay {
+  .project-card-shell:hover .project-card__overlay,
+  .project-card-shell:focus-within .project-card__overlay {
     opacity: 1;
     background: var(--color-overlay);
     backdrop-filter: blur(2px);
@@ -162,6 +185,12 @@ const attrs = isLink ? { href: project.href } : {};
     .project-card--sm,
     .project-card--md {
       min-height: 260px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card {
+      will-change: auto;
     }
   }
 </style>
