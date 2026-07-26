@@ -13,14 +13,18 @@ const attrs = isLink ? { href: project.href } : {};
 ---
 
 <!--
-  withOffset structure (Framer):
-  - shell: fixed hit area, data-magnetic (+ subtler range for large cards)
-  - visual: spring x/y layer
+  Layers (depth, front → back):
+  1. content (title/tags) — appears on hover, strongest parallax
+  2. scrim (dark + blur)
+  3. image — “far” layer, scales down on hover
+
+  Shell: magnetic withOffset (range 3) + card multi-layer parallax
 -->
 <div
   class="project-card-shell"
   data-magnetic
   data-magnetic-range="3"
+  data-card-parallax
   data-cursor="block"
 >
   <TagEl
@@ -33,7 +37,8 @@ const attrs = isLink ? { href: project.href } : {};
     {...attrs}
     aria-label={`${project.title}${project.soon ? ' (coming soon)' : ''}`}
   >
-    <div class="project-card__media">
+    <!-- Back layer: image -->
+    <div class="project-card__media" data-parallax-depth="back">
       <img
         class="project-card__image"
         src={project.cover}
@@ -41,10 +46,13 @@ const attrs = isLink ? { href: project.href } : {};
         loading="lazy"
         decoding="async"
       />
-      <div class="project-card__overlay" aria-hidden="true"></div>
     </div>
 
-    <div class="project-card__content">
+    <!-- Mid: dark scrim + blur (live Backdrop + Blur) -->
+    <div class="project-card__scrim" aria-hidden="true"></div>
+
+    <!-- Front: title + tags — hidden until hover -->
+    <div class="project-card__content" data-parallax-depth="front">
       <h2 class="project-card__title">{project.title}</h2>
       <div class="project-card__tags">
         {project.tags.map((tag) => <Tag label={tag} />)}
@@ -59,11 +67,11 @@ const attrs = isLink ? { href: project.href } : {};
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: inherit;
-    /* Hit area stays put; visual can translate ±range without layout shift */
   }
 
   .project-card {
+    --card-ease: cubic-bezier(0.44, 0, 0.56, 1);
+    --card-dur: 420ms;
     position: relative;
     display: block;
     width: 100%;
@@ -82,53 +90,59 @@ const attrs = isLink ? { href: project.href } : {};
     cursor: pointer;
   }
 
-  .project-card--lg {
-    min-height: 448px;
-  }
-
+  .project-card--lg,
   .project-card--tall {
     min-height: 448px;
   }
 
-  .project-card--wide {
-    min-height: 220px;
-  }
-
+  .project-card--wide,
   .project-card--sm,
   .project-card--md {
     min-height: 220px;
   }
 
+  /* —— Back: image —— */
   .project-card__media {
     position: absolute;
     inset: 0;
+    z-index: 0;
     overflow: hidden;
     border-radius: inherit;
+    will-change: transform;
+    transition: transform var(--card-dur) var(--card-ease);
   }
 
   .project-card__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(var(--card-image-scale));
-    transition: transform var(--duration-slow) var(--ease-smooth);
+    /* Rest: slightly large (live ~1.02). Hover: push “back” to ~0.8 */
+    transform: scale(1.02);
+    filter: saturate(1);
+    transition:
+      transform var(--card-dur) var(--card-ease),
+      filter var(--card-dur) var(--card-ease);
   }
 
-  .project-card__overlay {
+  /* —— Mid: scrim —— */
+  .project-card__scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(23, 22, 29, 0.05) 0%,
-      rgba(23, 22, 29, 0.55) 55%,
-      rgba(23, 22, 29, 0.85) 100%
-    );
-    opacity: 0.65;
+    z-index: 1;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    opacity: 0;
+    pointer-events: none;
     transition:
-      opacity var(--duration-base) var(--ease-smooth),
-      backdrop-filter var(--duration-base) var(--ease-smooth);
+      opacity var(--card-dur) var(--card-ease),
+      backdrop-filter var(--card-dur) var(--card-ease),
+      -webkit-backdrop-filter var(--card-dur) var(--card-ease);
   }
 
+  /* —— Front: title + tags (hidden at rest) ——
+     Opacity via CSS; translate via card-parallax (no transform conflict) */
   .project-card__content {
     position: absolute;
     inset: 0;
@@ -138,6 +152,10 @@ const attrs = isLink ? { href: project.href } : {};
     justify-content: flex-end;
     gap: var(--space-4);
     padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition: opacity var(--card-dur) var(--card-ease);
   }
 
   .project-card__title {
@@ -155,17 +173,27 @@ const attrs = isLink ? { href: project.href } : {};
     gap: var(--space-2);
   }
 
-  /* Hover media — keep image zoom independent of magnetic offset */
-  .project-card-shell:hover .project-card__image,
-  .project-card-shell:focus-within .project-card__image {
-    transform: scale(var(--card-image-scale-hover));
+  /* —— Hover / focus / magnetic active —— */
+  .project-card-shell:hover .project-card__content,
+  .project-card-shell:focus-within .project-card__content,
+  .project-card-shell.is-magnetic .project-card__content {
+    opacity: 1;
   }
 
-  .project-card-shell:hover .project-card__overlay,
-  .project-card-shell:focus-within .project-card__overlay {
+  .project-card-shell:hover .project-card__scrim,
+  .project-card-shell:focus-within .project-card__scrim,
+  .project-card-shell.is-magnetic .project-card__scrim {
     opacity: 1;
-    background: var(--color-overlay);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .project-card-shell:hover .project-card__image,
+  .project-card-shell:focus-within .project-card__image,
+  .project-card-shell.is-magnetic .project-card__image {
+    /* Live ImageBg: scale ~0.8 + saturate */
+    transform: scale(0.82);
+    filter: saturate(1.56);
   }
 
   .project-card.is-soon {
@@ -186,10 +214,32 @@ const attrs = isLink ? { href: project.href } : {};
     .project-card--md {
       min-height: 260px;
     }
+
+    /* Touch: keep content visible (no hover) */
+    .project-card__content {
+      opacity: 1;
+      transform: none;
+    }
+
+    .project-card__scrim {
+      opacity: 0.55;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .project-card__image {
+      transform: scale(1);
+      filter: saturate(1.15);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card {
+    .project-card,
+    .project-card__media,
+    .project-card__image,
+    .project-card__scrim,
+    .project-card__content {
+      transition: none;
       will-change: auto;
     }
   }

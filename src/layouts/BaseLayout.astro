@@ -55,9 +55,11 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
     <script>
       import { initMagneticButtons } from '../scripts/magnetic';
       import { initCursor } from '../scripts/cursor';
+      import { initCardParallax } from '../scripts/card-parallax';
 
       const boot = () => {
         initMagneticButtons();
+        initCardParallax();
         initCursor();
       };
       boot();

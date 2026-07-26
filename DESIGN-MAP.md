@@ -94,10 +94,13 @@ Fonts hosted: Blatant via Framer assets; Inter + IBM Plex via Google Fonts.
 ## Hover inventory
 
 1. **Project cards**  
-   - Image zooms inside `overflow: hidden` + 16px radius  
-   - Dark glass overlay strengthens  
-   - Title (Blatant) + tags (mono pills) remain on bottom  
-   - Magnetic `withOffset` (same spring 300/30), range **3** (half of buttons’ 6)  
+   - Rest: title/tags **hidden** (TextLayer opacity 0); image scale ~1.02  
+   - Hover: TextLayer opacity 1; Backdrop `rgba(0,0,0,0.7)` + Blur 18px;  
+     image “backs away” to scale ~0.8 + saturate 1.56  
+   - Magnetic `withOffset` range **3** on shell  
+   - Internal parallax: image (back) less travel, title/tags (front) more  
+   - All show/hide via ~420ms transitions  
+
 
 
 2. **Header logo**  
