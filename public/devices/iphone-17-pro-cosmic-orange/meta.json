@@ -1,0 +1,15 @@
+{
+  "frame": "https://raw.githubusercontent.com/jonnyjackson26/device-frames-media/main/device-frames-output/Apple%20iPhone/17%20Pro/Cosmic%20Orange/frame.png",
+  "mask": "https://raw.githubusercontent.com/jonnyjackson26/device-frames-media/main/device-frames-output/Apple%20iPhone/17%20Pro/Cosmic%20Orange/mask.png",
+  "screen": {
+    "x": 100,
+    "y": 100,
+    "width": 1206,
+    "height": 2622
+  },
+  "frameSize": {
+    "width": 1406,
+    "height": 2822
+  },
+  "hexColor": "#FABA88"
+}

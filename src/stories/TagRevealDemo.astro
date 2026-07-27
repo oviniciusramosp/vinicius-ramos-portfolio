@@ -1,0 +1,48 @@
+---
+import Tag from '../components/Tag.astro';
+
+interface Props {
+  label?: string;
+  tone?: 'default' | 'accent' | 'soon';
+}
+
+const { label = 'AI', tone = 'default' } = Astro.props;
+---
+
+<div class="project-card-shell reveal-demo" tabindex="0">
+  <p class="reveal-demo__hint">Hover this shell → reveal tags</p>
+  <div class="reveal-demo__tags">
+    <Tag label={label} tone={tone} variant="reveal" />
+    <Tag label="WEB" tone="default" variant="reveal" />
+    <Tag label="SOON" tone="soon" variant="reveal" />
+  </div>
+</div>
+
+<style>
+  .reveal-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 280px;
+    min-height: 120px;
+    padding: 24px;
+    border-radius: var(--radius-card);
+    background:
+      linear-gradient(135deg, rgba(0, 143, 255, 0.25), transparent 60%),
+      var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .reveal-demo__hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .reveal-demo__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>

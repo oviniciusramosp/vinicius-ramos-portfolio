@@ -1,0 +1,679 @@
+---
+/**
+ * Deck slideshow
+ * - wireframes: Framer SectionWireframes cards + side peeks
+ * - presentation: one content-width slide at a time (no adjacent peeks)
+ * + Apple #aap-media-card-gallery control chrome
+ */
+import type { CaseDeck } from '../data/projects';
+import '../styles/aap-media-card-gallery.css';
+
+interface Props {
+  decks: CaseDeck[];
+  texture?: string;
+  ariaLabel?: string;
+  autoplay?: boolean;
+  /** Apple --autoplay-persist-duration ≈ 6150ms */
+  interval?: number;
+  loop?: boolean;
+  /**
+   * `wireframes` — content-width cards with prev/next peeks (HP).
+   * `presentation` — full content-width slides, only the current slide visible.
+   */
+  variant?: 'wireframes' | 'presentation';
+  class?: string;
+}
+
+const {
+  decks,
+  texture,
+  ariaLabel = 'Wireframe decks',
+  autoplay = true,
+  interval = 6150,
+  loop = true,
+  variant = 'wireframes',
+  class: className = '',
+} = Astro.props;
+
+const isPresentation = variant === 'presentation';
+---
+
+<div
+  class:list={[
+    'deck-slider-shell',
+    isPresentation && 'deck-slider-shell--presentation',
+    className,
+  ]}
+>
+  <div
+    class="case-decks aap-root"
+    data-deck-slider
+    data-media-card-gallery
+    data-deck-variant={variant}
+    data-deck-autoplay={autoplay ? 'true' : 'false'}
+    data-deck-interval={String(interval)}
+    data-deck-loop={loop ? 'true' : 'false'}
+    role="region"
+    aria-roledescription="carousel"
+    aria-label={ariaLabel}
+    style={`--autoplay-persist-duration: ${interval}ms; --animation-duration: ${interval}ms; --autoplay-progress: 0;`}
+  >
+    {
+      !isPresentation && (
+        <>
+          <div class="case-decks__fade case-decks__fade--left" aria-hidden="true" />
+          <div class="case-decks__fade case-decks__fade--right" aria-hidden="true" />
+        </>
+      )
+    }
+
+    <div class="case-decks__viewport" data-deck-viewport tabindex="0">
+      <div class="case-decks__track">
+        {
+          isPresentation
+            ? decks.map((deck, i) => {
+                const img = deck.images[0];
+                return (
+                  <article
+                    class="case-deck case-deck--slide"
+                    data-deck
+                    data-deck-index={String(i)}
+                  >
+                    {img && (
+                      <img
+                        class="case-deck__slide-img"
+                        src={img.src}
+                        alt={img.alt || deck.title}
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        draggable="false"
+                        style={`object-fit: ${img.fit ?? 'contain'}`}
+                      />
+                    )}
+                  </article>
+                );
+              })
+            : decks.map((deck, i) => (
+                <article class="case-deck" data-deck data-deck-index={String(i)}>
+                  {texture && (
+                    <div
+                      class="case-deck__texture"
+                      aria-hidden="true"
+                      style={`background-image: url('${texture}')`}
+                    />
+                  )}
+                  <h2 class="case-deck__title">{deck.title}</h2>
+                  <div class="case-deck__phones">
+                    {deck.images.map((img) => (
+                      <figure
+                        class:list={[
+                          'case-deck__phone',
+                          img.hideOn === 'mobile' && 'case-deck__phone--hide-mobile',
+                        ]}
+                      >
+                        <img
+                          src={img.src}
+                          alt={img.alt}
+                          loading="lazy"
+                          draggable="false"
+                          style={`object-fit: ${img.fit ?? 'cover'}`}
+                        />
+                      </figure>
+                    ))}
+                  </div>
+                </article>
+              ))
+        }
+      </div>
+    </div>
+
+    {/* Portfolio-only side arrows */}
+    <div class="case-decks__arrows">
+      <button
+        type="button"
+        class="case-decks__arrow"
+        data-deck-prev
+        data-magnetic
+        data-cursor="block"
+        aria-label="Previous"
+      >
+        <span class="case-decks__arrow-visual" data-magnetic-visual>
+          <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M22.5 12.5 15 20l7.5 7.5"
+            />
+          </svg>
+        </span>
+      </button>
+      <button
+        type="button"
+        class="case-decks__arrow"
+        data-deck-next
+        data-magnetic
+        data-cursor="block"
+        aria-label="Next"
+      >
+        <span class="case-decks__arrow-visual" data-magnetic-visual>
+          <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.5 12.5 25 20l-7.5 7.5"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    {/*
+      Apple structure (apple-watch-ultra-3 #aap-media-card-gallery):
+      container >
+        .all-access-pass.aap-media-card-gallery
+          .all-access-pass__intro-element
+          .play-pause-button-wrapper  (order:2 → right)
+          .aap-media-card-gallery__timed-dotnav  (dots left)
+    */}
+    <div class="all-access-pass__container">
+      <div
+        class="all-access-pass aap-media-card-gallery inactive"
+        data-deck-aap
+        data-aap-name="highlights-gallery"
+        data-component-list="MediaCardGalleryControl"
+      >
+        <div class="all-access-pass__intro-element" aria-hidden="true"></div>
+
+        {/* Play first in DOM (Apple); CSS order:2 keeps it on the right */}
+        <div class="all-access-pass__element play-pause-button-wrapper">
+          <span class="all-access-pass__background" aria-hidden="true"></span>
+          <button
+            type="button"
+            class="play-pause-button all-access-pass__play-pause-button aap-media-card-gallery__button"
+            data-deck-play
+            data-magnetic
+            data-cursor="block"
+            aria-label="Play Highlights gallery"
+          >
+            <span class="play-pause-button__visual" data-magnetic-visual>
+              <span class="icons">
+                <svg
+                  class="icon-control svg-icon play-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 56 56"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="m23.7555 36.6237c.4478 0 .8598-.1343 1.4241-.4568l10.9178-6.3322c.8598-.5016 1.3614-1.021 1.3614-1.8361 0-.8061-.5016-1.3255-1.3614-1.8271l-10.9178-6.3322c-.5643-.3314-.9762-.4657-1.4241-.4657-.9315 0-1.7555.7165-1.7555 1.9435v13.3629c0 1.227.824 1.9435 1.7555 1.9435z"
+                  ></path>
+                </svg>
+                <svg
+                  class="icon-control svg-icon pause-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 56 56"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="m21.7334 36.67h2.5342c1.1483 0 1.7324-.5796 1.7324-1.7193v-13.9015c0-1.12-.5841-1.6898-1.7324-1.7193h-2.5342c-1.1483 0-1.7324.5698-1.7324 1.7193v13.9015c-.0297 1.1396.5544 1.7193 1.7324 1.7193zm9.9992 0h2.5347c1.1485 0 1.7327-.5796 1.7327-1.7193v-13.9015c0-1.12-.5842-1.7193-1.7327-1.7193h-2.5347c-1.1485 0-1.7327.5698-1.7327 1.7193v13.9015c0 1.1396.5545 1.7193 1.7327 1.7193z"
+                  ></path>
+                </svg>
+                <svg
+                  class="icon-control svg-icon replay-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 56 56"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="m36.2448 26.6447c-1.1073 0-2.0052.8978-2.0052 2.0052 0 3.4405-2.7992 6.2397-6.2397 6.2397s-6.2397-2.7992-6.2397-6.2397 2.7992-6.2397 6.2397-6.2397c.0283 0 .0546-.0072.0825-.0083l-1.2839 1.2841c-.7833.7828-.7833 2.0526 0 2.8354.3911.3916.9047.5874 1.4177.5874s1.0266-.1958 1.4177-.5874l4.4406-4.4406c.7833-.7828.7833-2.0526 0-2.8354l-4.657-4.657c-.7823-.7833-2.0531-.7833-2.8354 0-.7833.7828-.7833 2.0526 0 2.8354l.9973.9974c-5.4561.223-9.8295 4.7189-9.8295 10.2287 0 5.6517 4.5983 10.25 10.25 10.25s10.25-4.5983 10.25-10.25c0-1.1073-.8978-2.0052-2.0052-2.0052z"
+                  ></path>
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div class="all-access-pass__element aap-media-card-gallery__timed-dotnav">
+          <span class="all-access-pass__background" aria-hidden="true"></span>
+          <div class="tablist-wrapper">
+            <div class="dotnav">
+              <ul
+                role="tablist"
+                aria-label={`${ariaLabel} tablist`}
+                class="dotnav-items"
+                style={`--dotnav-count: ${decks.length}`}
+              >
+                {
+                  decks.map((deck, i) => (
+                    <li
+                      role="presentation"
+                      class:list={[
+                        'dotnav-item',
+                        'aap-media-card-gallery__dotnav-item',
+                        i === 0 && 'current',
+                      ]}
+                      style={`--item-index: ${i}`}
+                    >
+                      <button
+                        type="button"
+                        class:list={['dotnav-link', i === 0 && 'current']}
+                        data-deck-dot={String(i)}
+                        role="tab"
+                        aria-label={deck.title}
+                        aria-current={i === 0 ? 'true' : 'false'}
+                        style={`--item-index: ${i}`}
+                      >
+                        <span class="visuallyhidden">{deck.title}</span>
+                      </button>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /*
+   * Full-width track + content-column cards (like live Framer SectionWireframes):
+   * - Shell / viewport = full bleed (prev/next peeks)
+   * - --pad-x matches .case__section horizontal pad
+   * - --deck-width = content column (= section-inner measure)
+   * - track padding centers the active card; neighbors show at lower opacity (JS)
+   *
+   * Presentation variant: shell is already inside the content column —
+   * slides are 100% wide, gap 0, no peeks, no side fades.
+   */
+  .deck-slider-shell {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin-inline: auto;
+    container-type: inline-size;
+    container-name: deck-slider;
+    /* Content-column inset — mirror case study section padding */
+    --pad-x: 16px;
+    --deck-width: calc(100cqi - 2 * var(--pad-x));
+  }
+
+  @media (min-width: 810px) {
+    .deck-slider-shell {
+      --pad-x: 64px;
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .deck-slider-shell {
+      --pad-x: 250px;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .deck-slider-shell {
+      --pad-x: 240px;
+    }
+  }
+
+  /*
+   * Parent case__media already applies content padding.
+   * Use 100cqi (shell container width) — not 100% — because the track is
+   * width:max-content and % would resolve against the intrinsic image width.
+   */
+  .deck-slider-shell--presentation {
+    --pad-x: 0px;
+    --deck-width: 100cqi;
+  }
+
+  .case-decks {
+    --deck-gap: 16px;
+    position: relative;
+    width: 100%;
+    padding-block: 16px 96px;
+    overflow: hidden;
+  }
+
+  .deck-slider-shell--presentation .case-decks {
+    --deck-gap: 0px;
+    padding-block: 0 96px;
+  }
+
+  .case-decks__fade {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    bottom: 96px;
+    width: clamp(48px, 8cqi, 105px);
+    z-index: 3;
+  }
+
+  .case-decks__fade--left {
+    left: 0;
+    background: linear-gradient(90deg, #000 0%, #0000 100%);
+  }
+
+  .case-decks__fade--right {
+    right: 0;
+    background: linear-gradient(90deg, #0000 0%, #000 100%);
+  }
+
+  .case-decks__viewport {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    cursor: grab;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad-x);
+    outline: none;
+  }
+
+  .case-decks__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .case-decks__viewport.is-dragging,
+  .case-decks__viewport.is-animating {
+    cursor: grabbing;
+    user-select: none;
+    scroll-snap-type: none;
+  }
+
+  .case-decks__viewport:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .case-decks__track {
+    display: flex;
+    flex-direction: row;
+    /* hug content height — do not stretch cards */
+    align-items: center;
+    gap: var(--deck-gap);
+    width: max-content;
+    /* Centers active card; reveals prev/next in the side gutters */
+    padding-inline: var(--pad-x);
+  }
+
+  .deck-slider-shell--presentation .case-decks__track {
+    /* No side gutters — only the current slide is in view */
+    padding-inline: 0;
+    align-items: stretch;
+  }
+
+  .deck-slider-shell--presentation .case-decks__viewport {
+    scroll-padding-inline: 0;
+    /* Clip neighbors hard at the content edge */
+    overflow-x: auto;
+  }
+
+  /*
+   * Card height = content (title + phone rail + pad), same as original Framer:
+   * pad 12 → 24/24/48 · gap 24 · phones 188×409 (desktop) / fluid rail (mobile)
+   * Width stays content-column (--deck-width).
+   */
+  .case-deck {
+    position: relative;
+    flex: 0 0 var(--deck-width);
+    width: var(--deck-width);
+    max-width: var(--deck-width);
+    height: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    user-select: none;
+    opacity: 0.45;
+    transition: opacity 0.35s var(--ease-smooth, ease);
+  }
+
+  .case-deck.is-active {
+    opacity: 1;
+  }
+
+  /*
+   * Presentation slide — full content width, 16:9 (live Framer 3840×2160),
+   * contain image, no dimming of “neighbors” (they’re clipped out of view).
+   */
+  .case-deck--slide {
+    gap: 0;
+    padding: 0;
+    opacity: 1;
+    background-color: var(--color-surface, #131219);
+    scroll-snap-align: start;
+    aspect-ratio: 16 / 9;
+  }
+
+  .case-deck__slide-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .case-deck__texture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background-repeat: repeat;
+    background-position: left top;
+    background-size: 12px auto;
+    pointer-events: none;
+  }
+
+  .case-deck__title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    color: var(--color-text);
+  }
+
+  /* Mobile: compact phone rail (original) */
+  .case-deck__phones {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 256px;
+  }
+
+  .case-deck__phone {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    aspect-ratio: 0.46;
+    height: auto;
+    border-radius: 9px;
+    overflow: hidden;
+    /* Outer depth only (Framer multi-layer shadow) */
+    box-shadow:
+      0 0.97px 1.75px -0.47px #00000012,
+      0 2.31px 4.16px -0.94px #00000013,
+      0 4.21px 7.58px -1.41px #00000012,
+      0 7px 12.6px -1.88px #00000012,
+      0 11.31px 20.35px -2.34px #0001,
+      0 18.51px 33.32px -2.81px #0000000f,
+      0 31.87px 57.37px -3.28px #0000000c,
+      0 58px 104.4px -3.75px #00000006;
+  }
+
+  /*
+   * Live Framer [data-border=true]::after — 1px solid #4b485e over the image
+   * (token-ff6c725a… / --color-text-muted).
+   */
+  .case-deck__phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    box-sizing: border-box;
+    border: 1px solid var(--color-text-muted, #4b485e);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .case-deck__phone img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+  }
+
+  .case-deck__phone--hide-mobile {
+    display: none;
+  }
+
+  /* Desktop ≥810: original Framer phone cells 188×409, card pad 24/24/48 */
+  @media (min-width: 810px) {
+    .case-deck:not(.case-deck--slide) {
+      gap: 24px;
+      padding: 24px 24px 48px;
+    }
+
+    .case-deck__phones {
+      gap: 24px;
+      width: min-content;
+      max-width: none;
+    }
+
+    .case-deck__phone {
+      flex: none;
+      width: 188px;
+      height: 409px;
+      aspect-ratio: 0.46;
+      border-radius: 16px;
+    }
+
+    .case-deck__phone--hide-mobile {
+      display: block;
+    }
+  }
+
+  .case-decks__arrows {
+    position: absolute;
+    inset: clamp(48px, 12%, 100px) clamp(16px, 4vw, 100px) 100px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .case-decks__arrow {
+    pointer-events: auto;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 40px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    appearance: none;
+    overflow: visible;
+  }
+
+  .case-decks__arrow-visual {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: none;
+    will-change: transform;
+    transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .case-decks__arrow:hover:not(:disabled) .case-decks__arrow-visual,
+  .case-decks__arrow.is-magnetic .case-decks__arrow-visual {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .case-decks__arrow:disabled,
+  .case-decks__arrow.is-disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .case-decks__arrow svg {
+    display: block;
+  }
+
+  /* Fallback when container queries unavailable */
+  @supports not (width: 1cqi) {
+    .deck-slider-shell {
+      --deck-width: calc(100% - 2 * var(--pad-x));
+    }
+
+    .deck-slider-shell--presentation {
+      --deck-width: 100%;
+    }
+
+    .deck-slider-shell--presentation .case-deck--slide {
+      /* Resolve against the viewport/shell, not the max-content track */
+      flex-basis: 100%;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .deck-slider-shell--presentation .case-decks__viewport {
+      /* Establish a definite containing block for % */
+      width: 100%;
+    }
+
+    .deck-slider-shell--presentation .case-decks__track {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { bootDeckSliders } from '../scripts/deck-slider';
+
+  const boot = () => bootDeckSliders();
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>

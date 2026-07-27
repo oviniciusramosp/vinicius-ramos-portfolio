@@ -1,0 +1,227 @@
+---
+/**
+ * Logo “VINICIUS RAMOS” — Blatant Bold + radial width-wave.
+ * alts_only letters morph on the alt1↔alt2 continuum (extrapolate t<0 for narrow).
+ */
+import logoData from '../data/blatant-wave-glyphs.json';
+import { site } from '../data/site';
+
+interface Props {
+  /**
+   * Intro wave on mount:
+   * - `always` — every load/refresh (production default, like home banner)
+   * - `once` — once per tab session
+   * - `off` — hover only
+   */
+  intro?: 'once' | 'always' | 'off';
+}
+
+const { intro = 'always' } = Astro.props;
+
+const text = 'VINICIUS RAMOS';
+const emUnits = logoData.emUnits ?? logoData.upm ?? 1000;
+const capHeight = 559;
+const baseline = emUnits / 2 + capHeight / 2;
+
+const glyphs = logoData.glyphs as Record<
+  string,
+  {
+    base: string;
+    kind: string;
+    masters: Array<{ width: number; path: string }>;
+  }
+>;
+
+type Cell =
+  | { type: 'space'; width: number }
+  | {
+      type: 'letter';
+      char: string;
+      width: number;
+      path: string;
+      stretchable: boolean;
+    };
+
+const cells: Cell[] = [...text].map((char) => {
+  if (char === ' ') {
+    return { type: 'space', width: logoData.spaceWidth };
+  }
+  const g = glyphs[char];
+  const master = g?.masters[0];
+  return {
+    type: 'letter',
+    char,
+    width: master?.width ?? 500,
+    path: master?.path ?? '',
+    stretchable: (g?.masters?.length ?? 0) > 1,
+  };
+});
+
+const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : undefined;
+---
+
+<a
+  class="logo logo-wave"
+  href="/"
+  data-cursor="block"
+  data-logo-wave
+  data-logo-intro={introAttr}
+  data-transition-label="VINICIUS RAMOS"
+  aria-label={site.name}
+>
+  <span class="logo-wave__sr">{site.name}</span>
+  <span class="logo-wave__row" aria-hidden="true">
+    {
+      cells.map((cell) =>
+        cell.type === 'space' ? (
+          <span
+            class="logo-wave__space"
+            data-logo-letter=" "
+            data-logo-space="1"
+            style={`width: ${cell.width / emUnits}em`}
+          />
+        ) : (
+          <span
+            class:list={[
+              'logo-wave__letter',
+              cell.stretchable && 'logo-wave__letter--stretch',
+              !cell.stretchable && 'logo-wave__letter--static',
+            ]}
+            data-logo-letter={cell.char}
+            style={`width: ${cell.width / emUnits}em`}
+          >
+            <svg
+              viewBox={`0 0 ${cell.width} ${emUnits}`}
+              width="100%"
+              height="1em"
+              overflow="visible"
+            >
+              <g transform={`translate(0 ${baseline}) scale(1 -1)`}>
+                <g data-logo-layer="a">
+                  <path
+                    data-logo-path="a"
+                    d={cell.path}
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                  />
+                </g>
+                <g data-logo-layer="b">
+                  <path
+                    data-logo-path="b"
+                    d={cell.path}
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    opacity="0"
+                  />
+                </g>
+              </g>
+            </svg>
+          </span>
+        ),
+      )
+    }
+  </span>
+</a>
+
+<style>
+  .logo-wave {
+    display: inline-flex;
+    align-items: center;
+    align-self: center; /* vertical center in nav only */
+    justify-content: flex-start; /* never center the wordmark horizontally */
+    font-size: var(--text-lg);
+    line-height: 1;
+    color: var(--color-text);
+    text-decoration: none;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(58vw, 520px);
+    overflow: visible;
+  }
+
+  .logo-wave:hover,
+  .logo-wave:focus-visible {
+    color: var(--color-text);
+  }
+
+  .logo-wave__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .logo-wave__row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
+    column-gap: 0.4px;
+    height: 1em;
+  }
+
+  .logo-wave__letter,
+  .logo-wave__space {
+    display: block;
+    flex: 0 0 auto;
+    height: 1em;
+    position: relative;
+    color: inherit;
+  }
+
+  .logo-wave__letter svg {
+    display: block;
+    width: 100%;
+    height: 1em;
+    overflow: visible;
+  }
+
+  @media (max-width: 640px) {
+    .logo-wave {
+      font-size: 16px;
+      max-width: min(50vw, 220px);
+    }
+  }
+</style>
+
+<script>
+  import { initLogoWave } from '../scripts/logo-wave';
+  import logoWaveData from '../data/blatant-wave-glyphs.json';
+
+  function bootLogoWave(root: ParentNode = document) {
+    root.querySelectorAll<HTMLElement>('[data-logo-wave]').forEach((logo) => {
+      // Skip dynamically mounted wave texts that init themselves (page transitions)
+      if (logo.closest('.page-mask__label')) return;
+      if (logo.dataset.logoWaveInit === '1') return;
+
+      const introAttr = logo.dataset.logoIntro;
+      const intro =
+        introAttr === 'once'
+          ? 'once'
+          : introAttr === 'true' || introAttr === ''
+            ? true
+            : // Navbar logo only — Next Project / other waves stay hover-only
+              logo.classList.contains('logo')
+              ? true
+              : false;
+
+      initLogoWave(
+        logo,
+        {
+          ...logoWaveData,
+          emUnits: logoWaveData.emUnits ?? logoWaveData.upm ?? 1000,
+          glyphs: logoWaveData.glyphs as import('../scripts/logo-wave').LogoWaveData['glyphs'],
+        },
+        { intro },
+      );
+    });
+  }
+
+  bootLogoWave();
+  document.addEventListener('astro:page-load', () => bootLogoWave());
+</script>

@@ -1,33 +1,176 @@
 ---
-import type { Project } from '../data/projects';
+/**
+ * Next CTA — Blatant Bold width-wave title (same engine as navbar logo).
+ * Hover: solid white fill (no stroke) + radial width wave.
+ *
+ * Used on case studies ("NEXT PROJECT") and articles ("NEXT").
+ * A–Z: path masters (width-wave when multi-master).
+ * Digits/punct: real Blatant Bold via SVG <text> (static like "I").
+ */
+import rawWaveData from '../data/blatant-wave-glyphs.json';
+import {
+  normalizeWaveText,
+  isWaveFontChar,
+  waveFontAdvance,
+  waveFontSize,
+  type LogoWaveData,
+} from '../scripts/logo-wave';
 
 interface Props {
-  project: Project;
+  title: string;
+  href: string;
+  /** Eyebrow above the title. Default: "NEXT PROJECT" */
+  label?: string;
 }
 
-const { project } = Astro.props;
-const letters = project.title.split('');
+const { title, href, label = 'NEXT PROJECT' } = Astro.props;
+const waveData = rawWaveData as LogoWaveData;
+const waveTitle = normalizeWaveText(title);
+const emUnits = waveData.emUnits ?? waveData.upm ?? 1000;
+const capHeight = 559;
+const pathBaseline = emUnits / 2 + capHeight / 2;
+const textBaseline = pathBaseline;
+const fontSize = waveFontSize(emUnits);
+const glyphs = waveData.glyphs;
+
+type Cell =
+  | { type: 'space'; width: number }
+  | {
+      type: 'path';
+      char: string;
+      width: number;
+      path: string;
+      stretchable: boolean;
+    }
+  | {
+      type: 'font';
+      char: string;
+      width: number;
+    };
+
+const cells: Cell[] = [...waveTitle].flatMap((char): Cell[] => {
+  if (char === ' ') {
+    return [{ type: 'space', width: waveData.spaceWidth }];
+  }
+  if (isWaveFontChar(char)) {
+    return [{ type: 'font', char, width: waveFontAdvance(char) }];
+  }
+  const g = glyphs[char];
+  if (!g?.masters?.[0]) return [];
+  const master = g.masters[0];
+  return [
+    {
+      type: 'path',
+      char,
+      width: master.width ?? 500,
+      path: master.path ?? '',
+      stretchable: (g.masters?.length ?? 0) > 1,
+    },
+  ];
+});
 ---
 
 <section class="next-project">
-  <p class="next-project__label">NEXT PROJECT</p>
-  <a class="next-project__link" href={project.href ?? `/projects/${project.slug}`} data-framer-name="LinkNextProject">
-    <h2 class="next-project__title" aria-label={project.title}>
-      {
-        letters.map((letter) =>
-          letter === ' ' ? (
-            <span class="next-project__space">&nbsp;</span>
-          ) : (
-            <span class="next-project__letter">{letter}</span>
-          ),
-        )
-      }
+  <p class="next-project__label">{label}</p>
+  <a
+    class="next-project__link"
+    href={href}
+    data-framer-name="LinkNextProject"
+    data-transition-label={title}
+    data-cursor="block"
+  >
+    <h2
+      class="next-project__title logo-wave"
+      data-logo-wave
+      aria-label={title}
+    >
+      <span class="logo-wave__sr">{title}</span>
+      <span class="logo-wave__row" aria-hidden="true">
+        {
+          cells.map((cell) =>
+            cell.type === 'space' ? (
+              <span
+                class="logo-wave__space"
+                data-logo-letter=" "
+                data-logo-space="1"
+                style={`width: ${cell.width / emUnits}em`}
+              />
+            ) : cell.type === 'font' ? (
+              <span
+                class="logo-wave__letter logo-wave__letter--static logo-wave__letter--font"
+                data-logo-letter={cell.char}
+                data-logo-font="1"
+                style={`width: ${cell.width / emUnits}em`}
+              >
+                <svg
+                  viewBox={`0 0 ${cell.width} ${emUnits}`}
+                  width="100%"
+                  height="1em"
+                  overflow="visible"
+                >
+                  <text
+                    x={cell.width / 2}
+                    y={textBaseline}
+                    text-anchor="middle"
+                    font-family="Blatant Bold, Arial Black, Impact, sans-serif"
+                    font-size={fontSize}
+                    font-weight="700"
+                    fill="currentColor"
+                  >
+                    {cell.char}
+                  </text>
+                </svg>
+              </span>
+            ) : (
+              <span
+                class:list={[
+                  'logo-wave__letter',
+                  cell.stretchable && 'logo-wave__letter--stretch',
+                  !cell.stretchable && 'logo-wave__letter--static',
+                ]}
+                data-logo-letter={cell.char}
+                style={`width: ${cell.width / emUnits}em`}
+              >
+                <svg
+                  viewBox={`0 0 ${cell.width} ${emUnits}`}
+                  width="100%"
+                  height="1em"
+                  overflow="visible"
+                >
+                  <g transform={`translate(0 ${pathBaseline}) scale(1 -1)`}>
+                    <g data-logo-layer="a">
+                      <path
+                        data-logo-path="a"
+                        d={cell.path}
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                      />
+                    </g>
+                    <g data-logo-layer="b">
+                      <path
+                        data-logo-path="b"
+                        d={cell.path}
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        opacity="0"
+                      />
+                    </g>
+                  </g>
+                </svg>
+              </span>
+            ),
+          )
+        }
+      </span>
     </h2>
   </a>
 </section>
 
 <style>
   .next-project {
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
     padding: 64px var(--page-pad-x) 48px;
     text-align: center;
   }
@@ -41,34 +184,86 @@ const letters = project.title.split('');
   }
 
   .next-project__link {
-    display: inline-block;
-  }
-
-  .next-project__title {
-    display: flex;
-    flex-wrap: wrap;
+    display: inline-flex;
     justify-content: center;
-    gap: 0;
-    font-family: var(--font-display);
+    max-width: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .next-project__title.logo-wave {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: min(100%, 920px);
     font-size: clamp(40px, 8vw, var(--text-3xl));
-    line-height: 0.95;
-    text-transform: uppercase;
+    line-height: 1;
+    /* Outlined default: black fill + white stroke (Framer LinkNextProject) */
     color: #000;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.85);
     transition: color var(--duration-fast) ease-in-out;
   }
 
-  .next-project__letter,
-  .next-project__space {
-    display: inline-block;
-    transition: color var(--duration-fast) ease-in-out;
+  .next-project__title :global(path),
+  .next-project__title :global(text) {
+    fill: currentColor;
+    stroke: rgba(255, 255, 255, 0.85);
+    stroke-width: 22;
+    paint-order: stroke fill;
+    transition:
+      fill var(--duration-fast) ease-in-out,
+      stroke var(--duration-fast) ease-in-out,
+      stroke-width var(--duration-fast) ease-in-out;
   }
 
-  /* Hover mapped from Framer LinkNextProject snippet */
+  .next-project__title :global(.logo-wave__row) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 0.4px;
+    height: auto;
+    min-height: 1em;
+  }
+
+  .next-project__title :global(.logo-wave__letter),
+  .next-project__title :global(.logo-wave__space) {
+    display: block;
+    flex: 0 0 auto;
+    height: 1em;
+  }
+
+  .next-project__title :global(.logo-wave__letter svg) {
+    display: block;
+    width: 100%;
+    height: 1em;
+    overflow: visible;
+  }
+
+  .next-project__title :global(.logo-wave__sr) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Solid white on hover/focus — no outline */
   .next-project__link:hover .next-project__title,
   .next-project__link:focus-visible .next-project__title {
     color: #fff;
-    -webkit-text-stroke: 1px white;
+  }
+
+  .next-project__link:hover .next-project__title :global(path),
+  .next-project__link:focus-visible .next-project__title :global(path),
+  .next-project__link:hover .next-project__title :global(text),
+  .next-project__link:focus-visible .next-project__title :global(text) {
+    stroke: #fff;
+    stroke-width: 0;
   }
 
   .next-project__link:focus-visible {

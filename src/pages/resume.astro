@@ -1,155 +1,690 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { resume } from '../data/resume';
+import Button from '../components/Button.astro';
+import { resume, type ResumeIntroBlock } from '../data/resume';
 import { site } from '../data/site';
+
+function isRichIntro(
+  block: ResumeIntroBlock,
+): block is Extract<ResumeIntroBlock, { link: unknown }> {
+  return typeof block === 'object' && block !== null && 'link' in block;
+}
 ---
 
 <BaseLayout title={`${site.name} · Resume`}>
   <article class="resume">
+    <!-- Hero — Framer: TitleArea → divider → About Me (gap 20) -->
     <header class="resume__hero">
-      <h1 class="display-title">{resume.name}</h1>
-      <p class="resume__role">{resume.role}</p>
-      <p class="resume__location">{resume.location}</p>
+      <div class="resume__title-area">
+        <div class="resume__title-row">
+          <div class="resume__title-text">
+            <h1 class="resume__name">{resume.name}</h1>
+            <p class="resume__role">{resume.role}</p>
+            <p class="resume__location">{resume.location}</p>
+          </div>
+          <div class="resume__actions no-print">
+            <Button
+              label="Download PDF"
+              variant="solid"
+              class="resume__pdf-btn"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="resume__divider" aria-hidden="true"></div>
+
+      <section class="resume__intro" aria-label="About">
+        {
+          resume.intro.map((block) =>
+            isRichIntro(block) ? (
+              <p class="resume__intro-p">
+                {block.before}
+                <a class="resume__inline-link" href={block.link.href}>
+                  {block.link.label}
+                </a>
+                {block.after}
+              </p>
+            ) : (
+              <p class="resume__intro-p">{block}</p>
+            ),
+          )
+        }
+      </section>
     </header>
 
-    <section class="resume__intro">
-      {resume.intro.map((p) => <p class="body-text">{p}</p>)}
-    </section>
-
-    <section class="resume__block">
-      <h2 class="section-title">Main Work Experience</h2>
-      <ul class="experience-list">
+    <!-- Main Work Experience — Framer: SectionInitialStages -->
+    <section class="resume__section resume__section--experience">
+      <h2 class="section-title resume__section-title">Main Work Experience</h2>
+      <ul class="resume-timeline">
         {
           resume.experience.map((job) => (
-            <li class="experience-item">
-              <p class="experience-item__period">{job.period}</p>
-              <h3 class="experience-item__title">{job.title}</h3>
-              <p class="body-text">{job.body}</p>
+            <li class="resume-row resume-row--job">
+              <div
+                class="resume-row__duration resume-row__duration--job"
+                aria-label={`${job.periodStart} ${job.periodEnd}`}
+              >
+                <span class="resume-row__period-line">{job.periodStart}</span>
+                <span class="resume-row__period-line">{job.periodEnd}</span>
+              </div>
+              <div class="resume-row__content">
+                <h3 class="resume-row__title">{job.title}</h3>
+                <p class="resume-row__body">{job.body}</p>
+              </div>
             </li>
           ))
         }
       </ul>
     </section>
 
-    <section class="resume__block">
-      <h2 class="section-title">Skills</h2>
-      <ul class="skill-list">
-        {resume.skills.main.map((skill) => <li>-> {skill}</li>)}
-      </ul>
-      <p class="skills-other-label">Other Skills:</p>
-      <ul class="skill-list">
-        {resume.skills.other.map((skill) => <li>-> {skill}</li>)}
-      </ul>
-    </section>
+    <!-- Divider between experience and skills — Framer: DividerArea -->
+    <div class="resume__divider-area" aria-hidden="true">
+      <div class="resume__divider"></div>
+    </div>
 
-    <section class="resume__block">
-      <h2 class="section-title">Education</h2>
-      <ul class="education-list">
-        {
-          resume.education.map((item) => (
-            <li class="education-item">
-              <p class="education-item__period">{item.period}</p>
-              <p class="education-item__school">{item.school}</p>
-              <p class="education-item__detail">{item.detail}</p>
-            </li>
-          ))
-        }
-      </ul>
+    <!-- Skills + Education — Framer: SectionSkillsAndEducation -->
+    <section class="resume__section resume__section--skills-edu">
+      <div class="resume__skills">
+        <h2 class="section-title resume__section-title">Skills</h2>
+        <!-- Live: two SkillLists side-by-side (row, gap 24) -->
+        <div class="skill-columns">
+          <ul class="skill-list">
+            {resume.skills.main.map((skill) => <li>-> {skill}</li>)}
+          </ul>
+          <div class="skill-list skill-list--other">
+            <p class="skills-other-label">Other Skills:</p>
+            <ul class="skill-list">
+              {resume.skills.other.map((skill) => <li>-> {skill}</li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="resume__education">
+        <h2 class="section-title resume__section-title">Education</h2>
+        <ul class="resume-timeline resume-timeline--edu">
+          {
+            resume.education.map((item) => (
+              <li class="resume-row resume-row--edu">
+                <div class="resume-row__duration resume-row__duration--edu">
+                  <span class="resume-row__period-line">{item.period}</span>
+                </div>
+                <div class="resume-row__content">
+                  <p class="resume-row__title">{item.school}</p>
+                  <p class="resume-row__body">{item.detail}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </section>
   </article>
 </BaseLayout>
 
-<style>
-  .resume {
-    padding: var(--space-12) var(--page-pad-x) var(--space-10);
-    max-width: 860px;
+<script>
+  import { initResumePdf } from '../scripts/resume-pdf';
+
+  function boot() {
+    // Wire the Button component (no href → <button class="btn resume__pdf-btn">)
+    document.querySelectorAll('.resume__pdf-btn').forEach((el) => {
+      if (el instanceof HTMLElement && !el.hasAttribute('data-resume-pdf')) {
+        el.setAttribute('data-resume-pdf', '');
+      }
+    });
+    initResumePdf();
   }
 
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>
+
+<style>
+  /*
+   * Resume — mapped from live Framer (viniciusramos.com/resume)
+   * Breakpoints: ≤809 mobile · 810–1193 tablet · ≥1536 xl
+   */
+
+  .resume {
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+  }
+
+  /* —— Hero —— */
   .resume__hero {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    padding: 125px 250px 48px;
+    box-sizing: border-box;
+  }
+
+  /*
+   * TitleArea: name → role → location, gap 8px (live measured).
+   * Name: Blatant 42 / 1.2 → 50.4px
+   * Role: mono 22 / 1, weight 400 (strong on live)
+   * Location: Inter 14 / 1.7, opacity 0.5
+   */
+  .resume__title-area {
+    width: 100%;
+  }
+
+  .resume__title-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .resume__title-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .resume__actions {
+    flex: none;
+    padding-top: 4px;
+  }
+
+  .resume__name {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 1.2em;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--color-text);
   }
 
   .resume__role {
+    margin: 0;
+    padding: 0;
     font-family: var(--font-mono);
-    font-size: var(--text-lg);
-    font-weight: 300;
-    color: var(--color-accent);
+    font-size: 22px;
+    font-weight: 400; /* live strong → bold token 400 on mono preset */
+    line-height: 1; /* 22px box — critical for 8px gap rhythm */
+    letter-spacing: 0;
+    color: #ffffff;
   }
 
   .resume__location {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7em;
+    color: #ffffff;
+    opacity: 0.5; /* live Subtitle container */
+  }
+
+  /* 1px rule — live color #4b485e (--color-text-muted) */
+  .resume__divider {
+    width: 100%;
+    height: 1px;
+    flex: none;
+    background: var(--color-text-muted);
+  }
+
+  .resume__divider-area {
+    width: 100%;
+    padding: 0 250px;
+    box-sizing: border-box;
   }
 
   .resume__intro {
-    display: grid;
-    gap: 1em;
-    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
   }
 
-  .resume__block {
-    margin-bottom: 56px;
-  }
-
-  .resume__block .section-title {
-    margin-bottom: 28px;
-  }
-
-  .experience-list,
-  .education-list {
-    display: grid;
-    gap: 36px;
-  }
-
-  .experience-item,
-  .education-item {
-    display: grid;
-    gap: 10px;
-  }
-
-  .experience-item__period,
-  .education-item__period {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-  }
-
-  .experience-item__title,
-  .education-item__school {
+  .resume__intro-p {
+    margin: 0;
     font-family: var(--font-body);
-    font-size: var(--text-base);
-    font-weight: 500;
-    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7em;
+    color: #ffffff;
   }
 
-  .education-item__detail {
+  /* Framer jultdo --framer-paragraph-spacing: 20px */
+  .resume__intro-p + .resume__intro-p {
+    margin-top: 20px;
+  }
+
+  .resume__inline-link {
+    color: #9cd4ff;
+    text-decoration: none;
+    transition:
+      color var(--duration-base) var(--ease-smooth),
+      text-decoration-color var(--duration-base) var(--ease-smooth);
+  }
+
+  .resume__inline-link:hover,
+  .resume__inline-link:focus-visible {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  /* —— Sections —— */
+  .resume__section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 48px 250px;
+    box-sizing: border-box;
+  }
+
+  .resume__section--experience {
+    gap: 20px;
+  }
+
+  .resume__section--skills-edu {
+    gap: 32px;
+  }
+
+  /*
+   * Section titles: same .section-title token as case studies
+   * (Blatant Bold, uppercase, accent). Only spacing is local.
+   */
+  .resume__section-title {
+    margin: 0;
+  }
+
+  /* —— Timeline rows (jobs + education) —— */
+  .resume-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .resume-timeline--edu {
+    gap: 12px;
+  }
+
+  .resume-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .resume-row--job {
+    gap: 24px;
+  }
+
+  .resume-row--edu {
+    gap: 12px;
+  }
+
+  /* Live Duration: white text @ opacity 0.5 (not muted hex) */
+  .resume-row__duration {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    opacity: 0.5;
+    color: #ffffff;
+  }
+
+  .resume-row__duration--job {
+    width: 100px;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .resume-row__duration--edu {
+    width: 84px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .resume-row__period-line {
     font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--color-text-soft);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7em;
+    color: inherit;
+    white-space: nowrap;
+  }
+
+  .resume-row__content {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .resume-row__title {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.7em;
+    color: #ffffff;
+  }
+
+  .resume-row__body {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7em;
+    color: #ffffff;
+  }
+
+  /* —— Skills —— */
+  .resume__skills,
+  .resume__education {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* Live: framer-1b8u3yf — row, gap 24, two equal SkillLists */
+  .skill-columns {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
   }
 
   .skill-list {
-    display: grid;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 2; /* 28px on 14px */
+    color: #ffffff;
+  }
+
+  .skill-list--other {
+    width: 0;
+  }
+
+  .skill-list--other > .skill-list {
+    width: 100%;
+    flex: none;
   }
 
   .skills-other-label {
-    margin-top: 24px;
-    margin-bottom: 12px;
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 2;
+    color: #ffffff;
   }
 
-  @media (max-width: 768px) {
+  /* —— Responsive —— */
+
+  @media (max-width: 1193px) {
+    .resume__hero {
+      padding: 125px 64px 48px;
+    }
+
+    .resume__section {
+      padding: 48px 64px;
+    }
+
+    .resume__divider-area {
+      padding: 0 64px;
+    }
+  }
+
+  @media (max-width: 809px) {
+    .resume__hero {
+      min-height: 320px;
+      padding: 80px 16px 24px;
+    }
+
+    .resume__section {
+      padding: 24px 16px;
+    }
+
+    .resume__divider-area {
+      padding: 0 16px;
+    }
+
+    .resume__title-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .resume__name {
+      font-size: clamp(28px, 8vw, 42px);
+    }
+
+    .resume-row--job {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .resume-row__duration--job {
+      width: 100%;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: baseline;
+      gap: 0.35em;
+      text-align: left;
+    }
+
+    .resume-row--edu {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .resume-row__duration--edu {
+      width: 100%;
+    }
+
+    /* Skills stack on mobile (live ≤809) */
+    .skill-columns {
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .skill-list,
+    .skill-list--other {
+      width: 100%;
+      flex: none;
+    }
+  }
+
+  /* XL: Skills block | Education side by side (live ≥1536) */
+  @media (min-width: 1536px) {
+    .resume__hero {
+      padding: 125px 240px 48px;
+    }
+
+    .resume__section {
+      padding: 48px 240px;
+    }
+
+    .resume__divider-area {
+      padding: 0 240px;
+    }
+
+    .resume__section--skills-edu {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .resume__skills,
+    .resume__education {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+    }
+  }
+
+  /* ============================================================
+   * Print / PDF — same structure, black ink on white paper
+   * Triggered by Download PDF → window.print() → Save as PDF
+   * ============================================================ */
+  @media print {
+    @page {
+      size: auto;
+      margin: 12mm 14mm;
+    }
+
+    /* Hide site chrome */
+    :global(.site-header),
+    :global(.site-footer),
+    :global(.site-cursor),
+    :global(.page-mask),
+    :global(.banner),
+    :global([data-site-header]),
+    .no-print,
+    .resume__actions {
+      display: none !important;
+    }
+
+    :global(html),
+    :global(body) {
+      background: #ffffff !important;
+      color: #000000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    :global(.page-shell),
+    :global(.page-main) {
+      display: block !important;
+      min-height: 0 !important;
+      background: #ffffff !important;
+    }
+
     .resume {
-      padding: 48px 16px 32px;
+      max-width: none;
+      width: 100%;
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    .resume__hero {
+      padding: 0 0 20px !important;
+      gap: 16px;
+      min-height: 0 !important;
+    }
+
+    .resume__section {
+      padding: 20px 0 !important;
+    }
+
+    .resume__divider-area {
+      padding: 0 !important;
+    }
+
+    .resume__title-row {
+      display: block;
+    }
+
+    /* All ink black on paper */
+    .resume__name,
+    .resume__role,
+    .resume__intro-p,
+    .resume-row__title,
+    .resume-row__body,
+    .skill-list,
+    .skills-other-label,
+    .resume-row__period-line {
+      color: #000000 !important;
+    }
+
+    .resume__location {
+      color: #000000 !important;
+      opacity: 0.55;
+    }
+
+    .resume-row__duration {
+      color: #000000 !important;
+      opacity: 0.55;
+    }
+
+    /* Section titles: keep Blatant uppercase; black for paper */
+    .resume__section-title,
+    :global(.section-title.resume__section-title) {
+      color: #000000 !important;
+    }
+
+    .resume__inline-link {
+      color: #000000 !important;
+      text-decoration: underline;
+    }
+
+    .resume__divider {
+      background: #c8c8c8 !important;
+    }
+
+    /* Avoid awkward breaks */
+    .resume-row,
+    .resume__title-text,
+    .skill-columns {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .resume__section--experience {
+      break-inside: auto;
+    }
+
+    /* Force desktop-like skills columns on paper when width allows */
+    .skill-columns {
+      flex-direction: row !important;
+      gap: 24px;
+    }
+
+    .skill-list,
+    .skill-list--other {
+      flex: 1 1 0 !important;
+      width: 0 !important;
+      min-width: 0;
+    }
+
+    .skill-list--other > .skill-list {
+      width: 100% !important;
+      flex: none !important;
+    }
+
+    .resume-row--job {
+      flex-direction: row !important;
+      gap: 24px !important;
+    }
+
+    .resume-row__duration--job {
+      width: 100px !important;
+      flex-direction: column !important;
+      align-items: flex-end !important;
+      text-align: right !important;
     }
   }
 </style>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ScrollGallery from '../components/ScrollGallery.astro';
+import { articles, articleHref } from '../data/articles';
+import { site } from '../data/site';
+import type { ScrollGalleryItem } from '../components/ScrollGallery.astro';
+
+const galleryItems: ScrollGalleryItem[] = articles.map((article) => ({
+  id: `card-${article.id}`,
+  label: article.date,
+  headline: article.title,
+  body: article.description,
+  image: article.image,
+  imageAlt: article.imageAlt ?? article.title,
+  href: articleHref(article.id),
+  actionLabel: `Read ${article.title}`,
+  kind: 'article' as const,
+}));
+---
+
+<BaseLayout
+  title={`${site.name} · Articles`}
+  description="Writing on product design, craft, and the conversations that sharpen both."
+>
+  {/* Same frame as case study / home .page-hero */}
+  <section class="page-hero">
+    <div class="page-hero__main">
+      <h1 class="display-title articles-hero__title">Articles</h1>
+      <p class="body-text articles-hero__bio">
+        I’m passionate about writing, sharing knowledge, and sparking conversations that
+        matter. These notes are where I think in public: unfinished ideas welcome, honest
+        disagreement encouraged.
+      </p>
+    </div>
+  </section>
+
+  <ScrollGallery
+    id="incentive-gallery-dark"
+    items={galleryItems}
+    theme="dark"
+    short={true}
+    entrance={true}
+    ariaLabel="Articles"
+  />
+</BaseLayout>
+
+<style>
+  /* Frame size/padding: global .page-hero only (shared with case / home). */
+  .articles-hero__title {
+    max-width: 14ch;
+  }
+
+  .articles-hero__bio {
+    max-width: 720px;
+  }
+</style>

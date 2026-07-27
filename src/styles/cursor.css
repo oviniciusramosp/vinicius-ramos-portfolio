@@ -1,65 +1,140 @@
-/* Soft highlight cursor */
+/* Soft cursor — Framer-mapped (viniciusramos.com Cursor component) */
+
+/*
+  Hollow-center technique (matches Framer data-border ::after):
+  - Default: 32×32, --cursor-bw 16px → border fills the disk (solid glass)
+  - Pointer: 58×58, --cursor-bw → 1px, bg/border clear → expands, center opens
+  - Text:    4×32/48, blue fill, border 0
+  - Soon:   140×32, glass white + blur
+
+  Native OS cursor stays visible by default.
+  Hidden only on Coming Soon targets and .btn buttons.
+*/
+
+[data-cursor="soon"],
+[data-cursor="soon"] *,
+[data-cursor="none"],
+[data-cursor="none"] *,
+a.btn,
+a.btn *,
+button.btn,
+button.btn * {
+  cursor: none !important;
+}
 
 .site-cursor {
+  --cursor-bw: 16px;
+  --cursor-bg: rgba(255, 255, 255, 0.1);
+  --cursor-bc: rgba(255, 255, 255, 0.1);
+
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  /* Above header (10050) and toast banner (10040) */
+  z-index: 10100;
   width: 32px;
   height: 32px;
   border-radius: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--cursor-bg);
   pointer-events: none;
   opacity: 0;
-  will-change: transform, opacity, width, height, background-color, box-shadow;
-  box-shadow: none;
+  will-change: transform, opacity, width, height, background-color;
   border: none;
-  transform: translate3d(-100px, -100px, 0) scale(1);
+  box-shadow: none;
+  transform: translate3d(-100px, -100px, 0);
   transform-origin: center center;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Smooth color morph between circle glass and white pill */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   transition:
-    background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
-    box-shadow 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+    background-color 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+    backdrop-filter 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+    -webkit-backdrop-filter 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+    box-shadow 0.2s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
-.site-cursor.is-block {
-  background: rgba(255, 255, 255, 0.1);
+/* Ring / solid disk via inset border (box-sizing border-box) */
+.site-cursor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border-style: solid;
+  border-width: var(--cursor-bw);
+  border-color: var(--cursor-bc);
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: border-color 0.2s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
-/* Desktop soon cards — solid white pill */
+/* Pointer: expand + transparent (colors driven by JS vars) */
+.site-cursor.is-pointer {
+  overflow: visible;
+}
+
+/* Text: blue thin bar — no ring needed */
+.site-cursor.is-text {
+  overflow: visible;
+}
+
+/* Coming Soon — glass pill (production: rgba(255,255,255,0.2) + blur 10px) */
 .site-cursor.is-soon {
-  background: #fff;
-  color: #000;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  box-shadow: none;
+  overflow: hidden;
 }
 
 .site-cursor__label {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 0.95;
+  letter-spacing: 1.6px;
   white-space: nowrap;
   text-transform: uppercase;
-  color: #000;
+  color: #fff;
   opacity: 0;
   pointer-events: none;
-  /* opacity driven by JS for width-coupled fade */
   padding: 0 4px;
   user-select: none;
 }
 
 @media (pointer: coarse) {
+  [data-cursor="soon"],
+  [data-cursor="soon"] *,
+  [data-cursor="none"],
+  [data-cursor="none"] *,
+  a.btn,
+  a.btn *,
+  button.btn,
+  button.btn * {
+    cursor: auto !important;
+  }
+
   .site-cursor {
     display: none !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-cursor="soon"],
+  [data-cursor="soon"] *,
+  [data-cursor="none"],
+  [data-cursor="none"] *,
+  a.btn,
+  a.btn *,
+  button.btn,
+  button.btn * {
+    cursor: auto !important;
+  }
+
   .site-cursor {
     display: none !important;
   }

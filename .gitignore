@@ -1,5 +1,6 @@
 # build output
 dist/
+storybook-static/
 # generated types
 .astro/
 
@@ -25,3 +26,7 @@ pnpm-debug.log*
 
 # local design captures
 .design-ref/
+tmp-*.png
+local-*.png
+prod-*.png
+

@@ -1,26 +1,49 @@
 /**
- * Soft cursor — viniciusramos.com style.
+ * Soft cursor — mapped from viniciusramos.com (Framer Cursor component).
  *
- * Free: 32×32 circle, follows pointer
- * Block: scale + fade OUT under the pointer (no center-seek)
- * Soon (desktop): expand to white “Coming Soon” pill
+ * Variants (production):
+ *   Default        32×32 · border 16px glass · solid soft disk
+ *   Hover/pointer  58×58 · border → 1px · bg transparent (hole opens as border shrinks)
+ *   Text/paragraph  4×32 · blue rgba(0,145,255,0.8)
+ *   Text/title      4×48 · blue
+ *   Coming Soon   140×32 · glass white + blur · white label
  *
- * Leaving soon: pill closes (width spring) + label fades — no hard cut.
+ * The “filled disk → hollow ring” effect is a CSS border on a ::after overlay
+ * (same technique as Framer’s data-border). Border width springs down; center
+ * becomes transparent.
  */
 
 const DEFAULT_SIZE = 32;
-const SOON_W = 132;
-const SOON_H = 36;
-const BLOCK_SCALE = 2.2;
+const POINTER_SIZE = 58;
+const TEXT_W = 4;
+const TEXT_H = 32;
+const TEXT_TITLE_H = 48;
+const SOON_W = 140;
+const SOON_H = DEFAULT_SIZE;
 
-const POS_STIFF = 300;
-const POS_DAMP = 30;
-const SCALE_STIFF = 300;
-const SCALE_DAMP = 30;
-const SIZE_STIFF = 380;
-const SIZE_DAMP = 34;
+/** Default fills the circle (16+16 = 32). Pointer leaves a 1px ring then transparent. */
+const DEFAULT_BORDER = 16;
+const POINTER_BORDER = 1;
+const ZERO_BORDER = 0;
 
-type CursorMode = 'free' | 'block' | 'soon';
+const GLASS = 'rgba(255, 255, 255, 0.1)';
+const CLEAR = 'rgba(255, 255, 255, 0)';
+const BLUE = 'rgba(0, 145, 255, 0.8)';
+const SOON_BG = 'rgba(255, 255, 255, 0.2)';
+
+/**
+ * Position: snappier follow so the disk tracks the real pointer with less lag.
+ * Size / border: keep Framer-mapped springs — mode morphs stay smooth.
+ * (critically damped-ish: damp ≈ 2√stiff)
+ */
+const POS_STIFF = 1400;
+const POS_DAMP = 78;
+const SIZE_STIFF = 500;
+const SIZE_DAMP = 60;
+const BORDER_STIFF = 500;
+const BORDER_DAMP = 60;
+
+type CursorMode = 'free' | 'pointer' | 'text' | 'text-title' | 'soon' | 'none';
 
 type CursorState = {
   x: number;
@@ -30,10 +53,6 @@ type CursorState = {
   vx: number;
   vy: number;
 
-  scale: number;
-  ts: number;
-  vs: number;
-
   w: number;
   h: number;
   tw: number;
@@ -41,10 +60,14 @@ type CursorState = {
   vw: number;
   vh: number;
 
+  /** Border width (px) — hollow-center mechanism */
+  bw: number;
+  tbw: number;
+  vbw: number;
+
   opacity: number;
   to: number;
 
-  /** 0–1 label fade (Coming Soon text) */
   labelOp: number;
   labelTo: number;
 
@@ -83,20 +106,65 @@ function springStep(
   return { value: c, velocity: v };
 }
 
-function findCursorTarget(node: EventTarget | null): HTMLElement | null {
-  if (!(node instanceof Element)) return null;
-  return node.closest<HTMLElement>(
-    '[data-cursor="block"], [data-cursor="soon"], [data-magnetic], a.btn, button.btn',
-  );
-}
+/**
+ * Priority: none > soon > pointer (interactive) > text > free.
+ * Interactive targets win over text so links/buttons never get the blue bar.
+ */
+function resolveMode(node: EventTarget | null): {
+  mode: CursorMode;
+  target: HTMLElement | null;
+} {
+  if (!(node instanceof Element)) return { mode: 'free', target: null };
 
-function isSoonTarget(el: HTMLElement | null) {
-  if (!el) return false;
-  return (
-    el.dataset.cursor === 'soon' ||
-    el.classList.contains('is-soon') ||
-    !!el.closest('.is-soon, [data-cursor="soon"]')
+  // Fully hide soft + native cursor (e.g. decorative heart hover)
+  const hideEl = node.closest<HTMLElement>('[data-cursor="none"]');
+  if (hideEl) return { mode: 'none', target: hideEl };
+
+  const interactive = node.closest<HTMLElement>(
+    '[data-cursor="block"], [data-cursor="pointer"], [data-cursor="soon"], [data-magnetic], a.btn, button.btn, a[href], button',
   );
+
+  if (interactive) {
+    if (
+      interactive.dataset.cursor === 'soon' ||
+      interactive.classList.contains('is-soon') ||
+      !!interactive.closest('.is-soon, [data-cursor="soon"]')
+    ) {
+      return { mode: 'soon', target: interactive };
+    }
+    // plain links without data-cursor still get pointer expand
+    if (
+      interactive.dataset.cursor === 'block' ||
+      interactive.dataset.cursor === 'pointer' ||
+      interactive.dataset.cursor === 'soon' ||
+      interactive.hasAttribute('data-magnetic') ||
+      interactive.matches('a.btn, button.btn, a[href], button')
+    ) {
+      // Text-only links (no card/button chrome) can still prefer text if marked
+      if (interactive.dataset.cursor === 'text') {
+        return { mode: 'text', target: interactive };
+      }
+      if (interactive.dataset.cursor === 'text-title') {
+        return { mode: 'text-title', target: interactive };
+      }
+      return { mode: 'pointer', target: interactive };
+    }
+  }
+
+  const textEl = node.closest<HTMLElement>(
+    '[data-cursor="text"], [data-cursor="text-title"], h1, h2, h3, h4, h5, h6, p, .display-title, .body-text, .hero__title, .hero__bio',
+  );
+  if (textEl && !textEl.closest('a, button, [data-cursor="block"], [data-cursor="pointer"], [data-cursor="soon"], [data-magnetic]')) {
+    if (
+      textEl.dataset.cursor === 'text-title' ||
+      textEl.matches('h1, h2, .display-title, .hero__title')
+    ) {
+      return { mode: 'text-title', target: textEl };
+    }
+    return { mode: 'text', target: textEl };
+  }
+
+  return { mode: 'free', target: null };
 }
 
 function ensureCursorEl(): { el: HTMLDivElement; label: HTMLSpanElement } {
@@ -129,15 +197,34 @@ function applyDom(state: CursorState) {
   el.style.height = `${state.h}px`;
   el.style.borderRadius = `${Math.min(state.w, state.h) / 2}px`;
   el.style.opacity = String(state.opacity);
-  el.style.transform = `translate3d(${state.x - state.w / 2}px, ${state.y - state.h / 2}px, 0) scale(${state.scale})`;
+  el.style.transform = `translate3d(${state.x - state.w / 2}px, ${state.y - state.h / 2}px, 0)`;
+  el.style.setProperty('--cursor-bw', `${Math.max(0, state.bw)}px`);
 
-  el.classList.toggle('is-block', state.mode === 'block');
-  // Keep “soon” visual while pill is still wide (smooth exit)
+  const isPointer = state.mode === 'pointer';
+  const isText = state.mode === 'text' || state.mode === 'text-title';
+  // Keep soon visual while pill is still wide (smooth exit)
   const visuallySoon = state.mode === 'soon' || state.w > DEFAULT_SIZE + 8;
-  el.classList.toggle('is-soon', visuallySoon);
+
+  el.classList.toggle('is-pointer', isPointer);
+  el.classList.toggle('is-text', isText);
+  el.classList.toggle('is-soon', visuallySoon && !isText && !isPointer);
   el.classList.toggle('is-active', state.visible && state.opacity > 0.01);
 
-  // Label fades with its own lerp AND collapses with width (no hard cut)
+  // Background / border color by mode (CSS handles transition)
+  if (isPointer) {
+    el.style.setProperty('--cursor-bg', CLEAR);
+    el.style.setProperty('--cursor-bc', CLEAR);
+  } else if (isText) {
+    el.style.setProperty('--cursor-bg', BLUE);
+    el.style.setProperty('--cursor-bc', CLEAR);
+  } else if (visuallySoon) {
+    el.style.setProperty('--cursor-bg', SOON_BG);
+    el.style.setProperty('--cursor-bc', CLEAR);
+  } else {
+    el.style.setProperty('--cursor-bg', GLASS);
+    el.style.setProperty('--cursor-bc', GLASS);
+  }
+
   const widthFactor = clamp((state.w - DEFAULT_SIZE) / (SOON_W - DEFAULT_SIZE), 0, 1);
   labelEl.style.opacity = String(state.labelOp * widthFactor);
 }
@@ -153,28 +240,19 @@ function tick(state: CursorState, now: number) {
   state.y = py.value;
   state.vy = py.velocity;
 
-  const ps = springStep(
-    state.scale,
-    state.ts,
-    state.vs,
-    SCALE_STIFF,
-    SCALE_DAMP,
-    dt,
-  );
-  state.scale = ps.value;
-  state.vs = ps.velocity;
-
   const pw = springStep(state.w, state.tw, state.vw, SIZE_STIFF, SIZE_DAMP, dt);
   const ph = springStep(state.h, state.th, state.vh, SIZE_STIFF, SIZE_DAMP, dt);
-  state.w = Math.max(8, pw.value);
+  state.w = Math.max(2, pw.value);
   state.vw = pw.velocity;
-  state.h = Math.max(8, ph.value);
+  state.h = Math.max(2, ph.value);
   state.vh = ph.velocity;
 
-  const opacitySpeed = state.mode === 'block' ? 14 : 11;
-  state.opacity += (state.to - state.opacity) * Math.min(1, dt * opacitySpeed);
+  const pb = springStep(state.bw, state.tbw, state.vbw, BORDER_STIFF, BORDER_DAMP, dt);
+  state.bw = Math.max(0, pb.value);
+  state.vbw = pb.velocity;
 
-  // Label fades a bit faster on exit so text is gone before pill fully closes
+  state.opacity += (state.to - state.opacity) * Math.min(1, dt * 11);
+
   const labelSpeed = state.labelTo > state.labelOp ? 12 : 16;
   state.labelOp += (state.labelTo - state.labelOp) * Math.min(1, dt * labelSpeed);
 
@@ -183,14 +261,14 @@ function tick(state: CursorState, now: number) {
   const moving =
     Math.abs(state.vx) > 0.02 ||
     Math.abs(state.vy) > 0.02 ||
-    Math.abs(state.vs) > 0.001 ||
     Math.abs(state.vw) > 0.02 ||
     Math.abs(state.vh) > 0.02 ||
+    Math.abs(state.vbw) > 0.02 ||
     Math.abs(state.x - state.tx) > 0.1 ||
     Math.abs(state.y - state.ty) > 0.1 ||
-    Math.abs(state.scale - state.ts) > 0.002 ||
     Math.abs(state.w - state.tw) > 0.2 ||
     Math.abs(state.h - state.th) > 0.2 ||
+    Math.abs(state.bw - state.tbw) > 0.05 ||
     Math.abs(state.opacity - state.to) > 0.01 ||
     Math.abs(state.labelOp - state.labelTo) > 0.01 ||
     state.visible;
@@ -213,33 +291,51 @@ function setFree(state: CursorState, clientX: number, clientY: number) {
   state.activeTarget = null;
   state.tx = clientX;
   state.ty = clientY;
-  state.ts = 1;
   state.to = 1;
   state.tw = DEFAULT_SIZE;
   state.th = DEFAULT_SIZE;
+  state.tbw = DEFAULT_BORDER;
   state.labelTo = 0;
 }
 
-/** Dissolve under the pointer — do not move toward element center */
-function setBlock(
+/** Expand + open transparent center (border 16 → 1, bg clear). */
+function setPointer(
   state: CursorState,
   clientX: number,
   clientY: number,
   target: HTMLElement,
 ) {
-  state.mode = 'block';
+  state.mode = 'pointer';
   state.activeTarget = target;
   state.tx = clientX;
   state.ty = clientY;
-  state.ts = BLOCK_SCALE;
-  state.to = 0;
-  // Close any open soon-pill first (spring), then dissolve as circle
-  state.tw = DEFAULT_SIZE;
-  state.th = DEFAULT_SIZE;
+  state.to = 1;
+  state.tw = POINTER_SIZE;
+  state.th = POINTER_SIZE;
+  state.tbw = POINTER_BORDER;
   state.labelTo = 0;
 }
 
-/** Desktop soon cards: pill “Coming Soon” under the pointer */
+/** Blue thin bar — paragraph (4×32) or title (4×48). */
+function setText(
+  state: CursorState,
+  clientX: number,
+  clientY: number,
+  target: HTMLElement,
+  title: boolean,
+) {
+  state.mode = title ? 'text-title' : 'text';
+  state.activeTarget = target;
+  state.tx = clientX;
+  state.ty = clientY;
+  state.to = 1;
+  state.tw = TEXT_W;
+  state.th = title ? TEXT_TITLE_H : TEXT_H;
+  state.tbw = ZERO_BORDER;
+  state.labelTo = 0;
+}
+
+/** Desktop soon cards: glass “Coming Soon” pill. */
 function setSoon(
   state: CursorState,
   clientX: number,
@@ -250,18 +346,76 @@ function setSoon(
   state.activeTarget = target;
   state.tx = clientX;
   state.ty = clientY;
-  state.ts = 1;
   state.to = 1;
   state.tw = SOON_W;
   state.th = SOON_H;
+  state.tbw = ZERO_BORDER;
   state.labelTo = 1;
+}
+
+/** Fully hide soft cursor (native is hidden via CSS cursor: none). */
+function setNone(
+  state: CursorState,
+  clientX: number,
+  clientY: number,
+  target: HTMLElement,
+) {
+  state.mode = 'none';
+  state.activeTarget = target;
+  state.tx = clientX;
+  state.ty = clientY;
+  state.to = 0;
+  state.tw = DEFAULT_SIZE;
+  state.th = DEFAULT_SIZE;
+  state.tbw = DEFAULT_BORDER;
+  state.labelTo = 0;
+}
+
+function applyMode(
+  state: CursorState,
+  mode: CursorMode,
+  clientX: number,
+  clientY: number,
+  target: HTMLElement | null,
+) {
+  switch (mode) {
+    case 'pointer':
+      if (target) setPointer(state, clientX, clientY, target);
+      else setFree(state, clientX, clientY);
+      break;
+    case 'text':
+      if (target) setText(state, clientX, clientY, target, false);
+      else setFree(state, clientX, clientY);
+      break;
+    case 'text-title':
+      if (target) setText(state, clientX, clientY, target, true);
+      else setFree(state, clientX, clientY);
+      break;
+    case 'soon':
+      if (target) setSoon(state, clientX, clientY, target);
+      else setFree(state, clientX, clientY);
+      break;
+    case 'none':
+      if (target) setNone(state, clientX, clientY, target);
+      else setFree(state, clientX, clientY);
+      break;
+    default:
+      setFree(state, clientX, clientY);
+  }
 }
 
 let disposed = false;
 
 export function initCursor() {
   if (prefersReducedMotion() || !hasFinePointer()) return;
-  if (document.documentElement.dataset.cursorReady === 'true') return;
+
+  // View Transitions swap <body> and drop #site-cursor; stale flag would skip re-init.
+  const existing = document.getElementById('site-cursor');
+  if (document.documentElement.dataset.cursorReady === 'true') {
+    if (existing) return;
+    disposeCursor();
+  }
+
   document.documentElement.dataset.cursorReady = 'true';
   disposed = false;
 
@@ -273,15 +427,15 @@ export function initCursor() {
     ty: -100,
     vx: 0,
     vy: 0,
-    scale: 1,
-    ts: 1,
-    vs: 0,
     w: DEFAULT_SIZE,
     h: DEFAULT_SIZE,
     tw: DEFAULT_SIZE,
     th: DEFAULT_SIZE,
     vw: 0,
     vh: 0,
+    bw: DEFAULT_BORDER,
+    tbw: DEFAULT_BORDER,
+    vbw: 0,
     opacity: 0,
     to: 0,
     labelOp: 0,
@@ -308,23 +462,16 @@ export function initCursor() {
       state.ty = e.clientY;
     }
 
-    const target = findCursorTarget(e.target);
-    if (target && isSoonTarget(target)) {
-      setSoon(state, e.clientX, e.clientY, target);
-    } else if (target) {
-      setBlock(state, e.clientX, e.clientY, target);
-    } else {
-      setFree(state, e.clientX, e.clientY);
-    }
-
+    const { mode, target } = resolveMode(e.target);
+    applyMode(state, mode, e.clientX, e.clientY, target);
     start(state);
   };
 
   const onLeaveWindow = () => {
     state.to = 0;
-    state.ts = 1;
     state.tw = DEFAULT_SIZE;
     state.th = DEFAULT_SIZE;
+    state.tbw = DEFAULT_BORDER;
     state.labelTo = 0;
     state.visible = false;
     state.mode = 'free';

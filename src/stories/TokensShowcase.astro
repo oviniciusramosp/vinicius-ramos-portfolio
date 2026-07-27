@@ -1,0 +1,452 @@
+---
+/**
+ * Visual inventory of design tokens from tokens.css.
+ * Used only in Storybook — not linked from the site.
+ */
+type Section = 'all' | 'colors' | 'typography' | 'spacing' | 'radii' | 'motion';
+
+interface Props {
+  section?: Section;
+}
+
+const { section = 'all' } = Astro.props;
+
+const show = (s: Exclude<Section, 'all'>) => section === 'all' || section === s;
+
+const colors = [
+  { name: '--color-bg', value: '#000000' },
+  { name: '--color-surface', value: '#131219' },
+  { name: '--color-surface-elevated', value: '#17161d' },
+  { name: '--color-text', value: '#ffffff' },
+  { name: '--color-text-muted', value: '#4b485e' },
+  { name: '--color-text-soft', value: 'rgba(255, 255, 255, 0.75)' },
+  { name: '--color-accent', value: '#008fff' },
+  { name: '--color-accent-alt', value: '#0099ff' },
+  { name: '--color-border', value: 'rgba(255, 255, 255, 0.08)' },
+  { name: '--color-border-strong', value: 'rgba(255, 255, 255, 0.2)' },
+  { name: '--color-overlay', value: 'rgba(23, 22, 29, 0.8)' },
+  { name: '--color-white-05', value: 'rgba(255, 255, 255, 0.05)' },
+  { name: '--color-white-10', value: 'rgba(255, 255, 255, 0.1)' },
+  { name: '--color-tag-bg', value: 'rgba(0, 0, 0, 0.35)' },
+  { name: '--color-input-bg', value: 'rgba(255, 255, 255, 0.05)' },
+  { name: '--color-input-border', value: 'rgba(255, 255, 255, 0.12)' },
+];
+
+const fonts = [
+  { name: '--font-display', sample: 'HI, I AM DISPLAY', family: 'var(--font-display)', note: 'Blatant Bold' },
+  { name: '--font-display-regular', sample: 'LOGO / REGULAR', family: 'var(--font-display-regular)', note: 'Blatant Regular' },
+  { name: '--font-body', sample: 'Body copy — Inter for long-form reading.', family: 'var(--font-body)', note: 'Inter' },
+  { name: '--font-mono', sample: 'Nav · Buttons · Tags', family: 'var(--font-mono)', note: 'IBM Plex Mono' },
+  { name: '--font-sans-alt', sample: 'Alternate sans', family: 'var(--font-sans-alt)', note: 'IBM Plex Sans' },
+];
+
+const textSizes = [
+  { name: '--text-xs', value: '12px' },
+  { name: '--text-sm', value: '14px' },
+  { name: '--text-md', value: '15px' },
+  { name: '--text-base', value: '16px' },
+  { name: '--text-lg', value: '22px' },
+  { name: '--text-xl', value: '28px' },
+  { name: '--text-2xl', value: '42px' },
+  { name: '--text-3xl', value: '60px' },
+];
+
+const spaces = [
+  { name: '--space-1', value: '4px' },
+  { name: '--space-2', value: '6px' },
+  { name: '--space-3', value: '8px' },
+  { name: '--space-4', value: '10px' },
+  { name: '--space-5', value: '12px' },
+  { name: '--space-6', value: '16px' },
+  { name: '--space-7', value: '20px' },
+  { name: '--space-8', value: '24px' },
+  { name: '--space-9', value: '32px' },
+  { name: '--space-10', value: '48px' },
+  { name: '--space-11', value: '64px' },
+  { name: '--space-12', value: '86px' },
+];
+
+const layoutTokens = [
+  { name: '--page-pad-x', value: 'clamp(16px, 6vw, 250px)' },
+  { name: '--page-pad-x-sm', value: 'clamp(16px, 4vw, 48px)' },
+  { name: '--content-max', value: '1200px' },
+  { name: '--shell-max', value: '1920px' },
+  { name: '--nav-height', value: '64px' },
+];
+
+const radii = [
+  { name: '--radius-sm', value: '8px' },
+  { name: '--radius-card', value: '16px' },
+  { name: '--radius-btn', value: '30px' },
+  { name: '--radius-pill', value: '50px' },
+];
+
+const motion = [
+  { name: '--ease-smooth', value: 'cubic-bezier(0.44, 0, 0.56, 1)' },
+  { name: '--duration-fast', value: '200ms' },
+  { name: '--duration-base', value: '300ms' },
+  { name: '--duration-slow', value: '450ms' },
+  { name: '--blur-nav', value: '20px' },
+  { name: '--card-image-scale', value: '1.02' },
+  { name: '--card-image-scale-hover', value: '1.08' },
+];
+---
+
+<div class="ds">
+  {
+    show('colors') && (
+      <section class="ds__section">
+        <header class="ds__header">
+          <p class="ds__eyebrow">Tokens</p>
+          <h2 class="ds__title">Colors</h2>
+        </header>
+        <div class="swatch-grid">
+          {colors.map((c) => (
+            <article class="swatch">
+              <div class="swatch__chip" style={`background: var(${c.name})`} />
+              <div class="swatch__meta">
+                <code class="ds__code">{c.name}</code>
+                <span class="ds__value">{c.value}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    show('typography') && (
+      <section class="ds__section">
+        <header class="ds__header">
+          <p class="ds__eyebrow">Tokens</p>
+          <h2 class="ds__title">Typography</h2>
+        </header>
+
+        <div class="font-list">
+          {fonts.map((f) => (
+            <article class="font-row">
+              <div class="font-row__meta">
+                <code class="ds__code">{f.name}</code>
+                <span class="ds__value">{f.note}</span>
+              </div>
+              <p class="font-row__sample" style={`font-family: ${f.family}`}>
+                {f.sample}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <h3 class="ds__subtitle">Scale</h3>
+        <div class="type-scale">
+          {textSizes.map((t) => (
+            <div class="type-scale__row">
+              <code class="ds__code">{t.name}</code>
+              <span class="ds__value">{t.value}</span>
+              <p class="type-scale__sample" style={`font-size: var(${t.name})`}>
+                Aa
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <h3 class="ds__subtitle">Line height & tracking</h3>
+        <ul class="token-list">
+          <li><code class="ds__code">--lh-tight</code> <span class="ds__value">0.95</span></li>
+          <li><code class="ds__code">--lh-snug</code> <span class="ds__value">1.2</span></li>
+          <li><code class="ds__code">--lh-body</code> <span class="ds__value">1.7</span></li>
+          <li><code class="ds__code">--ls-logo</code> <span class="ds__value">0.4px</span></li>
+          <li><code class="ds__code">--ls-tight</code> <span class="ds__value">-0.02em</span></li>
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    show('spacing') && (
+      <section class="ds__section">
+        <header class="ds__header">
+          <p class="ds__eyebrow">Tokens</p>
+          <h2 class="ds__title">Spacing</h2>
+        </header>
+        <div class="space-list">
+          {spaces.map((s) => (
+            <div class="space-row">
+              <code class="ds__code">{s.name}</code>
+              <span class="ds__value">{s.value}</span>
+              <div class="space-row__bar" style={`width: var(${s.name})`} />
+            </div>
+          ))}
+        </div>
+        <h3 class="ds__subtitle">Layout</h3>
+        <ul class="token-list">
+          {layoutTokens.map((t) => (
+            <li>
+              <code class="ds__code">{t.name}</code>
+              <span class="ds__value">{t.value}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    show('radii') && (
+      <section class="ds__section">
+        <header class="ds__header">
+          <p class="ds__eyebrow">Tokens</p>
+          <h2 class="ds__title">Radii</h2>
+        </header>
+        <div class="radii-grid">
+          {radii.map((r) => (
+            <article class="radius-card">
+              <div class="radius-card__shape" style={`border-radius: var(${r.name})`} />
+              <code class="ds__code">{r.name}</code>
+              <span class="ds__value">{r.value}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    show('motion') && (
+      <section class="ds__section">
+        <header class="ds__header">
+          <p class="ds__eyebrow">Tokens</p>
+          <h2 class="ds__title">Motion & effects</h2>
+        </header>
+        <ul class="token-list">
+          {motion.map((m) => (
+            <li>
+              <code class="ds__code">{m.name}</code>
+              <span class="ds__value">{m.value}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="motion-demo">
+          <div class="motion-demo__box" data-motion-demo />
+          <p class="ds__value">Hover the box — uses --ease-smooth + --duration-base</p>
+        </div>
+      </section>
+    )
+  }
+</div>
+
+<style>
+  .ds {
+    width: min(960px, 100vw - 48px);
+    padding: 24px;
+    color: var(--color-text);
+    text-align: left;
+  }
+
+  .ds__section + .ds__section {
+    margin-top: 56px;
+    padding-top: 56px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .ds__header {
+    margin-bottom: 24px;
+  }
+
+  .ds__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ds__title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: var(--lh-snug);
+    text-transform: uppercase;
+  }
+
+  .ds__subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    color: var(--color-accent);
+    margin: 32px 0 16px;
+    font-weight: 300;
+  }
+
+  .ds__code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text);
+  }
+
+  .ds__value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+
+  /* Colors */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .swatch {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .swatch__chip {
+    height: 72px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .swatch__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  /* Typography */
+  .font-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .font-row {
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+  }
+
+  .font-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: 12px;
+  }
+
+  .font-row__sample {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .type-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .type-scale__row {
+    display: grid;
+    grid-template-columns: 120px 64px 1fr;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .type-scale__sample {
+    font-family: var(--font-display);
+    line-height: 1;
+  }
+
+  /* Spacing */
+  .space-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .space-row {
+    display: grid;
+    grid-template-columns: 110px 56px 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .space-row__bar {
+    height: 12px;
+    background: var(--color-accent);
+    border-radius: 2px;
+    min-width: 2px;
+  }
+
+  .token-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .token-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+  }
+
+  /* Radii */
+  .radii-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .radius-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    text-align: center;
+  }
+
+  .radius-card__shape {
+    width: 72px;
+    height: 72px;
+    background: var(--color-accent);
+  }
+
+  /* Motion */
+  .motion-demo {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .motion-demo__box {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-card);
+    background: var(--color-accent);
+    transition:
+      transform var(--duration-base) var(--ease-smooth),
+      background-color var(--duration-base) var(--ease-smooth);
+  }
+
+  .motion-demo__box:hover {
+    transform: scale(1.12) translateX(24px);
+    background: var(--color-text);
+  }
+</style>

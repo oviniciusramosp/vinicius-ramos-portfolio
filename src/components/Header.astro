@@ -1,13 +1,19 @@
 ---
 import { site } from '../data/site';
 import Button from './Button.astro';
+import LogoWave from './LogoWave.astro';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
-<header class="site-header">
+<!--
+  transition:persist — header never re-mounts on ClientRouter navigations,
+  so it stays out of the page-transition animation entirely.
+  Active states are synced in page-mask.ts (syncNavActive).
+-->
+<header class="site-header" transition:persist="site-header" data-site-header>
   <nav class="site-nav" aria-label="Primary">
-    <a class="logo" href="/" data-cursor="block">{site.name}</a>
+    <LogoWave />
     <div class="nav-links">
       {
         site.nav.map((item) => (
@@ -27,35 +33,28 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
   .site-header {
     position: sticky;
     top: 0;
-    z-index: 50;
+    /* Below .page-mask (10060) during transitions; above page content */
+    z-index: 10050;
     width: 100%;
-  }
-
-  .site-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-7);
-    height: var(--nav-height);
-    padding: 12px 24px;
+    overflow: visible;
+    /* Full-bleed bar; inner nav matches live Framer (1200 / --content-max) */
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(var(--blur-nav));
     -webkit-backdrop-filter: blur(var(--blur-nav));
   }
 
-  .logo {
-    font-family: var(--font-display-regular);
-    font-size: var(--text-lg);
-    font-weight: 400;
-    letter-spacing: var(--ls-logo);
-    text-transform: uppercase;
-    color: var(--color-text);
-    transition: color var(--duration-base) var(--ease-smooth);
-    white-space: nowrap;
-  }
-
-  .logo:hover {
-    color: var(--color-accent);
+  .site-nav {
+    display: flex;
+    align-items: center; /* vertical center: logo + links */
+    justify-content: space-between;
+    gap: var(--space-7);
+    height: var(--nav-height);
+    width: 100%;
+    /* Live Framer nav: width 1200px, padding 12px 24px */
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: 12px 24px;
+    overflow: visible;
   }
 
   .nav-links {
@@ -63,6 +62,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
     align-items: center;
     justify-content: flex-end;
     gap: var(--space-8);
+    flex-shrink: 0;
   }
 
   .nav-border {
@@ -73,12 +73,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
   @media (max-width: 640px) {
     .site-nav {
-      padding: 10px 16px;
-    }
-
-    .logo {
-      font-size: 16px;
-      letter-spacing: 0.2px;
+      padding: 12px 16px;
     }
 
     .nav-links {

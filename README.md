@@ -81,7 +81,7 @@ Home project sizes (`lg` | `tall` | `wide` | `sm`) drive the bento grid.
 
 ## Contact form
 
-`/contact` posts to Formspree by default. Replace `your-form-id` in `src/pages/contact.astro` with your endpoint (Formspree, Getform, Basin, etc.).
+`/contact` posts to the same **Framer Forms** endpoint as the live site (`site.contactForm` in `src/data/site.ts`). Client-side proof-of-work runs in `src/scripts/contact-form.ts` — no Formspree key required.
 
 ## Design map (from live site)
 

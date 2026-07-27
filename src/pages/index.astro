@@ -5,13 +5,15 @@ import { site } from '../data/site';
 import { getHomeProjects } from '../data/projects';
 
 const projects = getHomeProjects();
+// Filter chips hidden for now — re-enable with getHomeFilterTags() later
 ---
 
 <BaseLayout title={site.title} showBanner>
-  <section class="hero">
-    <div class="hero__inner">
-      <h1 class="hero__title display-title">{site.hero.title}</h1>
-      <p class="hero__bio body-text">{site.hero.bio}</p>
+  {/* Same frame as case study <header class="page-hero"> (crypto-bros etc.) */}
+  <section class="page-hero">
+    <div class="page-hero__main">
+      <h1 class="hero__title display-title" data-cursor="text-title">{site.hero.title}</h1>
+      <p class="hero__bio body-text" data-cursor="text">{site.hero.bio}</p>
     </div>
   </section>
 
@@ -19,29 +21,12 @@ const projects = getHomeProjects();
 </BaseLayout>
 
 <style>
-  .hero {
-    padding: var(--space-12) var(--page-pad-x) var(--space-10);
-  }
-
-  .hero__inner {
-    display: grid;
-    gap: var(--space-7);
-    max-width: 720px;
-  }
-
+  /* Frame size/padding come only from global .page-hero (shared with case headers). */
   .hero__title {
     max-width: 12ch;
   }
 
   .hero__bio {
-    max-width: 620px;
-    font-size: var(--text-sm);
-    line-height: 1.7;
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      padding: 48px 16px 32px;
-    }
+    max-width: 720px;
   }
 </style>

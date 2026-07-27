@@ -1,0 +1,257 @@
+---
+/**
+ * Full-viewport embed dialog for external case studies / sites.
+ * Open via [data-embed-open="{id}"]; iframe src loads on first open.
+ * No outbound links — keeps the visitor inside the portfolio.
+ */
+interface Props {
+  id: string;
+  src: string;
+  /** Optional override for the bar label (defaults to hostname, e.g. arctouch.com) */
+  siteLabel?: string;
+}
+
+const { id, src, siteLabel } = Astro.props;
+
+let hostLabel = siteLabel ?? 'case study';
+try {
+  hostLabel = siteLabel ?? new URL(src).hostname.replace(/^www\./, '');
+} catch {
+  /* keep fallback */
+}
+---
+
+<dialog
+  class="embed-modal"
+  id={id}
+  data-embed-modal
+  data-embed-src={src}
+  aria-labelledby={`${id}-label`}
+>
+  <div class="embed-modal__panel">
+    <header class="embed-modal__bar">
+      <p class="embed-modal__site" id={`${id}-label`}>{hostLabel}</p>
+      <button
+        type="button"
+        class="embed-modal__close"
+        data-embed-close
+        data-magnetic
+        data-cursor="block"
+        aria-label="Close"
+      >
+        <span class="embed-modal__close-visual" data-magnetic-visual>
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="1.75"
+              d="M5 5l10 10M15 5 5 15"
+            />
+          </svg>
+        </span>
+      </button>
+    </header>
+    <div class="embed-modal__frame-wrap">
+      <iframe
+        class="embed-modal__frame"
+        data-embed-frame
+        title={hostLabel}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+      <p class="embed-modal__fallback" data-embed-fallback hidden>
+        This page can’t be shown here. Close and try again later.
+      </p>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .embed-modal {
+    width: min(1120px, calc(100vw - 32px));
+    height: min(860px, calc(100vh - 48px));
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 48px);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    background: var(--color-surface, #131219);
+    color: var(--color-text, #fff);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 24px 80px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+  }
+
+  .embed-modal::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .embed-modal__panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .embed-modal__bar {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 0 0 auto;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-surface-elevated, #17161d);
+  }
+
+  /* Hostname label — not interactive */
+  .embed-modal__site {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--color-text-muted, #4b485e);
+    user-select: none;
+  }
+
+  .embed-modal__close {
+    appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 40px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .embed-modal__close-visual {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    will-change: transform;
+    transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .embed-modal__close:hover .embed-modal__close-visual,
+  .embed-modal__close.is-magnetic .embed-modal__close-visual {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .embed-modal__frame-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    background: #0a0a0c;
+  }
+
+  .embed-modal__frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+  }
+
+  .embed-modal__fallback[hidden] {
+    display: none !important;
+  }
+
+  .embed-modal__fallback:not([hidden]) {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 24px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text);
+    background: var(--color-surface);
+  }
+
+  @media (max-width: 734px) {
+    .embed-modal {
+      width: calc(100vw - 16px);
+      height: calc(100vh - 24px);
+      border-radius: 12px;
+    }
+
+    .embed-modal__bar {
+      padding: 8px 8px 8px 14px;
+    }
+  }
+</style>
+
+<script>
+  import { initMagneticButtons } from '../scripts/magnetic';
+
+  function openModal(dialog: HTMLDialogElement) {
+    const frame = dialog.querySelector<HTMLIFrameElement>('[data-embed-frame]');
+    const src = dialog.dataset.embedSrc;
+    if (frame && src && !frame.getAttribute('src')) {
+      frame.src = src;
+    }
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+    initMagneticButtons(dialog);
+  }
+
+  function closeModal(dialog: HTMLDialogElement) {
+    dialog.close();
+  }
+
+  function bindEmbedModals() {
+    document.querySelectorAll<HTMLElement>('[data-embed-open]').forEach((trigger) => {
+      if (trigger.dataset.embedBound === 'true') return;
+      trigger.dataset.embedBound = 'true';
+
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = trigger.dataset.embedOpen;
+        if (!id) return;
+        const dialog = document.getElementById(id);
+        if (!(dialog instanceof HTMLDialogElement)) return;
+        openModal(dialog);
+      });
+    });
+
+    document.querySelectorAll<HTMLDialogElement>('[data-embed-modal]').forEach((dialog) => {
+      if (dialog.dataset.embedBound === 'true') return;
+      dialog.dataset.embedBound = 'true';
+
+      dialog.querySelectorAll<HTMLElement>('[data-embed-close]').forEach((btn) => {
+        btn.addEventListener('click', () => closeModal(dialog));
+      });
+
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) closeModal(dialog);
+      });
+    });
+  }
+
+  bindEmbedModals();
+  document.addEventListener('astro:page-load', bindEmbedModals);
+</script>

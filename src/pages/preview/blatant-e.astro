@@ -1,0 +1,571 @@
+---
+/**
+ * Lab preview: Blatant “E” width alternates (default / alt1 / alt2).
+ * Paths extracted from Blatant Regular OTF — same height, 3 widths.
+ * Not linked from main nav; open /preview/blatant-e
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import glyphData from '../../data/blatant-e-glyphs.json';
+
+const order = ['E', 'E.alt1', 'E.alt2'] as const;
+const glyphs = order.map((key) => glyphData.glyphs[key]);
+const maxWidth = Math.max(...glyphs.map((g) => g.width));
+const viewH = 620;
+const padY = 30;
+---
+
+<BaseLayout
+  title="Preview · Blatant E widths"
+  description="Visual proof: Blatant letter E at three alternate widths (default, alt1, alt2)."
+>
+  <section class="lab">
+    <header class="lab__header">
+      <p class="lab__eyebrow">Preview · tipografia</p>
+      <h1 class="lab__title">Blatant · letra E</h1>
+      <p class="lab__lede">
+        Três versões do mesmo glifo (OpenType <code>aalt</code>): mesma altura, larguras
+        diferentes. Não é Regular→Bold — é stretch horizontal dentro da mesma face.
+      </p>
+      <p class="lab__links">
+        <a href="/preview/blatant-widths">Mapa completo de width alts →</a>
+      </p>
+    </header>
+
+    <!-- Side-by-side static comparison -->
+    <div class="lab__grid" role="list">
+      {
+        glyphs.map((g, i) => (
+          <article class="card" role="listitem">
+            <div class="card__stage">
+              <svg
+                class="card__svg"
+                viewBox={`0 0 ${maxWidth} ${viewH}`}
+                preserveAspectRatio="xMidYMid meet"
+                aria-label={`Glyph ${g.name}`}
+              >
+                <g transform={`translate(0 ${viewH - padY}) scale(1 -1)`}>
+                  <path d={g.path} fill="currentColor" />
+                </g>
+              </svg>
+            </div>
+            <div class="card__meta">
+              <span class="card__name">{g.name}</span>
+              <span class="card__label">{g.label}</span>
+              <dl class="card__stats">
+                <div>
+                  <dt>advance</dt>
+                  <dd>{g.width}</dd>
+                </div>
+                <div>
+                  <dt>bbox W×H</dt>
+                  <dd>
+                    {g.bounds.w} × {g.bounds.h}
+                  </dd>
+                </div>
+                <div>
+                  <dt>ratio vs default</dt>
+                  <dd>{(g.width / glyphs[0].width).toFixed(2)}×</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Live morph between the 3 masters -->
+    <div class="morph">
+      <div class="morph__head">
+        <h2 class="morph__title">Morph contínuo</h2>
+        <p class="morph__hint">
+          Interpolação linear entre os 12 pontos compartilhados (paths compatíveis).
+        </p>
+      </div>
+
+      <div class="morph__stage">
+        <svg
+          id="morph-svg"
+          class="morph__svg"
+          viewBox={`0 0 ${maxWidth} ${viewH}`}
+          preserveAspectRatio="xMidYMid meet"
+          aria-label="E width morph animation"
+        >
+          <g transform={`translate(0 ${viewH - padY}) scale(1 -1)`}>
+            <path id="morph-path" d={glyphs[0].path} fill="currentColor" />
+          </g>
+        </svg>
+        <div class="morph__readout" aria-live="polite">
+          <span id="morph-label">E</span>
+          <span id="morph-width" class="morph__width">advance 543</span>
+        </div>
+      </div>
+
+      <div class="morph__controls">
+        <label class="slider">
+          <span class="slider__label">Largura</span>
+          <input
+            id="width-slider"
+            class="slider__input"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            step="1"
+          />
+          <span class="slider__ticks" aria-hidden="true">
+            <span>default</span>
+            <span>alt1</span>
+            <span>alt2</span>
+          </span>
+        </label>
+        <div class="morph__actions">
+          <button type="button" id="btn-play" class="btn" data-playing="true">
+            Pausar
+          </button>
+          <button type="button" id="btn-reset" class="btn btn--ghost">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lab__notes">
+      <h2 class="lab__notes-title">Notas</h2>
+      <ul>
+        <li>
+          Fonte: Blatant Regular OTF (Tomas Castiglioni). Alts via feature
+          <code>aalt</code>.
+        </li>
+        <li>
+          Paths embutidos como SVG — o browser não anima OpenType alts de forma
+          contínua; o morph é ponto-a-ponto no path.
+        </li>
+        <li>
+          Página de lab, sem link no nav. Rota:
+          <code>/preview/blatant-e</code>
+        </li>
+      </ul>
+    </aside>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ glyphPayload: glyphs }}>
+  const masters = glyphPayload.map((g) => ({
+    name: g.name,
+    width: g.width,
+    points: g.points,
+  }));
+
+  const pathEl = document.getElementById('morph-path');
+  const labelEl = document.getElementById('morph-label');
+  const widthEl = document.getElementById('morph-width');
+  const slider = document.getElementById('width-slider');
+  const btnPlay = document.getElementById('btn-play');
+  const btnReset = document.getElementById('btn-reset');
+
+  if (!pathEl || !slider || !btnPlay || !btnReset || !labelEl || !widthEl) {
+    // no-op if DOM missing
+  } else {
+    /** t in [0, 2] — 0=default, 1=alt1, 2=alt2 */
+    function sampleAt(t) {
+      const clamped = Math.min(2, Math.max(0, t));
+      const i0 = Math.floor(clamped);
+      const i1 = Math.min(2, i0 + 1);
+      const local = clamped - i0;
+      const a = masters[i0];
+      const b = masters[i1];
+      const points = a.points.map((p, idx) => [
+        p[0] + (b.points[idx][0] - p[0]) * local,
+        p[1] + (b.points[idx][1] - p[1]) * local,
+      ]);
+      const width = a.width + (b.width - a.width) * local;
+      let name = a.name;
+      if (local < 0.02) name = a.name;
+      else if (local > 0.98) name = b.name;
+      else name = `${a.name} → ${b.name}`;
+      return { points, width, name, t: clamped };
+    }
+
+    function pointsToPath(points) {
+      const [x0, y0] = points[0];
+      let d = `M${x0.toFixed(2)} ${y0.toFixed(2)}`;
+      for (let i = 1; i < points.length; i++) {
+        d += `L${points[i][0].toFixed(2)} ${points[i][1].toFixed(2)}`;
+      }
+      return d + 'Z';
+    }
+
+    function applyT(t) {
+      const s = sampleAt(t);
+      pathEl.setAttribute('d', pointsToPath(s.points));
+      labelEl.textContent = s.name;
+      widthEl.textContent = `advance ${Math.round(s.width)}`;
+      slider.value = String(Math.round((t / 2) * 1000));
+    }
+
+    let playing = true;
+    let raf = 0;
+    let start = performance.now();
+    // full cycle default→alt2→default in ~4.5s
+    const cycleMs = 4500;
+
+    function tick(now) {
+      if (!playing) return;
+      const elapsed = (now - start) % cycleMs;
+      // ease triangle 0→2→0
+      const phase = elapsed / cycleMs; // 0..1
+      const tri = phase < 0.5 ? phase * 4 : (1 - phase) * 4; // 0..2..0
+      applyT(tri);
+      raf = requestAnimationFrame(tick);
+    }
+
+    slider.addEventListener('input', () => {
+      playing = false;
+      btnPlay.dataset.playing = 'false';
+      btnPlay.textContent = 'Play';
+      cancelAnimationFrame(raf);
+      const t = (Number(slider.value) / 1000) * 2;
+      applyT(t);
+    });
+
+    btnPlay.addEventListener('click', () => {
+      playing = !playing;
+      btnPlay.dataset.playing = playing ? 'true' : 'false';
+      btnPlay.textContent = playing ? 'Pausar' : 'Play';
+      if (playing) {
+        // resume from current slider position in the cycle
+        const t = (Number(slider.value) / 1000) * 2;
+        // invert triangle approx: store as phase
+        const phase = t <= 2 ? t / 4 : 0;
+        start = performance.now() - phase * cycleMs;
+        raf = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(raf);
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      start = performance.now();
+      applyT(0);
+      if (playing) {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(tick);
+      }
+    });
+
+    applyT(0);
+    raf = requestAnimationFrame(tick);
+  }
+</script>
+
+<style>
+  .lab {
+    width: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: var(--space-10) var(--page-pad-x-sm) var(--space-12);
+  }
+
+  .lab__header {
+    max-width: 40rem;
+    margin-bottom: var(--space-10);
+  }
+
+  .lab__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 var(--space-4);
+  }
+
+  .lab__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: var(--lh-tight);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-5);
+  }
+
+  .lab__lede {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--lh-body);
+    color: var(--color-text-soft);
+  }
+
+  .lab__links {
+    margin: var(--space-5) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .lab__links a {
+    color: var(--color-text-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .lab__links a:hover {
+    color: var(--color-accent);
+  }
+
+  .lab__lede code,
+  .lab__notes code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--color-accent-alt);
+  }
+
+  .lab__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-11);
+  }
+
+  @media (min-width: 768px) {
+    .lab__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card__stage {
+    aspect-ratio: 16 / 10;
+    display: grid;
+    place-items: center;
+    padding: var(--space-7);
+    border-bottom: 1px solid var(--color-border);
+    background: radial-gradient(
+      120% 80% at 50% 100%,
+      rgba(0, 143, 255, 0.08),
+      transparent 60%
+    );
+  }
+
+  .card__svg {
+    width: 100%;
+    height: 100%;
+    color: #fff;
+  }
+
+  .card__meta {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .card__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+  }
+
+  .card__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .card__stats {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+  }
+
+  .card__stats div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .card__stats dt {
+    color: var(--color-text-muted);
+  }
+
+  .card__stats dd {
+    margin: 0;
+    color: var(--color-text-soft);
+    text-align: right;
+  }
+
+  .morph {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: var(--space-8);
+    margin-bottom: var(--space-10);
+  }
+
+  .morph__head {
+    margin-bottom: var(--space-7);
+  }
+
+  .morph__title {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: 300;
+    color: var(--color-accent);
+    margin: 0 0 var(--space-3);
+  }
+
+  .morph__hint {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-soft);
+  }
+
+  .morph__stage {
+    position: relative;
+    min-height: 220px;
+    display: grid;
+    place-items: center;
+    padding: var(--space-8) var(--space-4);
+    border-radius: var(--radius-sm);
+    background: #0a0a0c;
+    border: 1px solid var(--color-border);
+    margin-bottom: var(--space-7);
+  }
+
+  .morph__svg {
+    width: min(100%, 720px);
+    height: auto;
+    max-height: 280px;
+    color: #fff;
+  }
+
+  .morph__readout {
+    position: absolute;
+    left: var(--space-5);
+    bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .morph__readout span:first-child {
+    color: var(--color-accent);
+  }
+
+  .morph__width {
+    color: var(--color-text-muted);
+  }
+
+  .morph__controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .morph__controls {
+      flex-direction: row;
+      align-items: flex-end;
+      gap: var(--space-8);
+    }
+  }
+
+  .slider {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .slider__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .slider__input {
+    width: 100%;
+    accent-color: var(--color-accent);
+    cursor: pointer;
+  }
+
+  .slider__ticks {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+
+  .morph__actions {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-accent);
+    color: #000;
+    cursor: pointer;
+    transition: opacity var(--duration-fast) var(--ease-smooth);
+  }
+
+  .btn:hover {
+    opacity: 0.88;
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--color-text);
+  }
+
+  .lab__notes {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-8);
+  }
+
+  .lab__notes-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .lab__notes ul {
+    margin: 0;
+    padding-left: 1.1em;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text-soft);
+    line-height: var(--lh-body);
+  }
+
+  .lab__notes li::marker {
+    color: var(--color-text-muted);
+  }
+</style>

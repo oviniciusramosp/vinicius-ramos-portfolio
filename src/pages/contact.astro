@@ -1,113 +1,509 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Button from '../components/Button.astro';
 import { site } from '../data/site';
 ---
 
 <BaseLayout title={`${site.name} · Contact`}>
   <section class="contact">
-    <h1 class="display-title contact__title">SAY HI</h1>
+    <header class="contact__title-area">
+      <h1 class="display-title contact__title">SAY HI</h1>
+    </header>
 
-    <!--
-      Static GitHub Pages: form posts via Formspree / Getform / your endpoint.
-      Replace action with your form endpoint before going live.
-    -->
-    <form
-      class="contact-form"
-      action="https://formspree.io/f/your-form-id"
-      method="POST"
-    >
-      <label class="field">
-        <span class="field__label">Name</span>
-        <input class="field__input" type="text" name="name" required autocomplete="name" />
-      </label>
+    <div class="contact__column">
+      <form
+        class="contact-form"
+        data-contact-form
+        data-action={site.contactForm.action}
+        data-site-id={site.contactForm.siteId}
+        data-status="idle"
+        novalidate={false}
+      >
+        <div class="contact-form__row">
+          <label class="field">
+            <span class="field__label">Name</span>
+            <input
+              class="field__input"
+              type="text"
+              name="Name"
+              required
+              autocomplete="name"
+              placeholder="Your name"
+            />
+          </label>
 
-      <label class="field">
-        <span class="field__label">Email</span>
-        <input
-          class="field__input"
-          type="email"
-          name="email"
-          required
-          autocomplete="email"
-        />
-      </label>
+          <label class="field">
+            <span class="field__label">Email</span>
+            <input
+              class="field__input"
+              type="email"
+              name="Email"
+              required
+              autocomplete="email"
+              placeholder="Your email"
+            />
+          </label>
+        </div>
 
-      <label class="field">
-        <span class="field__label">Message</span>
-        <textarea class="field__input field__input--area" name="message" rows="6" required
-        ></textarea>
-      </label>
+        <label class="field field--message">
+          <span class="field__label">Message</span>
+          <textarea
+            class="field__input field__input--area"
+            name="Message"
+            required
+            rows="5"
+            placeholder="Your message..."></textarea>
+        </label>
 
-      <div class="contact-form__actions">
-        <Button type="submit" label="Submit" variant="submit" />
-      </div>
-    </form>
+        <!-- Honeypot — bots only; hidden from humans -->
+        <div class="contact-form__honeypot" aria-hidden="true">
+          <label>
+            Website
+            <input
+              type="text"
+              name="website"
+              data-honeypot
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <div class="contact-form__actions">
+          <!--
+            Framer button states:
+            idle → outline + "Submit"
+            hover → no border, fill 10% white
+            pending → 40×40 circle + spinner
+            success → 40×40 circle + check
+          -->
+          <button
+            type="submit"
+            class="contact-submit"
+            data-contact-submit
+            data-magnetic
+            data-cursor="block"
+            aria-label="Submit"
+          >
+            <span class="contact-submit__visual" data-magnetic-visual>
+              <span class="contact-submit__label" data-contact-submit-label>Submit</span>
+              <span class="contact-submit__spinner" aria-hidden="true"></span>
+              <span class="contact-submit__check" aria-hidden="true">
+                <!-- Framer Check icon (viewBox from live site) -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 19.958 20.088"
+                  width="18"
+                  height="18"
+                  fill="none"
+                >
+                  <path
+                    d="M7.18 20.088c.372 0 .662-.168.867-.482L19.39 1.878c.16-.26.216-.449.216-.642 0-.488-.323-.812-.808-.812-.352 0-.548.116-.753.441L7.143 18.042l-5.53-6.913c-.22-.3-.44-.429-.764-.429-.501 0-.849.348-.849.833 0 .204.088.433.26.649l6.017 7.411c.264.338.53.495.902.495Z"
+                    fill="#fff"
+                    fill-opacity="0.85"
+                  ></path>
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <p class="contact-form__status" data-contact-status hidden role="status" aria-live="polite"></p>
+      </form>
+    </div>
   </section>
 </BaseLayout>
 
+<script>
+  import '../scripts/contact-form';
+</script>
+
 <style>
+  /* Layout mirrors Framer /contact breakpoints:
+     desktop ≥1194: pad 125×250×48, form 66%
+     tablet 810–1193: pad 125×64×48, form 100%
+     mobile ≤809: pad 80×16×24, fields stack
+     xl ≥1536: pad 125×240×48, form 50% max 800 */
   .contact {
-    padding: var(--space-12) var(--page-pad-x) var(--space-10);
-    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+    padding: 125px 250px 48px;
+    /* flex:1 growth like Framer hero (height:1px + flex-grow) */
+    flex: 1 0 auto;
+    min-height: calc(100dvh - var(--nav-height) - 160px);
+    box-sizing: border-box;
+  }
+
+  .contact__title-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .contact__title {
-    margin-bottom: 48px;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+    font-size: var(--text-2xl); /* 42px — live SAY HI */
+    line-height: var(--lh-snug);
+  }
+
+  .contact__column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 66%;
   }
 
   .contact-form {
-    display: grid;
-    gap: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .contact-form__row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
   }
 
   .field {
-    display: grid;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .field--message {
+    flex: none;
+    width: 100%;
   }
 
   .field__label {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--color-text);
   }
 
   .field__input {
     width: 100%;
-    padding: 14px 16px;
+    box-sizing: border-box;
+    padding: 12px;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--color-input-border);
-    background: var(--color-input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--color-surface);
     color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
     outline: none;
     transition:
       border-color var(--duration-base) var(--ease-smooth),
       background-color var(--duration-base) var(--ease-smooth);
   }
 
+  .field__input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
   .field__input:hover {
-    border-color: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .field__input:focus {
-    border-color: var(--color-accent);
-    background: rgba(0, 143, 255, 0.06);
+    border-color: #0099ff;
+    background: var(--color-surface);
   }
 
   .field__input--area {
     resize: vertical;
-    min-height: 140px;
+    min-height: 100px;
+  }
+
+  .contact-form__honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .contact-form__actions {
     display: flex;
-    justify-content: flex-start;
-    padding-top: 8px;
+    justify-content: center;
+    width: 100%;
   }
 
-  @media (max-width: 768px) {
+  /* Outline submit — Framer "No Icon" / Loading / Complete */
+  .contact-submit {
+    appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 30px;
+    background: transparent;
+    cursor: pointer;
+    overflow: visible;
+  }
+
+  .contact-submit:disabled {
+    cursor: default;
+  }
+
+  .contact-submit__visual {
+    /* Border via ::after (Framer data-border) so hover width→0 has no layout shift */
+    --submit-border-width: 1px;
+    --submit-border-color: var(--color-text-muted); /* #4b485e */
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 40px;
+    min-height: 40px;
+    min-width: 0;
+    padding: 0 32px;
+    border: none;
+    border-radius: 30px;
+    background: transparent;
+    will-change: transform;
+    transition:
+      background-color 200ms cubic-bezier(0.44, 0, 0.56, 1),
+      padding 320ms cubic-bezier(0.44, 0, 0.56, 1),
+      width 320ms cubic-bezier(0.44, 0, 0.56, 1),
+      min-width 320ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .contact-submit__visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border-style: solid;
+    border-width: var(--submit-border-width);
+    border-color: var(--submit-border-color);
+    pointer-events: none;
+    transition:
+      border-width 200ms cubic-bezier(0.44, 0, 0.56, 1),
+      border-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .contact-submit__label {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--color-text);
+    white-space: nowrap;
+    transition: opacity 160ms ease;
+  }
+
+  .contact-submit__spinner,
+  .contact-submit__check {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .contact-submit__check svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Spinner ring (Framer uses Lottie; CSS ring is the lightweight match) */
+  .contact-submit__spinner {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+  }
+
+  /* Hover / magnetic — live: border width → 0, fill 10% white */
+  .contact-submit:hover:not([aria-disabled='true']) .contact-submit__visual,
+  .contact-submit:focus-visible:not([aria-disabled='true']) .contact-submit__visual,
+  .contact-submit.is-magnetic:not([aria-disabled='true']) .contact-submit__visual {
+    --submit-border-width: 0px;
+    --submit-border-color: rgba(75, 72, 94, 0.01);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .contact-submit:active:not([aria-disabled='true']) .contact-submit__visual {
+    --submit-border-width: 0px;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .contact-submit:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Pending + success → 40×40 circle (Framer Loading / Complete) */
+  .contact-form[data-status='pending'] .contact-submit,
+  .contact-form[data-status='success'] .contact-submit {
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .contact-form[data-status='pending'] .contact-submit__visual,
+  .contact-form[data-status='success'] .contact-submit__visual {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 30px;
+    --submit-border-width: 1px;
+    --submit-border-color: var(--color-text-muted);
+    background: transparent;
+  }
+
+  .contact-form[data-status='pending'] .contact-submit__label,
+  .contact-form[data-status='success'] .contact-submit__label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  .contact-form[data-status='pending'] .contact-submit__spinner {
+    opacity: 1;
+    animation: contact-spin 0.7s linear infinite;
+  }
+
+  .contact-form[data-status='success'] .contact-submit__check {
+    opacity: 1;
+  }
+
+  @keyframes contact-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .contact-form__status {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    text-align: center;
+    color: var(--color-text-soft);
+  }
+
+  .contact-form__status[data-tone='error'] {
+    color: #ff6b6b;
+  }
+
+  /* Success is the check circle — keep text for screen readers only */
+  .contact-form__status[data-tone='success'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* XL — Framer ≥1536 */
+  @media (min-width: 1536px) {
     .contact {
-      padding: 48px 16px 32px;
+      padding: 125px 240px 48px;
+    }
+
+    .contact__column {
+      width: 50%;
+      max-width: 800px;
+    }
+  }
+
+  /* Tablet — Framer 810–1193 */
+  @media (max-width: 1193px) {
+    .contact {
+      padding: 125px 64px 48px;
+    }
+
+    .contact__column {
+      width: 100%;
+    }
+  }
+
+  /* Mobile — Framer ≤809 */
+  @media (max-width: 809px) {
+    .contact {
+      padding: 80px 16px 24px;
+      min-height: 320px;
+      gap: 16px;
+    }
+
+    .contact__title {
+      white-space: normal;
+      font-size: clamp(32px, 10vw, 42px);
+    }
+
+    .contact__column {
+      width: 100%;
+    }
+
+    .contact-form__row {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .field {
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-submit__visual {
+      will-change: auto;
+      transition: none;
+    }
+
+    .contact-submit__spinner {
+      animation: none;
+      border-top-color: rgba(255, 255, 255, 0.9);
+      opacity: 0.85;
     }
   }
 </style>

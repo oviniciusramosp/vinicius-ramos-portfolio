@@ -1,0 +1,40 @@
+---
+/**
+ * Storybook stage: bento-sized surface so SocialFan has a real cell to fill
+ * (same tokens as case-bento__cell).
+ */
+import SocialFan from '../components/SocialFan.astro';
+import type { SocialFanImage } from '../components/SocialFan.astro';
+
+interface Props {
+  images: SocialFanImage[];
+  ariaLabel?: string;
+  centerIndex?: number;
+  /** CSS size of the bento-like cell */
+  width?: string;
+  height?: string;
+}
+
+const {
+  images,
+  ariaLabel = 'Social posts',
+  centerIndex,
+  width = 'min(92vw, 560px)',
+  height = 'min(72vw, 440px)',
+} = Astro.props;
+---
+
+<div class="social-fan-stage" style={`width: ${width}; height: ${height}`}>
+  <SocialFan images={images} ariaLabel={ariaLabel} centerIndex={centerIndex} />
+</div>
+
+<style>
+  .social-fan-stage {
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background-color: var(--color-surface, #131219);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+</style>

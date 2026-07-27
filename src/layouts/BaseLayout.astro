@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { site } from '../data/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -21,7 +22,7 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
 ---
 
 <!doctype html>
-<html lang={site.locale}>
+<html lang={site.locale} transition:animate="none">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,11 +42,46 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={site.ogImage} />
+
+    <!-- Ionicons — site-wide icon library -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <ClientRouter />
   </head>
   <body>
+    <!--
+      Transition plate covers navbar + banner (z-index above both).
+      Label = clicked target word; circle always covers the viewport.
+      transition:persist keeps the plate across ClientRouter body swaps.
+    -->
+    <div
+      id="page-mask"
+      class="page-mask is-idle"
+      transition:persist="page-mask"
+      aria-hidden="true"
+    >
+      <div class="page-mask__stage">
+        <div class="page-mask__circle" aria-hidden="true"></div>
+      </div>
+      <div class="page-mask__label" aria-hidden="true"></div>
+    </div>
+
     <div class="page-shell">
       <Header />
-      {showBanner && <Banner />}
+      {showBanner && site.banner && (
+        <Banner
+          message={site.banner}
+          waitEvent="logo-wave:intro-end"
+          enterDelay={120}
+        />
+      )}
       <main class="page-main">
         <slot />
       </main>
@@ -54,13 +90,24 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
 
     <script>
       import { initMagneticButtons } from '../scripts/magnetic';
-      import { initCursor } from '../scripts/cursor';
+      import { initCursor, disposeCursor } from '../scripts/cursor';
       import { initCardParallax } from '../scripts/card-parallax';
+      import { initPageMask, syncNavActive } from '../scripts/page-mask';
+      import { bootCoverLines } from '../scripts/cover-lines';
+
+      initPageMask();
 
       const boot = () => {
+        syncNavActive();
         initMagneticButtons();
         initCardParallax();
+        bootCoverLines();
+        // Cursor lives on body; ClientRouter swaps body and drops the node.
+        if (!document.getElementById('site-cursor')) {
+          disposeCursor();
+        }
         initCursor();
+        // Logo wave self-boots from LogoWave.astro (incl. Storybook + intro).
       };
       boot();
       document.addEventListener('astro:page-load', boot);

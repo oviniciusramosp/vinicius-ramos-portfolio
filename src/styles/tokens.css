@@ -58,7 +58,11 @@
 
   --page-pad-x: clamp(16px, 6vw, 250px);
   --page-pad-x-sm: clamp(16px, 4vw, 48px);
+  /* Nav + footer frame (live Framer: width 1200;
+     nav pad 12×24 · footer pad 72×250×24 desktop) */
   --content-max: 1200px;
+  /* Homepage bento shell + case ImagesFull (live Framer: max-width 1920) */
+  --shell-max: 1920px;
   --nav-height: 64px;
 
   /* Radii */

@@ -1,7 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
-import QuoteSlider from '../../components/QuoteSlider.astro';
+import Button from '../../components/Button.astro';
+import EmbedModal from '../../components/EmbedModal.astro';
+import ScrollGallery from '../../components/ScrollGallery.astro';
+import DeckSlider from '../../components/DeckSlider.astro';
+import SocialFan from '../../components/SocialFan.astro';
+import Device3D from '../../components/Device3D.astro';
 import NextProject from '../../components/NextProject.astro';
 import {
   getPublishedProjects,
@@ -27,6 +32,32 @@ interface Props {
 const { project } = Astro.props;
 const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
 const useBlocks = Boolean(project.blocks && project.blocks.length > 0);
+const quotes = project.quotes ?? [];
+/** Quotes always use ScrollGallery (incentive-gallery-dark): paddlenav, no autoplay, all cards visible */
+const quoteIncentiveItems = quotes.map((quote, index) => ({
+  id: `${project.slug}-quote-${index}`,
+  kind: 'quote' as const,
+  /** role · author · optional avatar */
+  label: quote.role,
+  headline: quote.author,
+  body: quote.text,
+  avatar: quote.avatar,
+}));
+
+/** Section CTAs that open embed modals (deduped by href) */
+const embedModals = (project.blocks ?? [])
+  .filter(
+    (b): b is Extract<CaseBlock, { type: 'section' }> =>
+      b.type === 'section' && Boolean(b.cta?.modal && b.cta.href),
+  )
+  .map((b, i) => ({
+    id: `${project.slug}-embed-${i}`,
+    src: b.cta!.href,
+  }));
+
+function embedModalIdForHref(href: string) {
+  return embedModals.find((m) => m.src === href)?.id;
+}
 
 /** Render **bold** markers from case-study copy */
 function inlineHtml(text: string) {
@@ -37,19 +68,23 @@ function inlineHtml(text: string) {
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
 
-function cellClass(cell: CaseBentoCell, index: number) {
+function cellClass(cell: CaseBentoCell) {
   const span = cell.span ?? '1x1';
-  const parts = [`case-bento__cell`, `case-bento__cell--${span}`, `case-bento__cell--i${index}`];
+  const parts = [`case-bento__cell`, `case-bento__cell--${span}`];
   if (cell.kind === 'image' && cell.padded) parts.push('case-bento__cell--padded');
   if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
+  if (cell.kind === 'social-fan') parts.push('case-bento__cell--social-fan');
+  if (cell.kind === 'device-3d') parts.push('case-bento__cell--device-3d');
+  if (cell.kind === 'icon-set') parts.push('case-bento__cell--icon-set');
+  if (cell.surface === 'light') parts.push('case-bento__cell--light');
   return parts.join(' ');
 }
 ---
 
 <BaseLayout title={`${site.name} · ${project.title}`} description={project.summary}>
   <article class="case">
-    <header class="case__hero">
-      <div class="case__hero-main">
+    <header class="page-hero case__hero">
+      <div class="page-hero__main case__hero-main">
         {/* Live Framer: year + tags share the same pill component */}
         <div class="case__tags" data-framer-name="Tags">
           <Tag label={project.year} />
@@ -64,12 +99,26 @@ function cellClass(cell: CaseBentoCell, index: number) {
       useBlocks ? (
         project.blocks!.map((block: CaseBlock) => {
           if (block.type === 'bento') {
+            const columns = block.columns ?? 4;
+            const shell = block.shell ?? 'full';
             return (
-              <div class="case__media case__media--bento">
-                <div class="case-bento">
-                  {block.cells.map((cell, i) =>
+              <div
+                class:list={[
+                  'case__media',
+                  'case__media--bento',
+                  shell === 'content' && 'case__media--bento-content',
+                ]}
+              >
+                <div
+                  class:list={[
+                    'case-bento',
+                    columns === 3 && 'case-bento--cols-3',
+                    columns === 5 && 'case-bento--cols-5',
+                  ]}
+                >
+                  {block.cells.map((cell) =>
                     cell.kind === 'caption' ? (
-                      <div class={cellClass(cell, i)}>
+                      <div class={cellClass(cell)}>
                         {cell.texture && (
                           <div
                             class="case-bento__texture"
@@ -93,8 +142,61 @@ function cellClass(cell: CaseBentoCell, index: number) {
                           )}
                         </div>
                       </div>
+                    ) : cell.kind === 'social-fan' ? (
+                      <div class={cellClass(cell)}>
+                        <SocialFan
+                          images={cell.images.map((img) => ({
+                            src: img.src,
+                            alt: img.alt,
+                            aspect: img.aspect ? Number(img.aspect) : undefined,
+                          }))}
+                          aspect={
+                            cell.images[0]?.aspect
+                              ? Number(cell.images[0].aspect)
+                              : 0.75
+                          }
+                          ariaLabel={cell.ariaLabel ?? 'Social posts'}
+                        />
+                      </div>
+                    ) : cell.kind === 'device-3d' ? (
+                      <div class={cellClass(cell)}>
+                        <Device3D
+                          model={cell.model}
+                          screen={cell.screen}
+                          alt={cell.alt}
+                          poster={cell.poster}
+                        />
+                      </div>
+                    ) : cell.kind === 'icon-set' ? (
+                      <div class={cellClass(cell)}>
+                        <div
+                          class="case-bento__icon-set"
+                          role="group"
+                          aria-label="App icons"
+                        >
+                          {cell.icons.map((icon, iconIndex) => (
+                            <div
+                              class:list={[
+                                'case-bento__icon',
+                                icon.glow && 'case-bento__icon--glow',
+                                iconIndex === 0 && 'case-bento__icon--shadow-white',
+                                iconIndex === 1 && 'case-bento__icon--shadow-orange',
+                                iconIndex === 2 && 'case-bento__icon--shadow-blue',
+                              ]}
+                            >
+                              <img
+                                src={icon.src}
+                                alt={icon.alt}
+                                loading="eager"
+                                decoding="async"
+                                draggable="false"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : (
-                      <div class={cellClass(cell, i)}>
+                      <div class={cellClass(cell)}>
                         {cell.texture && (
                           <div
                             class="case-bento__texture"
@@ -106,7 +208,14 @@ function cellClass(cell: CaseBentoCell, index: number) {
                           src={cell.src}
                           alt={cell.alt}
                           loading="eager"
-                          style={`object-fit: ${cell.fit ?? 'cover'}`}
+                          style={[
+                            `object-fit: ${cell.fit ?? 'cover'}`,
+                            cell.objectPosition
+                              ? `object-position: ${cell.objectPosition}`
+                              : null,
+                          ]
+                            .filter(Boolean)
+                            .join('; ')}
                         />
                       </div>
                     ),
@@ -117,6 +226,9 @@ function cellClass(cell: CaseBentoCell, index: number) {
           }
 
           if (block.type === 'section') {
+            const cta = block.cta;
+            const embedId =
+              cta?.modal && cta.href ? embedModalIdForHref(cta.href) : undefined;
             return (
               <section class="case__section">
                 <div class="case__section-inner">
@@ -125,6 +237,28 @@ function cellClass(cell: CaseBentoCell, index: number) {
                     {block.paragraphs.map((p) => (
                       <p class="body-text" set:html={inlineHtml(p)} />
                     ))}
+                    {cta && (
+                      <div class="case__cta">
+                        {embedId ? (
+                          <Button
+                            label={cta.label}
+                            eyebrow={cta.eyebrow}
+                            variant="ghost"
+                            embedOpen={embedId}
+                            icon={cta.icon}
+                          />
+                        ) : (
+                          <Button
+                            label={cta.label}
+                            eyebrow={cta.eyebrow}
+                            href={cta.href}
+                            variant="ghost"
+                            external
+                            icon={cta.icon}
+                          />
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
@@ -132,25 +266,132 @@ function cellClass(cell: CaseBentoCell, index: number) {
           }
 
           if (block.type === 'gallery') {
+            const isScroll = block.layout === 'scroll';
+            const isStack = block.layout === 'stack';
             return (
               <div class={`case__media case__media--${block.layout}`}>
-                <div class={`case-gallery case-gallery--${block.layout}`}>
-                  {block.images.map((img: CaseImage) => (
+                {block.title && (
+                  <h2 class="section-title case__gallery-title">{block.title}</h2>
+                )}
+                <div
+                  class={`case-gallery case-gallery--${block.layout}`}
+                  data-gallery-slider={isScroll ? '' : undefined}
+                >
+                  {block.images.map((img: CaseImage, imgIndex: number) => (
                     <figure
                       class:list={[
                         'case-gallery__item',
+                        isStack && `case-gallery__item--stack-${imgIndex + 1}`,
                         img.hideOn === 'mobile' && 'case-gallery__item--hide-mobile',
+                        img.card && 'case-gallery__item--card',
+                        img.card && img.fit === 'contain' && 'case-gallery__item--card-padded',
+                        img.card && img.cardAlign === 'end' && 'case-gallery__item--card-end',
                       ]}
-                      style={img.aspect ? `aspect-ratio: ${img.aspect}` : undefined}
+                      style={[
+                        img.aspect ? `aspect-ratio: ${img.aspect}` : null,
+                        /* pair-height reads --pair-flex for column share (∝ aspect) */
+                        block.layout === 'pair-height' && img.aspect
+                          ? `--pair-flex: ${img.aspect}`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join('; ')}
                     >
                       <img
                         src={img.src}
                         alt={img.alt}
                         loading="lazy"
-                        style={`object-fit: ${img.fit ?? 'cover'}`}
+                        style={[
+                          `object-fit: ${img.fit ?? 'cover'}`,
+                          img.objectPosition
+                            ? `object-position: ${img.objectPosition}`
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join('; ')}
                       />
                     </figure>
                   ))}
+                </div>
+              </div>
+            );
+          }
+
+          if (block.type === 'deck-slider') {
+            const isPresentation = block.variant === 'presentation';
+            return (
+              <div
+                class:list={[
+                  'case__media',
+                  isPresentation ? 'case__media--presentation' : 'case__media--decks',
+                ]}
+              >
+                {block.title && (
+                  <h2 class="section-title case__gallery-title">{block.title}</h2>
+                )}
+                <DeckSlider
+                  decks={block.decks}
+                  texture={block.texture}
+                  variant={block.variant ?? 'wireframes'}
+                  autoplay={block.autoplay ?? !isPresentation}
+                  ariaLabel={block.title ?? (isPresentation ? 'Presentation' : 'Wireframe decks')}
+                />
+              </div>
+            );
+          }
+
+          if (block.type === 'scroll-gallery') {
+            return (
+              <ScrollGallery
+                id={`${project.slug}-scroll-${block.ariaLabel?.replace(/\s+/g, '-').toLowerCase() ?? 'gallery'}`}
+                title={block.title}
+                items={block.items}
+                theme={block.theme ?? 'dark'}
+                short={block.short ?? true}
+                entrance={block.entrance ?? false}
+                ariaLabel={block.ariaLabel ?? block.title ?? 'Gallery'}
+              />
+            );
+          }
+
+          if (block.type === 'video') {
+            const showControls = Boolean(block.controls);
+            return (
+              <div class="case__media case__media--video">
+                <div
+                  class:list={['case-video-block', showControls && 'case-video-block--controls']}
+                  data-case-video-block={showControls ? '' : undefined}
+                >
+                  <div
+                    class="case-video"
+                    style={block.aspect ? `aspect-ratio: ${block.aspect}` : undefined}
+                  >
+                    <video
+                      src={block.src}
+                      poster={block.poster}
+                      aria-label={block.alt ?? 'Product demo video'}
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload="auto"
+                      data-case-video={showControls ? '' : undefined}
+                      style={`object-fit: ${block.fit ?? 'cover'}`}
+                    />
+                  </div>
+                  {showControls && (
+                    <div class="case-video-block__bar">
+                      <button
+                        type="button"
+                        class="case-video-block__toggle"
+                        data-case-video-toggle
+                        aria-label="Pause video"
+                        aria-pressed="false"
+                      >
+                        <ion-icon name="pause" data-case-video-icon aria-hidden="true" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -188,7 +429,18 @@ function cellClass(cell: CaseBentoCell, index: number) {
       )
     }
 
-    {project.quotes && project.quotes.length > 0 && <QuoteSlider quotes={project.quotes} />}
+    {
+      quotes.length > 0 && (
+        <ScrollGallery
+          id={`${project.slug}-quotes`}
+          items={quoteIncentiveItems}
+          theme="dark"
+          short={true}
+          entrance={false}
+          ariaLabel="Testimonials"
+        />
+      )
+    }
 
     {
       project.note && (
@@ -196,9 +448,96 @@ function cellClass(cell: CaseBentoCell, index: number) {
       )
     }
 
-    {next && next.href && <NextProject project={next} />}
+    {
+      next && next.href && !next.soon && (
+        <NextProject title={next.title} href={next.href} />
+      )
+    }
+
+    {
+      embedModals.map((modal) => (
+        <EmbedModal id={modal.id} src={modal.src} />
+      ))
+    }
   </article>
 </BaseLayout>
+
+<script>
+  /**
+   * ClientRouter (view transitions) inserts new <video> nodes without
+   * re-honoring the autoplay attribute. Full reloads work; SPA navigations
+   * leave muted loops black until play() is called explicitly.
+   */
+  function kickCaseVideos() {
+    document.querySelectorAll<HTMLVideoElement>('.case-video video').forEach((video) => {
+      // Autoplay policies require muted + playsInline
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+
+      const tryPlay = () => {
+        if (video.paused) {
+          void video.play().catch(() => undefined);
+        }
+      };
+
+      // Resource may not have started after a DOM swap — nudge the media pipeline
+      if (video.readyState === 0 && video.src) {
+        video.load();
+      }
+
+      if (video.readyState >= 2) {
+        tryPlay();
+      } else {
+        video.addEventListener('canplay', tryPlay, { once: true });
+        // Also attempt immediately — some browsers start once muted is forced
+        tryPlay();
+      }
+    });
+  }
+
+  function bindCaseVideoBlocks() {
+    document.querySelectorAll<HTMLElement>('[data-case-video-block]').forEach((block) => {
+      const video = block.querySelector<HTMLVideoElement>('[data-case-video]');
+      const btn = block.querySelector<HTMLButtonElement>('[data-case-video-toggle]');
+      const icon = block.querySelector<HTMLElement>('[data-case-video-icon]');
+      if (!video || !btn || !icon) return;
+      if ((btn as HTMLButtonElement & { __bound?: boolean }).__bound) return;
+      (btn as HTMLButtonElement & { __bound?: boolean }).__bound = true;
+
+      const sync = () => {
+        const paused = video.paused;
+        icon.setAttribute('name', paused ? 'play' : 'pause');
+        btn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
+        btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      };
+
+      btn.addEventListener('click', () => {
+        if (video.paused) {
+          void video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+        // play() is async; also listen to events
+        requestAnimationFrame(sync);
+      });
+
+      video.addEventListener('play', sync);
+      video.addEventListener('pause', sync);
+      sync();
+    });
+  }
+
+  function initCaseVideos() {
+    kickCaseVideos();
+    bindCaseVideoBlocks();
+  }
+
+  initCaseVideos();
+  document.addEventListener('astro:page-load', initCaseVideos);
+</script>
 
 <style>
   /*
@@ -209,27 +548,14 @@ function cellClass(cell: CaseBentoCell, index: number) {
    *   xl      ≥1536px
    */
 
+  /* Same shell as home nav / bento — all case pages share this */
   .case {
     width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
   }
 
-  /* —— Hero —— */
-  .case__hero {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    width: 100%;
-    padding: 80px 16px 24px;
-  }
-
-  .case__hero-main {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    width: 100%;
-  }
-
+  /* —— Hero frame: global .page-hero (shared with homepage) —— */
   .case__tags {
     display: flex;
     flex-flow: row wrap;
@@ -294,37 +620,90 @@ function cellClass(cell: CaseBentoCell, index: number) {
     color: var(--color-text);
   }
 
+  .case__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0.25em;
+  }
+
+  /* Match Quotes paddlenav glass chip (default fill, stronger on hover/magnetic) */
+  .case__cta :global(.btn--ghost .btn__visual) {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  .case__cta :global(.btn--ghost:hover .btn__visual),
+  .case__cta :global(.btn--ghost:focus-visible .btn__visual),
+  .case__cta :global(.btn--ghost.is-magnetic .btn__visual) {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
   /* —— Media shells (galleries + bento) —— */
   .case__media {
     width: 100%;
     padding: 16px;
   }
 
-  .case__media--bento {
+  /* ImagesFull hero shell (edge pad). Content-shell strips keep .case__media pad. */
+  .case__media--bento:not(.case__media--bento-content) {
     padding: 16px;
   }
 
-  /* —— Hero bento (ImagesFull) ——
-   * Mobile 2-col stack; tablet/desktop 4-col with named areas:
-   *   phones phones caption icons
-   *   phones phones mac     mac
-   *   partners partners mac mac
+  .case__gallery-title {
+    margin: 0 0 16px;
+    padding-inline: 0;
+  }
+
+  /*
+   * Hero bento (ImagesFull) — live Framer grid:
+   *   mobile  ≤809.98  → 2 cols × rows 144px
+   *   tablet  810–1193 → 4 cols × rows 150px
+   *   desktop ≥1194    → 4 cols × rows 220px (height 692)
+   *   xl      ≥1536    → 4 cols × rows 290px
    */
   .case-bento {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      'phones phones'
-      'caption icons'
-      'mac mac'
-      'partners partners';
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    grid-template-rows: repeat(3, 144px);
+    grid-auto-rows: 144px;
     gap: 8px;
     width: 100%;
   }
 
   /*
+   * Design-challenge strip (live `.framer-1e8zhfa`):
+   *   mobile  → stacked flex-like column, aspect 1.44 / 2.32
+   *   ≥810    → 3 cols × 220px row (1×1 + 2×1)
+   *   ≥1536   → 3 cols × 330px row
+   */
+  .case-bento--cols-3 {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    height: auto;
+  }
+
+  .case-bento--cols-3 .case-bento__cell--1x1 {
+    aspect-ratio: 1.44355;
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .case-bento--cols-3 .case-bento__cell--2x1 {
+    aspect-ratio: 2.32468;
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  /*
    * Live ImagesFull cards (all 5):
    * bg #131219 · inset border 1px #ffffff0d · radius 12 (8 mobile)
+   *
+   * Border lives on ::after (above children). Plain inset box-shadow
+   * paints under content, so images would cover the 1px edge.
    */
   .case-bento__cell {
     position: relative;
@@ -332,45 +711,266 @@ function cellClass(cell: CaseBentoCell, index: number) {
     align-items: center;
     justify-content: center;
     min-height: 0;
+    width: 100%;
+    height: 100%;
     background-color: var(--color-surface);
     border: none;
     border-radius: 8px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     overflow: hidden;
   }
 
-  .case-bento__cell--i0 {
-    grid-area: phones;
-    min-height: 280px;
+  .case-bento__cell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    pointer-events: none;
   }
 
-  .case-bento__cell--i1 {
-    grid-area: caption;
-    min-height: 120px;
+  .case-bento__cell--1x1 {
+    grid-column: span 1;
+    grid-row: span 1;
   }
 
-  .case-bento__cell--i2 {
-    grid-area: icons;
-    min-height: 120px;
+  /* Tall phone cell (live HP Printables ImagesFull) */
+  .case-bento__cell--1x2 {
+    grid-column: span 1;
+    grid-row: span 2;
   }
 
-  .case-bento__cell--i3 {
-    grid-area: mac;
-    min-height: 200px;
+  .case-bento__cell--1x3 {
+    grid-column: span 1;
+    grid-row: span 3;
   }
 
-  .case-bento__cell--i4 {
-    grid-area: partners;
-    min-height: 100px;
+  .case-bento__cell--2x1 {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .case-bento__cell--2x2 {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* Full-height hero laptop (live Vibecheck ImagesFull .hkvnfu) */
+  .case-bento__cell--2x3 {
+    grid-column: span 2;
+    grid-row: span 3;
+  }
+
+  /* Moodboard Mac (live ImagesMoodBoard .igk09n) */
+  .case-bento__cell--2x4 {
+    grid-column: span 2;
+    grid-row: span 4;
   }
 
   .case-bento__cell--padded {
     padding: 15px;
   }
 
-  /* Caption cell: texture fill + stacked UI chips (text + lottie) */
-  .case-bento__cell--caption {
+  /* App icon set: side icons behind, default centered in front */
+  .case-bento__cell--icon-set {
     padding: 12px;
+    overflow: hidden;
+  }
+
+  .case-bento__icon-set {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /*
+   * Icon stack + colored drop-shadow (follows alpha, not a box).
+   * --icon-shadow-y controls vertical offset of the glow.
+   */
+  .case-bento__icon {
+    --icon-shadow-y: 10px;
+    --icon-shadow-blur: 18px;
+    --icon-shadow-color: rgba(255, 140, 40, 0.55);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(54px, 38%, 82px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .case-bento__icon:hover,
+  .case-bento__icon:focus-within {
+    z-index: 5;
+  }
+
+  /* Left rear — closer size to center */
+  .case-bento__icon:nth-child(1) {
+    left: 24%;
+    z-index: 1;
+    transform: translate(-50%, -50%) scale(0.9) rotate(-6deg);
+    opacity: 0.92;
+  }
+
+  /* Right rear */
+  .case-bento__icon:nth-child(3) {
+    left: 76%;
+    z-index: 1;
+    transform: translate(-50%, -50%) scale(0.9) rotate(6deg);
+    opacity: 0.92;
+  }
+
+  /* Center front (default) — only slightly larger */
+  .case-bento__icon--glow {
+    left: 50%;
+    z-index: 3;
+    width: clamp(58px, 40%, 88px);
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .case-bento__icon--shadow-white {
+    --icon-shadow-color: rgba(255, 255, 255, 0.55);
+  }
+
+  .case-bento__icon--shadow-orange {
+    --icon-shadow-color: rgba(255, 140, 40, 0.65);
+    --icon-shadow-y: 12px;
+    --icon-shadow-blur: 22px;
+  }
+
+  .case-bento__icon--shadow-blue {
+    --icon-shadow-color: rgba(70, 150, 255, 0.6);
+  }
+
+  .case-bento__icon img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 22%;
+    transform: scale(1);
+    filter: drop-shadow(
+      0 var(--icon-shadow-y) var(--icon-shadow-blur) var(--icon-shadow-color)
+    );
+    transition:
+      transform 320ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1)),
+      filter 320ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1));
+    will-change: transform, filter;
+  }
+
+  .case-bento__icon:hover,
+  .case-bento__icon:focus-within {
+    --icon-shadow-y: 14px;
+    --icon-shadow-blur: 28px;
+  }
+
+  .case-bento__icon:hover img,
+  .case-bento__icon:focus-within img {
+    transform: scale(1.1);
+    filter: drop-shadow(
+      0 var(--icon-shadow-y) var(--icon-shadow-blur) var(--icon-shadow-color)
+    );
+  }
+
+  .case-bento__icon--shadow-orange:hover,
+  .case-bento__icon--shadow-orange:focus-within {
+    --icon-shadow-y: 16px;
+    --icon-shadow-blur: 32px;
+  }
+
+  /* Dim siblings when one icon is hovered / focused (brightness only, keep opacity) */
+  .case-bento__icon-set:has(.case-bento__icon:hover) .case-bento__icon:not(:hover),
+  .case-bento__icon-set:has(.case-bento__icon:focus-within)
+    .case-bento__icon:not(:focus-within) {
+    --icon-shadow-y: 6px;
+    --icon-shadow-blur: 10px;
+  }
+
+  .case-bento__icon-set:has(.case-bento__icon:hover)
+    .case-bento__icon:not(:hover)
+    img,
+  .case-bento__icon-set:has(.case-bento__icon:focus-within)
+    .case-bento__icon:not(:focus-within)
+    img {
+    filter: drop-shadow(
+        0 var(--icon-shadow-y) var(--icon-shadow-blur) var(--icon-shadow-color)
+      )
+      brightness(0.62);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-bento__icon,
+    .case-bento__icon img {
+      transition: none;
+    }
+
+    .case-bento__icon:hover img,
+    .case-bento__icon:focus-within img {
+      transform: none;
+    }
+  }
+
+  /* Live white brand cells (Vibecheck decor / moodboard mark) */
+  .case-bento__cell--light {
+    background-color: #ffffff;
+  }
+
+  /*
+   * Social fan (Lando-style): clip card tips at the cell edge.
+   */
+  .case-bento__cell--social-fan {
+    overflow: hidden;
+    z-index: 1;
+    background-color: var(--color-surface);
+  }
+
+  /*
+   * ImagesMoodBoard (live `.framer-1biqixe`):
+   *   mobile  ≤809  → 2 cols × rows 100px (8 tracks)
+   *   tablet  810+  → 5 cols × rows 64px
+   *   desktop ≥1194 → 5 cols × rows 60px
+   *   xl      ≥1536 → 5 cols × rows 100px
+   */
+  .case-bento--cols-5 {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    grid-template-rows: repeat(8, 100px);
+    grid-auto-rows: 100px;
+    height: min-content;
+  }
+
+  /* On 2-col mobile, tall desktop spans collapse so the mosaic still packs */
+  .case-bento--cols-5 .case-bento__cell--2x4 {
+    grid-column: span 2;
+    grid-row: span 3;
+  }
+
+  .case-bento--cols-5 .case-bento__cell--2x3 {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+
+  .case-bento--cols-5 .case-bento__cell--1x3 {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+
+  .case-bento--cols-5 .case-bento__cell--2x2 {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /*
+   * Caption cell (live framer-13flmn + stack/chips):
+   * cell padding 0 · stack min-content @ desktop · chips hug content
+   * border token #4b485e · chip pad 12 desktop / 9 mobile
+   */
+  .case-bento__cell--caption {
+    padding: 0;
     align-items: center;
     justify-content: center;
   }
@@ -392,15 +992,16 @@ function cellClass(cell: CaseBentoCell, index: number) {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
-    width: min-content;
+    /* mobile live: gap 5px, width 100% */
+    gap: 5px;
+    width: 100%;
     max-width: 85%;
   }
 
   .case-bento__chip {
     background: var(--color-surface);
-    border-radius: 12px;
-    box-shadow: inset 0 0 0 1px var(--color-text-muted);
+    border-radius: 9px;
+    box-shadow: inset 0 0 0 1px #4b485e;
   }
 
   .case-bento__chip--text {
@@ -416,15 +1017,18 @@ function cellClass(cell: CaseBentoCell, index: number) {
   .case-bento__caption {
     margin: 0;
     font-family: var(--font-body);
-    font-size: 13px;
+    /* live mobile/tablet variants use ~10–11px; desktop 13px */
+    font-size: 10px;
     line-height: 1.4;
-    color: var(--color-text-muted);
-    white-space: nowrap;
+    color: #4b485e;
+    white-space: normal;
+    word-break: break-word;
   }
 
   .case-bento__lottie {
-    width: 46px;
-    height: 21px;
+    /* live mobile: 26×12 */
+    width: 26px;
+    height: 12px;
   }
 
   .case-bento__lottie :global(svg) {
@@ -436,9 +1040,107 @@ function cellClass(cell: CaseBentoCell, index: number) {
   .case-bento__cell img {
     position: relative;
     z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-position: center;
+  }
+
+  /* Full-width case video (live framer-1v6l154 + aspect 2.63754) */
+  .case-video {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .case-video video {
+    display: block;
     width: 100%;
     height: 100%;
     object-position: center;
+    border-radius: inherit;
+    background: transparent;
+  }
+
+  /* Video + external pause control (bottom-right, outside the frame) */
+  .case-video-block {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .case-video-block__bar {
+    display: flex;
+    justify-content: flex-end;
+    padding-inline: 2px;
+  }
+
+  .case-video-block__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-surface, #131219);
+    color: var(--color-text, #fff);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition:
+      background 200ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1)),
+      transform 200ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1));
+  }
+
+  .case-video-block__toggle:hover {
+    background: #1c1b24;
+  }
+
+  .case-video-block__toggle:focus-visible {
+    outline: 2px solid var(--color-accent, #008fff);
+    outline-offset: 2px;
+  }
+
+  .case-video-block__toggle:active {
+    transform: scale(0.96);
+  }
+
+  .case-video-block__toggle ion-icon {
+    font-size: 20px;
+    pointer-events: none;
+  }
+
+  /* Live: pair + video share one column with 8px gap (not double section pad) */
+  .case__media--pair:has(+ .case__media--video) {
+    padding-bottom: 8px;
+  }
+
+  .case__media--pair + .case__media--video {
+    padding-top: 0;
+  }
+
+  /*
+   * WebGL device cell: crop to upper half of the phone (scale is large in Three).
+   */
+  .case-bento__cell--device-3d {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .case-bento__cell--device-3d :global(.device-3d) {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   /* —— Galleries —— */
@@ -450,6 +1152,26 @@ function cellClass(cell: CaseBentoCell, index: number) {
 
   .case-gallery--pair {
     grid-template-columns: 1fr;
+  }
+
+  /*
+   * Shared height, column widths from each image’s aspect-ratio.
+   * flex-grow ∝ aspect (inline) so width_i / aspect_i matches → equal height.
+   */
+  .case-gallery--pair-height {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .case-gallery--pair-height .case-gallery__item {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    border-radius: 12px;
+    overflow: hidden;
   }
 
   .case-gallery--triple {
@@ -472,6 +1194,99 @@ function cellClass(cell: CaseBentoCell, index: number) {
     gap: 8px;
   }
 
+  /*
+   * Overlapping wireframe notes (live Vibecheck SectionImage / ImageNotes).
+   * Positions are % of the Framer desktop stage (670×650).
+   */
+  .case-gallery--stack {
+    position: relative;
+    display: block;
+    width: min(100%, 670px);
+    margin-inline: auto;
+    aspect-ratio: 670 / 650;
+    height: auto;
+    overflow: visible;
+  }
+
+  .case-gallery--stack .case-gallery__item {
+    position: absolute;
+    margin: 0;
+    /* override base .case-gallery__item { width: 100% } */
+    width: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow:
+      0 0 6px rgba(0, 0, 0, 0.35),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .case-gallery--stack .case-gallery__item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Card 1 — left portrait (304×366 @ left 55 top 0) */
+  .case-gallery--stack .case-gallery__item--stack-1 {
+    top: 0;
+    left: 8.2%;
+    width: 45.4%;
+    height: 56.3%;
+    z-index: 1;
+  }
+
+  /* Card 2 — right tall (287×409 @ right 0 top 17) */
+  .case-gallery--stack .case-gallery__item--stack-2 {
+    top: 2.6%;
+    right: 0;
+    left: auto;
+    width: 42.8%;
+    height: 62.9%;
+    z-index: 2;
+  }
+
+  /* Card 3 — bottom landscape (463×260 @ left 0 top 390) */
+  .case-gallery--stack .case-gallery__item--stack-3 {
+    top: 60%;
+    left: 0;
+    width: 69.1%;
+    height: 40%;
+    z-index: 3;
+  }
+
+  /* Horizontal drag row — social posts / flat slides (portrait-friendly cards) */
+  .case-gallery--scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    cursor: grab;
+  }
+
+  .case-gallery--scroll.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .case-gallery--scroll .case-gallery__item {
+    flex: 0 0 min(58vw, 280px);
+    scroll-snap-align: start;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /*
+   * DeckSlider track is full-bleed (peeks of prev/next cards).
+   * Card width itself is the content column — see DeckSlider --deck-width / --pad-x.
+   */
+  .case__media--decks {
+    padding: 16px 0;
+  }
+
   .case-gallery__item {
     margin: 0;
     width: 100%;
@@ -479,6 +1294,72 @@ function cellClass(cell: CaseBentoCell, index: number) {
     overflow: hidden;
     background: transparent;
     border: none;
+  }
+
+  /*
+   * Bento-matched gallery card (Watch product cutouts, icons, etc.):
+   * same surface token + inset border as .case-bento__cell
+   */
+  .case-gallery__item--card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .case-gallery__item--card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+  }
+
+  /* Pin media to the bottom of the card (Siri / Live Activity shot) */
+  .case-gallery__item--card-end {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .case-gallery__item--card-padded {
+    padding: 16px;
+  }
+
+  /* Bottom-aligned cards: no top pad so the device sits on the floor */
+  .case-gallery__item--card-end.case-gallery__item--card-padded {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .case-gallery__item--card img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* Contain product cutouts (Watch) sit at 85% so the card surface breathes */
+  .case-gallery__item--card-padded:not(.case-gallery__item--card-end) img {
+    width: 85%;
+    height: 85%;
+    max-width: 85%;
+    max-height: 85%;
+  }
+
+  /* Bottom-aligned contain: full width, hug height, sit on card floor */
+  .case-gallery__item--card-end img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
   }
 
   .case-gallery__item img {
@@ -541,10 +1422,6 @@ function cellClass(cell: CaseBentoCell, index: number) {
 
   /* —— Tablet ≥810px —— */
   @media (min-width: 810px) {
-    .case__hero {
-      padding: 125px 64px 48px;
-    }
-
     .case__section {
       padding: 48px 64px;
     }
@@ -553,39 +1430,129 @@ function cellClass(cell: CaseBentoCell, index: number) {
       padding: 16px 64px;
     }
 
+    .case__media--decks {
+      padding: 16px 0; /* full-bleed peeks; card measure via DeckSlider --pad-x: 64px */
+    }
+
     .case__note {
       padding: 48px 64px 32px;
     }
 
+    /* tablet 810–1193 — live framer-11yhh1s */
     .case-bento {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      grid-template-rows: repeat(3, minmax(150px, 1fr));
-      grid-template-areas:
-        'phones phones caption icons'
-        'phones phones mac mac'
-        'partners partners mac mac';
-      min-height: 460px;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      grid-template-rows: repeat(3, 150px);
+      grid-auto-rows: 150px;
+      height: min-content;
+    }
+
+    /* 3-col strip stays 3×220 (live base rule; only padding changes on tablet) */
+    .case-bento--cols-3 {
+      grid-template-columns: repeat(3, minmax(200px, 1fr));
+      grid-template-rows: 220px;
+      grid-auto-rows: 220px;
+      height: min-content;
+    }
+
+    .case-bento--cols-3 .case-bento__cell--1x1,
+    .case-bento--cols-3 .case-bento__cell--2x1 {
+      aspect-ratio: unset;
+    }
+
+    .case-bento--cols-3 .case-bento__cell--2x1 {
+      grid-column: span 2;
+    }
+
+    /* Moodboard mosaic — tablet rows 64px (live) */
+    .case-bento--cols-5 {
+      grid-template-columns: repeat(5, minmax(100px, 1fr));
+      grid-template-rows: repeat(6, 64px);
+      grid-auto-rows: 64px;
+      height: min-content;
+    }
+
+    .case-bento--cols-5 .case-bento__cell--2x4 {
+      grid-column: span 2;
+      grid-row: span 4;
+    }
+
+    .case-bento--cols-5 .case-bento__cell--2x3 {
+      grid-column: span 2;
+      grid-row: span 3;
+    }
+
+    .case-bento--cols-5 .case-bento__cell--1x3 {
+      grid-column: span 1;
+      grid-row: span 3;
+    }
+
+    .case-bento--cols-5 .case-bento__cell--2x2 {
+      grid-column: span 2;
+      grid-row: span 2;
     }
 
     .case-bento__cell {
       border-radius: 12px;
     }
 
-    .case-bento__cell--i0,
-    .case-bento__cell--i3 {
-      min-height: 0;
-    }
-
     .case-bento__cell--padded {
       padding: 20px;
     }
 
+    /* caption: stack stretches, chips full width, lottie 33×15 */
     .case-bento__caption-stack {
       gap: 7px;
+      width: 100%;
+    }
+
+    .case-bento__chip {
+      border-radius: 12px;
+    }
+
+    .case-bento__chip--text {
+      width: 100%;
+      padding: 12px;
+    }
+
+    .case-bento__chip--lottie {
+      width: fit-content;
+      padding: 12px;
+    }
+
+    .case-bento__caption {
+      font-size: 11px;
+      white-space: normal;
+    }
+
+    .case-bento__lottie {
+      width: 33px;
+      height: 15px;
     }
 
     .case-gallery--pair {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .case-gallery--pair-height {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .case-gallery--pair-height .case-gallery__item {
+      /* width share ∝ aspect → same rendered height */
+      flex: var(--pair-flex, 1) 1 0%;
+      width: auto;
+      height: auto;
+      min-width: 0;
+    }
+
+    .case-gallery--pair-height .case-gallery__item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .case-gallery--triple {
@@ -595,6 +1562,10 @@ function cellClass(cell: CaseBentoCell, index: number) {
 
     .case-gallery--social {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .case-gallery--scroll .case-gallery__item {
+      flex-basis: min(38vw, 300px);
     }
 
     .case-gallery__item--hide-mobile {
@@ -608,16 +1579,6 @@ function cellClass(cell: CaseBentoCell, index: number) {
 
   /* —— Desktop ≥1194px —— */
   @media (min-width: 1194px) {
-    .case__hero {
-      grid-template-columns: repeat(3, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 125px 250px 48px;
-    }
-
-    .case__hero-main {
-      grid-column: span 2;
-    }
-
     .case__section {
       padding: 48px 250px;
     }
@@ -626,29 +1587,71 @@ function cellClass(cell: CaseBentoCell, index: number) {
       padding: 16px 250px;
     }
 
-    .case__media--bento {
-      /* ImagesFull uses full width with only 16px pad on live */
+    .case__media--bento:not(.case__media--bento-content) {
+      /* ImagesFull: full shell width, only 16px pad (parent .case is shell-max) */
       padding: 16px;
-      max-width: 1920px;
-      margin-inline: auto;
+      max-width: none;
+      width: 100%;
     }
 
+    .case__media--decks {
+      padding: 16px 0; /* full-bleed peeks; card measure via DeckSlider --pad-x: 250px */
+    }
+
+    /* desktop ≥1194 — live fixed 220px rows, height 692 */
     .case-bento {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      grid-template-rows: repeat(3, minmax(180px, 220px));
-      grid-template-areas:
-        'phones phones caption icons'
-        'phones phones mac mac'
-        'partners partners mac mac';
-      min-height: 560px;
+      grid-template-columns: repeat(4, minmax(200px, 1fr));
+      grid-template-rows: repeat(3, 220px);
+      grid-auto-rows: 220px;
+      height: 692px;
+    }
+
+    /* design strip: 1 row × 220px (not the 3-row hero height) */
+    .case-bento--cols-3 {
+      grid-template-columns: repeat(3, minmax(200px, 1fr));
+      grid-template-rows: 220px;
+      grid-auto-rows: 220px;
+      height: min-content;
+    }
+
+    /* Moodboard mosaic — desktop rows 60px (live `.framer-1biqixe`) */
+    .case-bento--cols-5 {
+      grid-template-columns: repeat(5, minmax(100px, 1fr));
+      grid-template-rows: repeat(6, 60px);
+      grid-auto-rows: 60px;
+      height: min-content;
     }
 
     .case-bento__cell--padded {
       padding: 28px;
     }
 
+    /*
+     * Caption desktop: hug content (min-content), text chip ~218px,
+     * lottie 46×21, chip pad 12, gap 10
+     */
     .case-bento__caption-stack {
       gap: 10px;
+      width: min-content;
+      max-width: 85%;
+    }
+
+    .case-bento__chip--text {
+      width: min-content;
+      max-width: 100%;
+      padding: 12px;
+    }
+
+    .case-bento__chip--lottie {
+      width: min-content;
+      padding: 12px;
+    }
+
+    .case-bento__caption {
+      width: 218px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .case-bento__lottie {
@@ -665,6 +1668,10 @@ function cellClass(cell: CaseBentoCell, index: number) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
+    .case-gallery--scroll .case-gallery__item {
+      flex-basis: min(26vw, 300px);
+    }
+
     .case__note {
       padding: 48px 250px 32px;
     }
@@ -676,13 +1683,6 @@ function cellClass(cell: CaseBentoCell, index: number) {
 
   /* —— XL ≥1536px —— */
   @media (min-width: 1536px) {
-    .case__hero {
-      width: 1536px;
-      max-width: 100%;
-      margin-inline: auto;
-      padding: 144px 240px 48px;
-    }
-
     .case__section {
       width: 1536px;
       max-width: 100%;
@@ -690,11 +1690,19 @@ function cellClass(cell: CaseBentoCell, index: number) {
       padding: 48px 240px;
     }
 
-    .case__media:not(.case__media--bento) {
+    .case__media:not(.case__media--bento):not(.case__media--decks),
+    .case__media--bento-content {
       width: 1536px;
       max-width: 100%;
       margin-inline: auto;
       padding: 16px 240px;
+    }
+
+    /* Decks: full width of case shell (peeks); cards sized to content column */
+    .case__media--decks {
+      width: 100%;
+      max-width: none;
+      padding: 16px 0;
     }
 
     .case__note {
@@ -704,28 +1712,44 @@ function cellClass(cell: CaseBentoCell, index: number) {
       padding: 48px 240px 32px;
     }
 
+    /* xl ≥1536 — live rows 290px; caption text width auto + pre */
     .case-bento {
       grid-template-rows: repeat(3, 290px);
-      min-height: 886px;
+      grid-auto-rows: 290px;
+      height: min-content;
+    }
+
+    /* design strip live: 330px rows (not hero 290) */
+    .case-bento--cols-3 {
+      grid-template-rows: 330px;
+      grid-auto-rows: 330px;
+      height: min-content;
+    }
+
+    /* Moodboard mosaic — xl rows 100px */
+    .case-bento--cols-5 {
+      grid-template-rows: repeat(6, 100px);
+      grid-auto-rows: 100px;
+      height: min-content;
     }
 
     .case-bento__cell--padded {
       padding: 44px;
     }
+
+    .case-bento__caption {
+      width: auto;
+      white-space: pre;
+    }
+
+    .case-gallery--scroll .case-gallery__item {
+      flex-basis: 300px;
+    }
   }
 
   @media (max-width: 809.98px) {
-    .case-bento__lottie {
-      width: 33px;
-      height: 15px;
-    }
-
-    .case-bento__caption {
-      white-space: normal;
-    }
-
-    .case-bento__chip {
-      border-radius: 9px;
+    .case-video {
+      border-radius: 8px;
     }
   }
 </style>

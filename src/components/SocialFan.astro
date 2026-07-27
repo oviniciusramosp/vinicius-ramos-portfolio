@@ -1,0 +1,269 @@
+---
+/**
+ * Fanned social cards — landonorris.com/off-track `.callout-socials-card-layout`.
+ *
+ * Geometry: cards sit on a circular arc (center highest). CSS translate %:
+ *   x → % of card width · y → % of card height
+ * Card box uses the real image aspect (width/height), not a forced square.
+ */
+export type SocialFanImage = {
+  src: string;
+  alt: string;
+  /** width/height; defaults to shared `aspect` prop */
+  aspect?: number;
+};
+
+interface Props {
+  images: SocialFanImage[];
+  ariaLabel?: string;
+  /**
+   * Card width/height. Default 0.75 (1080×1440 IG portrait).
+   * Used for stage sizing + arc Y math.
+   */
+  aspect?: number;
+  /**
+   * 0-based index of the hero card (front, top of arc, x:0).
+   * Default = geometric mid (`floor((n-1)/2)`).
+   */
+  centerIndex?: number;
+  class?: string;
+}
+
+const {
+  images,
+  ariaLabel = 'Social posts',
+  aspect: aspectProp,
+  centerIndex: centerIndexProp,
+  class: className = '',
+} = Astro.props;
+
+/** Prefer explicit prop, else first image aspect, else IG 4:5-ish 0.75 */
+const ASPECT =
+  aspectProp ??
+  images.find((img) => typeof img.aspect === 'number')?.aspect ??
+  0.75;
+
+type Pose = { scale: number; rotation: number; x: number; y: number; z: number };
+
+/**
+ * Arc radius in multiples of card **width**.
+ * Lando outer: x≈±30rem on 20rem card @ 21° → R/w = 1.5/sin(21°) ≈ 4.19
+ */
+const R_OVER_W = 4.15;
+
+/** Outer-most card angle in degrees (Lando ±21). */
+const MAX_ANGLE_DEG = 21;
+
+function posesForCount(n: number, center: number, aspect: number): Pose[] {
+  if (n <= 0) return [];
+  const c = Math.max(0, Math.min(n - 1, center));
+  const maxDist = Math.max(c, n - 1 - c, 1);
+
+  return Array.from({ length: n }, (_, i) => {
+    const d = i - c;
+    const ad = Math.abs(d);
+
+    const thetaDeg = (d / maxDist) * MAX_ANGLE_DEG;
+    const theta = (thetaDeg * Math.PI) / 180;
+
+    /*
+     * Circular arc with apex at the center card (highest):
+     *   x_px = R · sin(θ)
+     *   y_px = R · (1 − cos(θ))
+     * translateX(%) → width; translateY(%) → height → multiply by aspect (w/h).
+     */
+    const x = 100 * R_OVER_W * Math.sin(theta);
+    const y = 100 * R_OVER_W * (1 - Math.cos(theta)) * aspect;
+
+    const scale = Math.max(0.76, 1 - ad * 0.07);
+
+    return {
+      x: round(x),
+      y: round(y),
+      rotation: round(thetaDeg),
+      scale: round(scale, 3),
+      z: Math.round(10 - ad * 2),
+    };
+  });
+}
+
+function round(n: number, d = 2) {
+  const m = 10 ** d;
+  return Math.round(n * m) / m;
+}
+
+const centerIndex =
+  centerIndexProp ?? Math.floor((images.length - 1) / 2);
+const poses = posesForCount(images.length, centerIndex, ASPECT);
+---
+
+<div
+  class:list={['social-fan', className]}
+  data-social-fan
+  data-center-index={String(centerIndex)}
+  role="group"
+  aria-label={ariaLabel}
+  style={`--sf-card-aspect: ${ASPECT}`}
+>
+  <div class="social-fan__stage" data-social-fan-stage>
+    {
+      images.map((img, i) => {
+        const pose = poses[i]!;
+        const cardAspect = img.aspect ?? ASPECT;
+        /*
+         * SSR starts compressed (stacked at center). Rest pose lives in data-*
+         * so social-fan.ts can expand horizontally on first paint without FOUC
+         * of the open fan, and still restore after hover peel.
+         */
+        return (
+          <figure
+            class="social-fan__card"
+            data-social-fan-card
+            data-index={String(i)}
+            data-rest-x={String(pose.x)}
+            data-rest-y={String(pose.y)}
+            data-rest-rot={String(pose.rotation)}
+            data-rest-scale={String(pose.scale)}
+            data-rest-z={String(pose.z)}
+            style={`--sf-x: 0%; --sf-y: 0%; --sf-rot: 0deg; --sf-scale: ${pose.scale}; --sf-z: ${pose.z}; z-index: ${pose.z}; --sf-item-aspect: ${cardAspect};`}
+          >
+            <img src={img.src} alt={img.alt} loading="eager" draggable="false" />
+          </figure>
+        );
+      })
+    }
+  </div>
+</div>
+
+<script>
+  import { bootSocialFans } from '../scripts/social-fan';
+
+  const boot = () => bootSocialFans();
+  boot();
+  document.addEventListener('astro:page-load', boot);
+  // bfcache restore (back/forward) — re-run entrance
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) boot();
+  });
+</script>
+
+<style>
+  .social-fan {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+    background: transparent;
+    border-radius: inherit;
+    /* size queries for stage fit */
+    container-type: size;
+  }
+
+  /*
+   * Stage size keeps real portrait ratio under width AND height caps:
+   * pick the largest card that still fits both limits.
+   */
+  .social-fan__stage {
+    --sf-ar: var(--sf-card-aspect, 0.75);
+    --sf-max-h: min(90cqb, 340px);
+    --sf-max-w: min(42cqw, 220px);
+    --sf-w-from-h: calc(var(--sf-max-h) * var(--sf-ar));
+    --sf-w: min(var(--sf-w-from-h), var(--sf-max-w));
+    --sf-h: calc(var(--sf-w) / var(--sf-ar));
+
+    position: relative;
+    width: var(--sf-w);
+    height: var(--sf-h);
+    translate: 0 -2%;
+  }
+
+  .social-fan__card {
+    position: absolute;
+    /* Anchor to stage top-left; size from aspect, not forced square */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--sf-item-aspect, var(--sf-card-aspect, 0.75));
+    margin: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-surface, #131219);
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transform: translate3d(var(--sf-x), var(--sf-y), 0) rotate(var(--sf-rot))
+      scale(var(--sf-scale));
+    transform-origin: center center;
+    z-index: var(--sf-z);
+    /* Intro expand + hover peel share this curve; stagger delays set in JS */
+    transition:
+      transform 0.72s cubic-bezier(0.22, 1.15, 0.36, 1),
+      box-shadow 0.35s ease,
+      z-index 0s linear 0.05s;
+    will-change: transform;
+    cursor: pointer;
+    backface-visibility: hidden;
+  }
+
+  .social-fan.is-intro .social-fan__card {
+    pointer-events: none;
+  }
+
+  .social-fan__card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .social-fan__card.is-active {
+    z-index: 20;
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.58),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1.2, 0.36, 1),
+      box-shadow 0.35s ease,
+      z-index 0s;
+  }
+
+  @media (max-width: 809.98px) {
+    .social-fan__stage {
+      --sf-max-h: min(88cqb, 240px);
+      --sf-max-w: min(48cqw, 140px);
+    }
+
+    .social-fan__card {
+      border-radius: 10px;
+    }
+  }
+
+  @media (min-width: 810px) {
+    .social-fan__stage {
+      --sf-max-h: min(90cqb, 300px);
+      --sf-max-w: min(40cqw, 190px);
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .social-fan__stage {
+      --sf-max-h: min(92cqb, 340px);
+      --sf-max-w: min(38cqw, 210px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .social-fan__card {
+      transition: none;
+    }
+  }
+</style>

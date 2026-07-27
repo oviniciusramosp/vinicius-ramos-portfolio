@@ -1,29 +1,355 @@
 ---
-import { site } from '../data/site';
+/**
+ * Reusable toast banner with Apple AAP-style entrance (seed → glass expand → dismiss).
+ *
+ * @example
+ * <Banner message="This portfolio is currently in development." />
+ * <Banner message="New case study" storageKey="portfolio:case-study-toast" />
+ * <Banner message="Preview only" storageKey="" /> <!-- no dismiss persistence -->
+ */
+interface Props {
+  /** Toast copy */
+  message: string;
+  /**
+   * localStorage key for dismiss persistence.
+   * Pass empty string to disable persistence (always re-shows; useful in Storybook).
+   * @default 'portfolio:dev-banner-dismissed:v2'
+   */
+  storageKey?: string;
+  /** Accessible label for the dismiss control */
+  dismissLabel?: string;
+  /** Extra delay after the gate (ms). Applied after waitEvent fires. */
+  enterDelay?: number;
+  /**
+   * Wait for a document event before entrance.
+   * Homepage uses `logo-wave:intro-end` so the toast appears after the logo intro.
+   */
+  waitEvent?: string;
+  /** Max ms to wait for waitEvent before showing anyway (default 4500). */
+  waitTimeout?: number;
+}
+
+const {
+  message,
+  storageKey = 'portfolio:dev-banner-dismissed:v2',
+  dismissLabel = 'Dismiss',
+  enterDelay = 160,
+  waitEvent = '',
+  waitTimeout = 4500,
+} = Astro.props;
 ---
 
 {
-  site.banner && (
-    <div class="dev-banner" role="status">
-      <p class="dev-banner__text">{site.banner}</p>
+  message && (
+    <div
+      class="dev-toast inactive"
+      role="status"
+      data-dev-toast
+      data-storage-key={storageKey}
+      data-enter-delay={String(enterDelay)}
+      data-wait-event={waitEvent || undefined}
+      data-wait-timeout={waitEvent ? String(waitTimeout) : undefined}
+      hidden
+    >
+      <div class="dev-toast__element" data-dev-toast-element>
+        {/* Seed blob — only shape visible while rising / morphing to circle */}
+        <div class="dev-toast__intro" data-dev-toast-intro aria-hidden="true"></div>
+
+        {/* Glass pill — appears at handoff, then expands to content width */}
+        <span class="dev-toast__bg" data-dev-toast-bg aria-hidden="true"></span>
+
+        <div class="dev-toast__content" data-dev-toast-content>
+          <p class="dev-toast__text" data-dev-toast-text>{message}</p>
+          <button
+            type="button"
+            class="dev-toast__dismiss"
+            data-dev-toast-dismiss
+            aria-label={dismissLabel}
+            data-cursor="block"
+          >
+            <span class="dev-toast__x" aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
 
 <style>
-  .dev-banner {
-    width: 100%;
-    background: var(--color-surface);
-    padding: 12px 16px;
+  .dev-toast {
+    --aap-h: 56px;
+    --aap-blur: 7px;
+    --aap-bg-solid: 42 42 45;
+    --aap-bg-alpha: 0.28;
+    --icon-size: 36px;
+    --icon-margin: 10px;
+    --button-margin: 10px;
+
+    position: fixed;
+    left: 50%;
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+    z-index: 10040;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    width: max-content;
+    max-width: min(calc(100vw - 32px), 420px);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+    transform: translate3d(-50%, 180px, 0);
+    will-change: transform;
   }
 
-  .dev-banner__text {
+  .dev-toast.is-leaving {
+    opacity: 0;
+    transition: opacity 280ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translate3d(-50%, 24px, 0);
+  }
+
+  .dev-toast__element {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--aap-h);
+    border-radius: 28px;
+    color: var(--color-text);
+    opacity: 0;
+    overflow: visible;
+  }
+
+  .dev-toast.is-activated .dev-toast__element {
+    opacity: 1;
+  }
+
+  .dev-toast__intro,
+  .dev-toast__bg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    box-sizing: border-box;
+    border-radius: 999px;
+    pointer-events: none;
+    will-change: transform, width, height, opacity;
+  }
+
+  .dev-toast__intro {
+    z-index: 1;
+    width: 30px;
+    height: 80px;
+    background: rgb(var(--aap-bg-solid));
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(1.3);
+  }
+
+  .dev-toast__bg {
+    z-index: 0;
+    width: 40px;
+    height: 36px;
+    border: 0;
+    background: rgba(var(--aap-bg-solid) / calc(1 - var(--aap-bg-alpha)));
+    backdrop-filter: blur(calc(var(--aap-blur) * 1.5)) saturate(160%);
+    -webkit-backdrop-filter: blur(calc(var(--aap-blur) * 1.5)) saturate(160%);
+    box-shadow:
+      0 8px 28px rgba(0, 0, 0, 0.4),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+
+  .dev-toast.is-bg-live .dev-toast__bg {
+    opacity: 1;
+  }
+
+  .dev-toast__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    width: max-content;
+    max-width: min(calc(100vw - 32px), 420px);
+    min-height: var(--aap-h);
+    /* Grow with wrapped lines — fixed height was clipping long copy */
+    height: auto;
+    padding: 10px 0;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .dev-toast.is-interactive .dev-toast__content {
+    pointer-events: auto;
+  }
+
+  .dev-toast__text {
+    --text-pad-end: calc(var(--icon-size) + var(--icon-margin) + var(--icon-margin));
+
+    display: block;
+    flex: 1 1 auto;
+    /* Allow shrinking inside max-width so long copy wraps instead of overflowing */
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 0 0 18px;
+    padding-inline-end: var(--text-pad-end);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
+    line-height: 1.35;
     color: var(--color-text-soft);
-    text-align: center;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    opacity: 0;
+    transform: scale(0.5);
+    transform-origin: left center;
+    will-change: transform, opacity;
+  }
+
+  .dev-toast.is-text-in .dev-toast__text {
+    opacity: 1;
+    transition: opacity 380ms ease-in-out;
+  }
+
+  .dev-toast__dismiss {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    z-index: 3;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    min-width: 0;
+    max-height: var(--icon-size);
+    margin: 0;
+    margin-inline-end: var(--icon-margin);
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #2c2c30;
+    color: #fff;
+    cursor: none;
+    appearance: none;
+    -webkit-appearance: none;
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) scale(0);
+    transform-origin: center center;
+    will-change: transform, width, opacity;
+    overflow: hidden;
+    transition: background var(--duration-fast) var(--ease-smooth);
+  }
+
+  .dev-toast.is-activated .dev-toast__dismiss {
+    opacity: 1;
+  }
+
+  .dev-toast.is-leaving .dev-toast__text,
+  .dev-toast.is-leaving .dev-toast__dismiss {
+    opacity: 0 !important;
+    transition: opacity 160ms ease-in !important;
+  }
+
+  .dev-toast__dismiss:hover {
+    background: #3a3a40;
+  }
+
+  .dev-toast__dismiss:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .dev-toast__x {
+    display: block;
+    flex-shrink: 0;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 500;
+    opacity: 0.85;
+    transition: opacity 200ms ease;
+  }
+
+  .dev-toast__dismiss:hover .dev-toast__x {
+    opacity: 1;
+  }
+
+  .dev-toast.is-measuring {
+    visibility: hidden;
+    transform: translate3d(-50%, 0, 0) !important;
+  }
+
+  .dev-toast.is-measuring .dev-toast__intro {
+    display: none;
+  }
+
+  .dev-toast.is-measuring .dev-toast__element,
+  .dev-toast.is-measuring .dev-toast__content,
+  .dev-toast.is-measuring .dev-toast__text {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .dev-toast.is-measuring .dev-toast__dismiss {
+    opacity: 0 !important;
+  }
+
+  .dev-toast.is-measuring .dev-toast__bg {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .dev-toast {
+      --aap-h: 48px;
+      --icon-size: 28px;
+      bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+    }
+
+    .dev-toast__text {
+      font-size: 11px;
+      padding-left: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dev-toast {
+      transform: translate3d(-50%, 0, 0) !important;
+    }
+
+    .dev-toast__intro {
+      display: none !important;
+    }
+
+    .dev-toast.is-activated .dev-toast__bg,
+    .dev-toast.is-bg-live .dev-toast__bg {
+      width: var(--toast-w) !important;
+      height: var(--toast-h) !important;
+      transform: translate3d(-50%, -50%, 0) scale(1) !important;
+      opacity: 1 !important;
+    }
+
+    .dev-toast.is-activated .dev-toast__text {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+
+    .dev-toast.is-activated .dev-toast__dismiss {
+      opacity: 1 !important;
+      width: var(--icon-size) !important;
+      height: var(--icon-size) !important;
+      transform: translate3d(0, calc(var(--icon-size) / -2), 0) scale(1) !important;
+    }
   }
 </style>
+
+<script>
+  import { bootToastBanners } from '../scripts/toast-banner';
+
+  bootToastBanners();
+  document.addEventListener('astro:page-load', () => bootToastBanners());
+</script>

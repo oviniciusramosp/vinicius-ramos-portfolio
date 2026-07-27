@@ -1,0 +1,1313 @@
+---
+/**
+ * Horizontal scroll gallery — close recreation of Apple’s #incentive-gallery
+ * (macbook-neo “Why Apple is the best place to buy Mac”).
+ *
+ * Structure:
+ *   .gallery.scroll-gallery
+ *     .scroll-container
+ *       .item-container > ul.card-set > li.gallery-item
+ *         .card.tile.tile-rounded.card-hover
+ *           .feature-card-content
+ *           button.card-control > .tile-button-wrapper > .tile-button (+ icon)
+ *     .scroll-gallery-paddlenav.paddlenav.paddlenav-alpha
+ */
+export type ScrollGalleryItem = {
+  id?: string;
+  /** Optional for `social` (image-first) cards — used as accessible name */
+  label?: string;
+  /** Optional for `social` cards */
+  headline?: string;
+  body?: string;
+  /** Optional — omit for quote/testimonial cards */
+  image?: string;
+  imageAlt?: string;
+  /**
+   * Quote cards only: portrait shown top-right (header row).
+   * Distinct from `image` (product feature art).
+   */
+  avatar?: string;
+  href?: string;
+  /**
+   * Opens `#id` ArticleModal (or any dialog with matching id) via
+   * [data-article-open]. Prefer this over href for in-page content.
+   */
+  modalId?: string;
+  /** Accessible label for the + control / modal trigger */
+  actionLabel?: string;
+  /**
+   * `feature` — Apple product card (image + compact copy).
+   * `quote` — testimonial: role + Blatant name + optional avatar · hairline · body.
+   * `article` — feature layout with quote-style date + Blatant title.
+   * `social` — image-first portrait card (educational posts / Stories); no + chrome.
+   */
+  kind?: 'feature' | 'quote' | 'article' | 'social';
+};
+
+interface Props {
+  title?: string;
+  cta?: { label: string; href: string };
+  items: ScrollGalleryItem[];
+  short?: boolean;
+  theme?: 'light' | 'dark';
+  entrance?: boolean;
+  id?: string;
+  class?: string;
+  /** Accessible name when there is no visible title (e.g. Testimonials) */
+  ariaLabel?: string;
+}
+
+const {
+  title,
+  cta,
+  items,
+  short = true,
+  theme = 'light',
+  entrance = true,
+  id = 'incentive-gallery',
+  class: className = '',
+  ariaLabel,
+} = Astro.props;
+
+const labelledBy = `${id}-heading`;
+const galleryName =
+  title?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() ||
+  ariaLabel ||
+  'gallery';
+const showHeader = Boolean(title || cta);
+const hasQuoteItems = items.some((item) => item.kind === 'quote');
+const hasArticleItems = items.some((item) => item.kind === 'article');
+const hasSocialItems = items.some((item) => item.kind === 'social');
+---
+
+<section
+  class:list={[
+    'section-incentive',
+    'scroll-gallery-section',
+    'background-alt',
+    theme === 'dark' ? 'theme-dark' : 'theme-light',
+    hasQuoteItems && 'scroll-gallery-section--quotes',
+    hasArticleItems && 'scroll-gallery-section--articles',
+    hasSocialItems && 'scroll-gallery-section--social',
+    className,
+  ]}
+  data-scroll-gallery-section
+  data-theme={theme}
+  aria-label={ariaLabel}
+>
+  {
+    showHeader && (
+      <header class="section-header viewport-content">
+        {
+          title ? (
+            <h2
+              class="section-header-headline"
+              id={labelledBy}
+              set:html={title.replace(/\n/g, '<br />')}
+            />
+          ) : null
+        }
+        {
+          cta && (
+            <div class="section-header-cta-list-wrapper">
+              <a class="section-header-cta" href={cta.href}>
+                <span class="icon-copy">{cta.label}</span>
+                <ion-icon
+                  name="chevron-forward-outline"
+                  class="section-header-cta-chevron"
+                  aria-hidden="true"
+                />
+              </a>
+            </div>
+          )
+        }
+      </header>
+    )
+  }
+
+  <div
+    id={id}
+    class:list={[
+      'gallery',
+      'gallery-gallery',
+      'scroll-gallery',
+      'feature-card-gallery',
+      short && 'short',
+    ]}
+    data-scroll-gallery
+    data-analytics-gallery-id={galleryName}
+    aria-roledescription="carousel"
+  >
+    <div class="scroll-container" tabindex="-1" data-scroll-container>
+      <div class="item-container">
+        <ul
+          class="card-set grid card-set-full-bleed"
+          role="list"
+          aria-labelledby={title ? labelledBy : undefined}
+        >
+          {
+            items.map((item, index) => {
+              const isQuote = item.kind === 'quote';
+              const isArticle = item.kind === 'article';
+              const isSocial = item.kind === 'social';
+              const actionLabel =
+                item.actionLabel ??
+                (item.label ? `Learn more about ${item.label}` : item.imageAlt ?? 'Open');
+              const headlineText = (item.headline ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+              return (
+                <li
+                  id={item.id}
+                  data-ac-gallery-item
+                  data-gallery-index={String(index)}
+                  role="listitem"
+                  class:list={[
+                    'card-container',
+                    'feature-card',
+                    'gallery-item',
+                    isQuote && 'gallery-item--quote',
+                    isArticle && 'gallery-item--article',
+                    isSocial && 'gallery-item--social',
+                    entrance && 'is-entrance',
+                  ]}
+                  style={entrance ? `--stagger: ${index}` : undefined}
+                >
+                  <div
+                    class:list={[
+                      'card',
+                      'tile',
+                      'tile-rounded',
+                      !isQuote && 'card-hover',
+                      isQuote && 'card--quote',
+                      isSocial && 'card--social',
+                    ]}
+                  >
+                    <div
+                      class:list={[
+                        'feature-card-content',
+                        item.image && 'image-inline',
+                        isQuote && 'feature-card-content--quote',
+                        isSocial && 'feature-card-content--social',
+                      ]}
+                    >
+                      {
+                        !isSocial && (
+                          <div class="feature-card-copy-container feature-card-copy">
+                            {
+                              isQuote ? (
+                                <>
+                                  {/*
+                                    Quote card layout (portfolio):
+                                      [role]           [avatar?]
+                                      [name · Blatant] [avatar?]
+                                      ─────────────────────────
+                                      quote body
+                                  */}
+                                  <header class="feature-card-quote-header">
+                                    <div class="feature-card-quote-identity">
+                                      <p class="feature-card-quote-role">{item.label}</p>
+                                      <h3 class="feature-card-quote-author">{item.headline}</h3>
+                                    </div>
+                                    {item.avatar && (
+                                      <img
+                                        class="feature-card-quote-avatar"
+                                        src={item.avatar}
+                                        alt={item.headline}
+                                        width="48"
+                                        height="48"
+                                        loading="lazy"
+                                        decoding="async"
+                                        draggable="false"
+                                      />
+                                    )}
+                                  </header>
+                                  <div class="feature-card-quote-divider" aria-hidden="true" />
+                                  <p class="feature-card-quote-text">{item.body}</p>
+                                </>
+                              ) : (
+                                <>
+                                  <h3
+                                    class:list={[
+                                      'feature-card-label',
+                                      'typography-feature-card-label',
+                                      isArticle && 'feature-card-label--article',
+                                    ]}
+                                  >
+                                    {item.label}
+                                  </h3>
+                                  <div class="feature-card-copy-stack">
+                                    <p
+                                      class:list={[
+                                        'feature-card-headline',
+                                        'typography-feature-card-headline',
+                                        isArticle && 'feature-card-headline--article',
+                                      ]}
+                                      set:html={item.headline}
+                                    />
+                                    {item.body && (
+                                      <p
+                                        class="feature-card-body typography-feature-card-body"
+                                        set:html={item.body}
+                                      />
+                                    )}
+                                  </div>
+                                </>
+                              )
+                            }
+                          </div>
+                        )
+                      }
+                      {
+                        item.image && (
+                          <figure
+                            class:list={[
+                              'feature-card-image-container',
+                              !isSocial && 'pin-self-bottom-center',
+                              isSocial && 'feature-card-image-container--social',
+                            ]}
+                          >
+                            <img
+                              class:list={[
+                                'feature-card-image',
+                                isSocial && 'feature-card-image--social',
+                              ]}
+                              src={item.image}
+                              alt={item.imageAlt ?? item.label ?? ''}
+                              loading="lazy"
+                              decoding="async"
+                              draggable="false"
+                            />
+                          </figure>
+                        )
+                      }
+                    </div>
+
+                    {
+                      !isQuote &&
+                        !isSocial &&
+                        (item.href && !item.modalId ? (
+                          /* Link control — shareable routes (e.g. /articles/[slug]) */
+                          <a
+                            class="card-control"
+                            data-card-control
+                            href={item.href}
+                            aria-label={actionLabel}
+                            data-transition-label={headlineText}
+                          >
+                            <div class="tile-button-wrapper">
+                              <span
+                                class:list={[
+                                  'tile-button',
+                                  'tile-button-high-contrast',
+                                  theme === 'dark' ? 'theme-dark' : 'theme-light',
+                                ]}
+                              >
+                                <svg
+                                  class="icon-control icon-control-plus tile-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 36 36"
+                                  aria-hidden="true"
+                                >
+                                  <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
+                                </svg>
+                              </span>
+                            </div>
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            class="card-control"
+                            data-card-control
+                            aria-label={actionLabel}
+                            tabindex="0"
+                            data-article-open={item.modalId}
+                          >
+                            {item.href ? (
+                              <span class="card-control-href" data-href={item.href} hidden />
+                            ) : null}
+                            <div class="tile-button-wrapper">
+                              <span
+                                class:list={[
+                                  'tile-button',
+                                  'tile-button-high-contrast',
+                                  theme === 'dark' ? 'theme-dark' : 'theme-light',
+                                ]}
+                              >
+                                <svg
+                                  class="icon-control icon-control-plus tile-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 36 36"
+                                  aria-hidden="true"
+                                >
+                                  <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
+                                </svg>
+                              </span>
+                            </div>
+                          </button>
+                        ))
+                    }
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!--
+      Apple: .scroll-gallery-paddlenav.paddlenav.paddlenav-alpha
+      Starts without [hidden]; .hide only when no overflow (JS).
+      Position uses static-position absolute (after scroll-container).
+    -->
+    <div
+      class="scroll-gallery-paddlenav paddlenav paddlenav-alpha"
+      data-gallery-paddlenav
+      data-analytics-gallery-interaction-type="paddlenav"
+    >
+      <ul>
+        <li class="left-item">
+          <button
+            type="button"
+            class="paddlenav-arrow paddlenav-arrow-previous disabled"
+            aria-label={`Previous item in ${galleryName}`}
+            data-paddlenav="prev"
+            data-magnetic
+            data-cursor="block"
+            disabled
+          >
+            <span class="paddlenav-arrow__visual" data-magnetic-visual>
+              {/* Same stroke chevrons as DeckSlider / case arrows */}
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M22.5 12.5 15 20l7.5 7.5"
+                />
+              </svg>
+            </span>
+          </button>
+        </li>
+        <li class="right-item">
+          <button
+            type="button"
+            class="paddlenav-arrow paddlenav-arrow-next"
+            aria-label={`Next item in ${galleryName}`}
+            data-paddlenav="next"
+            data-magnetic
+            data-cursor="block"
+          >
+            <span class="paddlenav-arrow__visual" data-magnetic-visual>
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.5 12.5 25 20l-7.5 7.5"
+                />
+              </svg>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * Layout + tokens mapped from Apple overview.built.css
+   * (scroll-gallery, paddlenav-alpha, card-hover, tile-button).
+   */
+  .scroll-gallery-section {
+    /* Content measure (Apple ~980–1024) */
+    --global-content-max-width: 980px;
+    --sg-content-width: 87.5%;
+    --feature-card-width: 372px;
+    --feature-card-min-height: 387px;
+    --feature-card-copy-padding: 32px;
+    --feature-card-gap: 20px;
+    --sk-tile-border-radius: 28px;
+    --sk-tile-background: #ffffff;
+    --feature-card-copy-color: #1d1d1f;
+    --feature-card-body-color: #6e6e73;
+    --sg-section-bg: #f5f5f7;
+    --card-element-scale: 1.02;
+    /* paddlenav-alpha (light) */
+    --sk-paddlenav-diameter: 36px;
+    --sk-paddlenav-arrow-color: rgba(0, 0, 0, 0.56);
+    --sk-paddlenav-arrow-color-hover: rgba(0, 0, 0, 0.64);
+    --sk-paddlenav-arrow-color-active: rgba(0, 0, 0, 0.64);
+    --sk-paddlenav-background: rgba(210, 210, 215, 0.64);
+    --sk-paddlenav-background-hover: rgba(223, 223, 227, 0.7);
+    --sk-paddlenav-background-active: rgba(193, 193, 198, 0.65);
+    --staggered-translate-y: 40px;
+    --sg-ease: cubic-bezier(0.28, 0.11, 0.32, 1);
+    --card-hover-ease: cubic-bezier(0, 0, 0.5, 1);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 80px 0 56px;
+    background: var(--sg-section-bg);
+    color: var(--feature-card-copy-color);
+    /* allow card scale + paddlenav */
+    overflow: visible;
+  }
+
+  .scroll-gallery-section.theme-dark {
+    --sg-section-bg: #000000;
+    --sk-tile-background: #161617;
+    --feature-card-copy-color: hsla(0, 0%, 100%, 0.92);
+    --feature-card-body-color: hsla(0, 0%, 100%, 0.56);
+    --sk-paddlenav-arrow-color: rgba(255, 255, 255, 0.8);
+    --sk-paddlenav-arrow-color-hover: rgb(255, 255, 255);
+    --sk-paddlenav-arrow-color-active: rgb(255, 255, 255);
+    --sk-paddlenav-background: rgba(66, 66, 69, 0.72);
+    --sk-paddlenav-background-hover: rgba(73, 73, 76, 0.73);
+    --sk-paddlenav-background-active: rgba(57, 57, 60, 0.74);
+  }
+
+  @media (max-width: 1068px) {
+    .scroll-gallery-section {
+      --feature-card-width: 344px;
+      --feature-card-min-height: 356px;
+      --feature-card-copy-padding: 28px;
+      --sk-tile-border-radius: 22px;
+    }
+  }
+
+  @media (max-width: 734px) {
+    .scroll-gallery-section {
+      --feature-card-width: 260px;
+      --feature-card-min-height: 255px;
+      --feature-card-copy-padding: 24px;
+      --feature-card-gap: 12px;
+      --sk-tile-border-radius: 18px;
+      padding-block: 48px 40px;
+    }
+  }
+
+  .scroll-gallery:not(.short) {
+    --feature-card-min-height: 680px;
+  }
+
+  @media (max-width: 1068px) {
+    .scroll-gallery:not(.short) {
+      --feature-card-min-height: 628px;
+    }
+  }
+
+  @media (max-width: 734px) {
+    .scroll-gallery:not(.short) {
+      --feature-card-min-height: 480px;
+    }
+  }
+
+  /* —— Header —— */
+  .section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+    width: min(var(--global-content-max-width), var(--sg-content-width));
+    margin: 0 auto 40px;
+  }
+
+  .section-header-headline {
+    margin: 0;
+    max-width: 12em;
+    font-family:
+      'SF Pro Display',
+      'SF Pro Text',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
+    font-size: clamp(28px, 4.2vw, 48px);
+    font-weight: 600;
+    line-height: 1.08349;
+    letter-spacing: -0.003em;
+    color: var(--feature-card-copy-color);
+  }
+
+  .section-header-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family:
+      'SF Pro Text',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.235;
+    color: #06c;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .theme-dark .section-header-cta {
+    color: #2997ff;
+  }
+
+  .section-header-cta:hover {
+    text-decoration: underline;
+  }
+
+  .section-header-cta-chevron {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    font-size: 1.05em;
+    margin-inline-start: 2px;
+    vertical-align: -0.12em;
+    color: currentColor;
+    pointer-events: none;
+  }
+
+  /* —— Gallery shell —— */
+  .scroll-gallery {
+    --paddlenav-height: 44px;
+    --paddlenavs-width: 90px;
+    --paddlenav-padding: 24px;
+    --responsive-content-width: 87.5%;
+    --responsive-content-max-width: var(--global-content-max-width);
+    --responsive-content-clamped-width: min(
+      var(--responsive-content-max-width),
+      var(--responsive-content-width)
+    );
+    --responsive-gutter-width: calc(50% - var(--responsive-content-clamped-width) / 2);
+    position: relative;
+    margin-top: 0;
+  }
+
+  .scroll-container {
+    position: relative;
+    overflow-x: auto;
+    /* note: overflow-x:auto forces overflow-y to auto — pad for scale hover */
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: var(--responsive-gutter-width);
+    padding: 20px 0 28px;
+    margin: -12px 0 0;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+  }
+
+  .scroll-container.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .item-container {
+    /* fit-content so scrollWidth grows with cards (critical for paddlenav) */
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    padding: 0 var(--responsive-gutter-width);
+    box-sizing: border-box;
+  }
+
+  .card-set {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: max-content;
+    gap: var(--feature-card-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gallery-item {
+    scroll-snap-align: start;
+    flex: 0 0 var(--feature-card-width);
+    width: var(--feature-card-width);
+    min-width: var(--feature-card-width);
+    max-width: var(--feature-card-width);
+    list-style: none;
+    /* scale hover must not clip */
+    overflow: visible;
+  }
+
+  .gallery-item:last-child {
+    scroll-snap-align: start end;
+  }
+
+  /* Quote / testimonial cards — portfolio layout, all visible (no dim) */
+  .gallery-item--quote {
+    /* ~2/3 of prior 600px / 85–72vw → more vertical cards */
+    --quote-card-width: min(57vw, 400px);
+    flex: 0 0 var(--quote-card-width);
+    width: var(--quote-card-width);
+    min-width: var(--quote-card-width);
+    max-width: var(--quote-card-width);
+  }
+
+  /* Educational social posts — portrait image-first cards */
+  .gallery-item--social {
+    --social-card-width: min(52vw, 280px);
+    flex: 0 0 var(--social-card-width);
+    width: var(--social-card-width);
+    min-width: var(--social-card-width);
+    max-width: var(--social-card-width);
+  }
+
+  @media (min-width: 810px) {
+    .gallery-item--quote {
+      --quote-card-width: min(48vw, 400px);
+    }
+
+    .gallery-item--social {
+      --social-card-width: min(32vw, 300px);
+    }
+  }
+
+  .scroll-gallery-section--social {
+    --feature-card-min-height: 0;
+    padding-block: 16px 24px;
+  }
+
+  .card--social {
+    position: relative;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 0.75;
+    background: var(--color-surface, #131219);
+  }
+
+  .feature-card-content--social {
+    position: relative;
+    display: block;
+    min-height: 0;
+    height: 100%;
+    grid-template-rows: none;
+  }
+
+  .feature-card-image-container--social {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    flex: none;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .feature-card-image--social {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .scroll-gallery-section--quotes {
+    --feature-card-min-height: 0;
+    --feature-card-copy-padding: 28px 32px;
+    --sk-tile-border-radius: 12px;
+    --feature-card-gap: 24px;
+    /* sit on portfolio black instead of Apple #f5f5f7 / #000 block */
+    --sg-section-bg: transparent;
+    padding-block: 48px 24px;
+  }
+
+  .scroll-gallery-section--quotes.theme-dark {
+    --sk-tile-background: var(--color-surface, #131219);
+    --feature-card-copy-color: var(--color-text, #fff);
+    --feature-card-body-color: var(--color-text, #fff);
+  }
+
+  .feature-card-content--quote {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    grid-template-rows: none;
+    height: auto;
+    min-height: 0;
+  }
+
+  .feature-card-content--quote .feature-card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 20px;
+    flex: 1;
+    height: auto;
+    padding: var(--feature-card-copy-padding);
+  }
+
+  .feature-card-quote-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .feature-card-quote-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .feature-card-quote-role {
+    margin: 0;
+    font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+    text-align: left;
+    color: var(--color-accent, #008fff);
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .feature-card-quote-author {
+    margin: 0;
+    font-family: var(--font-display, 'Blatant Bold', 'Arial Black', Impact, sans-serif);
+    font-size: clamp(22px, 3.2vw, 28px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--feature-card-copy-color);
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .feature-card-quote-avatar {
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    background-color: var(--color-surface-elevated, #17161d);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .feature-card-quote-divider {
+    flex: none;
+    width: 100%;
+    height: 1px;
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .feature-card-quote-text {
+    margin: 0;
+    font-family: var(--font-body, Inter, system-ui, sans-serif);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0;
+    text-align: left;
+    color: var(--feature-card-copy-color);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .card--quote {
+    cursor: default;
+    /* hug quote content — no tall product-card min-height */
+    min-height: 0;
+    height: auto;
+  }
+
+  .gallery-item--quote .card {
+    min-height: 0;
+    height: auto;
+  }
+
+  @media (max-width: 734px) {
+    .scroll-gallery-section--quotes {
+      --feature-card-copy-padding: 20px;
+      padding-block: 24px 16px;
+    }
+
+    .feature-card-quote-avatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    .feature-card-quote-author {
+      font-size: 20px;
+    }
+
+    .feature-card-content--quote .feature-card-copy {
+      gap: 16px;
+    }
+  }
+
+  /* —— Card —— */
+  .feature-card .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--feature-card-min-height);
+    height: 100%;
+    border-radius: var(--sk-tile-border-radius);
+    background: var(--sk-tile-background);
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  /* Apple .card-hover — scale up on desktop hover */
+  .card-hover {
+    transform: scale(1);
+    transition:
+      transform 0.3s var(--card-hover-ease),
+      background-color 0.344s ease;
+    will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card-hover:hover {
+      transform: scale(var(--card-element-scale));
+      z-index: 2;
+    }
+
+    .gallery-item:has(.card-hover:hover) {
+      z-index: 3;
+      position: relative;
+    }
+  }
+
+  .feature-card-content {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: min-content 1fr;
+    height: 100%;
+    min-height: var(--feature-card-min-height);
+    pointer-events: none;
+  }
+
+  .feature-card-copy {
+    z-index: 1;
+    padding: var(--feature-card-copy-padding) var(--feature-card-copy-padding) 0;
+    color: var(--feature-card-copy-color);
+  }
+
+  .feature-card-label {
+    margin: 0;
+    font-family:
+      'SF Pro Text',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.33337;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-card-label + .feature-card-copy-stack {
+    margin-top: 8px;
+  }
+
+  .feature-card-copy-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feature-card-headline {
+    margin: 0;
+    font-family:
+      'SF Pro Display',
+      'SF Pro Text',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.16667;
+    letter-spacing: 0.009em;
+  }
+
+  /* Article cards: date + title match quote-card type (mono accent · Blatant) */
+  .feature-card-label--article {
+    font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: 0;
+    color: var(--color-accent, #008fff);
+  }
+
+  .feature-card-headline--article {
+    font-family: var(--font-display, 'Blatant Bold', 'Arial Black', Impact, sans-serif);
+    font-size: clamp(22px, 3.2vw, 28px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .gallery-item--article .feature-card-label + .feature-card-copy-stack {
+    margin-top: 10px;
+  }
+
+  .gallery-item--article .feature-card-copy-stack {
+    gap: 10px;
+  }
+
+  @media (max-width: 1068px) {
+    .feature-card-headline {
+      font-size: 21px;
+    }
+
+    .feature-card-headline--article {
+      font-size: clamp(20px, 3vw, 26px);
+    }
+  }
+
+  @media (max-width: 734px) {
+    .feature-card-headline {
+      font-size: 19px;
+    }
+
+    .feature-card-headline--article {
+      font-size: 20px;
+    }
+  }
+
+  .feature-card-body {
+    margin: 0;
+    font-family:
+      'SF Pro Text',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42859;
+    letter-spacing: -0.016em;
+    color: var(--feature-card-body-color);
+  }
+
+  .feature-card-image-container {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin: 0;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .feature-card-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* —— Card control (+ button) —— */
+  .card .card-control {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    /* reset when rendered as <a> */
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card .card-control:focus {
+    outline: none;
+  }
+
+  .card .card-control:focus-visible .tile-button {
+    outline: 2px solid #0071e3;
+    outline-offset: 3px;
+  }
+
+  .tile-button-wrapper {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: none;
+  }
+
+  @media (max-width: 1068px) {
+    .tile-button-wrapper {
+      right: 13px;
+      bottom: 13px;
+    }
+  }
+
+  .tile-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 100ms linear, color 100ms linear;
+    /* high-contrast light (dark circle, white +) — Apple default on light cards */
+    --sk-tile-button-icon-color: rgb(255, 255, 255);
+    --sk-tile-button-icon-color-hover: rgb(255, 255, 255);
+    --sk-tile-button-background: rgb(29, 29, 31);
+    --sk-tile-button-background-hover: #272729;
+    --sk-tile-button-background-active: #18181a;
+    background: var(--sk-tile-button-background);
+    color: var(--sk-tile-button-icon-color);
+  }
+
+  /* dark section / dark cards → light pill + black icon */
+  .theme-dark .tile-button,
+  .tile-button.theme-dark {
+    --sk-tile-button-icon-color: rgb(0, 0, 0);
+    --sk-tile-button-icon-color-hover: rgb(0, 0, 0);
+    --sk-tile-button-background: rgb(245, 245, 247);
+    --sk-tile-button-background-hover: rgb(255, 255, 255);
+    --sk-tile-button-background-active: #ededf2;
+  }
+
+  .card-control:hover .tile-button {
+    background: var(--sk-tile-button-background-hover);
+    color: var(--sk-tile-button-icon-color-hover);
+  }
+
+  .card-control:active .tile-button {
+    background: var(--sk-tile-button-background-active);
+  }
+
+  .tile-button .tile-icon {
+    width: 36px;
+    height: 36px;
+    display: block;
+  }
+
+  .tile-button .tile-icon path {
+    fill: currentColor;
+  }
+
+  /* —— Paddlenav (Apple alpha) ——
+     Apple uses absolute + sticky for page scroll; we keep the same classes
+     and right-aligned chevrons under the track so controls are always visible.
+  */
+  .scroll-gallery-paddlenav {
+    --paddlenav-height: 40px;
+    --paddlenav-padding: 24px;
+    --responsive-content-width: min(var(--global-content-max-width), 87.5%);
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    width: var(--responsive-content-width);
+    max-width: 100%;
+    min-height: var(--paddlenav-height);
+    margin: 0 auto;
+    padding-top: var(--paddlenav-padding);
+    box-sizing: content-box;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease-out,
+      visibility 0.2s ease-out;
+    z-index: 5;
+  }
+
+  .scroll-gallery-paddlenav.hide {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .scroll-gallery-paddlenav ul {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: auto;
+  }
+
+  /*
+   * Paddlenav arrows — same chrome as DeckSlider / case-decks__arrow:
+   * transparent shell + glass visual (magnetic target) + stroke chevrons.
+   */
+  .paddlenav .paddlenav-arrow {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    position: relative;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    cursor: pointer;
+    overflow: visible;
+    transition: opacity 100ms linear;
+  }
+
+  .scroll-gallery-paddlenav .paddlenav-arrow.paddlenav-arrow-next,
+  .scroll-gallery-paddlenav .paddlenav-arrow.paddlenav-arrow-previous {
+    position: relative;
+    inset-inline-start: auto;
+    inset-inline-end: auto;
+    top: auto;
+    margin-top: 0;
+  }
+
+  .paddlenav-arrow__visual {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    will-change: transform;
+    transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .paddlenav .paddlenav-arrow:hover:not(:disabled) .paddlenav-arrow__visual,
+  .paddlenav .paddlenav-arrow.is-magnetic .paddlenav-arrow__visual {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .paddlenav .paddlenav-arrow svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+  }
+
+  .paddlenav .paddlenav-arrow:focus-visible {
+    outline: 2px solid var(--color-accent, #008fff);
+    outline-offset: 3px;
+  }
+
+  .paddlenav .paddlenav-arrow:disabled,
+  .paddlenav .paddlenav-arrow.disabled {
+    pointer-events: none;
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* Light theme (Apple incentive): keep dark glass for contrast */
+  .theme-light .paddlenav .paddlenav-arrow {
+    color: #1d1d1f;
+  }
+
+  .theme-light .paddlenav-arrow__visual {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .theme-light .paddlenav .paddlenav-arrow:hover:not(:disabled) .paddlenav-arrow__visual,
+  .theme-light .paddlenav .paddlenav-arrow.is-magnetic .paddlenav-arrow__visual {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  /* —— Entry (StaggeredFadeIn) —— */
+  .gallery-item.is-entrance {
+    opacity: 0;
+    transform: translate3d(0, var(--staggered-translate-y), 0);
+    transition:
+      opacity 0.8s var(--sg-ease),
+      transform 0.8s var(--sg-ease);
+    transition-delay: calc(var(--stagger, 0) * 80ms);
+    will-change: opacity, transform;
+  }
+
+  .gallery-item.is-entrance.is-in {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-item.is-entrance {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .card-hover {
+      transition: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-hover:hover {
+        transform: none;
+      }
+    }
+  }
+</style>
+
+<script>
+  import { bootScrollGalleriesOnce } from '../scripts/scroll-gallery';
+
+  bootScrollGalleriesOnce();
+  document.addEventListener('astro:page-load', () => bootScrollGalleriesOnce());
+</script>

@@ -2,6 +2,11 @@
 interface Props {
   href?: string;
   label: string;
+  /**
+   * Optional upper line for App Store–style badges
+   * (e.g. “Download on the” above “App Store”).
+   */
+  eyebrow?: string;
   variant?: 'ghost' | 'solid' | 'submit';
   active?: boolean;
   type?: 'button' | 'submit';
@@ -9,26 +14,48 @@ interface Props {
   /** Magnetic parallax matching viniciusramos.com (default true) */
   magnetic?: boolean;
   class?: string;
+  /**
+   * When set, renders as a button that opens `#id` embed modal
+   * (see EmbedModal + [data-embed-open]).
+   */
+  embedOpen?: string;
+  /** Optional leading icon */
+  icon?: 'apple';
 }
 
 const {
   href,
   label,
+  eyebrow,
   variant = 'ghost',
   active = false,
   type = 'button',
   external = false,
   magnetic = true,
   class: className = '',
+  embedOpen,
+  icon,
 } = Astro.props;
 
-const Tag = href ? 'a' : 'button';
-const attrs = href
+const isButton = Boolean(embedOpen) || !href;
+const isBadge = Boolean(eyebrow) || icon === 'apple';
+const Tag = isButton ? 'button' : 'a';
+const attrs = isButton
   ? {
-      href,
-      ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+      type: type as 'button' | 'submit',
+      ...(embedOpen ? { 'data-embed-open': embedOpen } : {}),
     }
-  : { type };
+  : {
+      href: href!,
+      ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+    };
+
+/** Default App Store badge eyebrow when icon is apple and none provided */
+const badgeEyebrow =
+  eyebrow ?? (icon === 'apple' ? 'Download on the' : undefined);
+const badgeMain = icon === 'apple' && !eyebrow && label === 'Download on the App Store'
+  ? 'App Store'
+  : label;
 ---
 
 <!--
@@ -37,13 +64,48 @@ const attrs = href
   - inner visual = spring-translated layer
 -->
 <Tag
-  class:list={['btn', `btn--${variant}`, active && 'is-active', className]}
+  class:list={[
+    'btn',
+    `btn--${variant}`,
+    active && 'is-active',
+    icon && 'btn--has-icon',
+    isBadge && 'btn--badge',
+    icon === 'apple' && 'btn--app-store',
+    className,
+  ]}
   data-magnetic={magnetic ? true : undefined}
   data-cursor={magnetic ? 'block' : undefined}
   {...attrs}
 >
   <span class="btn__visual" data-magnetic-visual>
-    <span class="btn__label">{label}</span>
+    {
+      icon === 'apple' && (
+        <svg
+          class="btn__icon btn__icon--apple"
+          viewBox="0 0 17 20"
+          width="28"
+          height="34"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <!-- Classic Apple mark (filled) -->
+          <path
+            fill="currentColor"
+            d="M14.1 10.6c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.6-1.3-.1-2.5.8-3.1.8-.7 0-1.7-.7-2.8-.7-1.4 0-2.8.9-3.5 2.2-1.5 2.6-.4 6.5 1.1 8.6.7 1 1.6 2.2 2.7 2.1 1.1 0 1.5-.7 2.8-.7s1.7.7 2.8.7c1.2 0 1.9-1 2.6-2 .8-1.2 1.2-2.3 1.2-2.4-.1 0-2.3-.9-2.3-3.4zM11.7 3.9c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.6.6-1.1 1.6-1 2.6 1 .1 1.9-.5 2.6-1.2z"
+          />
+        </svg>
+      )
+    }
+    {
+      badgeEyebrow ? (
+        <span class="btn__text">
+          <span class="btn__eyebrow">{badgeEyebrow}</span>
+          <span class="btn__label">{badgeMain}</span>
+        </span>
+      ) : (
+        <span class="btn__label">{label}</span>
+      )
+    }
   </span>
 </Tag>
 
@@ -65,18 +127,84 @@ const attrs = href
     box-shadow: none;
     /* Hit area stays put; only .btn__visual moves */
     overflow: visible;
+    text-decoration: none;
+    color: inherit;
   }
 
   .btn__visual {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0;
     min-height: 34px;
     padding: 8px 16px;
     border-radius: inherit;
     background: transparent;
     will-change: transform;
     transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .btn--has-icon .btn__visual {
+    gap: 8px;
+    padding-inline: 14px 16px;
+  }
+
+  /*
+   * App Store–style badge: large mark + stacked copy.
+   * --btn-pad-x = left pad & icon↔text gap; right pad is slightly larger.
+   */
+  .btn--app-store {
+    --btn-pad-x: 12px;
+    --btn-pad-right: 18px;
+    min-height: 48px;
+    border-radius: 10px;
+    text-align: left;
+  }
+
+  .btn--app-store.btn--has-icon .btn__visual,
+  .btn--app-store .btn__visual {
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--btn-pad-x);
+    min-height: 48px;
+    padding: 8px var(--btn-pad-right) 8px var(--btn-pad-x);
+  }
+
+  .btn__icon {
+    flex: 0 0 auto;
+    display: block;
+    color: inherit;
+  }
+
+  .btn--app-store .btn__icon--apple {
+    width: 28px;
+    height: 34px;
+    margin-top: 0;
+  }
+
+  .btn__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .btn__eyebrow {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body, Inter, system-ui, sans-serif);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+    text-align: left;
+    white-space: nowrap;
+    opacity: 0.9;
   }
 
   .btn__label {
@@ -91,6 +219,47 @@ const attrs = href
     color: var(--color-text);
     text-align: center;
     white-space: nowrap;
+  }
+
+  .btn--app-store .btn__label {
+    font-family: var(--font-body, Inter, system-ui, sans-serif);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-align: left;
+  }
+
+  .btn--has-icon .btn__icon {
+    color: var(--color-text);
+  }
+
+  .btn--solid.btn--has-icon .btn__icon,
+  .btn--submit.btn--has-icon .btn__icon {
+    color: var(--color-bg);
+  }
+
+  .btn--solid.btn--has-icon:hover .btn__icon,
+  .btn--solid.btn--has-icon:focus-visible .btn__icon,
+  .btn--solid.btn--has-icon.is-magnetic .btn__icon,
+  .btn--submit.btn--has-icon:hover .btn__icon,
+  .btn--submit.btn--has-icon:focus-visible .btn__icon,
+  .btn--submit.btn--has-icon.is-magnetic .btn__icon {
+    color: var(--color-text);
+  }
+
+  .btn--solid .btn__eyebrow,
+  .btn--submit .btn__eyebrow {
+    color: var(--color-bg);
+  }
+
+  .btn--solid:hover .btn__eyebrow,
+  .btn--solid:focus-visible .btn__eyebrow,
+  .btn--solid.is-magnetic .btn__eyebrow,
+  .btn--submit:hover .btn__eyebrow,
+  .btn--submit:focus-visible .btn__eyebrow,
+  .btn--submit.is-magnetic .btn__eyebrow {
+    color: var(--color-text);
   }
 
   /* Ghost — fill only, no border, no shadow (live site) */

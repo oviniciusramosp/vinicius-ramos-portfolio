@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <rect width="1200" height="1500" fill="#0B0F14"/>
+  <rect x="48" y="48" width="1104" height="1404" rx="24" fill="none" stroke="#F0B90B" stroke-width="2" stroke-dasharray="12 12" opacity="0.45"/>
+  <text x="600" y="720" text-anchor="middle" fill="#F0B90B" font-family="system-ui,sans-serif" font-size="42" font-weight="600">Crypto Bros</text>
+  <text x="600" y="780" text-anchor="middle" fill="#8B949E" font-family="system-ui,sans-serif" font-size="28">craft-charts</text>
+  <text x="600" y="840" text-anchor="middle" fill="#484F58" font-family="system-ui,sans-serif" font-size="22">placeholder</text>
+</svg>

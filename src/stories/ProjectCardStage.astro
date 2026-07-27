@@ -1,0 +1,27 @@
+---
+import type { Project } from '../data/projects';
+import ProjectCard from '../components/ProjectCard.astro';
+
+interface Props {
+  project: Project;
+  /** CSS size of the stage (cards need explicit height outside the bento). */
+  width?: string;
+  height?: string;
+}
+
+const {
+  project,
+  width = '360px',
+  height = '300px',
+} = Astro.props;
+---
+
+<div class="card-stage" style={`width: ${width}; height: ${height}`}>
+  <ProjectCard project={project} />
+</div>
+
+<style>
+  .card-stage {
+    position: relative;
+  }
+</style>

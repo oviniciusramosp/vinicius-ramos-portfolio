@@ -1,0 +1,25 @@
+---
+import type { Project } from '../data/projects';
+import ProjectGrid from '../components/ProjectGrid.astro';
+
+interface Props {
+  projects: Project[];
+  filterTags?: string[];
+}
+
+const { projects, filterTags = [] } = Astro.props;
+---
+
+<div class="grid-stage">
+  <ProjectGrid projects={projects} filterTags={filterTags} />
+</div>
+
+<style>
+  .grid-stage {
+    width: 100%;
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+    box-sizing: border-box;
+    background: var(--color-bg);
+  }
+</style>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <rect width="1200" height="1500" fill="#0C0C0C"/>
+  <rect x="48" y="48" width="1104" height="1404" rx="24" fill="none" stroke="#E8FF47" stroke-width="2" stroke-dasharray="12 12" opacity="0.4"/>
+  <text x="600" y="720" text-anchor="middle" fill="#E8FF47" font-family="system-ui,sans-serif" font-size="40" font-weight="600">Moove</text>
+  <text x="600" y="780" text-anchor="middle" fill="#A3A3A3" font-family="system-ui,sans-serif" font-size="26">icon</text>
+  <text x="600" y="840" text-anchor="middle" fill="#525252" font-family="system-ui,sans-serif" font-size="20">placeholder</text>
+</svg>

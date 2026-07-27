@@ -1,37 +1,130 @@
 ---
 import type { Project } from '../data/projects';
 import ProjectCard from './ProjectCard.astro';
+import Tag from './Tag.astro';
 
 interface Props {
   projects: Project[];
+  /** Unique filter tags (order preserved). Empty = no toolbar. */
+  filterTags?: string[];
 }
 
-const { projects } = Astro.props;
+const { projects, filterTags = [] } = Astro.props;
+const showFilter = filterTags.length > 0;
 ---
 
-<!--
-  Live Framer grid (desktop ~1440):
-  5 columns × 220px rows, gap 8px, dense packing
-  lg=2×2, tall=1×2, wide=2×1, sm=1×1
--->
-<section class="project-grid" aria-label="Selected work">
+<section class="bento" data-bento-grid aria-label="Selected work">
   {
-    projects.map((project) => (
-      <div class:list={['project-grid__cell', `is-${project.size}`]}>
-        <ProjectCard project={project} />
+    showFilter && (
+      <div
+        class="bento__toolbar"
+        data-bento-toolbar
+        role="group"
+        aria-label="Filter projects by category. Select multiple categories."
+      >
+        <button
+          type="button"
+          class="bento__chip is-active"
+          data-bento-filter=""
+          aria-pressed="true"
+          data-magnetic
+          data-magnetic-range="6"
+        >
+          <Tag label="ALL" variant="chip" pressed />
+        </button>
+        {filterTags.map((tag) => (
+          <button
+            type="button"
+            class="bento__chip"
+            data-bento-filter={tag}
+            aria-pressed="false"
+            data-magnetic
+            data-magnetic-range="6"
+          >
+            <Tag label={tag} variant="chip" />
+          </button>
+        ))}
       </div>
-    ))
+    )
   }
+
+  <p class="bento__status sr-only" data-bento-status aria-live="polite" />
+
+  <div class="project-grid">
+    {
+      projects.map((project) => (
+        <div
+          class:list={['project-grid__cell', `is-${project.size}`]}
+          data-bento-cell
+          data-size={project.size}
+          data-priority={String(project.priority ?? 0)}
+          data-tags={project.tags.join('|')}
+          data-slug={project.slug}
+        >
+          <ProjectCard project={project} />
+        </div>
+      ))
+    }
+  </div>
 </section>
 
 <style>
+  /* Live: .framer-ucwi3m — same site shell as nav / case pages */
+  .bento {
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+  }
+
+  .bento__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+
+  /* Hit shell only — visual is Tag chip (same glass badge as card categories) */
+  .bento__chip {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50px;
+    line-height: 0;
+  }
+
+  .bento__chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .bento__chip:hover :global(.tag--chip:not(.is-pressed)) {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .bento__chip:hover :global(.tag--chip:not(.is-pressed) .tag__glass) {
+    background-color: rgba(18, 18, 24, 0.55);
+  }
+
+  .bento__chip:hover :global(.tag--chip.is-pressed .tag__glass) {
+    background-color: rgba(0, 143, 255, 0.36);
+  }
+
+  /*
+   * Dense bento: fixed row tracks + spans.
+   * Filter reassigns is-lg / is-tall / is-sm via the 2-row packer.
+   */
   .project-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-auto-rows: 220px;
     grid-auto-flow: dense;
     gap: 8px;
-    padding: 16px;
+    padding: 0 16px 16px;
     width: 100%;
   }
 
@@ -39,6 +132,13 @@ const { projects } = Astro.props;
     min-width: 0;
     min-height: 0;
     height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    will-change: transform, opacity;
+  }
+
+  .project-grid__cell[hidden] {
+    display: none !important;
   }
 
   .project-grid__cell :global(.project-card-shell),
@@ -47,7 +147,6 @@ const { projects } = Astro.props;
     min-height: 0;
   }
 
-  /* Fill the grid track — no fixed min-heights that break dense packing */
   .project-grid__cell :global(.project-card) {
     min-height: 100%;
   }
@@ -55,6 +154,12 @@ const { projects } = Astro.props;
   .is-lg {
     grid-column: span 2;
     grid-row: span 2;
+  }
+
+  /* 2×3 feature tile (HP Printables) */
+  .is-xl {
+    grid-column: span 2;
+    grid-row: span 3;
   }
 
   .is-tall {
@@ -73,7 +178,6 @@ const { projects } = Astro.props;
     grid-row: span 1;
   }
 
-  /* Tablet: 3 columns, keep dense so no holes */
   @media (max-width: 1100px) {
     .project-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -85,6 +189,11 @@ const { projects } = Astro.props;
       grid-row: span 2;
     }
 
+    .is-xl {
+      grid-column: span 2;
+      grid-row: span 3;
+    }
+
     .is-wide {
       grid-column: span 2;
       grid-row: span 1;
@@ -94,24 +203,23 @@ const { projects } = Astro.props;
       grid-column: span 1;
       grid-row: span 2;
     }
-
-    .is-sm,
-    .is-md {
-      grid-column: span 1;
-      grid-row: span 1;
-    }
   }
 
-  /* Small tablet / large phone: 2 columns */
   @media (max-width: 720px) {
+    .bento__toolbar {
+      padding: 0 12px 12px;
+      gap: 6px;
+    }
+
     .project-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-auto-rows: 180px;
-      padding: 12px;
+      padding: 0 12px 12px;
       gap: 8px;
     }
 
     .is-lg,
+    .is-xl,
     .is-wide {
       grid-column: span 2;
       grid-row: span 1;
@@ -122,28 +230,24 @@ const { projects } = Astro.props;
       grid-row: span 2;
     }
 
-    .is-sm,
-    .is-md {
-      grid-column: span 1;
-      grid-row: span 1;
-    }
-
-    /* Large cards get a taller track on 2-col */
     .is-lg {
       grid-row: span 2;
     }
+
+    .is-xl {
+      grid-row: span 3;
+    }
   }
 
-  /* Mobile: single column */
   @media (max-width: 480px) {
     .project-grid {
       grid-template-columns: 1fr;
       grid-auto-rows: 220px;
-      padding: 12px;
       gap: 10px;
     }
 
     .is-lg,
+    .is-xl,
     .is-wide,
     .is-tall,
     .is-sm,
@@ -153,15 +257,21 @@ const { projects } = Astro.props;
     }
 
     .is-lg,
+    .is-xl,
     .is-tall {
-      grid-row: span 1;
-      /* slightly taller feature cards */
       min-height: 260px;
     }
 
-    .is-lg :global(.project-card-shell),
-    .is-tall :global(.project-card-shell) {
-      min-height: 260px;
+    .is-xl {
+      min-height: 320px;
     }
   }
 </style>
+
+<script>
+  import { initBentoFilter } from '../scripts/bento-filter';
+
+  const boot = () => initBentoFilter();
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>

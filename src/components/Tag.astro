@@ -3,16 +3,26 @@ interface Props {
   label: string;
   tone?: 'default' | 'accent' | 'soon';
   /**
-   * `solid` — always visible (case-study meta, default).
-   * `reveal` — hidden until project-card hover (homepage grid).
+   * `solid` — case-study meta (muted border).
+   * `reveal` — hidden until project-card hover.
+   * `chip` — always the card-badge glass look (filters, static chips).
    */
-  variant?: 'reveal' | 'solid';
+  variant?: 'reveal' | 'solid' | 'chip';
+  /** Filter active / selected state (chip only) */
+  pressed?: boolean;
 }
 
-const { label, tone = 'default', variant = 'solid' } = Astro.props;
+const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.props;
 ---
 
-<span class:list={['tag', `tag--${tone}`, `tag--${variant}`]}>
+<span
+  class:list={[
+    'tag',
+    `tag--${tone}`,
+    `tag--${variant}`,
+    pressed && 'is-pressed',
+  ]}
+>
   <span class="tag__glass" aria-hidden="true"></span>
   <span class="tag__label">{label}</span>
 </span>
@@ -66,6 +76,44 @@ const { label, tone = 'default', variant = 'solid' } = Astro.props;
   .tag--soon {
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  /*
+   * Chip — filter badges.
+   * Rest: muted glass (card-tag style).
+   * Pressed: solid accent fill so selected ≠ unselected is obvious.
+   */
+  .tag--chip {
+    color: rgba(255, 255, 255, 0.72);
+    border-color: rgba(255, 255, 255, 0.16);
+    background-color: transparent;
+    text-transform: uppercase;
+    transition:
+      color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .tag--chip .tag__glass {
+    background-color: rgba(12, 12, 16, 0.35);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    transition:
+      background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      backdrop-filter 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      -webkit-backdrop-filter 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .tag--chip.is-pressed,
+  .tag--chip.tag--accent {
+    color: #ffffff;
+    border-color: rgba(0, 143, 255, 0.55);
+  }
+
+  .tag--chip.is-pressed .tag__glass,
+  .tag--chip.tag--accent .tag__glass {
+    background-color: rgba(0, 143, 255, 0.28);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
   }
 
   /* —— Reveal (homepage cards only) —— */

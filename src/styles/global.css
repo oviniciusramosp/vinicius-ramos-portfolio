@@ -30,6 +30,16 @@ img {
   display: block;
 }
 
+/* Ionicons — default site icon library */
+ion-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  color: currentColor;
+  pointer-events: auto;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -84,6 +94,68 @@ ul {
   width: 100%;
 }
 
+/*
+ * Site shell — bento / full-bleed sections (live Framer max-width 1920).
+ * Nav + footer use --content-max (1200), not this shell.
+ */
+.shell {
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+}
+
+/*
+ * Page intro hero — home + case study headers share this frame.
+ * Breakpoints mirror live Framer case padding (mobile / tablet / desktop / xl).
+ */
+.page-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding: 80px 16px 24px;
+  box-sizing: border-box;
+}
+
+.page-hero__main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 810px) {
+  .page-hero {
+    padding: 125px 64px 48px;
+  }
+}
+
+@media (min-width: 1194px) {
+  .page-hero {
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 125px 250px 48px;
+  }
+
+  .page-hero__main {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1536px) {
+  .page-hero {
+    width: 1536px;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 144px 240px 48px;
+  }
+}
+
+/* Content column — live Framer nav / footer frame (1200) */
 .container {
   width: 100%;
   max-width: var(--content-max);
@@ -92,11 +164,13 @@ ul {
 }
 
 .section-title {
-  font-family: var(--font-mono);
-  font-weight: 300;
+  font-family: var(--font-display);
+  font-weight: 400;
   font-size: var(--text-lg);
+  line-height: var(--lh-tight);
+  letter-spacing: 0;
+  text-transform: uppercase;
   color: var(--color-accent);
-  line-height: var(--lh-snug);
 }
 
 .body-text {
@@ -119,4 +193,174 @@ ul {
   letter-spacing: 0;
   text-transform: uppercase;
   color: var(--color-text);
+}
+
+/*
+ * Page transition
+ * OUT: word scale-up → delay → circle scale-up (both surface)
+ * IN:  same motion as cutouts (destination-out) over a surface plate
+ * z-index above site-header (10050) + banner (10040) so the plate covers both.
+ * Cursor stays higher (10100).
+ */
+.page-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 10060;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.page-mask.is-active {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.page-mask__stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  opacity: 0;
+  overflow: hidden;
+  background: transparent;
+  /* Needed for destination-out reveal cutouts */
+  isolation: isolate;
+}
+
+.page-mask__stage.is-reveal-mode {
+  background: var(--color-accent, #008fff);
+}
+
+/* Diameter set in JS = viewport diagonal */
+.page-mask__circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--color-accent, #008fff);
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center center;
+  opacity: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Transition title shell — absolute, fixed box; only transform scales it.
+   Wave markup lives inside .page-mask__label-stage and must not resize this shell. */
+.page-mask__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  /* width/height set in JS to a stable envelope (px) */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(36px, 8vw, 88px);
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--color-accent, #008fff);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  user-select: none;
+  overflow: visible;
+}
+
+/* Fixed stage inside the shell — centers the wave without reflowing the shell */
+.page-mask__label-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  flex: 0 0 auto;
+}
+
+/* Wave text (child) — layout only; no max-width shrink */
+.page-mask__label .logo-wave,
+.page-mask__label .wave-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1em;
+  line-height: 1;
+  color: inherit;
+  max-width: none;
+  width: auto;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+
+.page-mask__label .logo-wave__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.page-mask__label .logo-wave__row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: nowrap;
+  column-gap: 0.4px;
+  height: 1em;
+}
+
+.page-mask__label .logo-wave__letter,
+.page-mask__label .logo-wave__space {
+  display: block;
+  flex: 0 0 auto;
+  height: 1em;
+  position: relative;
+  color: inherit;
+}
+
+.page-mask__label .logo-wave__letter svg {
+  display: block;
+  width: 100%;
+  height: 1em;
+  overflow: visible;
+}
+
+/* Digits/punct drawn with Blatant <text> (not path masters) */
+.page-mask__label .logo-wave__letter text {
+  fill: currentColor;
+  paint-order: stroke fill;
+}
+
+html.is-page-transitioning,
+html.is-page-transitioning body {
+  overflow: hidden;
+}
+
+html.is-page-transitioning .site-header {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-mask,
+  .page-mask__stage,
+  .page-mask__circle,
+  .page-mask__label {
+    transition: none !important;
+    animation: none !important;
+  }
 }

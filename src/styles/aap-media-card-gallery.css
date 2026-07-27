@@ -1,0 +1,472 @@
+/**
+ * Apple #aap-media-card-gallery + All Access Pass chrome
+ * Source: apple.com/apple-watch-ultra-3 overview.built.css (Jul 2026)
+ *
+ * Scoped under `.aap-root` so we don't leak into the rest of the site.
+ * `.enhanced` replaces Apple's `html.enhanced`.
+ */
+
+/* —— Tokens (theme-dark, portfolio black pages) —— */
+.aap-root {
+  --aap-min-height: 56px;
+  --aap-blur: 7px;
+  --aap-margin: 20px;
+  --aap-bubble-gap: 16px;
+  --aap-background-color-alpha: 0.28;
+  --aap-background-color: rgba(51, 51, 54, 0.7);
+  --aap-background-color-solid: 42 42 45;
+  --aap-inner-glow-color: rgba(232, 232, 237, 0.11);
+  --aap-text-color: rgb(245, 245, 247);
+  --aap-accent-color: rgb(0, 113, 227);
+  --aap-button-hover: rgba(73, 73, 76, 0.726);
+  --aap-button-active: rgba(57, 57, 60, 0.742);
+  --aap-icon-color: rgb(245, 245, 247);
+  --aap-active-fill-color: rgb(245, 245, 247);
+  --aap-inactive-fill-color: #767677;
+  --aap-dotnav-background: rgba(245, 245, 247, 0.8);
+  --aap-dotnav-background-hover: rgba(255, 255, 255, 0.48);
+
+  --sk-dotnav-size: 8px;
+  --sk-dotnav-margin-block: 0;
+  --sk-dotnav-margin-inline: 8px;
+
+  --autoplay-progress: 0;
+  --autoplay-persist-duration: 6.15s;
+  --frame-transition-duration: 200ms;
+}
+
+/* —— Container (positions chrome over gallery) —— */
+.aap-root .all-access-pass__container {
+  align-items: flex-end;
+  display: flex;
+  height: 75%;
+  justify-content: center;
+  left: 0;
+  margin: 0;
+  overflow: clip;
+  pointer-events: none;
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  will-change: transform;
+  z-index: 5;
+}
+
+/* —— Sticky AAP row —— */
+.aap-root .all-access-pass {
+  align-items: center;
+  bottom: var(--aap-margin);
+  display: flex;
+  margin-bottom: 0;
+  margin-top: var(--aap-margin);
+  pointer-events: auto;
+  position: relative;
+  will-change: transform;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.aap-root .all-access-pass.activated {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* —— AAP media-card-gallery —— */
+.aap-root .aap-media-card-gallery {
+  --button-margin: 10px;
+  --progress-bar-active-width: 48px;
+  --animation-duration: var(--autoplay-persist-duration, 6.25s);
+  --animation-timing-function: linear;
+  --aap-background-transition-duration: 250ms;
+  --ltr: 1;
+  --dotnav-opacity-delay: 740ms;
+  --dotnav-opacity-duration: 100ms;
+  --playpause-opacity-delay: 940ms;
+  --playpause-opacity-duration: 100ms;
+  --playpause-scale-delay: 940ms;
+  --playpause-scale-duration: 200ms;
+  z-index: 1;
+}
+
+@media (max-width: 734px) {
+  .aap-root .aap-media-card-gallery {
+    --progress-bar-active-width: 32px;
+    max-width: calc(100vw - 40px);
+  }
+}
+
+.aap-root .aap-media-card-gallery.all-access-pass::before {
+  content: '';
+  width: var(--aap-min-height);
+  flex: none;
+}
+
+.aap-root .aap-media-card-gallery__timed-dotnav {
+  --progress-intro: 1;
+}
+
+/* Intro seed (Apple AAP) — scale 0.01 → shown by their engine; we keep hidden once activated */
+.aap-root .all-access-pass__intro-element {
+  border-radius: var(--aap-min-height);
+  background-color: rgb(var(--aap-background-color-solid));
+  box-sizing: border-box;
+  height: var(--aap-min-height);
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%) scale(0.01);
+  width: var(--aap-min-height);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.aap-root .enhanced .all-access-pass.activated .all-access-pass__intro-element {
+  display: none;
+}
+
+/* Elements (bubbles) */
+.aap-root .all-access-pass__element {
+  --alpha: 1;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 28px;
+  color: var(--aap-text-color);
+  display: flex;
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.aap-root .aap-media-card-gallery .all-access-pass__element {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  min-height: var(--aap-min-height);
+  pointer-events: auto;
+  position: relative;
+}
+
+.aap-root .all-access-pass.activated .all-access-pass__element {
+  opacity: 1;
+}
+
+/* Glass background — no border stroke */
+.aap-root .all-access-pass__background {
+  --scale: 1;
+  align-self: center;
+  -webkit-backdrop-filter: blur(calc(var(--aap-blur) * (2 - var(--alpha))));
+  backdrop-filter: blur(calc(var(--aap-blur) * (2 - var(--alpha))));
+  background-color: rgba(
+    var(--aap-background-color-solid) /
+      calc(1 - var(--alpha) * var(--aap-background-color-alpha))
+  );
+  border-radius: 28px;
+  height: var(--aap-min-height);
+  justify-self: center;
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--scale));
+  width: var(--aap-min-height);
+  will-change: transform;
+  z-index: -1;
+  box-shadow: none;
+  border: none;
+}
+
+.aap-root .all-access-pass.activated .all-access-pass__background {
+  opacity: 1;
+  width: 100%;
+}
+
+/* —— Dotnav —— */
+.aap-root .aap-media-card-gallery .all-access-pass__element .dotnav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
+  padding: 0 16px;
+}
+
+.aap-root .aap-media-card-gallery .all-access-pass__element .dotnav .dotnav-items {
+  --dotnav-count: 0;
+  --dot-width-total: calc((var(--dotnav-count) - 1) * var(--sk-dotnav-size) * 3);
+  --progress-width-total: calc(
+    var(--progress-bar-active-width) * var(--progress-intro) + var(--sk-dotnav-size) * 2
+  );
+  min-width: calc(var(--dot-width-total) + var(--progress-width-total));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.aap-root .aap-media-card-gallery .all-access-pass__element .dotnav .dotnav-items .dotnav-item {
+  --item-index: 0;
+  width: auto;
+  list-style: none;
+  margin-block: var(--sk-dotnav-margin-block);
+  margin-inline: var(--sk-dotnav-margin-inline);
+  position: relative;
+}
+
+/* Base size 8×8; min-width expands via --autoplay-progress (Apple formula) */
+.aap-root
+  .aap-media-card-gallery
+  .all-access-pass__element
+  .dotnav
+  .dotnav-items
+  .dotnav-item
+  .dotnav-link {
+  --item-progress: calc(var(--item-index) - var(--autoplay-progress));
+  --abs-item-progress: max(var(--item-progress), -1 * var(--item-progress));
+  --item-expand-amount: min((1 - var(--abs-item-progress)), 1);
+  --progress-bar-delta-width: calc(
+    var(--progress-bar-active-width) - var(--sk-dotnav-size)
+  );
+
+  appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background-color: var(--aap-dotnav-background);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--sk-dotnav-size);
+  height: var(--sk-dotnav-size);
+  max-width: calc(var(--progress-bar-active-width));
+  min-width: calc(
+    var(--progress-bar-delta-width) * var(--item-expand-amount) * var(--progress-intro) +
+      var(--sk-dotnav-size)
+  );
+  transition: background-color linear var(--aap-background-transition-duration);
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+}
+
+.aap-root
+  .aap-media-card-gallery
+  .all-access-pass__element
+  .dotnav
+  .dotnav-items
+  .dotnav-item
+  .dotnav-link::before {
+  content: '';
+  position: absolute;
+  padding: var(--sk-dotnav-size);
+  width: 100%;
+  height: 100%;
+  box-sizing: content-box;
+}
+
+.aap-root
+  .aap-media-card-gallery
+  .all-access-pass__element
+  .dotnav
+  .dotnav-items
+  .dotnav-item
+  .dotnav-link:hover:not(.current) {
+  background-color: var(--aap-dotnav-background-hover);
+}
+
+.aap-root
+  .aap-media-card-gallery
+  .all-access-pass__element
+  .dotnav
+  .dotnav-items
+  .dotnav-item
+  .dotnav-link.current {
+  overflow: hidden;
+  cursor: default;
+  background-color: var(--aap-dotnav-background);
+  pointer-events: none;
+}
+
+/* Progress fill — CSS keyframes, play-state from .playing / .paused */
+.aap-root
+  .aap-media-card-gallery
+  .all-access-pass__element
+  .dotnav
+  .dotnav-items
+  .dotnav-item
+  .dotnav-link.current::after {
+  content: '';
+  width: 0;
+  height: 100%;
+  min-width: 15%;
+  margin-inline-start: -15%;
+  border-radius: 10px;
+  background-color: var(--aap-active-fill-color);
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  animation-name: aap-animate-progress;
+  animation-duration: var(--animation-duration);
+  animation-timing-function: var(--animation-timing-function);
+  animation-play-state: paused;
+  animation-fill-mode: forwards;
+  transition: background-color linear var(--aap-background-transition-duration);
+}
+
+@keyframes aap-animate-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 115%;
+  }
+}
+
+.aap-root .playing .tablist-wrapper .dotnav .dotnav-items .dotnav-item .dotnav-link.current::after {
+  animation-play-state: running;
+}
+
+.aap-root .paused .tablist-wrapper .dotnav .dotnav-items .dotnav-item .dotnav-link.current::after,
+.aap-root .ended .tablist-wrapper .dotnav .dotnav-items .dotnav-item .dotnav-link.current::after,
+/* Keep pause icon during slide pan; only freeze the fill */
+.aap-root .is-handoff .tablist-wrapper .dotnav .dotnav-items .dotnav-item .dotnav-link.current::after {
+  animation-play-state: paused;
+}
+
+/* Entrance scale (Apple html.enhanced → .enhanced) */
+.aap-root.enhanced .aap-media-card-gallery__dotnav-item {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.aap-root.enhanced .activated .aap-media-card-gallery__dotnav-item {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity var(--dotnav-opacity-duration) ease-in var(--dotnav-opacity-delay);
+}
+
+/* —— Play / pause (DOM first; order:2 → visual right) —— */
+.aap-root .aap-media-card-gallery .play-pause-button-wrapper {
+  order: 2;
+  height: var(--aap-min-height);
+  width: var(--aap-min-height);
+  margin-inline-start: var(--aap-bubble-gap);
+  flex: none;
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button-wrapper .play-pause-button {
+  height: 100%;
+  width: 100%;
+  pointer-events: all;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 32px;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  color: var(--aap-icon-color);
+  position: relative;
+  overflow: visible;
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button-wrapper .play-pause-button .svg-icon {
+  height: 100%;
+  width: 100%;
+  display: none;
+  fill: var(--aap-icon-color);
+  transition: fill linear var(--aap-background-transition-duration);
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button-wrapper .play-pause-button:hover {
+  background-color: var(--aap-button-hover);
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button-wrapper .play-pause-button:active {
+  background-color: var(--aap-button-active);
+}
+
+/* Magnetic visual layer (portfolio addition) */
+.aap-root .aap-media-card-gallery .play-pause-button .play-pause-button__visual {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  will-change: transform;
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button .icons {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.aap-root .aap-media-card-gallery .play-pause-button .svg-icon {
+  position: absolute;
+  inset: 0;
+}
+
+.aap-root .playing .play-pause-button .svg-icon.pause-icon {
+  display: block;
+}
+
+.aap-root .paused .play-pause-button .svg-icon.play-icon {
+  display: block;
+}
+
+.aap-root .ended .play-pause-button .svg-icon.replay-icon {
+  display: block;
+}
+
+.aap-root.enhanced .aap-media-card-gallery__button {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.aap-root.enhanced .activated .aap-media-card-gallery__button {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    background-color linear 100ms,
+    opacity var(--playpause-opacity-duration) ease-in var(--playpause-opacity-delay),
+    transform var(--playpause-scale-duration) ease-out var(--playpause-scale-delay);
+}
+
+.aap-root .visuallyhidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aap-root.enhanced .aap-media-card-gallery__dotnav-item,
+  .aap-root.enhanced .aap-media-card-gallery__button {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .aap-root
+    .aap-media-card-gallery
+    .dotnav-link.current::after {
+    animation: none;
+    width: 115%;
+  }
+}

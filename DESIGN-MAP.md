@@ -10,8 +10,8 @@ Source: live Framer site (published Jul 25, 2026). Inspected via HTML, search in
 | `/resume` | Live | Full CV |
 | `/contact` | Live | SAY HI form |
 | `/projects/staircase` | Live | Full case study: bento hero + interleaved galleries + quotes |
-| `/projects/hp-printables` | Live | Full case study + quotes |
-| `/projects/vibecheck` | Live | Full case study |
+| `/projects/hp-printables` | Live | Full case: bento + wireframe scrolls + quotes |
+| `/projects/vibecheck` | Live | Full case: bento + moodboard + presentation deck |
 | `/projects/intermex` | Live | Full case study (homepage card not always linked) |
 | `/projects/booking` | Live | Concept case study |
 | Gilbarco / Moove / Bubble | Cover only | Marked SOON on homepage |
@@ -70,7 +70,9 @@ Fonts hosted: Blatant via Framer assets; Inter + IBM Plex via Google Fonts.
 | Token | Value |
 |-------|--------|
 | Nav height | 64px |
+| Nav / footer max-width | **1200px** (`--content-max`; not shell 1920) |
 | Nav padding | 12px 24px |
+| Footer padding | **72×250×24** desktop · **48×64×24** tablet · **32×16×24** mobile |
 | Hero padding (desktop) | 86px 250px 48px |
 | Grid gap | 8px |
 | Grid outer pad | 16px |
@@ -153,7 +155,7 @@ Source: live Framer HTML + CSS (Jul 25, 2026). **Breakpoints:** mobile ≤809 ·
 
 ### Content order (Framer names)
 
-1. **Hero** — year `2023`, tags `AI`/`WEB`, title, summary  
+1. **Hero** — year `2021`, tags `AI`/`WEB`, title, summary  
 2. **ImagesFull** (bento 4×3 desktop)  
    - `Staircase01` — dual iPhones (`0jPwP3iw…`, contain, span 2×2)  
    - Caption chip — “Let me evaluate your documents…”  
@@ -186,7 +188,28 @@ Source: live Framer HTML + CSS (Jul 25, 2026). **Breakpoints:** mobile ≤809 ·
 ### Data model
 
 - Case studies with interleaved media use `project.blocks` (`bento` | `section` | `gallery`).  
+- Gallery layouts: `pair` | `triple` | `single` | `social` | `scroll` (horizontal drag).  
 - Projects without `blocks` keep legacy `sections` + single `case__cover`.
+
+## Case study: HP Printables
+
+1. ImagesFull bento 4×3: laptop 2×2 · hover 2×1 · logo 1×1 (+texture) · phone 1×2 · partners 1×1 · multi-page 2×1  
+2. Project Kickoff and Discovery  
+3. SectionWireframes **deck-slider** — Framer Slideshow: centered decks + L/R fade masks, prev/next arrows, 4 page dots; each card = title + phone rail on texture  
+4. Design Challenges + logo 35° / CMYK+halftone pair  
+5. Final Deliverables + laptop mockup  
+6. Results and Impact  
+7. Quotes (Chad, Stefan, James) · Thanks note · Next → Vibecheck  
+
+## Case study: Vibecheck
+
+1. ImagesFull bento: MacBook **2×3** · detail 1×1 · decor 1×1 (light) · phones 2×2  
+2. Audit · Audit Notes + notes photo  
+3. Wireframing text → **stack** of 3 overlapping hand-drawn wireframes  
+4. Moodboard text → ImagesMoodBoard **5-col mosaic** (Mac 2×4 · mood 2×3 · brand 1×3 light · phones 1×3 · mobile 2×3 · alt 2×2)  
+5. Final Deliverables + prototype mockup  
+6. Presentation — **DeckSlider `presentation`** (25 full content-width slides, no peeks)  
+7. Next → Intermex
 
 ## Rebuild mapping
 
@@ -196,6 +219,8 @@ Source: live Framer HTML + CSS (Jul 25, 2026). **Breakpoints:** mobile ≤809 ·
 | Project cell | `ProjectCard.astro` |
 | ImagesFull grid (home) | `ProjectGrid.astro` |
 | ImagesFull / galleries (case) | `projects/[slug].astro` + `blocks` in `projects.ts` |
+| SectionWireframes slideshow | `DeckSlider.astro` + `deck-slider.ts` |
+| AAP slide navigator (Apple highlights) | DeckSlider timed-dotnav + play/pause (inspired by `#aap-media-card-gallery`) |
 | SectionQuotes | `QuoteSlider.astro` |
 | LinkNextProject | `NextProject.astro` |
 | Content | `src/data/*.ts` |
