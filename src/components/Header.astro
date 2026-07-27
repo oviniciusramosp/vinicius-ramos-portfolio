@@ -4,6 +4,21 @@ import Button from './Button.astro';
 import LogoWave from './LogoWave.astro';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const menuLinks = [
+  { label: 'HOME', href: '/' },
+  ...site.nav.map((item) => ({
+    label: item.label.toUpperCase(),
+    href: item.href,
+  })),
+];
+
+function isActive(href: string) {
+  const path = pathname;
+  const h = href.replace(/\/$/, '') || '/';
+  if (h === '/') return path === '/';
+  return path === h || path.startsWith(`${h}/`);
+}
 ---
 
 <!--
@@ -20,13 +35,74 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
           <Button
             href={item.href}
             label={item.label}
-            active={pathname === item.href || pathname.startsWith(item.href + '/')}
+            active={isActive(item.href)}
           />
         ))
       }
     </div>
+
+    <!-- Mobile only: Ionicons menu toggle -->
+    <button
+      type="button"
+      class="nav-menu-toggle"
+      data-nav-menu-toggle
+      aria-expanded="false"
+      aria-controls="site-menu"
+      aria-label="Open menu"
+    >
+      <ion-icon class="nav-menu-toggle__icon nav-menu-toggle__icon--menu" name="menu-outline" aria-hidden="true"></ion-icon>
+      <ion-icon class="nav-menu-toggle__icon nav-menu-toggle__icon--close" name="close-outline" aria-hidden="true"></ion-icon>
+    </button>
   </nav>
   <div class="nav-border" aria-hidden="true"></div>
+
+  <!--
+    Fullscreen mobile menu — inspired by landonorris.com (large centered titles + footer meta).
+    Hidden on desktop; open state: .site-header.is-menu-open
+  -->
+  <div
+    id="site-menu"
+    class="site-menu"
+    data-site-menu
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site menu"
+    aria-hidden="true"
+  >
+    <nav class="site-menu__nav" aria-label="Mobile">
+      {
+        menuLinks.map((item, i) => (
+          <a
+            class:list={['site-menu__link', isActive(item.href) && 'is-active']}
+            href={item.href}
+            data-transition-label={item.label}
+            style={`--i: ${i}`}
+          >
+            <span class="site-menu__link-label">{item.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="site-menu__footer">
+      <a
+        class="site-menu__social"
+        href={site.social.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cursor="block"
+      >
+        linkedin
+      </a>
+      <p class="site-menu__note">
+        made with
+        <span class="site-menu__heart" aria-hidden="true">
+          <ion-icon name="heart"></ion-icon>
+        </span>
+        in Brazil
+      </p>
+    </div>
+  </div>
 </header>
 
 <style>
@@ -41,20 +117,39 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(var(--blur-nav));
     -webkit-backdrop-filter: blur(var(--blur-nav));
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .site-header a,
+  .site-header button {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .site-nav {
+    position: relative;
+    z-index: 2;
     display: flex;
-    align-items: center; /* vertical center: logo + links */
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-7);
     height: var(--nav-height);
     width: 100%;
-    /* Live Framer nav: width 1200px, padding 12px 24px */
     max-width: var(--content-max);
     margin-inline: auto;
     padding: 12px 24px;
     overflow: visible;
+  }
+
+  /* Wordmark always natural size — never share remaining flex space */
+  .site-nav :global(.logo),
+  .site-nav :global(.logo-wave) {
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
   }
 
   .nav-links {
@@ -62,22 +157,316 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
     align-items: center;
     justify-content: flex-end;
     gap: var(--space-8);
-    flex-shrink: 0;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .nav-border {
+    position: relative;
+    z-index: 2;
     height: 1px;
     width: 100%;
     background: var(--color-border);
   }
 
+  /* —— Menu toggle (mobile only) —— */
+  .nav-menu-toggle {
+    /* Shared optical size with the wordmark on mobile */
+    --nav-control-size: 24px;
+    display: none;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: relative;
+    z-index: 3;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-menu-toggle:focus,
+  .nav-menu-toggle:focus-visible {
+    outline: none;
+  }
+
+  .nav-menu-toggle__icon {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: var(--nav-control-size);
+    height: var(--nav-control-size);
+    font-size: var(--nav-control-size);
+    transition:
+      opacity 200ms var(--ease-smooth),
+      transform 280ms var(--ease-smooth);
+  }
+
+  .nav-menu-toggle__icon--close {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg) scale(0.7);
+    pointer-events: none;
+  }
+
+  .site-header.is-menu-open .nav-menu-toggle__icon--menu {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.7);
+    pointer-events: none;
+  }
+
+  .site-header.is-menu-open .nav-menu-toggle__icon--close {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    pointer-events: auto;
+  }
+
+  /* —— Fullscreen menu panel —— */
+  .site-menu {
+    display: none;
+  }
+
   @media (max-width: 640px) {
     .site-nav {
-      padding: 12px 16px;
+      --nav-control-size: 24px;
+      gap: 8px;
+      padding: 10px 12px;
+      flex-wrap: nowrap;
+      height: var(--nav-height);
+      min-height: var(--nav-height);
+      align-items: center;
     }
 
+    /* Desktop links → hamburger */
     .nav-links {
-      gap: var(--space-3);
+      display: none;
+    }
+
+    /* Wordmark em-box = menu icon size (same optical height) */
+    .site-nav :global(.logo-wave) {
+      font-size: var(--nav-control-size);
+      height: var(--nav-control-size);
+      line-height: 1;
+    }
+
+    .site-nav :global(.logo-wave__row),
+    .site-nav :global(.logo-wave__letter),
+    .site-nav :global(.logo-wave__space),
+    .site-nav :global(.logo-wave__letter svg) {
+      height: var(--nav-control-size);
+    }
+
+    .nav-menu-toggle {
+      display: inline-flex;
+      margin-left: auto;
+      --nav-control-size: 24px;
+    }
+
+    .site-header.is-menu-open {
+      background: #000;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .site-header.is-menu-open .nav-border {
+      background: transparent;
+    }
+
+    .site-menu {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      padding:
+        calc(var(--nav-height) + 8px)
+        24px
+        max(28px, env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
+      background: #000;
+      /* Closed state */
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 320ms var(--ease-smooth),
+        visibility 320ms;
+    }
+
+    .site-header.is-menu-open .site-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .site-menu__nav {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(4px, 1.5vh, 12px);
+      min-height: 0;
+      text-align: center;
+    }
+
+    .site-menu__link {
+      display: block;
+      width: 100%;
+      max-width: 16ch;
+      padding: 0.12em 0;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(42px, 12.5vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--color-text);
+      text-decoration: none;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      outline: none;
+      /* Enter animation */
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 480ms var(--ease-smooth),
+        transform 480ms var(--ease-smooth),
+        color 200ms ease;
+      transition-delay: 0ms;
+    }
+
+    .site-menu__link:focus,
+    .site-menu__link:focus-visible {
+      outline: none;
+    }
+
+    .site-header.is-menu-open .site-menu__link {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: calc(80ms + var(--i, 0) * 55ms);
+    }
+
+    .site-menu__link.is-active {
+      color: var(--color-accent);
+    }
+
+    .site-menu__link:active {
+      color: var(--color-accent);
+    }
+
+    .site-menu__link-label {
+      display: block;
+    }
+
+    .site-menu__footer {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding-top: 16px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity 420ms var(--ease-smooth),
+        transform 420ms var(--ease-smooth);
+      transition-delay: 0ms;
+    }
+
+    .site-header.is-menu-open .site-menu__footer {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 280ms;
+    }
+
+    .site-menu__social {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      outline: none;
+    }
+
+    .site-menu__social:focus,
+    .site-menu__social:focus-visible {
+      outline: none;
+    }
+
+    .site-menu__social:active {
+      color: var(--color-accent);
+    }
+
+    .site-menu__note {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .site-menu__heart {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      line-height: 1;
+      color: currentColor;
+    }
+
+    .site-menu__heart :global(ion-icon) {
+      display: block;
+      width: 1em;
+      height: 1em;
+      pointer-events: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-menu,
+    .site-menu__link,
+    .site-menu__footer,
+    .nav-menu-toggle__icon {
+      transition: none !important;
+      transition-delay: 0s !important;
+    }
+
+    .site-header.is-menu-open .site-menu__link,
+    .site-header.is-menu-open .site-menu__footer {
+      opacity: 1;
+      transform: none;
     }
   }
 </style>
+
+<script>
+  import { initMobileNav, closeMobileNav } from '../scripts/mobile-nav';
+
+  const boot = () => {
+    closeMobileNav();
+    initMobileNav();
+  };
+  boot();
+  document.addEventListener('astro:page-load', boot);
+  document.addEventListener('astro:before-preparation', () => closeMobileNav());
+</script>

@@ -41,6 +41,15 @@ export type Article = {
    * e.g. 'bottom center', 'center top'
    */
   imageObjectPosition?: string;
+  /**
+   * Scale the art inside its frame (1 = 100%). e.g. 0.8 for 80%.
+   */
+  imageScale?: number;
+  /**
+   * How the image fills its slot on the article page.
+   * `cover` (default) crops to fill; `contain` shows the full image (fit).
+   */
+  imageFit?: 'cover' | 'contain';
   /** Full article body — each item is a paragraph (string or rich parts) */
   content: ArticleParagraph[];
   /** Original LinkedIn post URL */
@@ -119,8 +128,11 @@ export const articles: Article[] = [
     title: 'UI-on-demand',
     description:
       'Apps are exploding. Next up: interfaces generated only when you need them.',
-    image: '/articles/ui-on-demand.svg',
-    imageAlt: 'Interface appearing on demand',
+    image: '/articles/ui-on-demand.png',
+    imageAlt:
+      'Two iPhones: describe your widget prompt and a generated marathon countdown widget',
+    imageObjectPosition: 'center',
+    imageFit: 'contain',
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7471196611948449792/',
     content: [
@@ -139,8 +151,11 @@ export const articles: Article[] = [
     title: 'Time to be B2A',
     description:
       'Maybe you don’t need an AI product. Maybe someone else’s agent needs yours.',
-    image: '/articles/your-customer-is-an-agent.svg',
-    imageAlt: 'Product designed for AI agents',
+    image: '/articles/your-customer-is-an-agent.png',
+    imageAlt:
+      'Your app connected to Claude, ChatGPT, and Perplexity as agent consumers',
+    imageObjectPosition: 'center',
+    imageScale: 0.8,
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7465759164049481729/',
     content: [

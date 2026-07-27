@@ -1,6 +1,9 @@
 /**
- * Homepage card: inline a stroked SVG and draw construction lines on hover.
+ * Homepage card: inline a stroked SVG and draw construction lines.
  * Host: [data-cover-lines][data-src="…svg"]
+ *
+ * Desktop: draw on hover / focus / magnetic.
+ * Mobile / touch: auto-draw once when the card enters view (is-inview cascade).
  *
  * Inlined SVGs rewrite clipPath/mask url(#id) to unique IDs so document-scoped
  * references don't break the white mark fills.
@@ -199,6 +202,14 @@ function setDrawn(host: HTMLElement, drawn: boolean) {
   }
 }
 
+/** Touch / narrow viewports — no reliable hover; auto-draw on enter. */
+function prefersAutoDraw(): boolean {
+  return (
+    window.matchMedia('(hover: none)').matches ||
+    window.matchMedia('(max-width: 768px)').matches
+  );
+}
+
 function bindCard(card: BoundCard, host: HTMLElement) {
   card.__coverLinesAbort?.abort();
   const ac = new AbortController();
@@ -208,6 +219,48 @@ function bindCard(card: BoundCard, host: HTMLElement) {
   const on = () => setDrawn(host, true);
   const off = () => setDrawn(host, false);
 
+  // Mobile / touch: fire once when the card is revealed (is-inview) or intersects
+  if (prefersAutoDraw()) {
+    let drawn = false;
+    const autoDraw = () => {
+      if (drawn) return;
+      drawn = true;
+      on();
+    };
+
+    // card-reveal adds .is-inview in cascade — preferred trigger
+    if (card.classList.contains('is-inview')) {
+      // Small delay so scale-up has started before lines draw
+      window.setTimeout(autoDraw, 120);
+    } else {
+      const mo = new MutationObserver(() => {
+        if (card.classList.contains('is-inview')) {
+          mo.disconnect();
+          window.setTimeout(autoDraw, 120);
+        }
+      });
+      mo.observe(card, { attributes: true, attributeFilter: ['class'] });
+      signal.addEventListener('abort', () => mo.disconnect());
+
+      // Fallback if reveal never arms (e.g. reduced motion without class)
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            io.disconnect();
+            window.setTimeout(autoDraw, 120);
+            break;
+          }
+        },
+        { threshold: 0.28, rootMargin: '0px 0px -4% 0px' },
+      );
+      io.observe(card);
+      signal.addEventListener('abort', () => io.disconnect());
+    }
+    return;
+  }
+
+  // Desktop: draw on hover / focus / magnetic
   card.addEventListener('pointerenter', on, { signal });
   card.addEventListener('pointerleave', off, { signal });
   card.addEventListener('focusin', on, { signal });

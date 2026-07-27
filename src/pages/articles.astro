@@ -12,6 +12,8 @@ const galleryItems: ScrollGalleryItem[] = articles.map((article) => ({
   body: article.description,
   image: article.image,
   imageAlt: article.imageAlt ?? article.title,
+  imageObjectPosition: article.imageObjectPosition,
+  imageScale: article.imageScale,
   href: articleHref(article.id),
   actionLabel: `Read ${article.title}`,
   kind: 'article' as const,

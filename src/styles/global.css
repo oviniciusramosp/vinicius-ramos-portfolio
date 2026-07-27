@@ -355,6 +355,13 @@ html.is-page-transitioning .site-header {
   pointer-events: none;
 }
 
+/* Mobile fullscreen menu open — lock page scroll */
+html.is-nav-menu-open,
+html.is-nav-menu-open body {
+  overflow: hidden;
+  touch-action: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .page-mask,
   .page-mask__stage,

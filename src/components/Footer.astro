@@ -30,6 +30,8 @@ import Button from './Button.astro';
    */
   .site-footer {
     width: 100%;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .site-footer__inner {
@@ -45,6 +47,12 @@ import Button from './Button.astro';
     box-sizing: border-box;
   }
 
+  .site-footer a,
+  .site-footer button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   .site-footer__note {
     display: inline-flex;
     align-items: center;
@@ -52,6 +60,8 @@ import Button from './Button.astro';
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-text-muted);
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   /* Wrapper: ion-icon uses contain:paint, so scale must live on a parent */

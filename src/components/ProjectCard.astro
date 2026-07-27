@@ -33,9 +33,9 @@ const coverSvgInline = animateCoverLines ? readPublicSvg(project.cover) : undefi
 const frontSvgInline = animateFrontLines ? readPublicSvg(project.coverFront) : undefined;
 
 const tagList = [
-  ...project.tags.map((label) => ({ label, tone: 'default' as const })),
-  // SOON badge only used on mobile (see CSS); desktop uses cursor pill
+  // SOON first on mobile (desktop hides it — cursor pill handles that)
   ...(project.soon ? [{ label: 'SOON', tone: 'soon' as const }] : []),
+  ...project.tags.map((label) => ({ label, tone: 'default' as const })),
 ];
 ---
 
@@ -44,6 +44,7 @@ const tagList = [
   data-magnetic
   data-magnetic-range="3"
   data-card-parallax
+  data-card-reveal
   data-cursor={project.soon ? 'soon' : 'block'}
 >
   <TagEl
@@ -51,6 +52,7 @@ const tagList = [
       'project-card',
       `project-card--${project.size}`,
       `project-card--fit-${fit}`,
+      `project-card--slug-${project.slug}`,
       hasFront && 'has-dual-image',
       project.soon && 'is-soon',
     ]}
@@ -156,9 +158,33 @@ const tagList = [
     --img-scale: 1.18;
     --img-scale-hover-back: 1.24;
     --img-scale-hover-mid: 1.22;
-    /* Inlined SVG covers (Moove mark) sit ~20% larger than the default img scale */
+    /* Inlined SVG covers — default slightly larger than raster */
     --img-scale-svg: 1.42;
     --img-scale-svg-hover: 1.48;
+    /*
+     * Scroll-reveal image parallax — desktop / multi-col (default): soft + slow.
+     * Ease-out only. Enter = rest − delta × travel.
+     * --reveal-travel is inverse to cell footprint so large cards don’t “pop”
+     * more than small ones (absolute motion stays comparable).
+     */
+    --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out */
+    --reveal-img-dur-back: 2.2s;
+    --reveal-img-dur-mid: 1.7s;
+    --reveal-travel: 1;
+    --reveal-delta-back: 0.01;
+    --reveal-delta-mid: 0.015;
+    --img-scale-enter-back: calc(
+      var(--img-scale) - var(--reveal-delta-back) * var(--reveal-travel)
+    );
+    --img-scale-enter-mid: calc(
+      var(--img-scale) - var(--reveal-delta-mid) * var(--reveal-travel)
+    );
+    --img-scale-svg-enter-back: calc(
+      var(--img-scale-svg) - var(--reveal-delta-back) * var(--reveal-travel)
+    );
+    --img-scale-svg-enter-mid: calc(
+      var(--img-scale-svg) - var(--reveal-delta-mid) * var(--reveal-travel)
+    );
     position: relative;
     display: block;
     width: 100%;
@@ -175,6 +201,28 @@ const tagList = [
 
   a.project-card {
     cursor: pointer;
+  }
+
+  /*
+   * Travel ∝ 1 / √(col×row) so pixel motion stays similar across sizes.
+   * 1×1 → 1 · 2×1/1×2 → ~0.71 · 2×2 → 0.5 · 2×3 → ~0.41
+   */
+  .project-card--sm,
+  .project-card--md {
+    --reveal-travel: 1;
+  }
+
+  .project-card--wide,
+  .project-card--tall {
+    --reveal-travel: 0.71;
+  }
+
+  .project-card--lg {
+    --reveal-travel: 0.5;
+  }
+
+  .project-card--xl {
+    --reveal-travel: 0.41;
   }
 
   /* —— Images —— */
@@ -218,8 +266,91 @@ const tagList = [
     display: block;
   }
 
+  /*
+   * Contain: product cutouts / logos keep aspect (no stretch).
+   * Defaults are mobile-safe; desktop bumps scale via min-width media.
+   * Per-slug overrides (moove / booking) tune crop-sensitive assets.
+   */
+  .project-card--fit-contain {
+    --img-scale: 1.05;
+    --img-scale-hover-back: 1.1;
+    --img-scale-hover-mid: 1.08;
+    --img-scale-svg: 0.9;
+    --img-scale-svg-hover: 0.94;
+  }
+
   .project-card--fit-contain .project-card__image {
     object-fit: contain;
+    object-position: center;
+  }
+
+  .project-card--fit-contain .project-card__image--svg :global(svg) {
+    object-fit: contain;
+  }
+
+  /* —— Moove: wide logo mark — never clip sides on narrow mobile cells —— */
+  .project-card--slug-moove {
+    --img-scale-svg: 0.82;
+    --img-scale-svg-hover: 0.86;
+  }
+
+  /*
+   * Booking: full mock visible (contain @ scale 1), sit on the card floor.
+   * No inset overscan — that was blowing layout and cropping the phone.
+   * Parallax Y is dampened in card-parallax.ts for fit-contain so edges stay covered.
+   */
+  /* Booking default = mobile: full mock @ contain, no extra zoom */
+  .project-card--slug-booking {
+    --img-scale: 1;
+    --img-scale-hover-back: 1.03;
+    --img-scale-hover-mid: 1.02;
+  }
+
+  .project-card--slug-booking .project-card__image {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    transform-origin: center bottom;
+  }
+
+  /* Desktop / multi-col: roomier cells → fuller scale (mobile stays conservative) */
+  @media (min-width: 769px) {
+    .project-card--fit-contain {
+      --img-scale: 1.14;
+      --img-scale-hover-back: 1.2;
+      --img-scale-hover-mid: 1.18;
+      --img-scale-svg: 1.22;
+      --img-scale-svg-hover: 1.28;
+    }
+
+    /* Wide bento cell — logo can breathe larger without side clip */
+    .project-card--slug-moove {
+      --img-scale-svg: 1.28;
+      --img-scale-svg-hover: 1.34;
+    }
+
+    /* Booking desktop only: ~20% larger than contain fit */
+    .project-card--slug-booking {
+      --img-scale: 1.2;
+      --img-scale-hover-back: 1.24;
+      --img-scale-hover-mid: 1.23;
+    }
+  }
+
+  /* Phone single-column: Moove full-width — keep mark fully inside */
+  @media (max-width: 768px) {
+    .project-card--slug-moove {
+      --img-scale-svg: 0.78;
+      --img-scale-svg-hover: 0.82;
+    }
+
+    .project-card--slug-booking {
+      --img-scale: 1;
+      --img-scale-hover-back: 1.03;
+      --img-scale-hover-mid: 1.02;
+    }
   }
 
   /*
@@ -415,32 +546,252 @@ const tagList = [
     outline-offset: 3px;
   }
 
+  /*
+   * Scroll-reveal · dual-layer scale-up (all viewports).
+   * Each layer has its own duration + enter scale so depth reads as parallax.
+   * Armed only when JS sets [data-card-reveal-ready]; settles on .is-inview.
+   */
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--back .project-card__image {
+    transform: scale(var(--img-scale-enter-back));
+    transition: transform var(--reveal-img-dur-back) var(--reveal-ease);
+  }
+
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--mid .project-card__image {
+    transform: scale(var(--img-scale-enter-mid));
+    transition: transform var(--reveal-img-dur-mid) var(--reveal-ease);
+  }
+
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--back .project-card__image--svg {
+    transform: scale(var(--img-scale-svg-enter-back));
+    transition: transform var(--reveal-img-dur-back) var(--reveal-ease);
+  }
+
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--mid .project-card__image--svg {
+    transform: scale(var(--img-scale-svg-enter-mid));
+    transition: transform var(--reveal-img-dur-mid) var(--reveal-ease);
+  }
+
+  .project-card-shell.is-inview .project-card__layer--back .project-card__image,
+  .project-card-shell.is-inview .project-card__layer--mid .project-card__image {
+    transform: scale(var(--img-scale));
+  }
+
+  .project-card-shell.is-inview .project-card__layer--back .project-card__image--svg,
+  .project-card-shell.is-inview .project-card__layer--mid .project-card__image--svg {
+    transform: scale(var(--img-scale-svg));
+  }
+
+  /* After settle, hover/magnetic still boost (desktop) — snappy card-dur */
+  .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image,
+  .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image,
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image {
+    transform: scale(var(--img-scale-hover-back));
+    transition-duration: var(--card-dur);
+    transition-timing-function: var(--card-ease);
+  }
+
+  .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image,
+  .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image,
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image {
+    transform: scale(var(--img-scale-hover-mid));
+    transition-duration: var(--card-dur);
+    transition-timing-function: var(--card-ease);
+  }
+
+  .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image--svg,
+  .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image--svg,
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image--svg,
+  .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image--svg,
+  .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image--svg,
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image--svg {
+    transform: scale(var(--img-scale-svg-hover));
+    transition-duration: var(--card-dur);
+    transition-timing-function: var(--card-ease);
+  }
+
+  /*
+   * Mobile: title + tags always on, bottom-left.
+   * Soft radial scrim. Stronger / snappier layer parallax than desktop.
+   */
   @media (max-width: 768px) {
+    .project-card {
+      /*
+       * Stronger enter deltas; equal card height on mobile so travel = 1
+       * (still uses size class if we ever reintroduce multi-span mobile).
+       */
+      --reveal-travel: 1;
+      --reveal-delta-back: 0.1;
+      --reveal-delta-mid: 0.2;
+      --reveal-img-dur-back: 1.2s;
+      --reveal-img-dur-mid: 0.72s;
+      --reveal-title-dur: 0.55s;
+      --reveal-scrim-dur: 1s;
+      --scrim-opacity-enter: 1;
+      --scrim-opacity-rest: 0.72;
+    }
+
+    .project-card__content {
+      place-items: end start;
+      align-content: end;
+      padding: 20px 16px 16px;
+    }
+
+    .project-card__stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
+    }
+
     .project-card__title {
+      text-align: left;
+      font-size: clamp(22px, 6.2vw, 28px);
+      white-space: normal;
+      /* Hidden only while scroll-reveal is armed (data-card-reveal-ready) */
+      opacity: 0;
+      transform: translateY(14px);
+      transition:
+        opacity var(--reveal-title-dur) var(--reveal-ease),
+        transform var(--reveal-title-dur) var(--reveal-ease);
+      transition-delay: 0s;
+    }
+
+    /* No-JS / pre-init: keep copy + image at rest */
+    .project-card-shell:not([data-card-reveal-ready]) .project-card__title,
+    .project-card-shell:not([data-card-reveal-ready]) .project-card__tag-item {
       opacity: 1;
       transform: none;
-      transition: none;
+    }
+
+    .project-card-shell:not([data-card-reveal-ready]) .project-card__image {
+      transform: scale(var(--img-scale));
+    }
+
+    .project-card-shell:not([data-card-reveal-ready]) .project-card__image--svg {
+      transform: scale(var(--img-scale-svg));
+    }
+
+    .project-card-shell:not([data-card-reveal-ready]) .project-card__scrim {
+      opacity: var(--scrim-opacity-rest);
+    }
+
+    .project-card__tags {
+      position: static;
+      top: auto;
+      left: auto;
+      margin-top: 10px;
+      transform: none;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
+      width: auto;
+      max-width: 100%;
     }
 
     .project-card__tag-item {
-      transform: none;
-      transition: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition:
+        opacity 0.45s var(--reveal-ease),
+        transform 0.45s var(--reveal-ease);
       transition-delay: 0s;
+    }
+
+    /* Slightly smaller pills on mobile */
+    .project-card__tag-item :global(.tag) {
+      padding: 4px 9px;
+    }
+
+    .project-card__tag-item :global(.tag__label) {
+      font-size: 10px;
+      letter-spacing: 0.8px;
     }
 
     .project-card__tag-item :global(.tag),
     .project-card__tag-item :global(.tag__glass) {
-      transition: none;
+      transition:
+        color 0.38s var(--card-ease),
+        border-color 0.38s var(--card-ease),
+        background-color 0.38s var(--card-ease),
+        backdrop-filter 0.38s var(--card-ease),
+        -webkit-backdrop-filter 0.38s var(--card-ease);
       transition-delay: 0s;
     }
 
-    /* Mobile only: solid SOON badge (cursor hidden on touch) */
-    .project-card__tag-item--soon {
-      display: inline-flex !important;
+    /*
+     * Soft radial vignette — bottom-left.
+     * Base gradient denser; opacity enter → rest softens the look.
+     */
+    .project-card__scrim {
+      opacity: var(--scrim-opacity-enter);
+      background: radial-gradient(
+        130% 100% at 0% 100%,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.4) 32%,
+        rgba(0, 0, 0, 0.16) 55%,
+        transparent 72%
+      );
+      transition: opacity var(--reveal-scrim-dur) var(--reveal-ease);
     }
 
-    .project-card__scrim {
-      opacity: 0.65;
+    /* —— In view: title / tags / scrim settle —— */
+    .project-card-shell.is-inview .project-card__title {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.06s;
+    }
+
+    .project-card-shell.is-inview .project-card__tag-item {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: calc(0.14s + var(--delay, 80ms));
+    }
+
+    .project-card-shell.is-inview .project-card__scrim {
+      opacity: var(--scrim-opacity-rest);
+    }
+
+    /* Mobile only: solid SOON badge first (cursor hidden on touch) */
+    .project-card__tag-item--soon {
+      display: inline-flex !important;
+      order: -1;
+    }
+
+    /* SOON = solid white pill, black type (distinct from glass tags) */
+    .project-card__tag-item--soon :global(.tag--soon) {
+      color: #0a0a0a;
+      border-color: #ffffff;
+      background-color: #ffffff;
+    }
+
+    .project-card__tag-item--soon :global(.tag--soon .tag__glass) {
+      background-color: #ffffff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .project-card__tag-item--soon :global(.tag--soon .tag__label) {
+      color: #0a0a0a;
+    }
+
+    /* No hover image boost on touch — keep rest scale after reveal */
+    .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image,
+    .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image,
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image,
+    .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image,
+    .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image,
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image {
+      transform: scale(var(--img-scale));
+    }
+
+    .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image--svg,
+    .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image--svg,
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image--svg,
+    .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image--svg,
+    .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image--svg,
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image--svg {
+      transform: scale(var(--img-scale-svg));
     }
   }
 
@@ -456,5 +807,31 @@ const tagList = [
     .project-card__image--svg :global(.cover-line) {
       transition: none !important;
     }
+
+    .project-card-shell .project-card__title,
+    .project-card-shell .project-card__tag-item {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .project-card-shell .project-card__image {
+      transform: scale(var(--img-scale)) !important;
+    }
+
+    .project-card-shell .project-card__image--svg {
+      transform: scale(var(--img-scale-svg)) !important;
+    }
+
+    .project-card-shell .project-card__scrim {
+      opacity: var(--scrim-opacity-rest, 0.72) !important;
+    }
   }
 </style>
+
+<script>
+  import { initCardReveal } from '../scripts/card-reveal';
+
+  const boot = () => initCardReveal();
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>

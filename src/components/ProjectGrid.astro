@@ -205,6 +205,10 @@ const showFilter = filterTags.length > 0;
     }
   }
 
+  /*
+   * Mobile: every card same size (1×1). Multi-row spans (lg/tall/xl)
+   * were overlapping neighbors when min-height fought fixed tracks.
+   */
   @media (max-width: 720px) {
     .bento__toolbar {
       padding: 0 12px 12px;
@@ -212,38 +216,12 @@ const showFilter = filterTags.length > 0;
     }
 
     .project-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: 180px;
-      padding: 0 12px 12px;
-      gap: 8px;
-    }
-
-    .is-lg,
-    .is-xl,
-    .is-wide {
-      grid-column: span 2;
-      grid-row: span 1;
-    }
-
-    .is-tall {
-      grid-column: span 1;
-      grid-row: span 2;
-    }
-
-    .is-lg {
-      grid-row: span 2;
-    }
-
-    .is-xl {
-      grid-row: span 3;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .project-grid {
       grid-template-columns: 1fr;
-      grid-auto-rows: 220px;
-      gap: 10px;
+      /* Taller mobile cards — room for bottom-left title + tags */
+      grid-auto-rows: min(300px, 78vw);
+      grid-auto-flow: row;
+      padding: 0 12px 12px;
+      gap: 12px;
     }
 
     .is-lg,
@@ -254,16 +232,8 @@ const showFilter = filterTags.length > 0;
     .is-md {
       grid-column: span 1;
       grid-row: span 1;
-    }
-
-    .is-lg,
-    .is-xl,
-    .is-tall {
-      min-height: 260px;
-    }
-
-    .is-xl {
-      min-height: 320px;
+      min-height: 0;
+      height: 100%;
     }
   }
 </style>

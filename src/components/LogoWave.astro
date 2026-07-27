@@ -65,6 +65,7 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
   href="/"
   data-cursor="block"
   data-logo-wave
+  data-logo-fit="off"
   data-logo-intro={introAttr}
   data-transition-label="VINICIUS RAMOS"
   aria-label={site.name}
@@ -133,10 +134,15 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
     line-height: 1;
     color: var(--color-text);
     text-decoration: none;
-    flex: 0 1 auto;
-    min-width: 0;
-    max-width: min(58vw, 520px);
+    /* Natural glyph width always — never flex-shrink or fit-scale */
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
     overflow: visible;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .logo-wave:hover,
@@ -163,6 +169,8 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
     white-space: nowrap;
     column-gap: 0.4px;
     height: 1em;
+    /* Kill fitRow scale even if a persisted header still runs old JS */
+    transform: none !important;
   }
 
   .logo-wave__letter,
@@ -181,19 +189,26 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
     overflow: visible;
   }
 
-  @media (max-width: 640px) {
-    .logo-wave {
-      font-size: 16px;
-      max-width: min(50vw, 220px);
-    }
-  }
+  /* Mobile size is set by Header (.site-nav --nav-control-size) to match menu icon */
 </style>
 
 <script>
   import { initLogoWave } from '../scripts/logo-wave';
   import logoWaveData from '../data/blatant-wave-glyphs.json';
 
+  function clearNavbarLogoScale(root: ParentNode = document) {
+    root.querySelectorAll<HTMLElement>('.logo.logo-wave, [data-logo-fit="off"]').forEach((logo) => {
+      const row = logo.querySelector<HTMLElement>('.logo-wave__row');
+      if (!row) return;
+      row.style.transform = '';
+      row.style.transformOrigin = '';
+    });
+  }
+
   function bootLogoWave(root: ParentNode = document) {
+    // Always strip residual fit-scale (transition:persist header + old closures)
+    clearNavbarLogoScale(root);
+
     root.querySelectorAll<HTMLElement>('[data-logo-wave]').forEach((logo) => {
       // Skip dynamically mounted wave texts that init themselves (page transitions)
       if (logo.closest('.page-mask__label')) return;
@@ -210,6 +225,9 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
               ? true
               : false;
 
+      const isNavbarLogo =
+        logo.classList.contains('logo') || logo.dataset.logoFit === 'off';
+
       initLogoWave(
         logo,
         {
@@ -217,7 +235,11 @@ const introAttr = intro === 'always' ? 'true' : intro === 'once' ? 'once' : unde
           emUnits: logoWaveData.emUnits ?? logoWaveData.upm ?? 1000,
           glyphs: logoWaveData.glyphs as import('../scripts/logo-wave').LogoWaveData['glyphs'],
         },
-        { intro },
+        {
+          intro,
+          // Navbar: never downscale after intro (see fitRow / lockLayout race)
+          fit: isNavbarLogo ? false : undefined,
+        },
       );
     });
   }

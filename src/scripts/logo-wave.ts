@@ -46,6 +46,12 @@ export type LogoWaveInitOptions = {
   introStorageKey?: string;
   /** Enable pointer hover wave (default true). */
   pointer?: boolean;
+  /**
+   * Downscale the letter row when it exceeds the root width.
+   * Default: false for navbar `.logo` (must never shrink after intro),
+   * true for other wave texts (page-mask, next project, etc.).
+   */
+  fit?: boolean;
 };
 
 export type SweepOptions = {
@@ -468,6 +474,15 @@ export function initLogoWave(
   const row = root.querySelector<HTMLElement>('.logo-wave__row');
   const slots: Slot[] = [];
   const pointerEnabled = options.pointer !== false;
+  // Navbar wordmark: never fit-scale. Intro looked correct while lockLayout
+  // skipped fitRow; when intro ended, fitRow crushed it to the flex leftover.
+  const allowFit =
+    options.fit ??
+    !(
+      root.classList.contains('logo') ||
+      root.dataset.logoFit === 'off' ||
+      root.closest('.site-nav, [data-site-header]')
+    );
 
   root.querySelectorAll<HTMLElement>('[data-logo-letter]').forEach((el) => {
     const char = el.dataset.logoLetter ?? '';
@@ -579,8 +594,11 @@ export function initLogoWave(
   }
 
   function fitRow() {
-    if (lockLayout || !row) return;
-    row.style.transform = 'none';
+    if (!row) return;
+    // Always clear any leftover scale (e.g. pre-intro paint or HMR).
+    row.style.transform = '';
+    row.style.transformOrigin = '';
+    if (lockLayout || !allowFit) return;
     const natural = row.scrollWidth;
     const budget = Math.max(root.clientWidth, 1);
     if (natural > budget * 1.02) {

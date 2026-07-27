@@ -151,12 +151,28 @@ function bindCard(shell: HTMLElement) {
     last: performance.now(),
   };
 
+  /**
+   * Contain / bottom-aligned assets (Booking, etc.) have little or no scale
+   * bleed. Full Y parallax translates the layer off its fitted edge and shows
+   * a hard crop line — dampen image layers heavily; leave text (front) alone.
+   */
+  const containCard = Boolean(shell.querySelector('.project-card--fit-contain'));
+  const bookingCard = Boolean(shell.querySelector('.project-card--slug-booking'));
+
   const setFromEvent = (clientX: number, clientY: number) => {
     const { nx, ny } = factors(shell, clientX, clientY);
     for (const layer of state.layers) {
       const range = RANGES[layer.depth];
-      layer.x.t = nx * range;
-      layer.y.t = ny * range;
+      const isImage = layer.depth === 'img-back' || layer.depth === 'img-mid';
+      let xRange = range;
+      let yRange = range;
+      if (isImage && (containCard || bookingCard)) {
+        // Mostly horizontal drift; tiny Y so bottom edge never peeks
+        xRange = range * 0.45;
+        yRange = bookingCard ? range * 0.12 : range * 0.25;
+      }
+      layer.x.t = nx * xRange;
+      layer.y.t = ny * yRange;
     }
   };
 

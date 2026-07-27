@@ -400,12 +400,19 @@ function resetModes(stage: HTMLElement, circle: HTMLElement, label: HTMLElement)
 
 export function syncNavActive() {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
-  document.querySelectorAll<HTMLAnchorElement>('.site-nav a[href]').forEach((a) => {
-    const href = (a.getAttribute('href') || '/').replace(/\/$/, '') || '/';
-    const active =
-      href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
-    a.classList.toggle('is-active', active);
-  });
+  document
+    .querySelectorAll<HTMLAnchorElement>('.site-nav a[href], .site-menu a[href]')
+    .forEach((a) => {
+      const href = (a.getAttribute('href') || '/').replace(/\/$/, '') || '/';
+      // Footer social (external) — skip active styling
+      if (/^https?:\/\//i.test(href) || href.startsWith('mailto:')) {
+        a.classList.remove('is-active');
+        return;
+      }
+      const active =
+        href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
+      a.classList.toggle('is-active', active);
+    });
 }
 
 /**

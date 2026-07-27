@@ -50,16 +50,23 @@ function paragraphParts(paragraph: ArticleParagraph) {
       article.image && (
         <figure class="article-page__figure">
           <img
-            class="article-page__image"
+            class:list={[
+              'article-page__image',
+              article.imageFit === 'contain' && 'article-page__image--contain',
+            ]}
             src={article.image}
             alt={article.imageAlt ?? article.title}
             loading="eager"
             decoding="async"
-            style={
-              article.imageObjectPosition
-                ? `object-position: ${article.imageObjectPosition}`
-                : undefined
-            }
+            style={[
+              article.imageObjectPosition &&
+                `object-position: ${article.imageObjectPosition}`,
+              article.imageScale != null &&
+                article.imageScale !== 1 &&
+                `transform: scale(${article.imageScale}); transform-origin: center`,
+            ]
+              .filter(Boolean)
+              .join('; ') || undefined}
           />
         </figure>
       )
@@ -167,6 +174,20 @@ function paragraphParts(paragraph: ArticleParagraph) {
     max-height: 360px;
     object-fit: cover;
     object-position: center;
+  }
+
+  /* Fit full art inside the slot (no crop) */
+  .article-page__image--contain {
+    height: 360px;
+    max-height: 360px;
+    object-fit: contain;
+  }
+
+  @media (max-width: 768px) {
+    .article-page__image--contain {
+      height: 240px;
+      max-height: 240px;
+    }
   }
 
   .article-page__body {

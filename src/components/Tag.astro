@@ -186,5 +186,18 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     .tag--reveal.tag--accent .tag__glass {
       background-color: rgba(0, 28, 56, 0.5);
     }
+
+    /* SOON: solid white + black label (not glass) */
+    .tag--reveal.tag--soon {
+      color: #0a0a0a;
+      border-color: #ffffff;
+      background-color: #ffffff;
+    }
+
+    .tag--reveal.tag--soon .tag__glass {
+      background-color: #ffffff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 </style>

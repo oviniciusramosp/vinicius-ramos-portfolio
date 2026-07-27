@@ -23,6 +23,13 @@ export type ScrollGalleryItem = {
   image?: string;
   imageAlt?: string;
   /**
+   * CSS object-position for the card image (default: bottom center for feature art).
+   * e.g. 'center', 'bottom center', 'center top'
+   */
+  imageObjectPosition?: string;
+  /** Scale art inside the frame (1 = 100%). e.g. 0.8 */
+  imageScale?: number;
+  /**
    * Quote cards only: portrait shown top-right (header row).
    * Distinct from `image` (product feature art).
    */
@@ -261,7 +268,9 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
                           <figure
                             class:list={[
                               'feature-card-image-container',
-                              !isSocial && 'pin-self-bottom-center',
+                              !isSocial &&
+                                item.imageObjectPosition === 'center' &&
+                                'feature-card-image-container--center',
                               isSocial && 'feature-card-image-container--social',
                             ]}
                           >
@@ -275,6 +284,15 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
                               loading="lazy"
                               decoding="async"
                               draggable="false"
+                              style={[
+                                item.imageObjectPosition &&
+                                  `object-position: ${item.imageObjectPosition}`,
+                                item.imageScale != null &&
+                                  item.imageScale !== 1 &&
+                                  `transform: scale(${item.imageScale}); transform-origin: center`,
+                              ]
+                                .filter(Boolean)
+                                .join('; ') || undefined}
                             />
                           </figure>
                         )
@@ -488,6 +506,11 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
       --feature-card-gap: 12px;
       --sk-tile-border-radius: 18px;
       padding-block: 48px 40px;
+    }
+
+    /* Articles gallery: ~30% taller than base mobile (255 → 337) */
+    .scroll-gallery-section--articles {
+      --feature-card-min-height: 337px;
     }
   }
 
@@ -875,8 +898,9 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
+    /* Fixed height so tall art (e.g. phone mockups) cannot stretch the card */
     min-height: var(--feature-card-min-height);
-    height: 100%;
+    height: var(--feature-card-min-height);
     border-radius: var(--sk-tile-border-radius);
     background: var(--sk-tile-background);
     overflow: clip;
@@ -909,7 +933,7 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     grid-template-columns: 100%;
     grid-template-rows: min-content 1fr;
     height: 100%;
-    min-height: var(--feature-card-min-height);
+    min-height: 0;
     pointer-events: none;
   }
 
@@ -989,6 +1013,11 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     gap: 10px;
   }
 
+  /* Space between copy and image = card padding (sides/top already use the same token) */
+  .gallery-item--article .feature-card-content.image-inline {
+    gap: var(--feature-card-copy-padding);
+  }
+
   @media (max-width: 1068px) {
     .feature-card-headline {
       font-size: 21px;
@@ -1028,24 +1057,26 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
 
   .feature-card-image-container {
     position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    display: block;
     margin: 0;
     min-height: 0;
-    flex: 1;
     overflow: hidden;
   }
 
   .feature-card-image {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 100%;
+    height: 100%;
     object-fit: contain;
     object-position: bottom center;
     user-select: none;
     pointer-events: none;
+  }
+
+  .feature-card-image-container--center .feature-card-image {
+    object-position: center;
   }
 
   /* —— Card control (+ button) —— */
