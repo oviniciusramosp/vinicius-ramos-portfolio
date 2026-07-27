@@ -151,6 +151,31 @@ describe('projects data integrity', () => {
   });
 });
 
+describe('crypto-bros educational posts slider', () => {
+  it('includes a short dark scroll-gallery of social posts with local assets', () => {
+    const project = getProject('crypto-bros');
+    expect(project).toBeDefined();
+    const gallery = project!.blocks?.find(
+      (b) => b.type === 'scroll-gallery' && b.ariaLabel === 'Educational social posts',
+    );
+    expect(gallery, 'missing Educational social posts scroll-gallery').toBeDefined();
+    if (!gallery || gallery.type !== 'scroll-gallery') return;
+
+    expect(gallery.theme).toBe('dark');
+    expect(gallery.short).toBe(true);
+    expect(gallery.items.length).toBeGreaterThanOrEqual(7);
+
+    for (const item of gallery.items) {
+      expect(item.kind, item.id).toBe('social');
+      expect(item.image, item.id).toMatch(/^\/projects\/crypto-bros\/post-/);
+      expect(
+        publicAssetExists(item.image!),
+        `missing social post asset: ${item.image}`,
+      ).toBe(true);
+    }
+  });
+});
+
 describe('project helpers', () => {
   it('getProject returns a match or undefined', () => {
     const first = projects[0];
