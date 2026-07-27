@@ -37,6 +37,8 @@ function paragraphParts(paragraph: ArticleParagraph) {
 <BaseLayout
   title={`${site.name} · ${article.title}`}
   description={article.description}
+  image={article.image}
+  imageAlt={article.imageAlt ?? article.title}
 >
   <article class="article-page">
     <header class="article-page__header">

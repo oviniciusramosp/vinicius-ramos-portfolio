@@ -9,16 +9,31 @@ import Banner from '../components/Banner.astro';
 interface Props {
   title?: string;
   description?: string;
+  /** Absolute or site-relative URL for og/twitter image */
+  image?: string;
+  /** Accessible label for the share image */
+  imageAlt?: string;
   showBanner?: boolean;
 }
 
 const {
   title = site.title,
   description = site.description,
+  image,
+  imageAlt,
   showBanner = false,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, site.url).toString();
+
+/** Resolve absolute URL for Open Graph (crawlers require absolute). */
+function absoluteUrl(pathOrUrl: string) {
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
+  return new URL(pathOrUrl, site.url).toString();
+}
+
+const ogImage = absoluteUrl(image || site.ogImage);
+const ogImageAlt = imageAlt || title;
 ---
 
 <!doctype html>
@@ -35,13 +50,15 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={site.ogImage} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:url" content={canonical} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={site.ogImage} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- Ionicons — site-wide icon library -->
     <script

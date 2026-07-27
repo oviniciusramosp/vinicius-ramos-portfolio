@@ -32,6 +32,9 @@ interface Props {
 const { project } = Astro.props;
 const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
 const useBlocks = Boolean(project.blocks && project.blocks.length > 0);
+/** Prefer front cover layer for share cards; fall back to back cover */
+const ogImage = project.coverFront ?? project.cover;
+
 const quotes = project.quotes ?? [];
 /** Quotes always use ScrollGallery (incentive-gallery-dark): paddlenav, no autoplay, all cards visible */
 const quoteIncentiveItems = quotes.map((quote, index) => ({
@@ -81,7 +84,12 @@ function cellClass(cell: CaseBentoCell) {
 }
 ---
 
-<BaseLayout title={`${site.name} · ${project.title}`} description={project.summary}>
+<BaseLayout
+  title={`${site.name} · ${project.title}`}
+  description={project.summary}
+  image={ogImage}
+  imageAlt={`${project.title} — project cover`}
+>
   <article class="case">
     <header class="page-hero case__hero">
       <div class="page-hero__main case__hero-main">
