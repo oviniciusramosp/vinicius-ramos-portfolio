@@ -75,6 +75,7 @@ function cellClass(cell: CaseBentoCell) {
   const span = cell.span ?? '1x1';
   const parts = [`case-bento__cell`, `case-bento__cell--${span}`];
   if (cell.kind === 'image' && cell.padded) parts.push('case-bento__cell--padded');
+  if (cell.kind === 'image' && cell.spin) parts.push('case-bento__cell--spin');
   if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
   if (cell.kind === 'social-fan') parts.push('case-bento__cell--social-fan');
   if (cell.kind === 'device-3d') parts.push('case-bento__cell--device-3d');
@@ -1054,6 +1055,34 @@ function cellClass(cell: CaseBentoCell) {
     max-width: 100%;
     max-height: 100%;
     object-position: center;
+  }
+
+  /*
+   * Continuous clockwise spin on bento images (e.g. Vibecheck hero deco).
+   * Sized under √2 so corners stay inside the card while rotating.
+   * Linear + full 360° keeps speed constant with no ease-out / reverse.
+   */
+  .case-bento__cell--spin img {
+    width: 72%;
+    height: 72%;
+    max-width: none;
+    max-height: none;
+    animation: case-bento-spin 22s linear infinite;
+  }
+
+  @keyframes case-bento-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-bento__cell--spin img {
+      animation: none;
+    }
   }
 
   /* Full-width case video (live framer-1v6l154 + aspect 2.63754) */

@@ -64,6 +64,8 @@ export type CaseBentoCell =
       texture?: string;
       /** Light card surface (live white cells for brand marks) */
       surface?: 'dark' | 'light';
+      /** Continuous clockwise CSS spin on the image (full 360° linear loop). */
+      spin?: boolean;
     }
   | {
       kind: 'caption';
@@ -1223,8 +1225,9 @@ export const projects: Project[] = [
             src: `${FRAMER}/cRmoltzO7EOBB17H1QxCa4ndalU.jpg?lossless=1`,
             alt: 'Vibecheck decorative visual',
             span: '1x1',
-            fit: 'cover',
+            fit: 'contain',
             surface: 'light',
+            spin: true,
           },
           {
             kind: 'image',
