@@ -1604,7 +1604,8 @@ export const projects: Project[] = [
             alt: 'Athlete training with Moove line-art wordmark overlay',
             span: '1x2',
             fit: 'cover',
-            objectPosition: 'center top',
+            // Wave / training column: keep subject centered in the tall card
+            objectPosition: 'center center',
           },
           {
             kind: 'image',
@@ -1621,7 +1622,8 @@ export const projects: Project[] = [
             alt: 'Moove wellness club poster: photo with infinity icon and wordmark',
             span: '2x2',
             fit: 'cover',
-            objectPosition: 'left center',
+            // Align photo to top of card so the subject sits under the overlay
+            objectPosition: 'left top',
             animate: 'layer-reveal',
           },
           {
@@ -1713,10 +1715,10 @@ export const projects: Project[] = [
       },
       {
         // Merch mosaic — content column (not full-bleed)
-        // Pack (4-col):
-        // [ tee1 2×1      ][ paper 2×1     ]
-        // [ bottles 2×2   ][ mol 1×2 ][ tee2 1×1 ]
-        // [ bottles       ][ mol     ][ bags 1×1 ]
+        // Pack (4-col): apparel first, paper last
+        // [ tee1 2×1      ][ mol 1×2 ][ tee2 1×1 ]
+        // [ bottles 2×2   ][ mol     ][ bags 1×1 ]
+        // [ bottles       ][ paper 2×1          ]
         type: 'bento',
         shell: 'content',
         cells: [
@@ -1729,10 +1731,19 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${MOOVE}/paper-work.jpg`,
-            alt: 'Brand system overview with mark and application samples on paper',
-            span: '2x1',
+            src: `${MOOVE}/moletom.jpg`,
+            alt: 'Moove branded hoodie mockup',
+            span: '1x2',
             fit: 'cover',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/tshirt-02.jpg`,
+            alt: 'Moove branded t-shirt mockup on dark surface',
+            span: '1x1',
+            fit: 'cover',
+            // Double default scale so the product reads larger in the 1×1 card
+            scale: 2,
           },
           {
             kind: 'image',
@@ -1745,26 +1756,19 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${MOOVE}/moletom.jpg`,
-            alt: 'Moove branded hoodie mockup',
-            span: '1x2',
-            fit: 'cover',
-          },
-          {
-            kind: 'image',
-            src: `${MOOVE}/tshirt-02.jpg`,
-            alt: 'Moove branded t-shirt mockup, alternate colorway',
-            span: '1x1',
-            fit: 'cover',
-          },
-          {
-            kind: 'image',
             src: `${MOOVE}/bags.png`,
             alt: 'Moove branded tote and gym bags',
             span: '1x1',
             fit: 'contain',
             scale: 1.15,
             surface: 'light',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/paper-work.jpg`,
+            alt: 'Brand system overview with mark and application samples on paper',
+            span: '2x1',
+            fit: 'cover',
           },
         ],
       },
@@ -1776,23 +1780,11 @@ export const projects: Project[] = [
         ],
       },
       {
+        // Continues “Modalities, one system” (no separate title)
         type: 'deck-slider',
-        // Content-width slides with prev/next peeks (not phone wireframes)
         variant: 'slides',
-        title: 'Modality campaigns',
         autoplay: false,
         decks: [
-          {
-            title: 'Wellness Club',
-            images: [
-              {
-                src: `${MOOVE}/icon-wellness-poster.jpg`,
-                alt: 'Moove wellness club poster with brand icon',
-                fit: 'cover',
-                aspect: '1.778',
-              },
-            ],
-          },
           {
             title: 'Yoga',
             images: [
@@ -1821,6 +1813,17 @@ export const projects: Project[] = [
               {
                 src: `${MOOVE}/icon-pilates.jpg`,
                 alt: 'Moove pilates campaign: brand icon over studio photography',
+                fit: 'cover',
+                aspect: '1.778',
+              },
+            ],
+          },
+          {
+            title: 'Wellness Club',
+            images: [
+              {
+                src: `${MOOVE}/icon-wellness-poster.jpg`,
+                alt: 'Moove wellness club poster with brand icon',
                 fit: 'cover',
                 aspect: '1.778',
               },

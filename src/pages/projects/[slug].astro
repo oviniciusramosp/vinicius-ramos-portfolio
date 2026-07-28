@@ -796,6 +796,8 @@ function cellClass(cell: CaseBentoCell) {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
     grid-template-rows: repeat(3, 144px);
     grid-auto-rows: 144px;
+    /* Pack later 1×1 cells into holes left by tall/wide spans (esp. mobile 2-col) */
+    grid-auto-flow: dense;
     gap: 8px;
     width: 100%;
   }
@@ -1088,9 +1090,15 @@ function cellClass(cell: CaseBentoCell) {
    * Draw = homepage cover-lines (.cover-line + setDrawn).
    * Size = viewBox crop + meet (no CSS scale).
    */
+  /*
+   * Logo mark card: equal inset on all sides (match top = sides).
+   * cqi keeps the same length on every edge (unlike % on padding-block vs inline).
+   */
   .case-bento__cell--logo-mark {
     cursor: default;
-    padding: 16px 20px;
+    container-type: size;
+    --logo-mark-inset: clamp(14px, 4.5cqi, 28px);
+    padding: var(--logo-mark-inset);
     overflow: hidden;
   }
 
@@ -1151,18 +1159,6 @@ function cellClass(cell: CaseBentoCell) {
 
   .case-bento__logo-mark.is-settled.is-spotlight :global(.logo-mark-lines-g) {
     opacity: 1;
-  }
-
-  @media (min-width: 810px) {
-    .case-bento__cell--logo-mark {
-      padding: 18px 24px;
-    }
-  }
-
-  @media (min-width: 1194px) {
-    .case-bento__cell--logo-mark {
-      padding: 20px 28px;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1244,6 +1240,8 @@ function cellClass(cell: CaseBentoCell) {
    */
   .case-bento__cell--layer-reveal {
     overflow: hidden;
+    /* So overlay insets can use cqi (same axis for top + left) */
+    container-type: size;
   }
 
   .case-bento__layered {
@@ -1271,10 +1269,12 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   /*
-   * Overlay: 50% of card width, top-left, equal top/left inset.
+   * Overlay: 50% of card width, top-left.
+   * Use cqi (container inline size) for BOTH top and left so insets match —
+   * plain % would resolve top against height and left against width.
    */
   .case-bento__layered-front {
-    --layer-inset: clamp(12px, 5%, 28px);
+    --layer-inset: clamp(12px, 5cqi, 28px);
     position: absolute;
     top: var(--layer-inset);
     left: var(--layer-inset);
@@ -1592,7 +1592,8 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   .case-gallery--pair {
-    grid-template-columns: 1fr;
+    /* 2 columns on all breakpoints (incl. mobile poster pairs) */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /*

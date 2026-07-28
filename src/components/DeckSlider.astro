@@ -375,6 +375,13 @@ const showPeeks = variant === 'wireframes' || variant === 'slides';
     background: linear-gradient(90deg, #0000 0%, #000 100%);
   }
 
+  /* Slides variant: no black side fades on mobile (peeks still work) */
+  @media (max-width: 809.98px) {
+    .deck-slider-shell--slides .case-decks__fade {
+      display: none;
+    }
+  }
+
   .case-decks__viewport {
     position: relative;
     z-index: 1;
