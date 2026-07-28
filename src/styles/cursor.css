@@ -48,11 +48,9 @@ button.btn * {
   justify-content: center;
   overflow: hidden;
   backdrop-filter: none;
-  -webkit-backdrop-filter: none;
   transition:
     background-color 0.2s cubic-bezier(0.44, 0, 0.56, 1),
     backdrop-filter 0.2s cubic-bezier(0.44, 0, 0.56, 1),
-    -webkit-backdrop-filter 0.2s cubic-bezier(0.44, 0, 0.56, 1),
     box-shadow 0.2s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
@@ -83,7 +81,6 @@ button.btn * {
 /* Coming Soon — glass pill (production: rgba(255,255,255,0.2) + blur 10px) */
 .site-cursor.is-soon {
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   color: #fff;
   box-shadow: none;
   overflow: hidden;

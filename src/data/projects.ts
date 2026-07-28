@@ -81,8 +81,11 @@ export type CaseBentoCell =
        * `logo-mark` — draw construction lines → fade in mark → hide lines;
        * hover reveals lines in a radius near the cursor.
        * `layer-reveal` — bg (`src`) always on; front (`front`) fades in after logo-mark intro.
+       * `logo-evolution` — construction draw + fill fade; cascade with siblings.
        */
-      animate?: 'logo-mark' | 'layer-reveal';
+      animate?: 'logo-mark' | 'layer-reveal' | 'logo-evolution';
+      /** Stagger order for `logo-evolution` cascade (0, 1, 2…). */
+      cascadeIndex?: number;
       /**
        * Front overlay for `layer-reveal` (icon / wordmark on transparent SVG).
        * Background is `src`.
@@ -170,6 +173,12 @@ export type CaseBlock =
        * - `content` = same pad as body text column (live design strip)
        */
       shell?: 'full' | 'content';
+      /**
+       * Special pack: 2 columns × 6 equal row tracks (same total height as a
+       * 3-row bento). Left stack of 3 horizontal cards (`1x2` each = 1/3
+       * height) + right stack of 2 cards (`1x3` each = half height).
+       */
+      layout?: 'split-3-2';
     }
   | {
       type: 'section';
@@ -1193,7 +1202,7 @@ export const projects: Project[] = [
     size: 'sm',
     priority: 40,
     href: '/projects/vibecheck',
-    nextSlug: 'crypto-bros',
+    nextSlug: 'moove',
     sections: [
       {
         title: 'Audit',
@@ -1528,10 +1537,8 @@ export const projects: Project[] = [
     imageFit: 'contain',
     size: 'wide',
     priority: 50,
-    // Coming soon on homepage; href keeps /projects/moove routable for case work
-    soon: true,
     href: '/projects/moove',
-    nextSlug: 'booking',
+    nextSlug: 'crypto-bros',
     sections: [
       {
         title: 'From every practice, one brand',
@@ -1645,41 +1652,55 @@ export const projects: Project[] = [
         ],
       },
       {
-        // Identity kit bento (4-col), content column (not full-bleed):
-        // [ construction 2×1 ][ primary orange 2×2 ]
-        // [ system sheet 2×2 ][ mono lockup 2×1 ]
+        // Identity kit — split-3-2 (2 cols × 6 tracks = same height as 3-row bento):
+        // [ evolution 01 1×2 ][ primary orange 1×3 ]
+        // [ evolution 02 1×2 ][ primary orange     ]
+        // [ evolution 03 1×2 ][ mono lockup 1×3    ]
+        // Left: 3 horizontal half-width cards. Right: 2 cards, 50/50 height.
         type: 'bento',
         shell: 'content',
+        layout: 'split-3-2',
         cells: [
           {
             kind: 'image',
-            src: `${MOOVE}/logo-mark.svg`,
-            alt: 'Moove infinity wordmark with construction lines on dark surface',
-            span: '2x1',
-            fit: 'contain',
-            padded: true,
+            src: `${MOOVE}/logo-evolution-01.svg`,
+            alt: 'Moove logo construction: early mark geometry and guidelines',
+            span: '1x2',
+            fit: 'cover',
+            animate: 'logo-evolution',
+            cascadeIndex: 0,
           },
           {
             kind: 'image',
             src: `${MOOVE}/colored-full-logo.svg`,
             alt: 'Moove primary logo on brand orange field',
-            span: '2x2',
+            span: '1x3',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${MOOVE}/paper-work.jpg`,
-            alt: 'Brand system overview with mark and application samples on paper',
-            span: '2x2',
+            src: `${MOOVE}/logo-evolution-02.svg`,
+            alt: 'Moove logo construction: refined wordmark proportions',
+            span: '1x2',
             fit: 'cover',
+            animate: 'logo-evolution',
+            cascadeIndex: 1,
           },
           {
             kind: 'image',
             src: `${MOOVE}/bw-full-logo.jpg`,
             alt: 'Moove monochrome logo lockup',
-            span: '2x1',
-            fit: 'contain',
-            padded: true,
+            span: '1x3',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/logo-evolution-03.svg`,
+            alt: 'Moove logo construction: final mark with grid and color accents',
+            span: '1x2',
+            fit: 'cover',
+            animate: 'logo-evolution',
+            cascadeIndex: 2,
           },
         ],
       },
@@ -1692,9 +1713,10 @@ export const projects: Project[] = [
       },
       {
         // Merch mosaic — content column (not full-bleed)
-        // Pack (4-col): tees always horizontal (2×1), moletom always vertical (1×2)
-        // [ tee1 2×1      ][ tee2 2×1      ]
-        // [ bottles 2×2   ][ mol 1×2 ][ bags 1×2 ]
+        // Pack (4-col):
+        // [ tee1 2×1      ][ paper 2×1     ]
+        // [ bottles 2×2   ][ mol 1×2 ][ tee2 1×1 ]
+        // [ bottles       ][ mol     ][ bags 1×1 ]
         type: 'bento',
         shell: 'content',
         cells: [
@@ -1707,8 +1729,8 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${MOOVE}/tshirt-02.jpg`,
-            alt: 'Moove branded t-shirt mockup, alternate colorway',
+            src: `${MOOVE}/paper-work.jpg`,
+            alt: 'Brand system overview with mark and application samples on paper',
             span: '2x1',
             fit: 'cover',
           },
@@ -1730,11 +1752,19 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
+            src: `${MOOVE}/tshirt-02.jpg`,
+            alt: 'Moove branded t-shirt mockup, alternate colorway',
+            span: '1x1',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
             src: `${MOOVE}/bags.png`,
             alt: 'Moove branded tote and gym bags',
-            span: '1x2',
+            span: '1x1',
             fit: 'contain',
-            scale: 1.28,
+            scale: 1.15,
+            surface: 'light',
           },
         ],
       },

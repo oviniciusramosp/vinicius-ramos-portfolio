@@ -53,8 +53,7 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     border-radius: inherit;
     pointer-events: none;
     background-color: transparent;
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: none;
   }
 
   .tag__label {
@@ -96,11 +95,9 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
   .tag--chip .tag__glass {
     background-color: rgba(12, 12, 16, 0.35);
     backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
     transition:
       background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
-      backdrop-filter 0.28s cubic-bezier(0.44, 0, 0.56, 1),
-      -webkit-backdrop-filter 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+      backdrop-filter 0.28s cubic-bezier(0.44, 0, 0.56, 1);
   }
 
   .tag--chip.is-pressed,
@@ -113,7 +110,6 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
   .tag--chip.tag--accent .tag__glass {
     background-color: rgba(0, 143, 255, 0.28);
     backdrop-filter: blur(14px) saturate(180%);
-    -webkit-backdrop-filter: blur(14px) saturate(180%);
   }
 
   /* —— Reveal (homepage cards only) —— */
@@ -128,12 +124,10 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
 
   .tag--reveal .tag__glass {
     background-color: transparent;
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: none;
     transition:
       background-color 0.38s cubic-bezier(0.44, 0, 0.56, 1),
-      backdrop-filter 0.38s cubic-bezier(0.44, 0, 0.56, 1),
-      -webkit-backdrop-filter 0.38s cubic-bezier(0.44, 0, 0.56, 1);
+      backdrop-filter 0.38s cubic-bezier(0.44, 0, 0.56, 1);
   }
 
   /* Appear on card hover / magnetic / focus */
@@ -149,7 +143,6 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
   :global(.project-card-shell.is-magnetic) .tag--reveal .tag__glass {
     background-color: rgba(12, 12, 16, 0.45);
     backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
   }
 
   :global(.project-card-shell:hover) .tag--reveal.tag--accent,
@@ -175,7 +168,6 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     .tag--reveal .tag__glass {
       background-color: rgba(12, 12, 16, 0.45);
       backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
     }
 
     .tag--reveal.tag--accent {
@@ -197,7 +189,6 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     .tag--reveal.tag--soon .tag__glass {
       background-color: #ffffff;
       backdrop-filter: none;
-      -webkit-backdrop-filter: none;
     }
   }
 </style>

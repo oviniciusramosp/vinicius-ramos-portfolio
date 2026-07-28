@@ -1,0 +1,164 @@
+---
+/**
+ * Local-first responsive image.
+ * - Resolves `/projects/...` via `src/assets`
+ * - Emits AVIF + WebP + fallback with srcset
+ * - Remote / SVG / missing paths fall back to a plain <img>
+ *
+ * Layout classes (e.g. `project-card__image`) land on the <picture> wrapper
+ * so existing absolute/transform rules don't double-apply to picture + img.
+ * object-fit / object-position go on the inner <img> (inline when set).
+ */
+import { Picture } from 'astro:assets';
+import {
+  clampWidths,
+  IMG_PRESETS,
+  resolveLocalImage,
+  type ImgPreset,
+} from '../utils/local-images';
+
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  /** Extra class on the wrapping <picture> only */
+  pictureClass?: string;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'auto' | 'sync';
+  preset?: ImgPreset;
+  /**
+   * `fill` — occupy parent (cards, bento, galleries, decks).
+   * `flow` — natural block image (article heroes).
+   * Default: `flow` for preset `full`, else `fill`.
+   */
+  layout?: 'fill' | 'flow';
+  widths?: number[];
+  sizes?: string;
+  quality?: number;
+  /** Applied as inline style on the inner img */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  objectPosition?: string;
+  style?: string;
+  draggable?: boolean | 'true' | 'false';
+  formats?: Array<'avif' | 'webp' | 'png' | 'jpg' | 'jpeg'>;
+  width?: number | string;
+  height?: number | string;
+}
+
+const {
+  src,
+  alt,
+  class: className,
+  pictureClass,
+  loading = 'lazy',
+  decoding = 'async',
+  preset = 'gallery',
+  layout: layoutProp,
+  widths: widthsProp,
+  sizes: sizesProp,
+  quality: qualityProp,
+  objectFit: objectFitProp,
+  objectPosition,
+  style: styleProp,
+  draggable = false,
+  formats = ['avif', 'webp'],
+  width,
+  height,
+} = Astro.props;
+
+const layout = layoutProp ?? (preset === 'full' ? 'flow' : 'fill');
+/**
+ * ALWAYS set object-fit inline on the img.
+ * Parent scoped CSS (`> img { object-fit }`) does not pierce child components
+ * in Astro — relying on it caused stretched homepage cards. Inline is the
+ * only guarantee; CSS remains a progressive enhancement for non-OptimizedImg.
+ */
+const objectFit = objectFitProp ?? 'cover';
+
+const presetCfg = IMG_PRESETS[preset];
+const meta = resolveLocalImage(src);
+const isOptimizableRemote =
+  !meta &&
+  (src.startsWith('https://framerusercontent.com/') ||
+    src.startsWith('http://framerusercontent.com/'));
+
+const nativeWidth = meta?.width ?? 1920;
+const widths = clampWidths(widthsProp ?? presetCfg.widths, nativeWidth);
+const sizes = sizesProp ?? presetCfg.sizes;
+const quality = qualityProp ?? presetCfg.quality;
+
+const imgStyle =
+  [
+    `object-fit: ${objectFit}`,
+    objectPosition ? `object-position: ${objectPosition}` : null,
+    styleProp,
+  ]
+    .filter(Boolean)
+    .join('; ') || undefined;
+
+const dragAttr =
+  draggable === true || draggable === 'true'
+    ? 'true'
+    : draggable === false || draggable === 'false'
+      ? 'false'
+      : undefined;
+
+/** Layout hooks on <picture> only (absolute, transforms, aspect boxes). */
+const pictureClassName = [
+  'opt-picture',
+  layout === 'flow' && 'opt-picture--flow',
+  className,
+  pictureClass,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{
+  meta ? (
+    <Picture
+      src={meta}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      formats={formats}
+      quality={quality}
+      loading={loading}
+      decoding={decoding}
+      draggable={dragAttr}
+      style={imgStyle}
+      width={width}
+      height={height}
+      pictureAttributes={{ class: pictureClassName }}
+    />
+  ) : isOptimizableRemote ? (
+    <Picture
+      src={src}
+      alt={alt}
+      inferSize
+      widths={widths}
+      sizes={sizes}
+      formats={formats}
+      quality={quality}
+      loading={loading}
+      decoding={decoding}
+      draggable={dragAttr}
+      style={imgStyle}
+      width={width}
+      height={height}
+      pictureAttributes={{ class: pictureClassName }}
+    />
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      class={pictureClassName}
+      loading={loading}
+      decoding={decoding}
+      draggable={dragAttr}
+      style={imgStyle}
+      width={width}
+      height={height}
+    />
+  )
+}

@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import EmbedModal from '../../components/EmbedModal.astro';
 import NextProject from '../../components/NextProject.astro';
+import OptimizedImg from '../../components/OptimizedImg.astro';
 import {
   articles,
   getArticleById,
@@ -13,6 +14,7 @@ import {
   type ArticleParagraph,
 } from '../../data/articles';
 import { site } from '../../data/site';
+import { optimizedUrl } from '../../utils/optimized-url';
 
 export function getStaticPaths() {
   return articles.map((article) => ({
@@ -30,6 +32,9 @@ const next = getNextArticle(article.id);
 const noteEmbed = article.note?.youtubeUrl
   ? youtubeEmbedSrc(article.note.youtubeUrl)
   : undefined;
+const ogImage =
+  (await optimizedUrl(article.image, { width: 1200, quality: 80, format: 'jpg' })) ??
+  article.image;
 
 /** CTAs that open embed modals (deduped by href) */
 const embedModals = (article.links ?? [])
@@ -69,7 +74,7 @@ const bodyAfterVideo = videoMidBody
 <BaseLayout
   title={`${site.name} · ${article.title}`}
   description={article.description}
-  image={article.image}
+  image={ogImage}
   imageAlt={article.imageAlt ?? article.title}
 >
   <article class="article-page">
@@ -81,24 +86,25 @@ const bodyAfterVideo = videoMidBody
     {
       article.image && (
         <figure class="article-page__figure">
-          <img
-            class:list={[
+          <OptimizedImg
+            class={[
               'article-page__image',
               article.imageFit === 'contain' && 'article-page__image--contain',
-            ]}
-            src={article.image}
-            alt={article.imageAlt ?? article.title}
-            loading="eager"
-            decoding="async"
-            style={[
-              article.imageObjectPosition &&
-                `object-position: ${article.imageObjectPosition}`,
-              article.imageScale != null &&
-                article.imageScale !== 1 &&
-                `transform: scale(${article.imageScale}); transform-origin: center`,
             ]
               .filter(Boolean)
-              .join('; ') || undefined}
+              .join(' ')}
+            src={article.image}
+            alt={article.imageAlt ?? article.title}
+            preset="full"
+            loading="eager"
+            decoding="async"
+            objectFit={article.imageFit === 'contain' ? 'contain' : 'cover'}
+            objectPosition={article.imageObjectPosition}
+            style={
+              article.imageScale != null && article.imageScale !== 1
+                ? `transform: scale(${article.imageScale}); transform-origin: center`
+                : undefined
+            }
           />
         </figure>
       )
@@ -403,6 +409,14 @@ const bodyAfterVideo = videoMidBody
     width: 100%;
     height: auto;
     max-height: 360px;
+  }
+
+  .article-page__image :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+    max-width: 100%;
     object-fit: cover;
     object-position: center;
   }
@@ -411,11 +425,21 @@ const bodyAfterVideo = videoMidBody
   .article-page__image--contain {
     height: 360px;
     max-height: 360px;
+  }
+
+  .article-page__image--contain :global(img) {
+    height: 360px;
+    max-height: 360px;
     object-fit: contain;
   }
 
   @media (max-width: 768px) {
     .article-page__image--contain {
+      height: 240px;
+      max-height: 240px;
+    }
+
+    .article-page__image--contain :global(img) {
       height: 240px;
       max-height: 240px;
     }
@@ -715,7 +739,8 @@ const bodyAfterVideo = videoMidBody
       padding: 48px 16px 40px;
     }
 
-    .article-page__image {
+    .article-page__image,
+    .article-page__image :global(img) {
       max-height: 240px;
     }
 

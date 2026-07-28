@@ -6,6 +6,8 @@
  *   x → % of card width · y → % of card height
  * Card box uses the real image aspect (width/height), not a forced square.
  */
+import OptimizedImg from './OptimizedImg.astro';
+
 export type SocialFanImage = {
   src: string;
   alt: string;
@@ -127,7 +129,14 @@ const poses = posesForCount(images.length, centerIndex, ASPECT);
             data-rest-z={String(pose.z)}
             style={`--sf-x: 0%; --sf-y: 0%; --sf-rot: 0deg; --sf-scale: ${pose.scale}; --sf-z: ${pose.z}; z-index: ${pose.z}; --sf-item-aspect: ${cardAspect};`}
           >
-            <img src={img.src} alt={img.alt} loading="eager" draggable="false" />
+            <OptimizedImg
+              src={img.src}
+              alt={img.alt}
+              preset="gallery"
+              loading="eager"
+              draggable="false"
+              objectFit="cover"
+            />
           </figure>
         );
       })
@@ -215,7 +224,8 @@ const poses = posesForCount(images.length, centerIndex, ASPECT);
     pointer-events: none;
   }
 
-  .social-fan__card img {
+  .social-fan__card img,
+  .social-fan__card :global(.opt-picture) {
     display: block;
     width: 100%;
     height: 100%;
@@ -223,6 +233,15 @@ const poses = posesForCount(images.length, centerIndex, ASPECT);
     object-position: center;
     pointer-events: none;
     user-select: none;
+  }
+
+  .social-fan__card :global(.opt-picture > img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 
   .social-fan__card.is-active {

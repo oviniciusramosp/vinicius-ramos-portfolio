@@ -156,7 +156,6 @@
 .aap-root .all-access-pass__background {
   --scale: 1;
   align-self: center;
-  -webkit-backdrop-filter: blur(calc(var(--aap-blur) * (2 - var(--alpha))));
   backdrop-filter: blur(calc(var(--aap-blur) * (2 - var(--alpha))));
   background-color: rgba(
     var(--aap-background-color-solid) /

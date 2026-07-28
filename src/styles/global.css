@@ -30,6 +30,52 @@ img {
   display: block;
 }
 
+/**
+ * Astro <Picture> wrapper.
+ *
+ * Do NOT use display:contents — it breaks sizing (sources leak into the
+ * parent layout; height:100% on the img stops resolving against the card).
+ *
+ * Default = fill the positioned/sized parent (cards, bento, galleries).
+ * Flow media (articles) add `.opt-picture--flow`.
+ */
+.opt-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin: 0;
+  line-height: 0;
+  /* visible: parents that scale for parallax bleed need overscan to paint */
+  overflow: visible;
+}
+
+.opt-picture > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Beat global `img { max-width: 100% }` + intrinsic width/height attrs,
+     which otherwise stretch when both axes are forced to 100%. */
+  max-width: none;
+  max-height: none;
+  /* Safe default: fill boxes without stretch. Call sites override via
+     inline style (OptimizedImg objectFit) or more specific CSS. */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* In-flow media: natural height, optional max from component CSS */
+.opt-picture.opt-picture--flow {
+  height: auto;
+  overflow: visible;
+}
+
+.opt-picture.opt-picture--flow > img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
 /* Ionicons — default site icon library */
 ion-icon {
   display: inline-block;

@@ -12,10 +12,15 @@ import {
 } from './projects';
 
 const publicDir = resolve(process.cwd(), 'public');
+/** Rasters live under src/assets (optimized at build); SVG/video stay in public. */
+const assetsDir = resolve(process.cwd(), 'src/assets');
 
 function publicAssetExists(path: string): boolean {
   if (!path.startsWith('/')) return true; // remote URL or non-public path
-  return existsSync(resolve(publicDir, path.slice(1)));
+  const rel = path.slice(1);
+  return (
+    existsSync(resolve(publicDir, rel)) || existsSync(resolve(assetsDir, rel))
+  );
 }
 
 function collectLocalSrcs(projectSlug: string): string[] {

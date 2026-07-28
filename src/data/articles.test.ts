@@ -12,10 +12,14 @@ import {
 } from './articles';
 
 const publicDir = resolve(process.cwd(), 'public');
+const assetsDir = resolve(process.cwd(), 'src/assets');
 
 function publicAssetExists(path: string): boolean {
   if (!path.startsWith('/')) return true; // remote or non-public path
-  return existsSync(resolve(publicDir, path.slice(1)));
+  const rel = path.slice(1);
+  return (
+    existsSync(resolve(publicDir, rel)) || existsSync(resolve(assetsDir, rel))
+  );
 }
 
 describe('articles data integrity', () => {

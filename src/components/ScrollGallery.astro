@@ -13,6 +13,7 @@
  *     .scroll-gallery-paddlenav.paddlenav.paddlenav-alpha
  */
 import { preventOrphans, preventOrphansHtml } from '../utils/prevent-orphans';
+import OptimizedImg from './OptimizedImg.astro';
 
 export type ScrollGalleryItem = {
   id?: string;
@@ -239,15 +240,17 @@ const displayItems = items.map(prepItem);
                                       <h3 class="feature-card-quote-author">{item.headline}</h3>
                                     </div>
                                     {item.avatar && (
-                                      <img
+                                      <OptimizedImg
                                         class="feature-card-quote-avatar"
                                         src={item.avatar}
-                                        alt={item.headline}
-                                        width="48"
-                                        height="48"
+                                        alt={item.headline ?? ''}
+                                        preset="avatar"
+                                        width={48}
+                                        height={48}
                                         loading="lazy"
                                         decoding="async"
                                         draggable="false"
+                                        objectFit="cover"
                                       />
                                     )}
                                   </header>
@@ -298,25 +301,29 @@ const displayItems = items.map(prepItem);
                               isSocial && 'feature-card-image-container--social',
                             ]}
                           >
-                            <img
-                              class:list={[
+                            <OptimizedImg
+                              class={[
                                 'feature-card-image',
                                 isSocial && 'feature-card-image--social',
-                              ]}
+                              ]
+                                .filter(Boolean)
+                                .join(' ')}
                               src={item.image}
                               alt={item.imageAlt ?? item.label ?? ''}
+                              preset="gallery"
                               loading="lazy"
                               decoding="async"
                               draggable="false"
-                              style={[
-                                item.imageObjectPosition &&
-                                  `object-position: ${item.imageObjectPosition}`,
-                                item.imageScale != null &&
-                                  item.imageScale !== 1 &&
-                                  `transform: scale(${item.imageScale}); transform-origin: center`,
-                              ]
-                                .filter(Boolean)
-                                .join('; ') || undefined}
+                              objectFit={isSocial ? 'cover' : 'contain'}
+                              objectPosition={
+                                item.imageObjectPosition ??
+                                (isSocial ? 'center' : 'bottom center')
+                              }
+                              style={
+                                item.imageScale != null && item.imageScale !== 1
+                                  ? `transform: scale(${item.imageScale}); transform-origin: center`
+                                  : undefined
+                              }
                             />
                           </figure>
                         )
@@ -792,8 +799,12 @@ const displayItems = items.map(prepItem);
     width: 100%;
     height: 100%;
     max-height: none;
+  }
+
+  .feature-card-image.feature-card-image--social :global(img) {
     object-fit: cover;
     object-position: center;
+    max-height: none;
   }
 
   .scroll-gallery-section--quotes {
@@ -886,10 +897,18 @@ const displayItems = items.map(prepItem);
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    object-fit: cover;
-    object-position: center;
+    overflow: hidden;
     background-color: var(--color-surface-elevated, #17161d);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .feature-card-quote-avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 
   .feature-card-quote-divider {
@@ -1130,13 +1149,23 @@ const displayItems = items.map(prepItem);
     display: block;
     width: 100%;
     height: 100%;
+    user-select: none;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .feature-card-image :global(img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
     object-fit: contain;
     object-position: bottom center;
     user-select: none;
     pointer-events: none;
+    display: block;
   }
 
-  .feature-card-image-container--center .feature-card-image {
+  .feature-card-image-container--center .feature-card-image :global(img) {
     object-position: center;
   }
 
@@ -1320,7 +1349,6 @@ const displayItems = items.map(prepItem);
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
     will-change: transform;
     transition: background-color 200ms cubic-bezier(0.44, 0, 0.56, 1);
   }

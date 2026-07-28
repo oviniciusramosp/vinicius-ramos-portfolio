@@ -2,16 +2,30 @@
  * Multi-layer card parallax (Framer dual-image + MPParallaxView depth).
  *
  * Hierarchy (far → near):
- * - img-back / img-mid — close to each other (subtle relative drift)
- * - front (title/tags) — clearly stronger so text reads as nearer
+ * - img-back / img-mid — close; depth mainly via different X ranges
+ * - front (title/tags) — stronger so text reads as nearer
  *
- * Same normalize as withOffset: clamp(mouse/half, -1, 1) * range
+ * Edge guarantee for image layers (absolute):
+ *   |translate| ≤ size × (scale − 1) / 2 − SAFETY
+ * Scale comes from card CSS vars (--img-scale / hover), not matrix parsing
+ * (computed matrix often read as 1 during transitions and killed all motion).
+ *
+ * Dual-image edge guarantee (relative):
+ *   mid and back share the same Y target so range mid−back (7−5 = 2px)
+ *   cannot open the overlaid image’s bottom edge. Depth stays on X.
+ *
  * Spring: stiffness 300, damping 30
  */
 
 const STIFFNESS = 300;
 const DAMPING = 30;
 const MASS = 1;
+
+/** Pixel safety under overscan (subpixel / rounding / AA). */
+const BLEED_SAFETY_PX = 4;
+
+/** Fallback when CSS vars are missing — matches ProjectCard defaults. */
+const DEFAULT_IMG_SCALE = 1.18;
 
 /** Image layers stay near each other; text stands out more. */
 const RANGES = {
@@ -66,6 +80,42 @@ function factors(shell: HTMLElement, clientX: number, clientY: number) {
     nx: clamp((clientX - rect.x - cx) / cx, -1, 1),
     ny: clamp((clientY - rect.y - cy) / cy, -1, 1),
   };
+}
+
+function parseScaleVar(raw: string, fallback: number): number {
+  const n = Number.parseFloat(raw.trim());
+  return Number.isFinite(n) && n >= 1 ? n : fallback;
+}
+
+/**
+ * Intended image scale from ProjectCard CSS variables.
+ * Prefer rest scale for the clamp (smaller overscan = safer). Hover only
+ * increases scale, so using rest never under-clamps during the transition.
+ */
+function readImageScale(shell: HTMLElement): number {
+  const card =
+    shell.querySelector<HTMLElement>('.project-card') ?? shell;
+  const cs = getComputedStyle(card);
+  return parseScaleVar(cs.getPropertyValue('--img-scale'), DEFAULT_IMG_SCALE);
+}
+
+/**
+ * Max axis translation (px) that keeps a center-scaled layer covering its box.
+ * overscan each side = size * (scale - 1) / 2
+ */
+function maxBleedPx(size: number, scale: number, safety = BLEED_SAFETY_PX): number {
+  if (size <= 0 || scale <= 1) return 0;
+  return Math.max(0, (size * (scale - 1)) / 2 - safety);
+}
+
+function layerSize(el: HTMLElement): { w: number; h: number } {
+  const w = el.offsetWidth || el.getBoundingClientRect().width;
+  const h = el.offsetHeight || el.getBoundingClientRect().height;
+  return { w, h };
+}
+
+function isImageDepth(depth: Depth): boolean {
+  return depth === 'img-back' || depth === 'img-mid';
 }
 
 function applyLayer(layer: Layer) {
@@ -151,26 +201,51 @@ function bindCard(shell: HTMLElement) {
     last: performance.now(),
   };
 
-  /**
-   * Contain / bottom-aligned assets (Booking, etc.) have little or no scale
-   * bleed. Full Y parallax translates the layer off its fitted edge and shows
-   * a hard crop line — dampen image layers heavily; leave text (front) alone.
-   */
-  const containCard = Boolean(shell.querySelector('.project-card--fit-contain'));
-  const bookingCard = Boolean(shell.querySelector('.project-card--slug-booking'));
+  const dualCard = Boolean(shell.querySelector('.has-dual-image'));
 
   const setFromEvent = (clientX: number, clientY: number) => {
     const { nx, ny } = factors(shell, clientX, clientY);
+    const scale = readImageScale(shell);
+
+    type Plan = { layer: Layer; xRange: number; yRange: number };
+    const plans: Plan[] = [];
+
     for (const layer of state.layers) {
       const range = RANGES[layer.depth];
-      const isImage = layer.depth === 'img-back' || layer.depth === 'img-mid';
       let xRange = range;
       let yRange = range;
-      if (isImage && (containCard || bookingCard)) {
-        // Mostly horizontal drift; tiny Y so bottom edge never peeks
-        xRange = range * 0.45;
-        yRange = bookingCard ? range * 0.12 : range * 0.25;
+
+      if (isImageDepth(layer.depth)) {
+        const { w, h } = layerSize(layer.el);
+        // Never let a bad size/scale zero out motion if scale is clearly > 1 —
+        // fall back to full design range when bleed is huge vs range anyway.
+        const bleedX = maxBleedPx(w, scale);
+        const bleedY = maxBleedPx(h, scale);
+        xRange = bleedX > 0 ? Math.min(range, bleedX) : range;
+        yRange = bleedY > 0 ? Math.min(range, bleedY) : range;
+        // If we truly have no overscan (scale ≈ 1), keep a tiny X-only drift
+        // for contain cards instead of a hard edge peek on Y.
+        if (bleedY <= 0) yRange = 0;
+        if (bleedX <= 0) xRange = Math.min(range, 2);
       }
+
+      plans.push({ layer, xRange, yRange });
+    }
+
+    if (dualCard) {
+      /**
+       * Same Y on back + mid → relative vertical drift = 0.
+       * (Design ranges 7 vs 5 produced exactly ~2px edge peek.)
+       * X ranges stay different so dual depth remains readable.
+       */
+      const imgPlans = plans.filter((p) => isImageDepth(p.layer.depth));
+      if (imgPlans.length > 1) {
+        const yLock = Math.min(...imgPlans.map((p) => p.yRange));
+        for (const p of imgPlans) p.yRange = yLock;
+      }
+    }
+
+    for (const { layer, xRange, yRange } of plans) {
       layer.x.t = nx * xRange;
       layer.y.t = ny * yRange;
     }

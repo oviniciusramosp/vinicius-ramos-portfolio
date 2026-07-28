@@ -10,6 +10,7 @@ import DeckSlider from '../../components/DeckSlider.astro';
 import SocialFan from '../../components/SocialFan.astro';
 import Device3D from '../../components/Device3D.astro';
 import NextProject from '../../components/NextProject.astro';
+import OptimizedImg from '../../components/OptimizedImg.astro';
 import {
   getPublishedProjects,
   getProject,
@@ -19,6 +20,7 @@ import {
   type CaseBentoCell,
 } from '../../data/projects';
 import { site } from '../../data/site';
+import { optimizedUrl } from '../../utils/optimized-url';
 
 export function getStaticPaths() {
   return getPublishedProjects().map((project) => ({
@@ -35,7 +37,9 @@ const { project } = Astro.props;
 const next = project.nextSlug ? getProject(project.nextSlug) : undefined;
 const useBlocks = Boolean(project.blocks && project.blocks.length > 0);
 /** Prefer front cover layer for share cards; fall back to back cover */
-const ogImage = project.coverFront ?? project.cover;
+const ogSource = project.coverFront ?? project.cover;
+const ogImage =
+  (await optimizedUrl(ogSource, { width: 1200, quality: 80, format: 'jpg' })) ?? ogSource;
 
 const quotes = project.quotes ?? [];
 /** Quotes always use ScrollGallery (incentive-gallery-dark): paddlenav, no autoplay, all cards visible */
@@ -95,6 +99,9 @@ function cellClass(cell: CaseBentoCell) {
   if (cell.kind === 'image' && cell.animate === 'layer-reveal') {
     parts.push('case-bento__cell--layer-reveal');
   }
+  if (cell.kind === 'image' && cell.animate === 'logo-evolution') {
+    parts.push('case-bento__cell--logo-evolution');
+  }
   if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
   if (cell.kind === 'social-fan') parts.push('case-bento__cell--social-fan');
   if (cell.kind === 'device-3d') parts.push('case-bento__cell--device-3d');
@@ -130,6 +137,7 @@ function cellClass(cell: CaseBentoCell) {
           if (block.type === 'bento') {
             const columns = block.columns ?? 4;
             const shell = block.shell ?? 'full';
+            const layout = block.layout;
             return (
               <div
                 class:list={[
@@ -143,6 +151,7 @@ function cellClass(cell: CaseBentoCell) {
                     'case-bento',
                     columns === 3 && 'case-bento--cols-3',
                     columns === 5 && 'case-bento--cols-5',
+                    layout === 'split-3-2' && 'case-bento--split-3-2',
                   ]}
                 >
                   {block.cells.map((cell) =>
@@ -213,12 +222,14 @@ function cellClass(cell: CaseBentoCell) {
                                 iconIndex === 2 && 'case-bento__icon--shadow-blue',
                               ]}
                             >
-                              <img
+                              <OptimizedImg
                                 src={icon.src}
                                 alt={icon.alt}
+                                preset="icon"
                                 loading="eager"
                                 decoding="async"
                                 draggable="false"
+                                objectFit="contain"
                               />
                             </div>
                           ))}
@@ -235,6 +246,22 @@ function cellClass(cell: CaseBentoCell) {
                           set:html={readPublicSvg(cell.src) ?? ''}
                         />
                       </div>
+                    ) : cell.kind === 'image' && cell.animate === 'logo-evolution' ? (
+                      <div class={cellClass(cell)}>
+                        <div
+                          class="case-bento__logo-evolution"
+                          data-logo-evolution
+                          data-src={cell.src}
+                          data-cascade-index={
+                            cell.kind === 'image' && cell.cascadeIndex != null
+                              ? String(cell.cascadeIndex)
+                              : undefined
+                          }
+                          role="img"
+                          aria-label={cell.alt}
+                          set:html={readPublicSvg(cell.src) ?? ''}
+                        />
+                      </div>
                     ) : cell.kind === 'image' && cell.animate === 'layer-reveal' ? (
                       <div class={cellClass(cell)}>
                         <div
@@ -243,29 +270,26 @@ function cellClass(cell: CaseBentoCell) {
                           role="img"
                           aria-label={cell.alt}
                         >
-                          <img
+                          <OptimizedImg
                             class="case-bento__layered-bg"
                             src={cell.src}
                             alt=""
+                            preset="hero"
                             loading="eager"
                             draggable="false"
-                            style={[
-                              `object-fit: ${cell.fit ?? 'cover'}`,
-                              cell.objectPosition
-                                ? `object-position: ${cell.objectPosition}`
-                                : null,
-                            ]
-                              .filter(Boolean)
-                              .join('; ')}
+                            objectFit={cell.fit ?? 'cover'}
+                            objectPosition={cell.objectPosition}
                           />
                           {cell.front && (
                             <div class="case-bento__layered-front" aria-hidden="true">
-                              <img
+                              <OptimizedImg
                                 class="case-bento__layered-front-img"
                                 src={cell.front}
                                 alt=""
+                                preset="hero"
                                 loading="eager"
                                 draggable="false"
+                                objectFit="contain"
                               />
                             </div>
                           )}
@@ -280,21 +304,18 @@ function cellClass(cell: CaseBentoCell) {
                             style={`background-image: url('${cell.texture}')`}
                           />
                         )}
-                        <img
+                        <OptimizedImg
                           src={cell.src}
                           alt={cell.alt}
+                          preset="hero"
                           loading="eager"
-                          style={[
-                            `object-fit: ${cell.fit ?? 'cover'}`,
-                            cell.objectPosition
-                              ? `object-position: ${cell.objectPosition}`
-                              : null,
+                          objectFit={cell.fit ?? 'cover'}
+                          objectPosition={cell.objectPosition}
+                          style={
                             cell.kind === 'image' && cell.scale
                               ? `transform: scale(${cell.scale})`
-                              : null,
-                          ]
-                            .filter(Boolean)
-                            .join('; ')}
+                              : undefined
+                          }
                         />
                       </div>
                     ),
@@ -376,18 +397,13 @@ function cellClass(cell: CaseBentoCell) {
                         .filter(Boolean)
                         .join('; ')}
                     >
-                      <img
+                      <OptimizedImg
                         src={img.src}
                         alt={img.alt}
+                        preset="gallery"
                         loading="lazy"
-                        style={[
-                          `object-fit: ${img.fit ?? 'cover'}`,
-                          img.objectPosition
-                            ? `object-position: ${img.objectPosition}`
-                            : null,
-                        ]
-                          .filter(Boolean)
-                          .join('; ')}
+                        objectFit={img.fit ?? 'cover'}
+                        objectPosition={img.objectPosition}
                       />
                     </figure>
                   ))}
@@ -491,7 +507,13 @@ function cellClass(cell: CaseBentoCell) {
       ) : (
         <>
           <div class="case__cover">
-            <img src={project.cover} alt={`${project.title} cover`} loading="eager" />
+            <OptimizedImg
+              src={project.cover}
+              alt={`${project.title} cover`}
+              preset="full"
+              loading="eager"
+              objectFit="cover"
+            />
           </div>
           {project.sections.map((section) => (
             <section class="case__section">
@@ -506,7 +528,13 @@ function cellClass(cell: CaseBentoCell) {
                   <div class="case__gallery" data-gallery-slider>
                     {section.images.map((src, i) => (
                       <figure class="case__figure">
-                        <img src={src} alt={`${section.title} visual ${i + 1}`} loading="lazy" />
+                        <OptimizedImg
+                          src={src}
+                          alt={`${section.title} visual ${i + 1}`}
+                          preset="gallery"
+                          loading="lazy"
+                          objectFit="cover"
+                        />
                       </figure>
                     ))}
                   </div>
@@ -721,7 +749,6 @@ function cellClass(cell: CaseBentoCell) {
   .case__cta :global(.btn--ghost .btn__visual) {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
   }
 
   .case__cta :global(.btn--ghost:hover .btn__visual),
@@ -771,6 +798,24 @@ function cellClass(cell: CaseBentoCell) {
     grid-auto-rows: 144px;
     gap: 8px;
     width: 100%;
+  }
+
+  /*
+   * Split 3+2 (Identity kit): 2 equal columns × 6 equal tracks.
+   * Left cards (1×2) match logo-evolution SVG viewBox 1083∶658.
+   * Height from container width: each left card is colW × (colW·658/1083);
+   * right cards (1×3) split that stack 50/50.
+   */
+  .case-bento--split-3-2 {
+    --split-gap: 8px;
+    container-type: inline-size;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(6, 1fr);
+    grid-auto-rows: unset;
+    /* colW = (cqw - gap) / 2; cardH = colW * 658/1083; total = 3·cardH + 2·gap */
+    height: calc(
+      3 * ((100cqw - var(--split-gap)) / 2) * 658 / 1083 + 2 * var(--split-gap)
+    );
   }
 
   /*
@@ -945,7 +990,8 @@ function cellClass(cell: CaseBentoCell) {
     --icon-shadow-color: rgba(70, 150, 255, 0.6);
   }
 
-  .case-bento__icon img {
+  .case-bento__icon img,
+  .case-bento__icon :global(.opt-picture) {
     position: relative;
     z-index: 1;
     display: block;
@@ -961,6 +1007,7 @@ function cellClass(cell: CaseBentoCell) {
       transform 320ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1)),
       filter 320ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1));
     will-change: transform, filter;
+    overflow: hidden;
   }
 
   .case-bento__icon:hover,
@@ -970,11 +1017,22 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   .case-bento__icon:hover img,
-  .case-bento__icon:focus-within img {
+  .case-bento__icon:focus-within img,
+  .case-bento__icon:hover :global(.opt-picture),
+  .case-bento__icon:focus-within :global(.opt-picture) {
     transform: scale(1.1);
     filter: drop-shadow(
       0 var(--icon-shadow-y) var(--icon-shadow-blur) var(--icon-shadow-color)
     );
+  }
+
+  .case-bento__icon :global(.opt-picture > img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+    border-radius: 22%;
+    display: block;
   }
 
   .case-bento__icon--shadow-orange:hover,
@@ -1116,6 +1174,71 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   /*
+   * Logo evolution cascade (Identity kit left column).
+   * Lines are armed with transition:none (no reverse shrink), then
+   * `.is-drawing` enables a one-way dashoffset draw.
+   */
+  .case-bento__cell--logo-evolution {
+    overflow: hidden;
+  }
+
+  .case-bento__logo-evolution {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .case-bento__logo-evolution :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
+  /* Armed / idle: never transition dashoffset (prevents shrink-then-grow) */
+  .case-bento__logo-evolution :global(.logo-evo-line) {
+    fill: none !important;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: none;
+  }
+
+  /* Only while drawing: offset length → 0 */
+  .case-bento__logo-evolution.is-drawing :global(.logo-evo-line) {
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1)
+      var(--logo-evo-delay, 0ms);
+    will-change: stroke-dashoffset;
+  }
+
+  /* Visible dashed lines keep authored dash + opacity; mask does the reveal */
+  .case-bento__logo-evolution :global(.logo-evo-line-visible) {
+    transition: none;
+  }
+
+  /* Fills: no transition while armed */
+  .case-bento__logo-evolution :global(.logo-evo-fill) {
+    transition: none;
+  }
+
+  /* Fills only — never while lines are still drawing */
+  .case-bento__logo-evolution.is-filling :global(.logo-evo-fill) {
+    transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1)
+      var(--logo-evo-fill-delay, 0ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-bento__logo-evolution :global(.logo-evo-line),
+    .case-bento__logo-evolution.is-drawing :global(.logo-evo-line),
+    .case-bento__logo-evolution :global(.logo-evo-fill),
+    .case-bento__logo-evolution.is-filling :global(.logo-evo-fill) {
+      transition: none !important;
+    }
+  }
+
+  /*
    * Layered bento cell (wellness poster): photo bg + icon/wordmark front.
    * Front stays hidden until logo-mark intro settles (layer-reveal.ts).
    */
@@ -1137,6 +1260,14 @@ function cellClass(cell: CaseBentoCell) {
     height: 100%;
     display: block;
     z-index: 0;
+    overflow: hidden;
+  }
+
+  .case-bento__layered-bg :global(img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    display: block;
   }
 
   /*
@@ -1174,6 +1305,13 @@ function cellClass(cell: CaseBentoCell) {
     width: 100%;
     height: auto;
     max-height: none;
+  }
+
+  .case-bento__layered-front-img :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
     object-fit: contain;
   }
 
@@ -1302,7 +1440,8 @@ function cellClass(cell: CaseBentoCell) {
     height: 100%;
   }
 
-  .case-bento__cell img {
+  .case-bento__cell img,
+  .case-bento__cell :global(.opt-picture) {
     position: relative;
     z-index: 1;
     display: block;
@@ -1313,12 +1452,21 @@ function cellClass(cell: CaseBentoCell) {
     object-position: center;
   }
 
+  .case-bento__cell :global(.opt-picture > img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-position: center;
+  }
+
   /*
    * Continuous clockwise spin on bento images (e.g. Vibecheck hero deco).
    * Sized under √2 so corners stay inside the card while rotating.
    * Linear + full 360° keeps speed constant with no ease-out / reverse.
    */
-  .case-bento__cell--spin img {
+  .case-bento__cell--spin img,
+  .case-bento__cell--spin :global(.opt-picture) {
     width: 72%;
     height: 72%;
     max-width: none;
@@ -1514,9 +1662,17 @@ function cellClass(cell: CaseBentoCell) {
       inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
-  .case-gallery--stack .case-gallery__item img {
+  .case-gallery--stack .case-gallery__item img,
+  .case-gallery--stack .case-gallery__item :global(.opt-picture) {
     width: 100%;
     height: 100%;
+    display: block;
+  }
+
+  .case-gallery--stack .case-gallery__item :global(.opt-picture > img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
     display: block;
   }
 
@@ -1655,9 +1811,17 @@ function cellClass(cell: CaseBentoCell) {
     object-position: bottom center;
   }
 
-  .case-gallery__item img {
+  .case-gallery__item img,
+  .case-gallery__item :global(.opt-picture) {
     width: 100%;
     height: 100%;
+    object-position: center;
+  }
+
+  .case-gallery__item :global(.opt-picture > img) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
     object-position: center;
   }
 
@@ -1741,6 +1905,13 @@ function cellClass(cell: CaseBentoCell) {
       grid-template-rows: repeat(3, 150px);
       grid-auto-rows: 150px;
       height: min-content;
+    }
+
+    .case-bento--split-3-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(6, 1fr);
+      grid-auto-rows: unset;
+      /* height from SVG aspect ratio — see base rule */
     }
 
     /* 3-col strip stays 3×220 (live base rule; only padding changes on tablet) */
@@ -1845,9 +2016,18 @@ function cellClass(cell: CaseBentoCell) {
       min-width: 0;
     }
 
-    .case-gallery--pair-height .case-gallery__item img {
+    .case-gallery--pair-height .case-gallery__item img,
+    .case-gallery--pair-height .case-gallery__item :global(.opt-picture) {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .case-gallery--pair-height .case-gallery__item :global(.opt-picture > img) {
+      width: 100%;
+      height: 100%;
+      max-width: none;
       object-fit: cover;
       display: block;
     }
@@ -1899,12 +2079,20 @@ function cellClass(cell: CaseBentoCell) {
       padding-inline: 250px;
     }
 
-    /* desktop ≥1194 — live fixed 220px rows, height 692 */
+    /* desktop ≥1194 — 220px rows; height grows with content (not fixed 692)
+     * so multi-row content bentos don't overflow into the next section */
     .case-bento {
       grid-template-columns: repeat(4, minmax(200px, 1fr));
       grid-template-rows: repeat(3, 220px);
       grid-auto-rows: 220px;
-      height: 692px;
+      height: min-content;
+    }
+
+    .case-bento--split-3-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(6, 1fr);
+      grid-auto-rows: unset;
+      /* height from SVG aspect ratio — see base rule */
     }
 
     /* design strip: 1 row × 220px (not the 3-row hero height) */
@@ -2029,6 +2217,13 @@ function cellClass(cell: CaseBentoCell) {
       height: min-content;
     }
 
+    .case-bento--split-3-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(6, 1fr);
+      grid-auto-rows: unset;
+      /* height from SVG aspect ratio — see base rule */
+    }
+
     /* design strip live: 330px rows (not hero 290) */
     .case-bento--cols-3 {
       grid-template-rows: 330px;
@@ -2130,12 +2325,14 @@ function cellClass(cell: CaseBentoCell) {
 <script>
   import { bootLogoMark } from '../../scripts/logo-mark';
   import { bootLayerReveal } from '../../scripts/layer-reveal';
+  import { bootLogoEvolution } from '../../scripts/logo-evolution';
 
   // Immediate + page-load (same pattern as BaseLayout / Device3D).
   // __logoMarkGen invalidates any in-flight prepare from a prior call.
   const bootMooveHero = () => {
     bootLogoMark();
     bootLayerReveal();
+    bootLogoEvolution();
   };
   bootMooveHero();
   document.addEventListener('astro:page-load', bootMooveHero);

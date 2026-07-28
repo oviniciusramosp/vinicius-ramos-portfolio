@@ -6,7 +6,7 @@ Documento de referência do case Moove no portfolio. Complementa o copy em `src/
 - **Título público:** Moove
 - **Ano:** `2023` (metadata dos PDFs de entrega, fev/2023)
 - **Rota:** `/projects/moove`
-- **Status:** **Coming Soon** na homepage até imagens finais. Sem `href` (não gera `/projects/moove`, não aparece em Next Project). Copy/blocks já escritos no data model.
+- **Status:** **Publicado** na homepage e na cadeia Next Project (`vibecheck → moove → crypto-bros`).
 - **Idioma do portfolio:** inglês
 - **Última atualização desta nota:** 2026-07-27
 
@@ -70,9 +70,9 @@ Implicações para o case:
 | `tags` | `BRAND` |
 | `size` | `wide` |
 | `priority` | `50` |
-| `href` | *(omitido até publicar)* |
-| `soon` | `true` |
-| `nextSlug` | `booking` (só vale quando publicar) |
+| `href` | `/projects/moove` |
+| `soon` | *(removido — live)* |
+| `nextSlug` | `crypto-bros` (cadeia: vibecheck → moove → crypto-bros) |
 | `imageFit` | `contain` |
 | `cover` | `logo-mark.svg` + `coverAnimate: 'draw-lines'` |
 
@@ -118,12 +118,13 @@ Pasta: `public/projects/moove/`
 
 | Arquivo | Uso no case |
 |---------|-------------|
-| `logo-mark.svg` | Card home + bento 2×1 animate |
-| `colored-full-logo.svg` | Hero bento 2×2 + identity pair |
-| `paper-work.jpg` | Hero bento 2×2 + full-width system |
-| `bw-full-logo.jpg` | Bento 1×1 light + identity pair |
-| `tshirt-01.jpg` / `tshirt-02.jpg` / `moletom.jpg` | Apparel triple |
-| `bottles.png` / `bags.png` | Merch pair |
+| `logo-mark.svg` | Card home + hero bento 2×1 animate |
+| `logo-evolution-01.svg` / `02` / `03` | Identity bento left column (3× 2×1, light) |
+| `colored-full-logo.svg` | Identity bento right 2×2 (orange primary) |
+| `bw-full-logo.jpg` | Identity bento right 2×1, `fit: cover` (fills card) |
+| `paper-work.jpg` | In the club bento 2×2 (system sheet / applications on paper) |
+| `tshirt-01.jpg` / `tshirt-02.jpg` / `moletom.jpg` | In the club apparel |
+| `bottles.png` / `bags.png` | In the club merch |
 | `icon-yoga.jpg` / `icon-jiu.jpg` / `icon-pilates.jpg` / `icon-wellness-poster.jpg` | Deck presentation modalidades |
 | `poster-infinite-01.jpg` / `poster-infinite-02.jpg` | Print pair |
 | `wave-poster.jpg` | Print single |
