@@ -82,8 +82,9 @@ export type CaseBentoCell =
        * hover reveals lines in a radius near the cursor.
        * `layer-reveal` — bg (`src`) always on; front (`front`) fades in after logo-mark intro.
        * `logo-evolution` — construction draw + fill fade; cascade with siblings.
+       * `brand-waves` — neumorphic expanding rings on brand surface (autoplay).
        */
-      animate?: 'logo-mark' | 'layer-reveal' | 'logo-evolution';
+      animate?: 'logo-mark' | 'layer-reveal' | 'logo-evolution' | 'brand-waves';
       /** Stagger order for `logo-evolution` cascade (0, 1, 2…). */
       cascadeIndex?: number;
       /**
@@ -253,6 +254,12 @@ export type CaseBlock =
        * Video still autoplays muted + loop by default.
        */
       controls?: boolean;
+      /**
+       * Horizontal measure:
+       * - `full` (default) = full media column (Staircase listings demo)
+       * - `copy` = same width as section title/copy (2/3 on desktop+)
+       */
+      shell?: 'full' | 'copy';
     }
   | {
       /**
@@ -587,6 +594,7 @@ export const projects: Project[] = [
         aspect: '1.401',
         fit: 'cover',
         controls: true,
+        shell: 'copy',
       },
       {
         type: 'section',
@@ -1628,13 +1636,16 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${MOOVE}/icon-on-orange.svg`,
+            // Transparent mark so brand-wave rings show on orange cell bg
+            src: `${MOOVE}/icon-mark.svg`,
             alt: 'Moove infinity icon on brand orange',
             span: '1x1',
             fit: 'contain',
             padded: true,
-            scale: 0.62,
+            // Wide mark (180×89); keep modest vs the orange field
+            scale: 0.28,
             surface: 'brand',
+            animate: 'brand-waves',
           },
         ],
       },

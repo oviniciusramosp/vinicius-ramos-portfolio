@@ -102,6 +102,9 @@ function cellClass(cell: CaseBentoCell) {
   if (cell.kind === 'image' && cell.animate === 'logo-evolution') {
     parts.push('case-bento__cell--logo-evolution');
   }
+  if (cell.kind === 'image' && cell.animate === 'brand-waves') {
+    parts.push('case-bento__cell--brand-waves');
+  }
   if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
   if (cell.kind === 'social-fan') parts.push('case-bento__cell--social-fan');
   if (cell.kind === 'device-3d') parts.push('case-bento__cell--device-3d');
@@ -280,7 +283,15 @@ function cellClass(cell: CaseBentoCell) {
                             objectFit={cell.fit ?? 'cover'}
                             objectPosition={cell.objectPosition}
                           />
-                          {cell.front && (
+                          {cell.front && cell.front.endsWith('.svg') ? (
+                            <div
+                              class="case-bento__layered-front"
+                              aria-hidden="true"
+                              data-wellness-overlay
+                              data-src={cell.front}
+                              set:html={readPublicSvg(cell.front) ?? ''}
+                            />
+                          ) : cell.front ? (
                             <div class="case-bento__layered-front" aria-hidden="true">
                               <OptimizedImg
                                 class="case-bento__layered-front-img"
@@ -292,11 +303,18 @@ function cellClass(cell: CaseBentoCell) {
                                 objectFit="contain"
                               />
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     ) : (
                       <div class={cellClass(cell)}>
+                        {cell.kind === 'image' && cell.animate === 'brand-waves' && (
+                          <div class="brand-waves" data-brand-waves aria-hidden="true">
+                            <span class="brand-waves__dot" />
+                            <span class="brand-waves__dot" />
+                            <span class="brand-waves__dot" />
+                          </div>
+                        )}
                         {cell.texture && (
                           <div
                             class="case-bento__texture"
@@ -461,42 +479,54 @@ function cellClass(cell: CaseBentoCell) {
 
           if (block.type === 'video') {
             const showControls = Boolean(block.controls);
+            const shellCopy = block.shell === 'copy';
             return (
-              <div class="case__media case__media--video">
-                <div
-                  class:list={['case-video-block', showControls && 'case-video-block--controls']}
-                  data-case-video-block={showControls ? '' : undefined}
-                >
+              <div
+                class:list={[
+                  'case__media',
+                  'case__media--video',
+                  shellCopy && 'case__media--video-copy',
+                ]}
+              >
+                <div class={shellCopy ? 'case__video-inner' : undefined}>
                   <div
-                    class="case-video"
-                    style={block.aspect ? `aspect-ratio: ${block.aspect}` : undefined}
+                    class:list={[
+                      'case-video-block',
+                      showControls && 'case-video-block--controls',
+                    ]}
+                    data-case-video-block={showControls ? '' : undefined}
                   >
-                    <video
-                      src={block.src}
-                      poster={block.poster}
-                      aria-label={block.alt ?? 'Product demo video'}
-                      autoplay
-                      muted
-                      loop
-                      playsinline
-                      preload="auto"
-                      data-case-video={showControls ? '' : undefined}
-                      style={`object-fit: ${block.fit ?? 'cover'}`}
-                    />
-                  </div>
-                  {showControls && (
-                    <div class="case-video-block__bar">
-                      <button
-                        type="button"
-                        class="case-video-block__toggle"
-                        data-case-video-toggle
-                        aria-label="Pause video"
-                        aria-pressed="false"
-                      >
-                        <ion-icon name="pause" data-case-video-icon aria-hidden="true" />
-                      </button>
+                    <div
+                      class="case-video"
+                      style={block.aspect ? `aspect-ratio: ${block.aspect}` : undefined}
+                    >
+                      <video
+                        src={block.src}
+                        poster={block.poster}
+                        aria-label={block.alt ?? 'Product demo video'}
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="auto"
+                        data-case-video={showControls ? '' : undefined}
+                        style={`object-fit: ${block.fit ?? 'cover'}`}
+                      />
                     </div>
-                  )}
+                    {showControls && (
+                      <div class="case-video-block__bar">
+                        <button
+                          type="button"
+                          class="case-video-block__toggle"
+                          data-case-video-toggle
+                          aria-label="Pause video"
+                          aria-pressed="false"
+                        >
+                          <ion-icon name="pause" data-case-video-icon aria-hidden="true" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -1086,6 +1116,99 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   /*
+   * Neumorphism waves on brand icon card (after Kilian So / CodePen vYOjGpQ).
+   * Orange base; true circles (cqmin), centered, slow + random rhythm via JS.
+   */
+  .case-bento__cell--brand-waves {
+    overflow: hidden;
+    container-type: size;
+  }
+
+  .case-bento__cell--brand-waves > :global(.opt-picture),
+  .case-bento__cell--brand-waves > img {
+    position: relative;
+    z-index: 2;
+  }
+
+  .brand-waves {
+    /* Diameter in px (set by JS from icon). One token → both axes stay equal. */
+    --brand-wave-size: 0px;
+    --brand-wave-scale: 6.5;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .brand-waves__dot {
+    /*
+     * Perfect circle: square box (size × size) + full radius.
+     * Never width%/height% of the cell — non-square cells become ovals.
+     */
+    --brand-wave-duration: 4.2s;
+    --brand-wave-delay: 0s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: var(--brand-wave-size);
+    height: var(--brand-wave-size);
+    min-width: var(--brand-wave-size);
+    min-height: var(--brand-wave-size);
+    max-width: var(--brand-wave-size);
+    max-height: var(--brand-wave-size);
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: #ff4b24;
+    box-shadow:
+      6px 6px 14px rgba(120, 20, 0, 0.28),
+      -5px -5px 12px rgba(255, 200, 160, 0.28);
+    opacity: 0;
+    /* Center with left/top + margin trick so scale stays uniform on a square */
+    margin-top: calc(var(--brand-wave-size) / -2);
+    margin-left: calc(var(--brand-wave-size) / -2);
+    transform: scale(1);
+    transform-origin: center center;
+    will-change: transform, opacity;
+  }
+
+  .brand-waves.is-playing .brand-waves__dot {
+    animation: brand-wave var(--brand-wave-duration) linear infinite;
+    animation-delay: var(--brand-wave-delay);
+  }
+
+  @keyframes brand-wave {
+    /*
+     * Fade-in runs with the first half of growth; fade-out with the rest.
+     * Opacity and scale share the same timeline so the ring appears while expanding.
+     */
+    0% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    45% {
+      opacity: 0.92;
+      transform: scale(calc(1 + (var(--brand-wave-scale) - 1) * 0.45));
+    }
+    100% {
+      opacity: 0;
+      transform: scale(var(--brand-wave-scale));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-waves.is-playing .brand-waves__dot {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  /*
    * Logo mark (Moove hero 2×1).
    * Draw = homepage cover-lines (.cover-line + setDrawn).
    * Size = viewBox crop + meet (no CSS scale).
@@ -1272,6 +1395,7 @@ function cellClass(cell: CaseBentoCell) {
    * Overlay: 50% of card width, top-left.
    * Use cqi (container inline size) for BOTH top and left so insets match —
    * plain % would resolve top against height and left against width.
+   * When SVG has [data-wellness-order] layers, each slides up + fades in cascade.
    */
   .case-bento__layered-front {
     --layer-inset: clamp(12px, 5cqi, 28px);
@@ -1287,17 +1411,43 @@ function cellClass(cell: CaseBentoCell) {
     padding: 0;
     display: block;
     pointer-events: none;
+  }
+
+  /* Inlined overlay SVG fills the front box */
+  .case-bento__layered-front :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Cascade layers: start below + transparent; reveal slides up */
+  .case-bento__layered-front :global(.wellness-layer) {
     opacity: 0;
-    transform: scale(0.94) translateY(6px);
-    transform-origin: top left;
+    transform: translateY(14px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--wellness-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--wellness-delay, 0ms);
+  }
+
+  .case-bento__layered.is-revealed .case-bento__layered-front :global(.wellness-layer) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Fallback when overlay has no ordered layers (single unit) */
+  .case-bento__layered-front:not([data-has-layers='true']) {
+    opacity: 0;
+    transform: translateY(10px);
     transition:
       opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .case-bento__layered.is-revealed .case-bento__layered-front {
+  .case-bento__layered.is-revealed
+    .case-bento__layered-front:not([data-has-layers='true']) {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 
   .case-bento__layered-front-img {
@@ -1316,10 +1466,11 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .case-bento__layered-front {
-      transition: none;
-      opacity: 1;
-      transform: none;
+    .case-bento__layered-front,
+    .case-bento__layered-front :global(.wellness-layer) {
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 
@@ -1505,6 +1656,34 @@ function cellClass(cell: CaseBentoCell) {
     object-position: center;
     border-radius: inherit;
     background: transparent;
+  }
+
+  /*
+   * shell: 'copy' — same measure as .case__section-inner title/copy
+   * (full on mobile/tablet; span 2 of 3 cols on desktop+).
+   */
+  .case__video-inner {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 920px;
+  }
+
+  @media (min-width: 810px) {
+    .case__video-inner {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: none;
+    }
+
+    .case__video-inner > .case-video-block {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .case__video-inner > .case-video-block {
+      grid-column: span 2;
+    }
   }
 
   /* Video + external pause control (bottom-right, outside the frame) */
@@ -2327,6 +2506,7 @@ function cellClass(cell: CaseBentoCell) {
   import { bootLogoMark } from '../../scripts/logo-mark';
   import { bootLayerReveal } from '../../scripts/layer-reveal';
   import { bootLogoEvolution } from '../../scripts/logo-evolution';
+  import { bootBrandWaves } from '../../scripts/brand-waves';
 
   // Immediate + page-load (same pattern as BaseLayout / Device3D).
   // __logoMarkGen invalidates any in-flight prepare from a prior call.
@@ -2334,6 +2514,7 @@ function cellClass(cell: CaseBentoCell) {
     bootLogoMark();
     bootLayerReveal();
     bootLogoEvolution();
+    bootBrandWaves();
   };
   bootMooveHero();
   document.addEventListener('astro:page-load', bootMooveHero);

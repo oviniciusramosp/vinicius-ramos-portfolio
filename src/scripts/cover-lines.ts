@@ -105,6 +105,106 @@ export async function ensureInline(host: HTMLElement): Promise<SVGSVGElement | n
   return svg;
 }
 
+function ensureDefs(svg: SVGSVGElement): SVGDefsElement {
+  let defs = svg.querySelector(':scope > defs');
+  if (!defs) {
+    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svg.insertBefore(defs, svg.firstChild);
+  }
+  return defs;
+}
+
+function clearInlineDashFromStyle(el: SVGElement) {
+  const style = el.getAttribute('style');
+  if (!style || !/stroke-dasharray|stroke-dashoffset/i.test(style)) return;
+  const cleaned = style
+    .replace(/stroke-dasharray:\s*[^;]+;?/gi, '')
+    .replace(/stroke-dashoffset:\s*[^;]+;?/gi, '')
+    .replace(/;;+/g, ';')
+    .replace(/^;|;$/g, '')
+    .trim();
+  if (cleaned) el.setAttribute('style', cleaned);
+  else el.removeAttribute('style');
+}
+
+/**
+ * Dashed strokes keep authored dash + final opacity from frame one.
+ * Progressive reveal uses a solid white mask stroke that draws.
+ */
+function armDashedWithMask(
+  el: LineEl,
+  svg: SVGSVGElement,
+  length: number,
+  dashRest: string,
+  delayMs: number,
+) {
+  const defs = ensureDefs(svg);
+  const id = `cl-mask-${++uid}`;
+
+  const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+  mask.setAttribute('id', id);
+  mask.setAttribute('maskUnits', 'userSpaceOnUse');
+  mask.setAttribute('maskContentUnits', 'userSpaceOnUse');
+
+  try {
+    const vb = svg.viewBox.baseVal;
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', String(vb.x));
+    bg.setAttribute('y', String(vb.y));
+    bg.setAttribute('width', String(vb.width || 1844));
+    bg.setAttribute('height', String(vb.height || 1392));
+    bg.setAttribute('fill', '#000');
+    mask.appendChild(bg);
+  } catch {
+    /* ignore */
+  }
+
+  const drawer = el.cloneNode(true) as LineEl;
+  drawer.removeAttribute('id');
+  drawer.removeAttribute('mask');
+  drawer.removeAttribute('opacity');
+  drawer.classList.add('cover-line', 'cover-line-mask-drawer');
+  drawer.setAttribute('stroke', '#fff');
+  drawer.setAttribute('fill', 'none');
+  drawer.setAttribute('opacity', '1');
+  const sw = el.getAttribute('stroke-width') || el.style.strokeWidth || '1';
+  const swNum = parseFloat(String(sw)) || 1;
+  drawer.setAttribute('stroke-width', String(Math.max(swNum * 1.35, swNum + 0.5)));
+  clearInlineDashFromStyle(drawer);
+  drawer.style.setProperty('--cover-line-len', String(length));
+  drawer.style.setProperty('--cover-line-delay', `${delayMs}ms`);
+  drawer.style.strokeDasharray = String(length);
+  drawer.style.strokeDashoffset = String(length);
+  drawer.setAttribute('stroke-dasharray', String(length));
+  drawer.setAttribute('stroke-dashoffset', String(length));
+  mask.appendChild(drawer);
+  defs.appendChild(mask);
+
+  // Visible line: final dash + final authored opacity (no boost)
+  clearInlineDashFromStyle(el);
+  el.classList.add('cover-line-visible');
+  el.dataset.dashRest = dashRest;
+  el.dataset.maskId = id;
+  el.setAttribute('stroke-dasharray', dashRest);
+  el.setAttribute('stroke-dashoffset', '0');
+  el.style.strokeDasharray = dashRest;
+  el.style.strokeDashoffset = '0';
+  el.setAttribute('mask', `url(#${id})`);
+}
+
+/** Solid stroke: classic length dashoffset draw at final opacity. */
+function armSolidDraw(el: LineEl, length: number, delayMs: number) {
+  el.classList.add('cover-line');
+  el.style.setProperty('--cover-line-len', String(length));
+  el.style.setProperty('--cover-line-delay', `${delayMs}ms`);
+  el.dataset.dashRest = '';
+  clearInlineDashFromStyle(el);
+  el.style.strokeDasharray = String(length);
+  el.style.strokeDashoffset = String(length);
+  el.setAttribute('stroke-dasharray', String(length));
+  el.setAttribute('stroke-dashoffset', String(length));
+}
+
 export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
   if (host.dataset.linesReady === 'true') return;
 
@@ -113,6 +213,8 @@ export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
       'path[stroke], circle[stroke], ellipse[stroke], line[stroke], polyline[stroke], polygon[stroke]',
     ),
   ).filter((el) => {
+    if (el.closest('defs') || el.closest('mask')) return false;
+    if (el.classList.contains('cover-line-mask-drawer')) return false;
     // Skip filled letterforms if any path has both fill + stroke
     const fill = (el.getAttribute('fill') || '').toLowerCase();
     if (fill && fill !== 'none' && fill !== 'transparent') return false;
@@ -122,59 +224,26 @@ export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
   });
 
   lines.forEach((el, i) => {
-    const len = measureLength(el);
-    el.classList.add('cover-line');
-    el.style.setProperty('--cover-line-len', String(len));
-    el.style.setProperty('--cover-line-delay', `${Math.min(i * 20, 360)}ms`);
+    const len = Math.max(measureLength(el), 1);
+    const delayMs = Math.min(i * 20, 360);
+    const authoredDash =
+      el.getAttribute('stroke-dasharray') ||
+      (el.getAttribute('style') || '').match(/stroke-dasharray:\s*([^;]+)/i)?.[1]?.trim() ||
+      '';
 
-    // Preserve authoring dash pattern (e.g. "5 5", "8 8") for after the draw
-    const authoredDash = el.getAttribute('stroke-dasharray') || '';
-    el.dataset.dashRest = authoredDash;
-
-    // Hide with solid dash = full length (draw technique); restore pattern when drawn
-    el.setAttribute('stroke-dasharray', String(len));
-    el.setAttribute('stroke-dashoffset', String(len));
-    el.style.strokeDasharray = String(len);
-    el.style.strokeDashoffset = String(len);
-
-    // Authoring opacities are often 0.2–0.5 — boost so the draw is readable
-    const op = Number(el.getAttribute('opacity') || '1');
-    if (op < 0.85) {
-      el.dataset.opacityRest = String(op);
-      el.setAttribute('opacity', '0.95');
+    // Keep final authored opacity for the whole draw (no temporary boost).
+    if (authoredDash) {
+      armDashedWithMask(el, svg, len, authoredDash, delayMs);
+    } else {
+      armSolidDraw(el, len, delayMs);
     }
-
-    // After draw completes, put dashed patterns back
-    el.addEventListener('transitionend', (ev) => {
-      if (ev.propertyName !== 'stroke-dashoffset') return;
-      if (!host.classList.contains('is-drawn')) return;
-      restoreAuthoredDash(el);
-    });
   });
 
   host.dataset.linesReady = 'true';
   host.classList.remove('is-drawn');
 }
 
-/** Restore "5 5" / "8 8" construction dashes after the solid draw finishes. */
-function restoreAuthoredDash(el: LineEl) {
-  const rest = el.dataset.dashRest || '';
-  if (!rest) {
-    // Solid construction stroke — leave as continuous line
-  } else {
-    el.setAttribute('stroke-dasharray', rest);
-    el.style.strokeDasharray = rest;
-    el.setAttribute('stroke-dashoffset', '0');
-    el.style.strokeDashoffset = '0';
-  }
-  // Restore authored opacity (prep boosts faint guides to ~0.95 for the draw)
-  const opRest = el.dataset.opacityRest;
-  if (opRest != null && opRest !== '') {
-    el.setAttribute('opacity', opRest);
-  }
-}
-
-/** Prepare for a fresh solid draw from empty → full. */
+/** Prepare a cover-line (solid or mask drawer) for a fresh draw from empty → full. */
 function armForDraw(el: LineEl) {
   const len = el.style.getPropertyValue('--cover-line-len') || '1';
   el.setAttribute('stroke-dasharray', len);
@@ -184,6 +253,7 @@ function armForDraw(el: LineEl) {
 }
 
 export function setDrawn(host: HTMLElement, drawn: boolean) {
+  // Only animate drawers / solid lines — visible dashed stay dashed under the mask
   const lines = host.querySelectorAll<LineEl>('.cover-line');
   if (!lines.length) return;
 

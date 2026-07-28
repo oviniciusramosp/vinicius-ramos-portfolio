@@ -191,8 +191,13 @@ Component: `Device3D.astro` · client: `src/scripts/device-three.ts`. Prefer **o
   aspect?: string,
   fit?: 'cover' | 'contain',
   poster?: string,
+  controls?: boolean,           // pause/play outside the frame
+  shell?: 'full' | 'copy',      // full media column (default) | section copy width
 }
 ```
+
+- **full** (default): full media column (Staircase listings demo).
+- **copy**: same width as section title/copy (Crypto Bros craft chart).
 
 ---
 

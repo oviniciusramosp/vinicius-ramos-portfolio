@@ -24,6 +24,13 @@ function applyPose(
   card.style.setProperty('--sf-scale', String(scale));
 }
 
+/** Stacking lives only on --sf-z (see SocialFan.astro). Never set inline z-index. */
+function applyZ(card: HTMLElement, z: number) {
+  card.style.setProperty('--sf-z', String(z));
+  // Clear any legacy inline z-index so it cannot override the CSS variable
+  card.style.removeProperty('z-index');
+}
+
 function readRest(card: HTMLElement): RestPose {
   const ds = card.dataset;
   const fromData = (key: string) => {
@@ -95,7 +102,7 @@ export function initSocialFan(root: HTMLElement) {
         c.style.transitionDelay = '';
       }
       applyPose(c, p.x, p.y, p.rot, p.scale);
-      c.style.zIndex = String(p.z);
+      applyZ(c, p.z);
     });
   };
 
@@ -111,7 +118,7 @@ export function initSocialFan(root: HTMLElement) {
       const p = rest[i];
       c.style.transitionDelay = '';
       applyPose(c, 0, 0, 0, p.scale);
-      c.style.zIndex = String(p.z);
+      applyZ(c, p.z);
     });
   };
 
@@ -216,13 +223,14 @@ export function initSocialFan(root: HTMLElement) {
       c.classList.remove('is-active');
       const p = rest[i];
       applyPose(c, p.x, p.y, p.rot, p.scale);
-      c.style.zIndex = String(p.z);
+      applyZ(c, p.z);
     });
   };
 
   const activate = (index: number) => {
     if (!introDone) return;
     active = index;
+    const n = cards.length;
     cards.forEach((c, i) => {
       const p = rest[i];
       const dist = Math.abs(i - index);
@@ -235,7 +243,8 @@ export function initSocialFan(root: HTMLElement) {
           p.rot * 0.4,
           Math.min(1.08, p.scale * 1.06),
         );
-        c.style.zIndex = '20';
+        // Uniquely above every other card (is-active CSS fallback is also 1000)
+        applyZ(c, 1000);
         return;
       }
       c.classList.remove('is-active');
@@ -244,7 +253,12 @@ export function initSocialFan(root: HTMLElement) {
       const drop = dist * 1.5;
       const tilt = dir * (1.2 / (dist + 0.5));
       applyPose(c, p.x + push, p.y + drop, p.rot + tilt, p.scale);
-      c.style.zIndex = String(Math.max(1, p.z - dist));
+      /*
+       * Strict distance stack: farther from the hovered card = lower.
+       * Unique secondary (- i) so the last card never ties with another and
+       * pops above the middle of the fan via DOM order alone.
+       */
+      applyZ(c, (n - dist) * n - i);
     });
   };
 

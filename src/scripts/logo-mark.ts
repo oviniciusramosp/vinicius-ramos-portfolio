@@ -78,7 +78,15 @@ function ensureLinesGroup(svg: SVGSVGElement): SVGGElement {
   const existing = svg.querySelector<SVGGElement>('g.logo-mark-lines-g');
   if (existing) return existing;
 
-  const lines = Array.from(svg.querySelectorAll('.cover-line'));
+  // Visible strokes only — never move mask drawers out of <defs>/<mask>
+  const lines = Array.from(
+    svg.querySelectorAll<SVGElement>('.cover-line, .cover-line-visible'),
+  ).filter(
+    (el) =>
+      !el.closest('defs') &&
+      !el.closest('mask') &&
+      !el.classList.contains('cover-line-mask-drawer'),
+  );
   const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   g.classList.add('logo-mark-lines-g');
 
@@ -190,6 +198,7 @@ async function playIntro(
   host.__logoMarkIntroRunning = true;
 
   const linesG = svg.querySelector<SVGGElement>('g.logo-mark-lines-g');
+  // Solid drawers + mask drawers (dashed lines keep final opacity under mask)
   const lines = host.querySelectorAll('.cover-line');
 
   host.classList.remove('is-settled', 'is-filled', 'is-lines-out', 'is-spotlight');
