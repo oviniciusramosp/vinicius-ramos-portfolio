@@ -55,7 +55,10 @@ function collectBlockSrcs(
   }
   if (block.type === 'bento') {
     for (const cell of block.cells as CaseBentoCell[]) {
-      if (cell.kind === 'image') push(cell.src);
+      if (cell.kind === 'image') {
+        push(cell.src);
+        if ('front' in cell) push(cell.front);
+      }
       if (cell.kind === 'device-3d') push(cell.screen);
       if (cell.kind === 'social-fan') {
         for (const image of cell.images) push(image.src);
@@ -114,13 +117,15 @@ describe('projects data integrity', () => {
     }
   });
 
-  it('published projects have href, year, and are not marked soon', () => {
+  it('routable projects have href; non-soon ones also require year', () => {
     const published = getPublishedProjects();
     expect(published.length).toBeGreaterThan(0);
     for (const project of published) {
       expect(project.href, project.slug).toBeTruthy();
-      expect(project.year, project.slug).toBeTruthy();
-      expect(project.soon, project.slug).toBeFalsy();
+      // Drafts may ship with empty year until the case is ready
+      if (!project.soon) {
+        expect(project.year, project.slug).toBeTruthy();
+      }
     }
   });
 

@@ -25,6 +25,50 @@ export type ArticleNote = {
   youtubeUrl?: string;
 };
 
+/** End-of-post CTA (HP Printables pattern: optional embed modal) */
+export type ArticleLink = {
+  label: string;
+  href: string;
+  /** Open `href` in a portfolio embed modal instead of navigating */
+  modal?: boolean;
+};
+
+/**
+ * Muted autoplay loop in the article body (Crypto Bros pattern).
+ * `controls: true` shows a pause/play button under the frame.
+ * Crop + radius are ratio-based so they scale with the rendered width.
+ */
+export type ArticleVideo = {
+  src: string;
+  alt?: string;
+  /** CSS aspect-ratio, e.g. "16 / 9" or "9 / 16" for portrait */
+  aspect?: string;
+  /**
+   * Preferred max frame width (still capped by viewport, e.g. 72vw).
+   * e.g. "280px"
+   */
+  maxWidth?: string;
+  fit?: 'cover' | 'contain';
+  /**
+   * Extra zoom over `fit` to crop letterbox/pillarbox (1 = none).
+   * Unitless ratio — already proportional at every breakpoint.
+   * e.g. 1.13 for the Gemini square export with white margins.
+   */
+  cropScale?: number;
+  /**
+   * Corner radius as a fraction of the rendered frame width
+   * (e.g. 0.16 → 16% of width via container queries).
+   */
+  radiusRatio?: number;
+  /**
+   * 0-based index of the last paragraph before the video.
+   * Omit to place the video after the full body.
+   */
+  insertAfter?: number;
+  /** Show pause/play control outside the video (bottom-right) */
+  controls?: boolean;
+};
+
 export type Article = {
   /** URL slug: /articles/{id} */
   id: string;
@@ -54,6 +98,15 @@ export type Article = {
   content: ArticleParagraph[];
   /** Original LinkedIn post URL */
   sourceUrl?: string;
+  /** Optional muted autoplay video after the body */
+  video?: ArticleVideo;
+  /**
+   * Optional line above end-of-post CTAs (context for the links).
+   * e.g. “Examples of Apple and Google shipping UI on demand.”
+   */
+  linksIntro?: string;
+  /** Optional CTAs after body/video (embed modals when modal: true) */
+  links?: ArticleLink[];
   /** Optional addition after the post body */
   note?: ArticleNote;
 };
@@ -90,7 +143,7 @@ export const articles: Article[] = [
     date: 'Jun 2026',
     title: 'Siri, meet my app',
     description:
-      'Notes from an exclusive Apple Brazil event: OS-level intelligence, App Intents, and a foldable prep hint.',
+      'Apple invited me to an event where I got a clearer sense of why they haven’t fallen behind in the AI race.',
     image: '/articles/apple-ai-app-intents.png',
     imageAlt: 'iPhone Dynamic Island with a glass lens effect over the lock screen',
     imageObjectPosition: 'bottom center',
@@ -117,7 +170,7 @@ export const articles: Article[] = [
     note: {
       label: 'Addition',
       paragraphs: [
-        'A few weeks after I wrote this, MKBHD published a really interesting video on whether Apple has actually fallen behind in the AI race. It pairs well with the notes above — worth a watch if you care about how Apple is playing this game.',
+        'A few weeks after I wrote this, MKBHD published a really interesting video on whether Apple has actually fallen behind in the AI race. It pairs well with the notes above. Worth a watch if you care about how Apple is playing this game.',
       ],
       youtubeUrl: 'https://www.youtube.com/watch?v=eWKY0OnPByg',
     },
@@ -127,7 +180,7 @@ export const articles: Article[] = [
     date: 'Jun 2026',
     title: 'UI-on-demand',
     description:
-      'Apps are exploding. Next up: interfaces generated only when you need them.',
+      'The way we interact with interfaces is about to change, and the power will be in the user’s hands.',
     image: '/articles/ui-on-demand.png',
     imageAlt:
       'Two iPhones: describe your widget prompt and a generated marathon countdown widget',
@@ -144,13 +197,41 @@ export const articles: Article[] = [
       'To me, the next step starts to become very clear: UI-less experiences, where the agent handles the task for you and only shows you the result. And UI-on-demand experiences, where you interact with a screen only when it is actually necessary, in a way that is fully personalized to you.',
       'This shift will not happen overnight, which means there will be a very interesting window of opportunity for the people and companies that learn how to navigate it. Is it a little scary? Yes. Leaving the comfort zone and exploring a new paradigm always is. But it’s also incredibly exciting to be living through this transformation in real time.',
     ],
+    video: {
+      src: 'https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Final-5.5-GI-_Gen_UI_Widget_v02.mp4#t=0.001',
+      alt: 'Gemini generating a UI widget on demand on Android',
+      // Source is 1080×1080 with white margins; phone UI is ~452×958
+      aspect: '452 / 958',
+      maxWidth: '280px',
+      fit: 'cover',
+      cropScale: 1.13,
+      // ~16% of rendered width (scales with breakpoint; ~45px at 280)
+      radiusRatio: 0.16,
+      // After Uber example — visual proof of the idea mid-argument
+      insertAfter: 4,
+      controls: true,
+    },
+    linksIntro:
+      'Apple and Google are already shipping pieces of this future: interfaces generated on demand for the user.',
+    links: [
+      {
+        label: 'Google',
+        href: 'https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/',
+        modal: true,
+      },
+      {
+        label: 'Apple',
+        href: 'https://www.apple.com/newsroom/2026/06/apple-intelligence-brings-powerful-ai-capabilities-into-everyday-experiences/',
+        modal: true,
+      },
+    ],
   },
   {
     id: 'your-customer-is-an-agent',
     date: 'May 2026',
     title: 'Time to be B2A',
     description:
-      'Maybe you don’t need an AI product. Maybe someone else’s agent needs yours.',
+      'Stop thinking about building your chatbot. Start seeing an AI agent as your main customer.',
     image: '/articles/your-customer-is-an-agent.png',
     imageAlt:
       'Your app connected to Claude, ChatGPT, and Perplexity as agent consumers',
@@ -189,7 +270,7 @@ export const articles: Article[] = [
     date: 'Apr 2026',
     title: 'How fast is too fast?',
     description:
-      'From Figma fatigue to Claude Design: when code becomes the single source of truth.',
+      'AI companies aren’t slowing down. They’re swallowing others and shipping more tools every day.',
     image: '/articles/how-fast-is-too-fast.svg',
     imageAlt: 'Design and code merging at high speed',
     sourceUrl:
@@ -201,6 +282,13 @@ export const articles: Article[] = [
       'Today, Claude Design was announced, and it’s going to be incredibly helpful for us during this transition. Even in its first version, it already addresses a significant portion of our current pain points. What’s still missing is a way to integrate seamlessly with code in real time, without the need to export. But I’d expect that to be on their roadmap.',
       'At this pace, the team at Anthropic might need to start asking themselves: How fast is too fast when it comes to shipping new products? 😂',
     ],
+    note: {
+      label: 'Addition',
+      paragraphs: [
+        'Here’s Anthropic’s own intro to Claude Design, the launch I was writing about above.',
+      ],
+      youtubeUrl: 'https://www.youtube.com/watch?v=t_LBECIQQqs',
+    },
   },
 ];
 

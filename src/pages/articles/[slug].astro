@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import EmbedModal from '../../components/EmbedModal.astro';
 import NextProject from '../../components/NextProject.astro';
 import {
   articles,
@@ -29,9 +31,39 @@ const noteEmbed = article.note?.youtubeUrl
   ? youtubeEmbedSrc(article.note.youtubeUrl)
   : undefined;
 
+/** CTAs that open embed modals (deduped by href) */
+const embedModals = (article.links ?? [])
+  .filter((l) => l.modal && l.href)
+  .reduce<{ id: string; src: string }[]>((acc, link) => {
+    if (acc.some((m) => m.src === link.href)) return acc;
+    acc.push({
+      id: `article-embed-${acc.length + 1}`,
+      src: link.href,
+    });
+    return acc;
+  }, []);
+
+function embedModalIdForHref(href: string) {
+  return embedModals.find((m) => m.src === href)?.id;
+}
+
 function paragraphParts(paragraph: ArticleParagraph) {
   return typeof paragraph === 'string' ? [paragraph] : paragraph;
 }
+
+const showVideoControls = Boolean(article.video?.controls);
+const videoInsertAfter = article.video?.insertAfter;
+const videoMidBody =
+  article.video != null &&
+  videoInsertAfter != null &&
+  videoInsertAfter >= 0 &&
+  videoInsertAfter < article.content.length - 1;
+const bodyBeforeVideo = videoMidBody
+  ? article.content.slice(0, videoInsertAfter! + 1)
+  : article.content;
+const bodyAfterVideo = videoMidBody
+  ? article.content.slice(videoInsertAfter! + 1)
+  : [];
 ---
 
 <BaseLayout
@@ -74,7 +106,7 @@ function paragraphParts(paragraph: ArticleParagraph) {
 
     <div class="article-page__body">
       {
-        article.content.map((paragraph) => (
+        bodyBeforeVideo.map((paragraph) => (
           <p class="article-page__p body-text">
             {paragraphParts(paragraph).map((part) =>
               isArticleHighlight(part) ? (
@@ -97,6 +129,127 @@ function paragraphParts(paragraph: ArticleParagraph) {
     </div>
 
     {
+      article.video && (
+        <div
+          class:list={[
+            'article-page__media',
+            videoMidBody && 'article-page__media--inline',
+          ]}
+        >
+          <div
+            class:list={[
+              'article-video-block',
+              showVideoControls && 'article-video-block--controls',
+            ]}
+            data-article-video-block={showVideoControls ? '' : undefined}
+            style={[
+              article.video.maxWidth &&
+                `--article-video-max: ${article.video.maxWidth}`,
+              article.video.radiusRatio != null &&
+                `--article-video-radius-ratio: ${article.video.radiusRatio}`,
+              article.video.cropScale != null &&
+                `--article-video-crop: ${article.video.cropScale}`,
+            ]
+              .filter(Boolean)
+              .join('; ') || undefined}
+          >
+            <div
+              class="article-video"
+              style={
+                article.video.aspect
+                  ? `aspect-ratio: ${article.video.aspect}`
+                  : undefined
+              }
+            >
+              <video
+                src={article.video.src}
+                aria-label={article.video.alt ?? 'Article demo video'}
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                data-article-video={showVideoControls ? '' : undefined}
+                style={`object-fit: ${article.video.fit ?? 'cover'}`}
+              />
+            </div>
+            {showVideoControls && (
+              <div class="article-video-block__bar">
+                <button
+                  type="button"
+                  class="article-video-block__toggle"
+                  data-article-video-toggle
+                  aria-label="Pause video"
+                  aria-pressed="false"
+                >
+                  <ion-icon name="pause" data-article-video-icon aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    {
+      bodyAfterVideo.length > 0 && (
+        <div class="article-page__body article-page__body--continued">
+          {bodyAfterVideo.map((paragraph) => (
+            <p class="article-page__p body-text">
+              {paragraphParts(paragraph).map((part) =>
+                isArticleHighlight(part) ? (
+                  <a
+                    class="article-highlight"
+                    href={part.href}
+                    data-tooltip={part.tooltip}
+                    data-transition-label={part.tooltip.replace(/^View Project:\s*/i, '')}
+                    data-cursor="block"
+                  >
+                    {part.text}
+                  </a>
+                ) : (
+                  part
+                ),
+              )}
+            </p>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      article.links && article.links.length > 0 && (
+        <div class="article-page__links">
+          {article.linksIntro && (
+            <p class="article-page__links-intro body-text">{article.linksIntro}</p>
+          )}
+          <div class="article-page__links-row">
+            {article.links.map((link) => {
+              const embedId =
+                link.modal && link.href ? embedModalIdForHref(link.href) : undefined;
+              return embedId ? (
+                <Button
+                  label={link.label}
+                  variant="ghost"
+                  embedOpen={embedId}
+                  class="article-page__link-btn"
+                />
+              ) : (
+                <Button
+                  label={link.label}
+                  href={link.href}
+                  variant="ghost"
+                  external
+                  class="article-page__link-btn"
+                />
+              );
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    {
       article.note && (
         <aside class="article-note" aria-label={article.note.label ?? 'Addition'}>
           <p class="article-note__label">{article.note.label ?? 'Addition'}</p>
@@ -108,7 +261,7 @@ function paragraphParts(paragraph: ArticleParagraph) {
               <iframe
                 class="article-note__iframe"
                 src={noteEmbed}
-                title="MKBHD — Apple and the AI race"
+                title="Related video"
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerpolicy="strict-origin-when-cross-origin"
@@ -130,7 +283,85 @@ function paragraphParts(paragraph: ArticleParagraph) {
       />
     )
   }
+
+  {embedModals.map((modal) => <EmbedModal id={modal.id} src={modal.src} />)}
 </BaseLayout>
+
+<script>
+  /**
+   * Muted autoplay + optional pause control (same behavior as case study videos).
+   * ClientRouter can leave new <video> nodes paused after SPA navigations.
+   */
+  function kickArticleVideos() {
+    document
+      .querySelectorAll<HTMLVideoElement>('.article-video video')
+      .forEach((video) => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+
+        const tryPlay = () => {
+          if (video.paused) {
+            void video.play().catch(() => undefined);
+          }
+        };
+
+        if (video.readyState === 0 && video.src) {
+          video.load();
+        }
+
+        if (video.readyState >= 2) {
+          tryPlay();
+        } else {
+          video.addEventListener('canplay', tryPlay, { once: true });
+          tryPlay();
+        }
+      });
+  }
+
+  function bindArticleVideoBlocks() {
+    document
+      .querySelectorAll<HTMLElement>('[data-article-video-block]')
+      .forEach((block) => {
+        const video = block.querySelector<HTMLVideoElement>('[data-article-video]');
+        const btn = block.querySelector<HTMLButtonElement>('[data-article-video-toggle]');
+        const icon = block.querySelector<HTMLElement>('[data-article-video-icon]');
+        if (!video || !btn || !icon) return;
+        if ((btn as HTMLButtonElement & { __bound?: boolean }).__bound) return;
+        (btn as HTMLButtonElement & { __bound?: boolean }).__bound = true;
+
+        const sync = () => {
+          const paused = video.paused;
+          icon.setAttribute('name', paused ? 'play' : 'pause');
+          btn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
+          btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        };
+
+        btn.addEventListener('click', () => {
+          if (video.paused) {
+            void video.play().catch(() => undefined);
+          } else {
+            video.pause();
+          }
+          requestAnimationFrame(sync);
+        });
+
+        video.addEventListener('play', sync);
+        video.addEventListener('pause', sync);
+        sync();
+      });
+  }
+
+  function initArticleVideos() {
+    kickArticleVideos();
+    bindArticleVideoBlocks();
+  }
+
+  initArticleVideos();
+  document.addEventListener('astro:page-load', initArticleVideos);
+</script>
 
 <style>
   .article-page {
@@ -201,6 +432,129 @@ function paragraphParts(paragraph: ArticleParagraph) {
     font-size: var(--text-sm);
     line-height: 1.75;
     color: var(--color-text-soft, rgba(255, 255, 255, 0.75));
+  }
+
+  /* Continued body after mid-post media */
+  .article-page__body--continued {
+    margin-top: var(--space-9);
+  }
+
+  /* Muted loop — width + radius scale with the rendered frame */
+  .article-page__media {
+    margin-top: var(--space-9);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .article-page__media--inline {
+    margin-block: var(--space-9);
+  }
+
+  .article-video-block {
+    /* Container for cqi-based radius / control sizing */
+    container-type: inline-size;
+    container-name: article-video;
+    /* Prefer data max, but never exceed viewport fraction */
+    width: min(var(--article-video-max, 280px), 72vw, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 3.5cqi, 12px);
+  }
+
+  /* Phone-on-transparent: radius = ratio of frame width (scales per breakpoint) */
+  .article-video {
+    width: 100%;
+    border-radius: calc(var(--article-video-radius-ratio, 0.14) * 100cqi);
+    overflow: hidden;
+    background: transparent;
+    isolation: isolate;
+  }
+
+  .article-video video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    background: transparent;
+    /* cropScale is a unitless ratio — same crop fraction at every size */
+    transform: scale(var(--article-video-crop, 1));
+    transform-origin: center center;
+  }
+
+  .article-video-block__bar {
+    display: flex;
+    justify-content: flex-end;
+    padding-inline: 2px;
+  }
+
+  .article-video-block__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Scales with the phone width */
+    width: clamp(32px, 14cqi, 40px);
+    height: clamp(32px, 14cqi, 40px);
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-surface, #131219);
+    color: var(--color-text, #fff);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition:
+      background 200ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1)),
+      transform 200ms var(--ease-smooth, cubic-bezier(0.44, 0, 0.56, 1));
+  }
+
+  .article-video-block__toggle:hover {
+    background: #1c1b24;
+  }
+
+  .article-video-block__toggle:focus-visible {
+    outline: 2px solid var(--color-accent, #008fff);
+    outline-offset: 2px;
+  }
+
+  .article-video-block__toggle:active {
+    transform: scale(0.96);
+  }
+
+  .article-video-block__toggle :global(ion-icon) {
+    font-size: clamp(16px, 7cqi, 20px);
+    pointer-events: none;
+  }
+
+  /* End-of-post CTAs (embed modals / external) — intro + compact labels */
+  .article-page__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+    margin-top: var(--space-9);
+  }
+
+  .article-page__links-intro {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: var(--color-text-soft, rgba(255, 255, 255, 0.75));
+  }
+
+  .article-page__links-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .article-page__links :global(.article-page__link-btn .btn__visual) {
+    min-height: 30px;
+    padding: 6px 12px;
+  }
+
+  .article-page__links :global(.article-page__link-btn .btn__label) {
+    font-size: var(--text-xs, 12px);
   }
 
   /* Postscript / addition after original post */

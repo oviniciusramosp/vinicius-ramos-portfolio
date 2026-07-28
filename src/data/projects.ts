@@ -62,10 +62,32 @@ export type CaseBentoCell =
       padded?: boolean;
       /** Tiled background texture (Framer background-image repeat) */
       texture?: string;
-      /** Light card surface (live white cells for brand marks) */
-      surface?: 'dark' | 'light';
+      /**
+       * Card surface:
+       * - `dark` = default `--color-surface`
+       * - `light` = white
+       * - `brand` = Moove orange `#FF4B24`
+       */
+      surface?: 'dark' | 'light' | 'brand';
       /** Continuous clockwise CSS spin on the image (full 360° linear loop). */
       spin?: boolean;
+      /**
+       * Uniform CSS scale on the image (e.g. 1.25) so product cutouts can
+       * sit larger inside a contain cell without changing the grid span.
+       */
+      scale?: number;
+      /**
+       * Special case animations for inlined SVG cells.
+       * `logo-mark` — draw construction lines → fade in mark → hide lines;
+       * hover reveals lines in a radius near the cursor.
+       * `layer-reveal` — bg (`src`) always on; front (`front`) fades in after logo-mark intro.
+       */
+      animate?: 'logo-mark' | 'layer-reveal';
+      /**
+       * Front overlay for `layer-reveal` (icon / wordmark on transparent SVG).
+       * Background is `src`.
+       */
+      front?: string;
     }
   | {
       kind: 'caption';
@@ -190,17 +212,22 @@ export type CaseBlock =
        * - `presentation`: one full content-width slide at a time, no adjacent peeks
        */
       type: 'deck-slider';
-      variant?: 'wireframes' | 'presentation';
+      /**
+       * `wireframes` — phone-frame cards + prev/next peeks (HP).
+       * `presentation` — full content-width slides, no peeks (Vibecheck).
+       * `slides` — full-bleed slide images + prev/next peeks (campaign decks).
+       */
+      variant?: 'wireframes' | 'presentation' | 'slides';
       /** Optional eyebrow above the slider (e.g. “Presentation”) */
       title?: string;
       /** Tiled micro-logo texture under each deck card (wireframes only) */
       texture?: string;
       /**
        * Wireframes: title + phone frames.
-       * Presentation: title (a11y) + single full-bleed slide image per deck.
+       * Presentation / slides: title (a11y) + single full-bleed slide image per deck.
        */
       decks: CaseDeck[];
-      /** Defaults: wireframes true · presentation false */
+      /** Defaults: wireframes true · presentation/slides false */
       autoplay?: boolean;
     }
   | {
@@ -1491,84 +1518,165 @@ export const projects: Project[] = [
 {
     slug: 'moove',
     title: 'Moove',
-    year: '',
+    year: '2023',
     tags: ['BRAND'],
     summary:
-      'Designed the brand system and real-world applications for Moove Wellness Club, a Brazilian fitness network: identity, brand book, apparel, signage, and everyday club touchpoints that carry the brand from locker room to facade.',
+      'Visual identity and brand applications for Moove Wellness Club, a multi-modality Brazilian fitness network: a clearer infinity mark, then apparel, merch, and campaigns that carry the brand from the locker room to the wall.',
     // Homepage: original combined mark + construction lines (draw strokes on hover)
     cover: `${MOOVE}/logo-mark.svg`,
     coverAnimate: 'draw-lines',
     imageFit: 'contain',
     size: 'wide',
     priority: 50,
-    // Coming soon until case images are final (no href → not in static paths / Next Project)
+    // Coming soon on homepage; href keeps /projects/moove routable for case work
     soon: true,
+    href: '/projects/moove',
     nextSlug: 'booking',
     sections: [
       {
-        title: 'A brand built to be lived in',
+        title: 'From every practice, one brand',
         paragraphs: [
-          'Moove Wellness Club is a Brazilian fitness network that needed more than a logo. The brand had to feel sharp on a facade, clear on a towel at arm’s length, and consistent across social, merch, and club communication.',
-          'I developed the full visual identity and its applications, plus a brand book that keeps the system usable for the teams who print, post, and open doors every day.',
+          'Moove Wellness Club brings pilates, yoga, dance, jiu-jitsu, and wellness under one roof. The old mark was hard to apply: too delicate at small sizes, easy to confuse with generic gym type, and too rigid for every context a club like this needs.',
+          'I redesigned the identity so it could stay sharp on a hoodie, clear on a bottle, and flexible across campaigns, then built the applications that put it in members hands every day.',
         ],
       },
       {
         title: 'Identity system',
         paragraphs: [
-          'The core of the work is a tight identity kit: logo, icon, and color palette designed to hold up from large outdoor lettering down to small embroidered marks. The goal was a mark that reads as confident and athletic without looking generic in a crowded gym market.',
+          'The infinity mark is the heart of Moove: strong enough to stand alone as an icon, and clean enough to live next to the wordmark in orange, black, or reverse. The system is built to scale, reverse, and print without drama.',
         ],
       },
       {
         title: 'In the club',
         paragraphs: [
-          'The brand shows up where members already are. I designed applications for t-shirts, towels, water bottles, and Stanley-style cups so the identity lives on the floor, not only on presentation boards.',
-          'For the club exterior, I designed facade signage and lettering concepts for a new academy front, so Moove is recognizable from the street before anyone walks in.',
+          'A wellness brand has to survive the floor, not only the deck. I applied the system to hoodies, tees, bottles, and bags so members wear and carry Moove between classes.',
         ],
       },
       {
-        title: 'Communication system',
+        title: 'Modalities, one system',
         paragraphs: [
-          'Beyond physical goods, I created templates and models for communication and promotion materials, including social media post systems, so the club can stay consistent without redesigning every campaign from scratch.',
-          'Everything rolls into the brand book: how to use the mark, palette, type, and applications so future pieces still feel like Moove.',
+          'Wellness, yoga, jiu-jitsu, and pilates each keep their own energy, while sharing the same mark and brand color. Campaign templates keep the club consistent without redesigning every class from scratch.',
+        ],
+      },
+      {
+        title: 'Print and promotion',
+        paragraphs: [
+          'Poster systems and infinite-tile layouts extend the mark into walls, windows, and seasonal communication, so the brand stays present outside the studio too.',
         ],
       },
     ],
     blocks: [
       {
         type: 'bento',
+        // Pack order for 4-col grid (sizes fixed: tshirt 1×1, wave 1×2):
+        // [ logo-mark 2×1 ][ tshirt 1×1 ][ wave 1×2 ]
+        // [ moletom 1×2 ][ wellness 2×2 ][ wave     ]
+        // [ moletom     ][ wellness     ][ icon 1×1 ]
         cells: [
           {
             kind: 'image',
-            src: `${MOOVE}/hero-identity.svg`,
-            alt: 'Moove brand identity overview',
-            span: '2x2',
+            src: `${MOOVE}/logo-mark.svg`,
+            alt: 'Moove wordmark with construction lines',
+            span: '2x1',
             fit: 'contain',
-          },
-          {
-            kind: 'caption',
-            text: 'Identity that works in the club, not only on a deck.',
-            span: '1x1',
+            animate: 'logo-mark',
           },
           {
             kind: 'image',
-            src: `${MOOVE}/icon.svg`,
-            alt: 'Moove brand icon',
+            src: `${MOOVE}/tshirt-01.jpg`,
+            alt: 'Moove branded t-shirt mockup',
+            span: '1x1',
+            fit: 'cover',
+            // Zoom shirt so the product reads larger in the 1×1 card
+            scale: 1.22,
+            objectPosition: 'center center',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/hero-training.jpg`,
+            alt: 'Athlete training with Moove line-art wordmark overlay',
+            span: '1x2',
+            fit: 'cover',
+            objectPosition: 'center top',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/moletom.jpg`,
+            alt: 'Moove branded hoodie mockup',
+            span: '1x2',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
+            // Layered: photo bg + infinity icon / Wellness Club wordmark front
+            src: `${MOOVE}/wellness-bg.jpg`,
+            front: `${MOOVE}/wellness-overlay.svg`,
+            alt: 'Moove wellness club poster: photo with infinity icon and wordmark',
+            span: '2x2',
+            fit: 'cover',
+            objectPosition: 'left center',
+            animate: 'layer-reveal',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/icon-on-orange.svg`,
+            alt: 'Moove infinity icon on brand orange',
             span: '1x1',
             fit: 'contain',
             padded: true,
-            surface: 'light',
+            scale: 0.62,
+            surface: 'brand',
           },
+        ],
+      },
+      {
+        type: 'section',
+        title: 'From every practice, one brand',
+        paragraphs: [
+          '**Moove Wellness Club** brings **pilates**, **yoga**, **dance**, **jiu-jitsu**, and **wellness** under one roof. The old mark fought that reality: fragile at small sizes, easy to confuse with generic gym type, and too rigid for every context a club like this needs.',
+          'I rebuilt the identity so it could stay sharp on a hoodie, clear on a bottle, and flexible across campaigns, then carried it into the applications members actually touch.',
+        ],
+      },
+      {
+        type: 'section',
+        title: 'Identity system',
+        paragraphs: [
+          'The infinity mark is the heart of Moove: strong enough to stand alone as an icon, and clean enough to sit with the wordmark in brand orange, black, or reverse. The system is built to scale, reverse, and print without drama, from large outdoor lettering down to embroidery.',
+        ],
+      },
+      {
+        // Identity kit bento (4-col), content column (not full-bleed):
+        // [ construction 2×1 ][ primary orange 2×2 ]
+        // [ system sheet 2×2 ][ mono lockup 2×1 ]
+        type: 'bento',
+        shell: 'content',
+        cells: [
           {
             kind: 'image',
-            src: `${MOOVE}/hero-signage.svg`,
-            alt: 'Moove facade signage concept',
-            span: '2x2',
+            src: `${MOOVE}/logo-mark.svg`,
+            alt: 'Moove infinity wordmark with construction lines on dark surface',
+            span: '2x1',
             fit: 'contain',
+            padded: true,
           },
           {
             kind: 'image',
-            src: `${MOOVE}/logo.svg`,
-            alt: 'Moove wordmark',
+            src: `${MOOVE}/colored-full-logo.svg`,
+            alt: 'Moove primary logo on brand orange field',
+            span: '2x2',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/paper-work.jpg`,
+            alt: 'Brand system overview with mark and application samples on paper',
+            span: '2x2',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/bw-full-logo.jpg`,
+            alt: 'Moove monochrome logo lockup',
             span: '2x1',
             fit: 'contain',
             padded: true,
@@ -1577,178 +1685,148 @@ export const projects: Project[] = [
       },
       {
         type: 'section',
-        title: 'A brand built to be lived in',
-        paragraphs: [
-          '**Moove Wellness Club** is a Brazilian fitness network that needed more than a logo. The brand had to feel sharp on a facade, clear on a towel at arm’s length, and consistent across social, merch, and club communication.',
-          'I developed the full visual identity and its applications, plus a **brand book** that keeps the system usable for the teams who print, post, and open doors every day.',
-        ],
-      },
-      {
-        type: 'section',
-        title: 'Identity system',
-        paragraphs: [
-          'The core of the work is a tight identity kit: **logo**, **icon**, and **color palette** designed to hold up from large outdoor lettering down to small embroidered marks. The goal was a mark that reads as confident and athletic without looking generic in a crowded gym market.',
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'triple',
-        images: [
-          {
-            src: `${MOOVE}/logo.svg`,
-            alt: 'Moove logo lockup',
-            fit: 'contain',
-            aspect: '1',
-          },
-          {
-            src: `${MOOVE}/icon.svg`,
-            alt: 'Moove icon mark',
-            fit: 'contain',
-            aspect: '1',
-          },
-          {
-            src: `${MOOVE}/palette.svg`,
-            alt: 'Moove color palette',
-            fit: 'contain',
-            aspect: '1',
-            hideOn: 'mobile',
-          },
-        ],
-      },
-      {
-        type: 'section',
         title: 'In the club',
         paragraphs: [
-          'The brand shows up where members already are. I designed applications for **t-shirts**, **towels**, **water bottles**, and **Stanley-style cups** so the identity lives on the floor, not only on presentation boards.',
+          'A wellness brand has to survive the floor, not only the deck. I applied the system to **hoodies**, **tees**, **bottles**, and **bags** so members wear and carry Moove between classes.',
         ],
       },
       {
-        type: 'gallery',
-        layout: 'triple',
-        images: [
+        // Merch mosaic — content column (not full-bleed)
+        // Pack (4-col): tees always horizontal (2×1), moletom always vertical (1×2)
+        // [ tee1 2×1      ][ tee2 2×1      ]
+        // [ bottles 2×2   ][ mol 1×2 ][ bags 1×2 ]
+        type: 'bento',
+        shell: 'content',
+        cells: [
           {
-            src: `${MOOVE}/apparel-tee.svg`,
-            alt: 'Moove branded t-shirt mockup',
+            kind: 'image',
+            src: `${MOOVE}/tshirt-01.jpg`,
+            alt: 'Moove branded t-shirt mockup, front view',
+            span: '2x1',
             fit: 'cover',
-            aspect: '0.8',
           },
           {
-            src: `${MOOVE}/apparel-towel.svg`,
-            alt: 'Moove branded towel mockup',
+            kind: 'image',
+            src: `${MOOVE}/tshirt-02.jpg`,
+            alt: 'Moove branded t-shirt mockup, alternate colorway',
+            span: '2x1',
             fit: 'cover',
-            aspect: '0.8',
           },
           {
-            src: `${MOOVE}/apparel-bottle.svg`,
-            alt: 'Moove branded water bottle mockup',
-            fit: 'cover',
-            aspect: '0.8',
-            hideOn: 'mobile',
-          },
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'pair',
-        images: [
-          {
-            src: `${MOOVE}/merch-stanley.svg`,
-            alt: 'Moove Stanley-style cup application',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-          {
-            src: `${MOOVE}/merch-cup.svg`,
-            alt: 'Moove cup application',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-        ],
-      },
-      {
-        type: 'section',
-        paragraphs: [
-          'For the club exterior, I designed **facade signage** and lettering concepts for a new academy front, so Moove is recognizable from the street before anyone walks in.',
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'single',
-        images: [
-          {
-            src: `${MOOVE}/facade-signage.svg`,
-            alt: 'Moove academy facade lettering and signage',
-            fit: 'cover',
-            aspect: '1.239',
-          },
-        ],
-      },
-      {
-        type: 'section',
-        title: 'Communication system',
-        paragraphs: [
-          'Beyond physical goods, I created models for **communication and promotion** materials, including a **social media post** system, so the club can stay consistent without redesigning every campaign from scratch.',
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'pair',
-        images: [
-          {
-            src: `${MOOVE}/collat-poster.svg`,
-            alt: 'Moove promotional poster',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-          {
-            src: `${MOOVE}/collat-flyer.svg`,
-            alt: 'Moove communication flyer',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'social',
-        images: [
-          {
-            src: `${MOOVE}/social-1.svg`,
-            alt: 'Moove social media post template 1',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-          {
-            src: `${MOOVE}/social-2.svg`,
-            alt: 'Moove social media post template 2',
-            fit: 'cover',
-            aspect: '0.8',
-            hideOn: 'mobile',
-          },
-          {
-            src: `${MOOVE}/social-3.svg`,
-            alt: 'Moove social media post template 3',
-            fit: 'cover',
-            aspect: '0.8',
-          },
-        ],
-      },
-      {
-        type: 'section',
-        paragraphs: [
-          'Everything rolls into the **brand book**: how to use the mark, palette, type, and applications so future pieces still feel like Moove. The presentation is built to show the brand as a living system, closer to how premium fitness studios stage identity work: mark first, then the world it creates.',
-        ],
-      },
-      {
-        type: 'gallery',
-        layout: 'single',
-        images: [
-          {
-            src: `${MOOVE}/brand-book.svg`,
-            alt: 'Moove brand book spread',
+            kind: 'image',
+            src: `${MOOVE}/bottles.png`,
+            alt: 'Moove branded water bottles and drinkware',
+            span: '2x2',
             fit: 'contain',
-            aspect: '1.239',
+            padded: true,
+            surface: 'light',
           },
+          {
+            kind: 'image',
+            src: `${MOOVE}/moletom.jpg`,
+            alt: 'Moove branded hoodie mockup',
+            span: '1x2',
+            fit: 'cover',
+          },
+          {
+            kind: 'image',
+            src: `${MOOVE}/bags.png`,
+            alt: 'Moove branded tote and gym bags',
+            span: '1x2',
+            fit: 'contain',
+            scale: 1.28,
+          },
+        ],
+      },
+      {
+        type: 'section',
+        title: 'Modalities, one system',
+        paragraphs: [
+          'Many practices, one brand. Campaigns for **wellness**, **yoga**, **jiu-jitsu**, and **pilates** share the infinity mark and brand color, while photography keeps each class feeling like itself.',
+        ],
+      },
+      {
+        type: 'deck-slider',
+        // Content-width slides with prev/next peeks (not phone wireframes)
+        variant: 'slides',
+        title: 'Modality campaigns',
+        autoplay: false,
+        decks: [
+          {
+            title: 'Wellness Club',
+            images: [
+              {
+                src: `${MOOVE}/icon-wellness-poster.jpg`,
+                alt: 'Moove wellness club poster with brand icon',
+                fit: 'cover',
+                aspect: '1.778',
+              },
+            ],
+          },
+          {
+            title: 'Yoga',
+            images: [
+              {
+                src: `${MOOVE}/icon-yoga.jpg`,
+                alt: 'Moove yoga campaign: brand icon over yoga photography',
+                fit: 'cover',
+                aspect: '1.778',
+              },
+            ],
+          },
+          {
+            title: 'Jiu-jitsu',
+            images: [
+              {
+                src: `${MOOVE}/icon-jiu.jpg`,
+                alt: 'Moove jiu-jitsu campaign: brand icon over training photography',
+                fit: 'cover',
+                aspect: '1.778',
+              },
+            ],
+          },
+          {
+            title: 'Pilates',
+            images: [
+              {
+                src: `${MOOVE}/icon-pilates.jpg`,
+                alt: 'Moove pilates campaign: brand icon over studio photography',
+                fit: 'cover',
+                aspect: '1.778',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'section',
+        title: 'Print and promotion',
+        paragraphs: [
+          'Beyond the floor, I designed **poster systems** and **infinite-tile** layouts so walls, windows, and seasonal communication stay on-brand without starting from zero every time.',
+        ],
+      },
+      {
+        type: 'gallery',
+        layout: 'pair',
+        images: [
+          {
+            src: `${MOOVE}/poster-infinite-01.jpg`,
+            alt: 'Moove infinite-tile poster design, variant one',
+            fit: 'cover',
+            aspect: '0.667',
+          },
+          {
+            src: `${MOOVE}/poster-infinite-02.jpg`,
+            alt: 'Moove infinite-tile poster design, variant two',
+            fit: 'cover',
+            aspect: '0.667',
+          },
+        ],
+      },
+      {
+        type: 'section',
+        paragraphs: [
+          'The **brand book** closed the project for the teams that print, post, and open doors every day, so new pieces can keep feeling like Moove without starting from a blank file.',
         ],
       },
     ],
@@ -1787,8 +1865,9 @@ export function getProject(slug: string) {
   return projects.find((p) => p.slug === slug);
 }
 
+/** Projects with a case-study route (includes `soon` drafts so /projects/[slug] is previewable). */
 export function getPublishedProjects() {
-  return projects.filter((p) => p.href && !p.soon);
+  return projects.filter((p) => Boolean(p.href));
 }
 
 export function getHomeProjects() {

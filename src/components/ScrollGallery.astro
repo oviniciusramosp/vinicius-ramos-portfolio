@@ -324,68 +324,78 @@ const displayItems = items.map(prepItem);
                     </div>
 
                     {
+                      /* Articles: full-card hit target only (no + / chevron chrome) */
                       !isQuote &&
                         !isSocial &&
-                        (item.href && !item.modalId ? (
-                          /* Link control — shareable routes (e.g. /articles/[slug]) */
+                        (isArticle && item.href && !item.modalId ? (
                           <a
-                            class="card-control"
+                            class="card-control card-control--bare"
                             data-card-control
                             href={item.href}
                             aria-label={actionLabel}
                             data-transition-label={headlineText}
-                          >
-                            <div class="tile-button-wrapper">
-                              <span
-                                class:list={[
-                                  'tile-button',
-                                  'tile-button-high-contrast',
-                                  theme === 'dark' ? 'theme-dark' : 'theme-light',
-                                ]}
-                              >
-                                <svg
-                                  class="icon-control icon-control-plus tile-icon"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 36 36"
-                                  aria-hidden="true"
+                          ></a>
+                        ) : !isArticle ? (
+                          item.href && !item.modalId ? (
+                            <a
+                              class="card-control"
+                              data-card-control
+                              href={item.href}
+                              aria-label={actionLabel}
+                              data-transition-label={headlineText}
+                            >
+                              <div class="tile-button-wrapper">
+                                <span
+                                  class:list={[
+                                    'tile-button',
+                                    'tile-button-high-contrast',
+                                    theme === 'dark' ? 'theme-dark' : 'theme-light',
+                                  ]}
                                 >
-                                  <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
-                                </svg>
-                              </span>
-                            </div>
-                          </a>
-                        ) : (
-                          <button
-                            type="button"
-                            class="card-control"
-                            data-card-control
-                            aria-label={actionLabel}
-                            tabindex="0"
-                            data-article-open={item.modalId}
-                          >
-                            {item.href ? (
-                              <span class="card-control-href" data-href={item.href} hidden />
-                            ) : null}
-                            <div class="tile-button-wrapper">
-                              <span
-                                class:list={[
-                                  'tile-button',
-                                  'tile-button-high-contrast',
-                                  theme === 'dark' ? 'theme-dark' : 'theme-light',
-                                ]}
-                              >
-                                <svg
-                                  class="icon-control icon-control-plus tile-icon"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 36 36"
-                                  aria-hidden="true"
+                                  <svg
+                                    class="icon-control icon-control-plus tile-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 36 36"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
+                                  </svg>
+                                </span>
+                              </div>
+                            </a>
+                          ) : (
+                            <button
+                              type="button"
+                              class="card-control"
+                              data-card-control
+                              aria-label={actionLabel}
+                              tabindex="0"
+                              data-article-open={item.modalId}
+                            >
+                              {item.href ? (
+                                <span class="card-control-href" data-href={item.href} hidden />
+                              ) : null}
+                              <div class="tile-button-wrapper">
+                                <span
+                                  class:list={[
+                                    'tile-button',
+                                    'tile-button-high-contrast',
+                                    theme === 'dark' ? 'theme-dark' : 'theme-light',
+                                  ]}
                                 >
-                                  <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
-                                </svg>
-                              </span>
-                            </div>
-                          </button>
-                        ))
+                                  <svg
+                                    class="icon-control icon-control-plus tile-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 36 36"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="m24 16.5h-4.5v-4.5c0-.8286-.6719-1.5-1.5-1.5s-1.5.6714-1.5 1.5v4.5h-4.5c-.8281 0-1.5.6714-1.5 1.5s.6719 1.5 1.5 1.5h4.5v4.5c0 .8286.6719 1.5 1.5 1.5s1.5-.6714 1.5-1.5v-4.5h4.5c.8281 0 1.5-.6714 1.5-1.5s-.6719-1.5-1.5-1.5z" />
+                                  </svg>
+                                </span>
+                              </div>
+                            </button>
+                          )
+                        ) : null)
                     }
                   </div>
                 </li>

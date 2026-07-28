@@ -70,7 +70,7 @@ function measureLength(el: LineEl): number {
   return 120;
 }
 
-async function ensureInline(host: HTMLElement): Promise<SVGSVGElement | null> {
+export async function ensureInline(host: HTMLElement): Promise<SVGSVGElement | null> {
   // Prefer SSR-inlined SVG (set:html); fall back to fetch via data-src
   let svg = host.querySelector('svg');
 
@@ -105,7 +105,7 @@ async function ensureInline(host: HTMLElement): Promise<SVGSVGElement | null> {
   return svg;
 }
 
-function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
+export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
   if (host.dataset.linesReady === 'true') return;
 
   const lines = Array.from(
@@ -161,12 +161,17 @@ function restoreAuthoredDash(el: LineEl) {
   const rest = el.dataset.dashRest || '';
   if (!rest) {
     // Solid construction stroke — leave as continuous line
-    return;
+  } else {
+    el.setAttribute('stroke-dasharray', rest);
+    el.style.strokeDasharray = rest;
+    el.setAttribute('stroke-dashoffset', '0');
+    el.style.strokeDashoffset = '0';
   }
-  el.setAttribute('stroke-dasharray', rest);
-  el.style.strokeDasharray = rest;
-  el.setAttribute('stroke-dashoffset', '0');
-  el.style.strokeDashoffset = '0';
+  // Restore authored opacity (prep boosts faint guides to ~0.95 for the draw)
+  const opRest = el.dataset.opacityRest;
+  if (opRest != null && opRest !== '') {
+    el.setAttribute('opacity', opRest);
+  }
 }
 
 /** Prepare for a fresh solid draw from empty → full. */
@@ -178,7 +183,7 @@ function armForDraw(el: LineEl) {
   el.style.strokeDashoffset = len;
 }
 
-function setDrawn(host: HTMLElement, drawn: boolean) {
+export function setDrawn(host: HTMLElement, drawn: boolean) {
   const lines = host.querySelectorAll<LineEl>('.cover-line');
   if (!lines.length) return;
 

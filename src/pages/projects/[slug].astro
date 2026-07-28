@@ -1,4 +1,6 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
 import Button from '../../components/Button.astro';
@@ -62,6 +64,17 @@ function embedModalIdForHref(href: string) {
   return embedModals.find((m) => m.src === href)?.id;
 }
 
+/** Read public SVG at build/SSR time for reliable inlining (no client fetch race). */
+function readPublicSvg(publicPath: string | undefined): string | undefined {
+  if (!publicPath?.startsWith('/') || !publicPath.endsWith('.svg')) return undefined;
+  try {
+    const file = path.join(process.cwd(), 'public', publicPath.replace(/^\//, ''));
+    return fs.readFileSync(file, 'utf8');
+  } catch {
+    return undefined;
+  }
+}
+
 /** Render **bold** markers from case-study copy */
 function inlineHtml(text: string) {
   return text
@@ -76,11 +89,18 @@ function cellClass(cell: CaseBentoCell) {
   const parts = [`case-bento__cell`, `case-bento__cell--${span}`];
   if (cell.kind === 'image' && cell.padded) parts.push('case-bento__cell--padded');
   if (cell.kind === 'image' && cell.spin) parts.push('case-bento__cell--spin');
+  if (cell.kind === 'image' && cell.animate === 'logo-mark') {
+    parts.push('case-bento__cell--logo-mark');
+  }
+  if (cell.kind === 'image' && cell.animate === 'layer-reveal') {
+    parts.push('case-bento__cell--layer-reveal');
+  }
   if (cell.kind === 'caption') parts.push('case-bento__cell--caption');
   if (cell.kind === 'social-fan') parts.push('case-bento__cell--social-fan');
   if (cell.kind === 'device-3d') parts.push('case-bento__cell--device-3d');
   if (cell.kind === 'icon-set') parts.push('case-bento__cell--icon-set');
   if (cell.surface === 'light') parts.push('case-bento__cell--light');
+  if (cell.surface === 'brand') parts.push('case-bento__cell--brand');
   return parts.join(' ');
 }
 ---
@@ -204,6 +224,53 @@ function cellClass(cell: CaseBentoCell) {
                           ))}
                         </div>
                       </div>
+                    ) : cell.kind === 'image' && cell.animate === 'logo-mark' ? (
+                      <div class={cellClass(cell)}>
+                        <div
+                          class="case-bento__logo-mark"
+                          data-logo-mark
+                          data-src={cell.src}
+                          role="img"
+                          aria-label={cell.alt}
+                          set:html={readPublicSvg(cell.src) ?? ''}
+                        />
+                      </div>
+                    ) : cell.kind === 'image' && cell.animate === 'layer-reveal' ? (
+                      <div class={cellClass(cell)}>
+                        <div
+                          class="case-bento__layered"
+                          data-layer-reveal
+                          role="img"
+                          aria-label={cell.alt}
+                        >
+                          <img
+                            class="case-bento__layered-bg"
+                            src={cell.src}
+                            alt=""
+                            loading="eager"
+                            draggable="false"
+                            style={[
+                              `object-fit: ${cell.fit ?? 'cover'}`,
+                              cell.objectPosition
+                                ? `object-position: ${cell.objectPosition}`
+                                : null,
+                            ]
+                              .filter(Boolean)
+                              .join('; ')}
+                          />
+                          {cell.front && (
+                            <div class="case-bento__layered-front" aria-hidden="true">
+                              <img
+                                class="case-bento__layered-front-img"
+                                src={cell.front}
+                                alt=""
+                                loading="eager"
+                                draggable="false"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <div class={cellClass(cell)}>
                         {cell.texture && (
@@ -221,6 +288,9 @@ function cellClass(cell: CaseBentoCell) {
                             `object-fit: ${cell.fit ?? 'cover'}`,
                             cell.objectPosition
                               ? `object-position: ${cell.objectPosition}`
+                              : null,
+                            cell.kind === 'image' && cell.scale
+                              ? `transform: scale(${cell.scale})`
                               : null,
                           ]
                             .filter(Boolean)
@@ -342,8 +412,18 @@ function cellClass(cell: CaseBentoCell) {
                   decks={block.decks}
                   texture={block.texture}
                   variant={block.variant ?? 'wireframes'}
-                  autoplay={block.autoplay ?? !isPresentation}
-                  ariaLabel={block.title ?? (isPresentation ? 'Presentation' : 'Wireframe decks')}
+                  autoplay={
+                    block.autoplay ??
+                    (block.variant === 'presentation' || block.variant === 'slides'
+                      ? false
+                      : true)
+                  }
+                  ariaLabel={
+                    block.title ??
+                    (block.variant === 'presentation' || block.variant === 'slides'
+                      ? 'Presentation'
+                      : 'Wireframe decks')
+                  }
                 />
               </div>
             );
@@ -667,6 +747,17 @@ function cellClass(cell: CaseBentoCell) {
   }
 
   /*
+   * Deck track is full-bleed for peeks; keep the eyebrow title on the same
+   * content measure as section copy / active deck card (--pad-x in DeckSlider).
+   */
+  .case__media--decks > .case__gallery-title {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 16px;
+  }
+
+  /*
    * Hero bento (ImagesFull) — live Framer grid:
    *   mobile  ≤809.98  → 2 cols × rows 144px
    *   tablet  810–1193 → 4 cols × rows 150px
@@ -927,6 +1018,171 @@ function cellClass(cell: CaseBentoCell) {
   /* Live white brand cells (Vibecheck decor / moodboard mark) */
   .case-bento__cell--light {
     background-color: #ffffff;
+  }
+
+  /* Moove brand orange (identity icon card) */
+  .case-bento__cell--brand {
+    background-color: #ff4b24;
+  }
+
+  /*
+   * Logo mark (Moove hero 2×1).
+   * Draw = homepage cover-lines (.cover-line + setDrawn).
+   * Size = viewBox crop + meet (no CSS scale).
+   */
+  .case-bento__cell--logo-mark {
+    cursor: default;
+    padding: 16px 20px;
+    overflow: hidden;
+  }
+
+  .case-bento__logo-mark {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    --mx: 50%;
+    --my: 50%;
+    --logo-mark-radius: 0px;
+  }
+
+  .case-bento__logo-mark :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  /* White mark — opacity set by JS */
+  .case-bento__logo-mark :global(.logo-mark-fill) {
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Same stroke-draw CSS as ProjectCard cover-lines */
+  .case-bento__logo-mark :global(.cover-line) {
+    fill: none !important;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke-dashoffset 0.85s cubic-bezier(0.44, 0, 0.56, 1)
+      var(--cover-line-delay, 0ms);
+    will-change: stroke-dashoffset;
+  }
+
+  .case-bento__logo-mark :global(.logo-mark-lines-g) {
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Intro: force lines visible (inline style also set by JS) */
+  .case-bento__logo-mark.is-intro:not(.is-lines-out) :global(.logo-mark-lines-g) {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /*
+   * Settled hover: show strokes near the pointer.
+   * Mask is applied on an HTML wrapper via the host — SVG <g> ignores CSS mask
+   * in most engines, so we opacity-toggle the group and mask the host’s
+   * pseudo… Actually mask the host would hide the fill too.
+   * → opacity full on spotlight (radial refined later if needed).
+   */
+  .case-bento__logo-mark.is-settled:not(.is-spotlight) :global(.logo-mark-lines-g) {
+    opacity: 0;
+  }
+
+  .case-bento__logo-mark.is-settled.is-spotlight :global(.logo-mark-lines-g) {
+    opacity: 1;
+  }
+
+  @media (min-width: 810px) {
+    .case-bento__cell--logo-mark {
+      padding: 18px 24px;
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .case-bento__cell--logo-mark {
+      padding: 20px 28px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-bento__logo-mark :global(.cover-line),
+    .case-bento__logo-mark :global(.logo-mark-fill),
+    .case-bento__logo-mark :global(.logo-mark-lines-g) {
+      transition: none !important;
+    }
+  }
+
+  /*
+   * Layered bento cell (wellness poster): photo bg + icon/wordmark front.
+   * Front stays hidden until logo-mark intro settles (layer-reveal.ts).
+   */
+  .case-bento__cell--layer-reveal {
+    overflow: hidden;
+  }
+
+  .case-bento__layered {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .case-bento__layered-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+  }
+
+  /*
+   * Overlay: 50% of card width, top-left, equal top/left inset.
+   */
+  .case-bento__layered-front {
+    --layer-inset: clamp(12px, 5%, 28px);
+    position: absolute;
+    top: var(--layer-inset);
+    left: var(--layer-inset);
+    right: auto;
+    bottom: auto;
+    z-index: 1;
+    width: 50%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+    transform-origin: top left;
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .case-bento__layered.is-revealed .case-bento__layered-front {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  .case-bento__layered-front-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-bento__layered-front {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /*
@@ -1471,6 +1727,10 @@ function cellClass(cell: CaseBentoCell) {
       padding: 16px 0; /* full-bleed peeks; card measure via DeckSlider --pad-x: 64px */
     }
 
+    .case__media--decks > .case__gallery-title {
+      padding-inline: 64px;
+    }
+
     .case__note {
       padding: 48px 64px 32px;
     }
@@ -1635,6 +1895,10 @@ function cellClass(cell: CaseBentoCell) {
       padding: 16px 0; /* full-bleed peeks; card measure via DeckSlider --pad-x: 250px */
     }
 
+    .case__media--decks > .case__gallery-title {
+      padding-inline: 250px;
+    }
+
     /* desktop ≥1194 — live fixed 220px rows, height 692 */
     .case-bento {
       grid-template-columns: repeat(4, minmax(200px, 1fr));
@@ -1740,6 +2004,15 @@ function cellClass(cell: CaseBentoCell) {
       width: 100%;
       max-width: none;
       padding: 16px 0;
+    }
+
+    .case__media--decks > .case__gallery-title {
+      /* Shell is 1920 max; content column uses pad-x 240 inside 1536 track.
+         Match DeckSlider --pad-x at xl + center like .case__section. */
+      width: 1536px;
+      max-width: 100%;
+      margin-inline: auto;
+      padding-inline: 240px;
     }
 
     .case__note {
@@ -1852,4 +2125,22 @@ function cellClass(cell: CaseBentoCell) {
 
   initCaseStudy();
   document.addEventListener('astro:page-load', initCaseStudy);
+</script>
+
+<script>
+  import { bootLogoMark } from '../../scripts/logo-mark';
+  import { bootLayerReveal } from '../../scripts/layer-reveal';
+
+  // Immediate + page-load (same pattern as BaseLayout / Device3D).
+  // __logoMarkGen invalidates any in-flight prepare from a prior call.
+  const bootMooveHero = () => {
+    bootLogoMark();
+    bootLayerReveal();
+  };
+  bootMooveHero();
+  document.addEventListener('astro:page-load', bootMooveHero);
+  // bfcache restore (back/forward) — modules stay warm, DOM may be restored
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) bootMooveHero();
+  });
 </script>

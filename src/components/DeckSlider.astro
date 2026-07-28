@@ -3,6 +3,7 @@
  * Deck slideshow
  * - wireframes: Framer SectionWireframes cards + side peeks
  * - presentation: one content-width slide at a time (no adjacent peeks)
+ * - slides: full-bleed slide images + prev/next peeks (campaign decks)
  * + Apple #aap-media-card-gallery control chrome
  */
 import type { CaseDeck } from '../data/projects';
@@ -19,8 +20,9 @@ interface Props {
   /**
    * `wireframes` — content-width cards with prev/next peeks (HP).
    * `presentation` — full content-width slides, only the current slide visible.
+   * `slides` — slide images at content width with prev/next peeks.
    */
-  variant?: 'wireframes' | 'presentation';
+  variant?: 'wireframes' | 'presentation' | 'slides';
   class?: string;
 }
 
@@ -35,13 +37,19 @@ const {
   class: className = '',
 } = Astro.props;
 
+/** Full-bleed image slide markup (presentation + slides) */
+const isSlideDeck = variant === 'presentation' || variant === 'slides';
+/** Clip neighbors hard — only presentation */
 const isPresentation = variant === 'presentation';
+/** Content-width cards with side peeks — wireframes + slides */
+const showPeeks = variant === 'wireframes' || variant === 'slides';
 ---
 
 <div
   class:list={[
     'deck-slider-shell',
     isPresentation && 'deck-slider-shell--presentation',
+    variant === 'slides' && 'deck-slider-shell--slides',
     className,
   ]}
 >
@@ -59,7 +67,7 @@ const isPresentation = variant === 'presentation';
     style={`--autoplay-persist-duration: ${interval}ms; --animation-duration: ${interval}ms; --autoplay-progress: 0;`}
   >
     {
-      !isPresentation && (
+      showPeeks && (
         <>
           <div class="case-decks__fade case-decks__fade--left" aria-hidden="true" />
           <div class="case-decks__fade case-decks__fade--right" aria-hidden="true" />
@@ -70,7 +78,7 @@ const isPresentation = variant === 'presentation';
     <div class="case-decks__viewport" data-deck-viewport tabindex="0">
       <div class="case-decks__track">
         {
-          isPresentation
+          isSlideDeck
             ? decks.map((deck, i) => {
                 const img = deck.images[0];
                 return (
@@ -86,7 +94,7 @@ const isPresentation = variant === 'presentation';
                         alt={img.alt || deck.title}
                         loading={i === 0 ? 'eager' : 'lazy'}
                         draggable="false"
-                        style={`object-fit: ${img.fit ?? 'contain'}`}
+                        style={`object-fit: ${img.fit ?? (variant === 'slides' ? 'cover' : 'contain')}`}
                       />
                     )}
                   </article>
@@ -461,6 +469,19 @@ const isPresentation = variant === 'presentation';
     background-color: var(--color-surface, #131219);
     scroll-snap-align: start;
     aspect-ratio: 16 / 9;
+  }
+
+  /*
+   * Slides variant: same image cards as presentation, but content-width
+   * with prev/next peeks (dimmed inactive, snap center).
+   */
+  .deck-slider-shell--slides .case-deck--slide {
+    opacity: 0.45;
+    scroll-snap-align: center;
+  }
+
+  .deck-slider-shell--slides .case-deck--slide.is-active {
+    opacity: 1;
   }
 
   .case-deck__slide-img {
