@@ -293,6 +293,9 @@ export type Project = {
 const FRAMER = 'https://framerusercontent.com/images';
 
 const CB = '/projects/crypto-bros';
+const SC = '/projects/staircase';
+const HP = '/projects/hp-printables';
+const VC = '/projects/vibecheck';
 const MOOVE = '/projects/moove';
 
 export const projects: Project[] = [
@@ -621,9 +624,9 @@ export const projects: Project[] = [
     tags: ['AI', 'WEB'],
     summary:
       'Led the design of key tools at Staircase, leveraging AI and advanced APIs to streamline the traditionally lengthy American mortgage process to less than 48 hours.',
-    // Homepage card layers (Framer ImageBg + Image)
-    cover: `${FRAMER}/iVkogMvFCsOuQA0VY6Tr7Yrzpk.png?lossless=1&width=1800&height=1831`,
-    coverFront: `${FRAMER}/ricuZuBUmCFzZWQDKTgk8KrzySU.png?lossless=1&width=1800&height=1831`,
+    // Homepage card layers (ImageBg + Image)
+    cover: `${SC}/cover.png`,
+    coverFront: `${SC}/cover-front.png`,
     imageFit: 'contain',
     size: 'lg',
     priority: 100,
@@ -656,10 +659,10 @@ export const projects: Project[] = [
       },
     ],
     /**
-     * Live Framer order (/projects/staircase):
+     * Case order (from live site):
      * ImagesFull bento → Role → UJ01 → listings pair + video → UJ02 → Chat MTG triple
      * → UJ03 → Calc+PreApproval → UJ04 → Challenges → social triple → Quotes → Thanks
-     * Breakpoints (Framer): mobile ≤809 · tablet 810–1193 · desktop ≥1194 · xl ≥1536
+     * Breakpoints: mobile ≤809 · tablet 810–1193 · desktop ≥1194 · xl ≥1536
      */
     blocks: [
       {
@@ -667,7 +670,7 @@ export const projects: Project[] = [
         cells: [
           {
             kind: 'image',
-            src: `${FRAMER}/0jPwP3iwXhNkSupZVjEOqBVqeso.png?width=1800&height=2244`,
+            src: `${SC}/hero-phones.png`,
             alt: 'Staircase apps running in two iPhones',
             span: '2x2',
             fit: 'contain',
@@ -676,14 +679,14 @@ export const projects: Project[] = [
             kind: 'caption',
             text: 'Let me evaluate your documents…',
             span: '1x1',
-            // Live ImagesFull caption cell — tiled micro-logo texture + Lottie
-            texture: `${FRAMER}/cDegCjCjwxmASK5CnPBQbOgT6g.svg?width=24&height=24`,
-            lottie: 'https://lottie.host/09a82d30-8b79-493c-83c0-03055e85af99/NsRCuSepGP.json',
+            // Caption cell — tiled micro-logo texture + Lottie
+            texture: `${SC}/texture.svg`,
+            lottie: `${SC}/caption-lottie.json`,
             lottieSpeed: 0.75,
           },
           {
             kind: 'image',
-            src: `${FRAMER}/5yTt4aAXl4XoI4fy7vsYAM4tM.svg?width=144&height=144`,
+            src: `${SC}/icons.svg`,
             alt: 'Staircase custom icons',
             span: '1x1',
             fit: 'contain',
@@ -691,14 +694,14 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${FRAMER}/GkbdAK27mFflSYo4k4N6lwlLHs.jpg?width=1200&height=788`,
+            src: `${SC}/hero-macbook.jpg`,
             alt: 'Staircase Listings App running on a MacBook',
             span: '2x2',
             fit: 'contain',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/QPkE0yspjGvXRPAlFc4q2fxznw.svg?width=598&height=137`,
+            src: `${SC}/partners.svg`,
             alt: 'Partner logos',
             span: '2x1',
             fit: 'contain',
@@ -727,23 +730,23 @@ export const projects: Project[] = [
         layout: 'pair',
         images: [
           {
-            src: `${FRAMER}/hSrf3zxGl1C12bVkqmZC1NlC8.jpg?width=1600&height=1410`,
+            src: `${SC}/listings-property.jpg`,
             alt: 'Staircase Listings property interface',
             fit: 'cover',
             aspect: '0.8',
           },
           {
-            src: `${FRAMER}/rcoyAGVi09pKjlKxTL66IpGBDR8.jpg?width=1342&height=1367`,
+            src: `${SC}/listings-detail.jpg`,
             alt: 'Staircase Listings product detail',
             fit: 'cover',
             aspect: '0.8',
           },
         ],
       },
-      // Live Framer: full-width muted loop after Listings pair (framer-1v6l154)
+      // Full-width muted loop after Listings pair
       {
         type: 'video',
-        src: 'https://framerusercontent.com/assets/OdthISj7ebObxS20CUBc1Npalmc.mp4',
+        src: `${SC}/listings-demo.mp4`,
         alt: 'Staircase Listings product demo',
         aspect: '2.63754',
         fit: 'cover',
@@ -759,19 +762,19 @@ export const projects: Project[] = [
         layout: 'triple',
         images: [
           {
-            src: `${FRAMER}/hL18ARQAfH1coQ8Vy84Ycs6TTME.png?width=800&height=1646`,
+            src: `${SC}/chat-mtg-1.png`,
             alt: 'Chat MTG conversation screen',
             fit: 'cover',
             aspect: '0.486',
           },
           {
-            src: `${FRAMER}/orzZ7ixQxU4cl7oTAJiEgErIuUc.png?width=800&height=1646`,
+            src: `${SC}/chat-mtg-2.png`,
             alt: 'Chat MTG eligibility screen',
             fit: 'cover',
             aspect: '0.486',
           },
           {
-            src: `${FRAMER}/5PfcG5Ci0rDG6fUTXGB6sbfgqCU.png?width=800&height=1646`,
+            src: `${SC}/chat-mtg-3.png`,
             alt: 'Chat MTG results screen',
             fit: 'cover',
             aspect: '0.486',
@@ -790,7 +793,7 @@ export const projects: Project[] = [
         layout: 'single',
         images: [
           {
-            src: `${FRAMER}/USSwtHSRdlcNalKsW2UEaRLDzhE.jpg?width=1800&height=1453`,
+            src: `${SC}/rate-preapproval.jpg`,
             alt: 'Rate Calculator and digital PreApproval letter',
             fit: 'cover',
             aspect: '1.239',
@@ -815,20 +818,20 @@ export const projects: Project[] = [
         layout: 'social',
         images: [
           {
-            src: `${FRAMER}/Dwip1xnuBSofqNv6IhmDRLPXA4.jpeg?width=1024&height=1280`,
+            src: `${SC}/social-1.jpeg`,
             alt: 'Staircase social media creative 1',
             fit: 'cover',
             aspect: '0.8',
           },
           {
-            src: `${FRAMER}/vnhZ06nmmh3N1JBiSdcDyAClGic.jpeg?width=1024&height=1280`,
+            src: `${SC}/social-2.jpeg`,
             alt: 'Staircase social media creative 2',
             fit: 'cover',
             aspect: '0.8',
             hideOn: 'mobile',
           },
           {
-            src: `${FRAMER}/5cE2nYL0OJBworIwQvxnWN7DeqI.jpeg?width=1024&height=1280`,
+            src: `${SC}/social-3.jpeg`,
             alt: 'Staircase social media creative 3',
             fit: 'cover',
             aspect: '0.8',
@@ -866,7 +869,7 @@ export const projects: Project[] = [
     tags: ['WEB'],
     summary:
       'Redesigned the Print, Play & Learn website to create an engaging platform for printable content, allowing users to easily find and print materials such as games, coloring pages, holiday cards, children’s exercises, and more.',
-    cover: `${FRAMER}/OHYUgJmxWxj1mumTybM6nJORSwg.png?lossless=1&width=764&height=819`,
+    cover: `${HP}/cover.png`,
     imageFit: 'cover',
     size: 'xl',
     priority: 90,
@@ -903,12 +906,11 @@ export const projects: Project[] = [
       },
     ],
     /**
-     * Live Framer ImagesFull (/projects/hp-printables) — 4×3 desktop:
+     * ImagesFull — 4×3 desktop:
      *   [Laptop 2×2][Laptop 2×2][Hover 2×1     ][Hover 2×1]
      *   [Laptop 2×2][Laptop 2×2][Logo 1×1      ][Phone 1×2]
      *   [Partners  ][Multi-page 2×1            ][Phone 1×2]
-     * Logo cell: tiled micro-logo texture (same SVG as Staircase caption).
-     * Phone: object-position center top.
+     * Logo cell: tiled micro-logo texture. Phone: object-position center top.
      */
     blocks: [
       {
@@ -916,29 +918,29 @@ export const projects: Project[] = [
         cells: [
           {
             kind: 'image',
-            src: `${FRAMER}/uGMu2Dmqb8Zfb2oVZUYNWEQHPdU.png`,
+            src: `${HP}/hero-laptop.png`,
             alt: 'HP Printables running in a laptop',
             span: '2x2',
             fit: 'contain',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/UszePmAdPs08daa9FpYC6aC5E8.jpg?lossless=1`,
+            src: `${HP}/hover-list.jpg`,
             alt: 'List of Printable files showing the hover effect',
             span: '2x1',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/jMqY1clFL3R2RzcKEDwLfVYkXfs.svg?lossless=1`,
+            src: `${HP}/logo-deco.svg`,
             alt: 'HP Logo - Decorative element',
             span: '1x1',
             fit: 'contain',
-            texture: `${FRAMER}/cDegCjCjwxmASK5CnPBQbOgT6g.svg?width=24&height=24`,
+            texture: `${HP}/texture.svg`,
           },
           {
             kind: 'image',
-            src: `${FRAMER}/inHs0Dsu23LhPLs8mahi0oSBkc.jpg`,
+            src: `${HP}/hero-phone.jpg`,
             alt: 'HP Printables website running on an iPhone',
             span: '1x2',
             fit: 'cover',
@@ -946,14 +948,14 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${FRAMER}/WfX0Wkwpnaa0LsEWyhvFV4ReWfI.jpg?lossless=1`,
+            src: `${HP}/partners.jpg`,
             alt: 'Printables Partners example',
             span: '1x1',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/mucN5aXN5ewN5Ha2Ud2wY7SjzP0.jpg?lossless=1`,
+            src: `${HP}/multipage.jpg`,
             alt: 'Difference between a single page printable file and a multi-page printable file in the UI.',
             span: '2x1',
             fit: 'contain',
@@ -969,29 +971,29 @@ export const projects: Project[] = [
         ],
       },
       /**
-       * Live Framer SectionWireframes: ONE horizontal carousel of 4 deck cards.
+       * SectionWireframes: ONE horizontal carousel of 4 deck cards.
        * Desktop: 3 phone frames / card (2 on Share). Mobile: drops 3rd frame.
        * Each card: tiled texture · mono title · aspect .46 phone rails · cover fit.
        */
       {
         type: 'deck-slider',
-        texture: `${FRAMER}/cDegCjCjwxmASK5CnPBQbOgT6g.svg?width=24&height=24`,
+        texture: `${HP}/texture.svg`,
         decks: [
           {
             title: 'Wireframes: Homepage',
             images: [
               {
-                src: `${FRAMER}/dFS2ahP1fEbUiIZBxnTLSzCiw.jpg`,
+                src: `${HP}/wf-homepage-1.jpg`,
                 alt: 'HP Printables Wireframe: Homepage',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/ZvIVKd4LOzIhBKjWHuT5A7Hu63s.jpg`,
+                src: `${HP}/wf-homepage-2.jpg`,
                 alt: 'HP Printables Wireframe: Homepage detail',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/DTSEsGYgdWjOOqhqDfCnDImyXY.jpg`,
+                src: `${HP}/wf-homepage-3.jpg`,
                 alt: 'HP Printables Wireframe: Homepage variants',
                 fit: 'cover',
                 hideOn: 'mobile',
@@ -1002,17 +1004,17 @@ export const projects: Project[] = [
             title: 'Wireframes: Logged Out vs Logged In',
             images: [
               {
-                src: `${FRAMER}/b3wdNTjDMvywbak72c7UVRUas.jpg`,
+                src: `${HP}/wf-login-1.jpg`,
                 alt: 'HP Printables Wireframe: Homepage with login option',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/hLzVMdKU36JgyoepcXY5V8VF4.jpg`,
+                src: `${HP}/wf-login-2.jpg`,
                 alt: 'HP Printables Wireframe: Homepage logged in',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/iCQAO0n1UwTKnGlswweakn4MOK8.jpg`,
+                src: `${HP}/wf-login-3.jpg`,
                 alt: 'HP Printables Wireframe: Homepage with Ads',
                 fit: 'cover',
                 hideOn: 'mobile',
@@ -1023,17 +1025,17 @@ export const projects: Project[] = [
             title: 'Wireframes: Printable Page',
             images: [
               {
-                src: `${FRAMER}/moFX23OKtKm0yZU5dlkolDd7i8.jpg`,
+                src: `${HP}/wf-printable-1.jpg`,
                 alt: 'HP Printables Wireframe: Printable file page',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/dJGGDVyT2hQHcKeeWq11DOv1t7M.jpg`,
+                src: `${HP}/wf-printable-2.jpg`,
                 alt: 'HP Printables Wireframe: Printable File Details',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/KXzN5GrRFbfvT41TecswoQPnq8.jpg`,
+                src: `${HP}/wf-printable-3.jpg`,
                 alt: 'HP Printables Wireframe: Details',
                 fit: 'cover',
                 hideOn: 'mobile',
@@ -1044,12 +1046,12 @@ export const projects: Project[] = [
             title: 'Wireframes: Share and Printed',
             images: [
               {
-                src: `${FRAMER}/odM24465EgfKINu71YpHhOHbahE.jpg`,
+                src: `${HP}/wf-share-1.jpg`,
                 alt: 'HP Printables Wireframe: Share sheet',
                 fit: 'cover',
               },
               {
-                src: `${FRAMER}/3DFfcZn0FMOW2QcgnU7xjuEyko.jpg`,
+                src: `${HP}/wf-share-2.jpg`,
                 alt: 'HP Printables Wireframe: Printed',
                 fit: 'cover',
               },
@@ -1065,10 +1067,9 @@ export const projects: Project[] = [
         ],
       },
       /**
-       * Live Framer `.framer-1e8zhfa` — 3-col content-shell strip:
+       * 3-col content-shell strip:
        *   [Logo 1×1][CMYK + Halftone 2×1        ]
        * Desktop rows 220px · XL 330px · mobile stacked aspect ratios.
-       * Sits between Challenges para 1 and the collaboration para.
        */
       {
         type: 'bento',
@@ -1077,14 +1078,14 @@ export const projects: Project[] = [
         cells: [
           {
             kind: 'image',
-            src: `${FRAMER}/JOHnAIaHL5WjO4i0nls2QmMuy64.svg`,
+            src: `${HP}/challenge-logo.svg`,
             alt: 'HP Logo showing the 35º rotation',
             span: '1x1',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/qDcyHZtfulgELHWV9R7D5A5tkk.svg`,
+            src: `${HP}/challenge-cmyk.svg`,
             alt: 'Visual elements: CMYK and Halftone dots',
             span: '2x1',
             fit: 'cover',
@@ -1110,7 +1111,7 @@ export const projects: Project[] = [
         layout: 'single',
         images: [
           {
-            src: `${FRAMER}/1H1FhTRMRwjyxhmfBldJoD9as.jpg`,
+            src: `${HP}/deliverable-laptop.jpg`,
             alt: 'HP Printables website running in a laptop',
             fit: 'cover',
           },
@@ -1159,8 +1160,8 @@ export const projects: Project[] = [
     tags: ['WEB', 'CONCEPT'],
     summary:
       'During a hackathon at AE Studio, the internal tool Vibecheck was created for AI sentiment analysis. As part of the hiring process, I redesigned Vibecheck, suggested improvements, and created user stories, leading to my employment at AE Studio.',
-    cover: `${FRAMER}/RcO3ablF3ttKN5S5n2hEDr1uAk.png?lossless=1&width=2000&height=1367`,
-    coverFront: `${FRAMER}/ntRLXi5jcnvMoVnIUpn7S0GqSI.png?lossless=1&width=2000&height=1367`,
+    cover: `${VC}/cover.png`,
+    coverFront: `${VC}/cover-front.png`,
     imageFit: 'cover',
     size: 'sm',
     priority: 40,
@@ -1195,7 +1196,7 @@ export const projects: Project[] = [
       },
     ],
     /**
-     * Live Framer order (/projects/vibecheck):
+     * Case order:
      * ImagesFull (Mac 2×3 · detail · decor · phones 2×2)
      * → Audit → Audit Notes + photo
      * → Wireframing text → stacked wireframe notes (3 overlap)
@@ -1208,21 +1209,21 @@ export const projects: Project[] = [
         cells: [
           {
             kind: 'image',
-            src: `${FRAMER}/Vo93miXs5EFU7CixdTNuKwq5VJw.png`,
+            src: `${VC}/hero-mac.png`,
             alt: 'Vibecheck website running in a macbook pro',
             span: '2x3',
             fit: 'contain',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/crgKkbtRQYVLwCzV9LvSlOGQfI.jpg`,
+            src: `${VC}/hero-detail.jpg`,
             alt: 'Vibecheck product detail',
             span: '1x1',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/cRmoltzO7EOBB17H1QxCa4ndalU.jpg?lossless=1`,
+            src: `${VC}/hero-deco.jpg`,
             alt: 'Vibecheck decorative visual',
             span: '1x1',
             fit: 'contain',
@@ -1231,7 +1232,7 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${FRAMER}/eqdfLDEvbqq2iJlkcKg50CFbM7s.png?lossless=1`,
+            src: `${VC}/hero-phones.png`,
             alt: 'Vibecheck running in 2 iPhones',
             span: '2x2',
             fit: 'contain',
@@ -1257,7 +1258,7 @@ export const projects: Project[] = [
         layout: 'single',
         images: [
           {
-            src: `${FRAMER}/16AWzzzOiEHpA4VwT8fdNYS3Gfw.jpg`,
+            src: `${VC}/audit-notes.jpg`,
             alt: 'Audit Notes',
             fit: 'cover',
           },
@@ -1271,22 +1272,22 @@ export const projects: Project[] = [
         ],
       },
       {
-        /** Live SectionImage / ImageNotes — 3 overlapping hand-drawn wireframe cards */
+        /** 3 overlapping hand-drawn wireframe cards */
         type: 'gallery',
         layout: 'stack',
         images: [
           {
-            src: `${FRAMER}/e6i1pxmNcH5Xp5H77zzgf2mYE.jpg?lossless=1`,
+            src: `${VC}/wire-1.jpg`,
             alt: 'Hand-drawn Vibecheck wireframe notes (portrait)',
             fit: 'cover',
           },
           {
-            src: `${FRAMER}/LY7Lq9YPNkCBRGGHtvhxUvYoRPs.jpg`,
+            src: `${VC}/wire-2.jpg`,
             alt: 'Hand-drawn Vibecheck wireframe notes (tall)',
             fit: 'cover',
           },
           {
-            src: `${FRAMER}/ptRT5F9buSUndK1RYUL0FNyYL8k.jpg`,
+            src: `${VC}/wire-3.jpg`,
             alt: 'Hand-drawn Vibecheck wireframe notes (landscape)',
             fit: 'cover',
           },
@@ -1300,7 +1301,7 @@ export const projects: Project[] = [
       },
       {
         /**
-         * Live ImagesMoodBoard — 5×6 mosaic (not a horizontal scroll):
+         * ImagesMoodBoard — 5×6 mosaic (not a horizontal scroll):
          * Mac 2×4 · mood 2×3 · brand 1×3 · phones 1×3 · mobile 2×3 · mobile-alt 2×2
          */
         type: 'bento',
@@ -1309,21 +1310,21 @@ export const projects: Project[] = [
         cells: [
           {
             kind: 'image',
-            src: `${FRAMER}/tRfJVlce56zC870AzEPrZmwVcw.png`,
+            src: `${VC}/mood-mac.png`,
             alt: 'Vibecheck website running in a macbook pro',
             span: '2x4',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/AviAyaaAYbySCtDm3qHbOlUBnE.jpg`,
+            src: `${VC}/mood-visual.jpg`,
             alt: 'Vibecheck moodboard visual',
             span: '2x3',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/DU4aJeiY5J8lsRqmxlWjs69ltw.png?lossless=1`,
+            src: `${VC}/mood-brand.png`,
             alt: 'Vibecheck brand / decorative element',
             span: '1x3',
             fit: 'contain',
@@ -1331,21 +1332,21 @@ export const projects: Project[] = [
           },
           {
             kind: 'image',
-            src: `${FRAMER}/mpo4CBx5YQLtTva4IXkVJTo3Z5o.png?lossless=1`,
+            src: `${VC}/mood-phones.png`,
             alt: 'Vibecheck running in 2 iPhones',
             span: '1x3',
             fit: 'contain',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/sHL79VK6ZANpNOhGxEloXs5A2w.jpg?lossless=1`,
+            src: `${VC}/mood-mobile.jpg`,
             alt: 'Vibecheck mobile interface',
             span: '2x3',
             fit: 'cover',
           },
           {
             kind: 'image',
-            src: `${FRAMER}/qzTqJlQwt8QSm4Y5DF1h84OqBVo.jpg?lossless=1`,
+            src: `${VC}/mood-mobile-alt.jpg`,
             alt: 'Vibecheck mobile interface alternate',
             span: '2x2',
             fit: 'cover',
@@ -1364,7 +1365,7 @@ export const projects: Project[] = [
         layout: 'single',
         images: [
           {
-            src: `${FRAMER}/uDOutKUs4J2N5jfUhBO5z9lhQ.png`,
+            src: `${VC}/prototype.png`,
             alt: 'Vibecheck prototype mockups',
             fit: 'contain',
           },
@@ -1378,44 +1379,18 @@ export const projects: Project[] = [
       },
       {
         /**
-         * Live SectionPresentation — full content-width slides, no side peeks.
+         * SectionPresentation — full content-width slides, no side peeks.
          * Uses DeckSlider variant `presentation`.
          */
         type: 'deck-slider',
         variant: 'presentation',
         title: 'Presentation',
         autoplay: false,
-        decks: [
-          'bQIOI0TrXkrXRmcBbCoTsOHBXs.jpg',
-          'ChbHTaK3gu9MYNITtGalyDB4.jpg',
-          '2nnAt65IATfva1KbZAuqBVyBBo.jpg',
-          'eKZC0YQW9Pf4Kca5bSHSnnQP7M.jpg',
-          'EKxeke5NjrqXoze5SNJKOo.jpg',
-          '1pw4FF6u74QZXt5KbH2c1OuwvU.jpg',
-          'g9XRl4mZI4tCkdwyKMaILw2CXEQ.jpg',
-          'rPs462MTdtSOJ4WkS6TFiQ6rCU.jpg',
-          'PVCtL780a18mrzhoDxQ27b56zSQ.jpg',
-          'Sigm8bNuejAivM0Ps0dtHnNlBc.jpg',
-          'xDY647X4oak75mRj1hYZ6uUhygg.jpg',
-          'HdkXGVhNRjAfoxR5lAg5Ihk5mE.jpg',
-          'NGMdgKL7O1oXGfRFk9mGTLiYqFQ.jpg',
-          'QjIGQtO2zdnCI2douQ1Oqdjt1U8.jpg',
-          'eBOlVrAO2UEd2wdH9hltwXyMhHc.jpg',
-          '7f1VNmbI10ef2r2Gf47u55xRqM.jpg',
-          'KSsdB2aCnCbl9ls2Jk9kEJtkb3M.jpg',
-          'Bx9Mrp6m5lMryEe1RwQ2FZDLyEQ.jpg',
-          '6RVzXBcNI3M4RT48rtI5dleq20.jpg',
-          '0LDOerqyHvItPjqhWqrf6KNBZq8.jpg',
-          'lJcEKkShZ4oRVE2zQq1vCHbyQtk.jpg',
-          'QATImTqR7qT3ih4ALMEo8p1Y94s.jpg',
-          'wQJGU3dYdmzKSo3UHoqPyXH0YE8.jpg',
-          'vR9W6lnBMh9GW0uG80MW9mSPo.jpg',
-          'jYZiaoMT1mwCzVidvSmGQHv8OM.jpg',
-        ].map((file, i) => ({
+        decks: Array.from({ length: 25 }, (_, i) => ({
           title: `Slide ${i + 1}`,
           images: [
             {
-              src: `${FRAMER}/${file}`,
+              src: `${VC}/slide-${String(i + 1).padStart(2, '0')}.jpg`,
               alt: `Vibecheck presentation slide ${i + 1}`,
               fit: 'contain' as const,
             },

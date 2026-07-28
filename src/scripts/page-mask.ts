@@ -29,8 +29,13 @@ let labelWave: WaveHandle | null = null;
 const WORD_SCALE_MS = 1400;
 /** Width-wave L→R on the black title (independent of shell scale) */
 const WORD_WAVE_MS = 1800;
-/** Final word width as a fraction of the viewport */
+/** Final word width as a fraction of the viewport (long titles) */
 const WORD_TARGET_VW = 0.8;
+/**
+ * Max shell scale for short titles.
+ * Past this, the composited layer (will-change: transform) rasterizes and looks pixelated.
+ */
+const WORD_SCALE_MAX = 2.2;
 /** Solid black type on the blue plate during reveal */
 const WORD_REVEAL_COLOR = '#000000';
 
@@ -298,11 +303,11 @@ function setLabelWaveText(label: HTMLElement, text: string): number {
   return restW;
 }
 
-/** Shell scale so rest content width spans ~80vw. */
+/** Shell scale so rest content width spans ~80vw, capped to stay sharp. */
 function measureWordScale(restContentWidth: number): number {
   const target = window.innerWidth * WORD_TARGET_VW;
   const natural = Math.max(restContentWidth, 1);
-  return target / natural;
+  return Math.min(WORD_SCALE_MAX, target / natural);
 }
 
 function animateNumber(

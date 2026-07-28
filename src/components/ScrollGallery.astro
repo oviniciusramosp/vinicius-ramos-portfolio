@@ -12,6 +12,8 @@
  *           button.card-control > .tile-button-wrapper > .tile-button (+ icon)
  *     .scroll-gallery-paddlenav.paddlenav.paddlenav-alpha
  */
+import { preventOrphans, preventOrphansHtml } from '../utils/prevent-orphans';
+
 export type ScrollGalleryItem = {
   id?: string;
   /** Optional for `social` (image-first) cards — used as accessible name */
@@ -85,6 +87,28 @@ const showHeader = Boolean(title || cta);
 const hasQuoteItems = items.some((item) => item.kind === 'quote');
 const hasArticleItems = items.some((item) => item.kind === 'article');
 const hasSocialItems = items.some((item) => item.kind === 'social');
+
+/** Glue last words so card copy never orphans a single word on the last line */
+function prepItem(item: ScrollGalleryItem): ScrollGalleryItem {
+  /** Quotes are plain text; feature/article headlines may include light HTML */
+  const plain = item.kind === 'quote';
+  return {
+    ...item,
+    label: item.label ? preventOrphans(item.label) : item.label,
+    headline: item.headline
+      ? plain
+        ? preventOrphans(item.headline)
+        : preventOrphansHtml(item.headline)
+      : item.headline,
+    body: item.body
+      ? plain
+        ? preventOrphans(item.body)
+        : preventOrphansHtml(item.body)
+      : item.body,
+  };
+}
+
+const displayItems = items.map(prepItem);
 ---
 
 <section
@@ -153,7 +177,7 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
           aria-labelledby={title ? labelledBy : undefined}
         >
           {
-            items.map((item, index) => {
+            displayItems.map((item, index) => {
               const isQuote = item.kind === 'quote';
               const isArticle = item.kind === 'article';
               const isSocial = item.kind === 'social';
@@ -684,6 +708,10 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     width: var(--quote-card-width);
     min-width: var(--quote-card-width);
     max-width: var(--quote-card-width);
+    /* Stretch row (card-set align-items: stretch) → equal-height cards */
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
   }
 
   /* Educational social posts — portrait image-first cards */
@@ -780,7 +808,8 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     justify-content: flex-start;
     gap: 0;
     grid-template-rows: none;
-    height: auto;
+    flex: 1 1 auto;
+    height: 100%;
     min-height: 0;
   }
 
@@ -790,8 +819,9 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     align-items: stretch;
     justify-content: flex-start;
     gap: 20px;
-    flex: 1;
-    height: auto;
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
     padding: var(--feature-card-copy-padding);
   }
 
@@ -862,6 +892,7 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
 
   .feature-card-quote-text {
     margin: 0;
+    flex: 1 1 auto;
     font-family: var(--font-body, Inter, system-ui, sans-serif);
     font-size: 14px;
     font-weight: 400;
@@ -873,15 +904,20 @@ const hasSocialItems = items.some((item) => item.kind === 'social');
     word-break: break-word;
   }
 
-  .card--quote {
+  /*
+   * Must beat `.feature-card .card { height: var(--feature-card-min-height) }`
+   * (0 for quote sections) — same specificity trap as social cards.
+   * Equal height: card-set stretch → li flex column → card flex:1 fills
+   * the tallest sibling (HP / Staircase / Intermex / Storybook).
+   */
+  .feature-card .card.card--quote {
     cursor: default;
-    /* hug quote content — no tall product-card min-height */
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 100%;
     min-height: 0;
-    height: auto;
-  }
-
-  .gallery-item--quote .card {
-    min-height: 0;
+    /* auto for intrinsic measure; flex:1 grows to match tallest quote */
     height: auto;
   }
 

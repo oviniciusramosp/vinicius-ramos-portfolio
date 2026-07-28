@@ -1,8 +1,8 @@
 import DeckSlider from './DeckSlider.astro';
 import { getProject } from '../data/projects';
 
-const FRAMER = 'https://framerusercontent.com/images';
-const TEXTURE = `${FRAMER}/cDegCjCjwxmASK5CnPBQbOgT6g.svg?width=24&height=24`;
+const HP = '/projects/hp-printables';
+const TEXTURE = `${HP}/texture.svg`;
 
 /** Live HP Printables SectionWireframes data (from projects.ts). */
 const hp = getProject('hp-printables');
@@ -15,17 +15,17 @@ const demoDecks = [
     title: 'Wireframes: Homepage',
     images: [
       {
-        src: `${FRAMER}/dFS2ahP1fEbUiIZBxnTLSzCiw.jpg`,
+        src: `${HP}/wf-homepage-1.jpg`,
         alt: 'Homepage wireframe',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/ZvIVKd4LOzIhBKjWHuT5A7Hu63s.jpg`,
+        src: `${HP}/wf-homepage-2.jpg`,
         alt: 'Homepage detail',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/DTSEsGYgdWjOOqhqDfCnDImyXY.jpg`,
+        src: `${HP}/wf-homepage-3.jpg`,
         alt: 'Homepage variants',
         fit: 'cover' as const,
         hideOn: 'mobile' as const,
@@ -36,17 +36,17 @@ const demoDecks = [
     title: 'Wireframes: Logged Out vs Logged In',
     images: [
       {
-        src: `${FRAMER}/b3wdNTjDMvywbak72c7UVRUas.jpg`,
+        src: `${HP}/wf-login-1.jpg`,
         alt: 'Homepage with login',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/hLzVMdKU36JgyoepcXY5V8VF4.jpg`,
+        src: `${HP}/wf-login-2.jpg`,
         alt: 'Homepage logged in',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/iCQAO0n1UwTKnGlswweakn4MOK8.jpg`,
+        src: `${HP}/wf-login-3.jpg`,
         alt: 'Homepage with Ads',
         fit: 'cover' as const,
         hideOn: 'mobile' as const,
@@ -57,17 +57,17 @@ const demoDecks = [
     title: 'Wireframes: Printable Page',
     images: [
       {
-        src: `${FRAMER}/moFX23OKtKm0yZU5dlkolDd7i8.jpg`,
+        src: `${HP}/wf-printable-1.jpg`,
         alt: 'Printable file page',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/dJGGDVyT2hQHcKeeWq11DOv1t7M.jpg`,
+        src: `${HP}/wf-printable-2.jpg`,
         alt: 'File details',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/KXzN5GrRFbfvT41TecswoQPnq8.jpg`,
+        src: `${HP}/wf-printable-3.jpg`,
         alt: 'Details',
         fit: 'cover' as const,
         hideOn: 'mobile' as const,
@@ -78,12 +78,12 @@ const demoDecks = [
     title: 'Wireframes: Share and Printed',
     images: [
       {
-        src: `${FRAMER}/odM24465EgfKINu71YpHhOHbahE.jpg`,
+        src: `${HP}/wf-share-1.jpg`,
         alt: 'Share sheet',
         fit: 'cover' as const,
       },
       {
-        src: `${FRAMER}/3DFfcZn0FMOW2QcgnU7xjuEyko.jpg`,
+        src: `${HP}/wf-share-2.jpg`,
         alt: 'Printed',
         fit: 'cover' as const,
       },

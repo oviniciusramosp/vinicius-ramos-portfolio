@@ -10,6 +10,7 @@
  *   quote body
  */
 import type { ProjectQuote } from '../data/projects';
+import { preventOrphans } from '../utils/prevent-orphans';
 import '../styles/aap-media-card-gallery.css';
 
 interface Props {
@@ -30,6 +31,13 @@ const {
   loop = true,
   class: className = '',
 } = Astro.props;
+
+const displayQuotes = quotes.map((q) => ({
+  ...q,
+  role: preventOrphans(q.role),
+  author: preventOrphans(q.author),
+  text: preventOrphans(q.text),
+}));
 ---
 
 {
@@ -52,7 +60,7 @@ const {
 
         <div class="quote-slider__viewport" data-deck-viewport tabindex="0">
           <div class="quote-slider__track">
-            {quotes.map((quote, i) => (
+            {displayQuotes.map((quote, i) => (
               <article
                 class="quote-card"
                 data-deck

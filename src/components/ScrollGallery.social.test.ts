@@ -83,3 +83,41 @@ describe('ScrollGallery social posts layout (CSS regression)', () => {
     expect(weakFigureOnly).toBe(false);
   });
 });
+
+describe('ScrollGallery quote cards layout (CSS regression)', () => {
+  it('quote section zeroes feature-card min-height (row stretch drives size)', () => {
+    expect(css).toMatch(
+      /\.scroll-gallery-section--quotes\s*\{[^}]*--feature-card-min-height:\s*0/,
+    );
+  });
+
+  it('quote cards override height with higher specificity than .feature-card .card', () => {
+    // Must be two classes under .feature-card so it beats
+    // `.feature-card .card { height: var(--feature-card-min-height) }`
+    expect(css).toMatch(/\.feature-card\s+\.card\.card--quote\s*\{/);
+
+    const block = css.match(
+      /\.feature-card\s+\.card\.card--quote\s*\{([^}]+)\}/,
+    );
+    expect(block, 'missing .feature-card .card.card--quote rule').toBeTruthy();
+    const body = block![1];
+    // flex:1 grows into stretched gallery-item (equal height across quotes)
+    expect(body).toMatch(/flex:\s*1/);
+    expect(body).toMatch(/min-height:\s*0/);
+  });
+
+  it('quote gallery items are flex columns so cards can stretch equal height', () => {
+    const block = css.match(/\.gallery-item--quote\s*\{([^}]+)\}/);
+    expect(block, 'missing .gallery-item--quote rule').toBeTruthy();
+    const body = block![1];
+    expect(body).toMatch(/display:\s*flex/);
+    expect(body).toMatch(/flex-direction:\s*column/);
+  });
+
+  it('does not rely only on low-specificity .card--quote height rules', () => {
+    const weakOnly =
+      /\.card--quote\s*\{[^}]*height:\s*(auto|100%)[^}]*\}/.test(css) &&
+      !/\.feature-card\s+\.card\.card--quote\s*\{/.test(css);
+    expect(weakOnly).toBe(false);
+  });
+});
