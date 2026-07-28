@@ -2,7 +2,12 @@
  * Homepage card: inline a stroked SVG and draw construction lines.
  * Host: [data-cover-lines][data-src="…svg"]
  *
- * Desktop: draw on hover / focus / magnetic.
+ * Rules (same as case-study logo-mark):
+ *   - Final authored opacity for the whole draw (no temporary boost)
+ *   - Dashed strokes keep "5 5" / "8 8" from frame one (mask-draw reveal)
+ *   - Solid strokes: classic dashoffset draw at final opacity
+ *
+ * Desktop: draw on hover / focus / magnetic; reverse on leave.
  * Mobile / touch: auto-draw once when the card enters view (is-inview cascade).
  *
  * Inlined SVGs rewrite clipPath/mask url(#id) to unique IDs so document-scoped
@@ -127,6 +132,62 @@ function clearInlineDashFromStyle(el: SVGElement) {
   else el.removeAttribute('style');
 }
 
+/** True authored pattern ("5 5", "8 8") — not a single length used by solid draw. */
+function isAuthoredDashPattern(value: string): boolean {
+  const parts = value
+    .trim()
+    .split(/[\s,]+/)
+    .filter(Boolean);
+  return parts.length >= 2;
+}
+
+function readRawDash(el: SVGElement): string {
+  return (
+    el.getAttribute('stroke-dasharray') ||
+    (el.getAttribute('style') || '').match(/stroke-dasharray:\s*([^;]+)/i)?.[1]?.trim() ||
+    ''
+  );
+}
+
+/**
+ * Undo a previous prepare so re-boot / HMR can arm cleanly.
+ * Restores authored dash patterns from data-dash-authored when present.
+ */
+function resetArming(svg: SVGSVGElement) {
+  svg.querySelectorAll('mask').forEach((mask) => {
+    if (mask.querySelector('.cover-line-mask-drawer')) mask.remove();
+  });
+
+  svg
+    .querySelectorAll<SVGElement>('.cover-line, .cover-line-visible, .cover-line-mask-drawer')
+    .forEach((el) => {
+      if (el.classList.contains('cover-line-mask-drawer')) {
+        el.remove();
+        return;
+      }
+      el.classList.remove('cover-line', 'cover-line-visible');
+      el.removeAttribute('mask');
+      delete el.dataset.dashRest;
+      delete el.dataset.maskId;
+      el.style.removeProperty('--cover-line-len');
+      el.style.removeProperty('--cover-line-delay');
+      clearInlineDashFromStyle(el);
+
+      const authored = el.dataset.dashAuthored || '';
+      if (authored && isAuthoredDashPattern(authored)) {
+        el.setAttribute('stroke-dasharray', authored);
+        el.style.strokeDasharray = authored;
+        el.setAttribute('stroke-dashoffset', '0');
+        el.style.strokeDashoffset = '0';
+      } else {
+        el.removeAttribute('stroke-dasharray');
+        el.removeAttribute('stroke-dashoffset');
+        el.style.removeProperty('stroke-dasharray');
+        el.style.removeProperty('stroke-dashoffset');
+      }
+    });
+}
+
 /**
  * Dashed strokes keep authored dash + final opacity from frame one.
  * Progressive reveal uses a solid white mask stroke that draws.
@@ -163,6 +224,7 @@ function armDashedWithMask(
   drawer.removeAttribute('id');
   drawer.removeAttribute('mask');
   drawer.removeAttribute('opacity');
+  drawer.classList.remove('cover-line', 'cover-line-visible');
   drawer.classList.add('cover-line', 'cover-line-mask-drawer');
   drawer.setAttribute('stroke', '#fff');
   drawer.setAttribute('fill', 'none');
@@ -182,8 +244,10 @@ function armDashedWithMask(
 
   // Visible line: final dash + final authored opacity (no boost)
   clearInlineDashFromStyle(el);
+  el.classList.remove('cover-line');
   el.classList.add('cover-line-visible');
   el.dataset.dashRest = dashRest;
+  el.dataset.dashAuthored = dashRest;
   el.dataset.maskId = id;
   el.setAttribute('stroke-dasharray', dashRest);
   el.setAttribute('stroke-dashoffset', '0');
@@ -194,10 +258,12 @@ function armDashedWithMask(
 
 /** Solid stroke: classic length dashoffset draw at final opacity. */
 function armSolidDraw(el: LineEl, length: number, delayMs: number) {
+  el.classList.remove('cover-line-visible');
   el.classList.add('cover-line');
   el.style.setProperty('--cover-line-len', String(length));
   el.style.setProperty('--cover-line-delay', `${delayMs}ms`);
   el.dataset.dashRest = '';
+  el.dataset.dashAuthored = '';
   clearInlineDashFromStyle(el);
   el.style.strokeDasharray = String(length);
   el.style.strokeDashoffset = String(length);
@@ -207,6 +273,13 @@ function armSolidDraw(el: LineEl, length: number, delayMs: number) {
 
 export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
   if (host.dataset.linesReady === 'true') return;
+
+  // HMR / double boot may have half-armed the SVG — start clean
+  if (
+    svg.querySelector('.cover-line, .cover-line-visible, .cover-line-mask-drawer')
+  ) {
+    resetArming(svg);
+  }
 
   const lines = Array.from(
     svg.querySelectorAll<LineEl>(
@@ -226,10 +299,11 @@ export function prepareSvg(host: HTMLElement, svg: SVGSVGElement) {
   lines.forEach((el, i) => {
     const len = Math.max(measureLength(el), 1);
     const delayMs = Math.min(i * 20, 360);
-    const authoredDash =
-      el.getAttribute('stroke-dasharray') ||
-      (el.getAttribute('style') || '').match(/stroke-dasharray:\s*([^;]+)/i)?.[1]?.trim() ||
-      '';
+
+    // Prefer saved authored pattern (survives solid-length overwrite on re-boot)
+    const saved = el.dataset.dashAuthored;
+    const raw = saved != null && saved !== '' ? saved : readRawDash(el);
+    const authoredDash = isAuthoredDashPattern(raw) ? raw.trim() : '';
 
     // Keep final authored opacity for the whole draw (no temporary boost).
     if (authoredDash) {
@@ -252,9 +326,17 @@ function armForDraw(el: LineEl) {
   el.style.strokeDashoffset = len;
 }
 
+/** Drawers + solid strokes only — never touch visible dashed (mask) lines. */
+function drawableLines(host: HTMLElement): LineEl[] {
+  return Array.from(host.querySelectorAll<LineEl>('.cover-line')).filter(
+    (el) =>
+      el.classList.contains('cover-line-mask-drawer') ||
+      !el.classList.contains('cover-line-visible'),
+  );
+}
+
 export function setDrawn(host: HTMLElement, drawn: boolean) {
-  // Only animate drawers / solid lines — visible dashed stay dashed under the mask
-  const lines = host.querySelectorAll<LineEl>('.cover-line');
+  const lines = drawableLines(host);
   if (!lines.length) return;
 
   if (drawn) {
@@ -335,7 +417,7 @@ function bindCard(card: BoundCard, host: HTMLElement) {
     return;
   }
 
-  // Desktop: draw on hover / focus / magnetic
+  // Desktop: draw on hover / focus / magnetic; reverse on leave (home only)
   card.addEventListener('pointerenter', on, { signal });
   card.addEventListener('pointerleave', off, { signal });
   card.addEventListener('focusin', on, { signal });
@@ -372,11 +454,14 @@ export function initCoverLines(root: ParentNode = document) {
 
 export function bootCoverLines() {
   document.querySelectorAll<HTMLElement>('[data-cover-lines]').forEach((el) => {
-    delete el.dataset.linesReady;
     // Keep SSR-inlined SVG; only clear fetch-only hosts
     if (!el.querySelector('svg')) {
       el.innerHTML = '';
       delete el.dataset.idsScoped;
+      delete el.dataset.linesReady;
+    } else {
+      // Force a clean re-arm so double-boot / HMR can't stack masks
+      delete el.dataset.linesReady;
     }
     el.classList.remove('is-drawn');
   });

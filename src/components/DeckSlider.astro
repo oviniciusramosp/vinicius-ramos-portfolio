@@ -327,9 +327,15 @@ const showPeeks = variant === 'wireframes' || variant === 'slides';
     }
   }
 
+  /*
+   * XL: .case__section / content media cap at 1536px with 240 pad → 1056 content.
+   * Shell stays full-bleed (peeks), so pad-x must grow with the shell while the
+   * active card stays locked to that content column (not 100cqi − 480).
+   */
   @media (min-width: 1536px) {
     .deck-slider-shell {
-      --pad-x: 240px;
+      --deck-width: min(1056px, calc(100cqi - 2 * 240px));
+      --pad-x: calc((100cqi - var(--deck-width)) / 2);
     }
   }
 
@@ -696,6 +702,13 @@ const showPeeks = variant === 'wireframes' || variant === 'slides';
   @supports not (width: 1cqi) {
     .deck-slider-shell {
       --deck-width: calc(100% - 2 * var(--pad-x));
+    }
+
+    @media (min-width: 1536px) {
+      .deck-slider-shell {
+        --deck-width: min(1056px, calc(100% - 2 * 240px));
+        --pad-x: calc((100% - var(--deck-width)) / 2);
+      }
     }
 
     .deck-slider-shell--presentation {

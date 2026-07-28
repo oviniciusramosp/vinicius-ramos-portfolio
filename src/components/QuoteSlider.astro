@@ -73,17 +73,20 @@ const displayQuotes = quotes.map((q) => ({
                     <strong class="quote-card__author">{quote.author}</strong>
                   </div>
                   {quote.avatar && (
-                    <OptimizedImg
-                      class="quote-card__avatar"
-                      src={quote.avatar}
-                      alt={quote.author}
-                      preset="avatar"
-                      width={48}
-                      height={48}
-                      loading="lazy"
-                      draggable="false"
-                      objectFit="cover"
-                    />
+                    // Clip box owns size/radius — class on OptimizedImg lands on
+                    // <picture> and misses Astro scoped attrs.
+                    <span class="quote-card__avatar">
+                      <OptimizedImg
+                        src={quote.avatar}
+                        alt={quote.author}
+                        preset="avatar"
+                        width={48}
+                        height={48}
+                        loading="lazy"
+                        draggable="false"
+                        objectFit="cover"
+                      />
+                    </span>
                   )}
                 </header>
                 <div class="quote-card__divider" aria-hidden="true" />
@@ -438,12 +441,21 @@ const displayQuotes = quotes.map((q) => ({
 
   .quote-card__avatar {
     flex: 0 0 auto;
+    display: block;
     width: 48px;
     height: 48px;
     border-radius: 50%;
     overflow: hidden;
     background-color: var(--color-surface-elevated);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .quote-card__avatar :global(.opt-picture) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    border-radius: inherit;
+    overflow: hidden;
   }
 
   .quote-card__avatar :global(img) {

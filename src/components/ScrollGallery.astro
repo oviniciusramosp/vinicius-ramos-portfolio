@@ -240,18 +240,21 @@ const displayItems = items.map(prepItem);
                                       <h3 class="feature-card-quote-author">{item.headline}</h3>
                                     </div>
                                     {item.avatar && (
-                                      <OptimizedImg
-                                        class="feature-card-quote-avatar"
-                                        src={item.avatar}
-                                        alt={item.headline ?? ''}
-                                        preset="avatar"
-                                        width={48}
-                                        height={48}
-                                        loading="lazy"
-                                        decoding="async"
-                                        draggable="false"
-                                        objectFit="cover"
-                                      />
+                                      // Clip box owns size/radius — class on OptimizedImg
+                                      // lands on <picture> and misses Astro scoped attrs.
+                                      <span class="feature-card-quote-avatar">
+                                        <OptimizedImg
+                                          src={item.avatar}
+                                          alt={item.headline ?? ''}
+                                          preset="avatar"
+                                          width={48}
+                                          height={48}
+                                          loading="lazy"
+                                          decoding="async"
+                                          draggable="false"
+                                          objectFit="cover"
+                                        />
+                                      </span>
                                     )}
                                   </header>
                                   <div class="feature-card-quote-divider" aria-hidden="true" />
@@ -894,12 +897,22 @@ const displayItems = items.map(prepItem);
 
   .feature-card-quote-avatar {
     flex: 0 0 auto;
+    display: block;
     width: 48px;
     height: 48px;
     border-radius: 50%;
     overflow: hidden;
     background-color: var(--color-surface-elevated, #17161d);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  /* .opt-picture is width/height 100% — fill the 48×48 clip circle */
+  .feature-card-quote-avatar :global(.opt-picture) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    border-radius: inherit;
+    overflow: hidden;
   }
 
   .feature-card-quote-avatar :global(img) {
