@@ -6,13 +6,9 @@ import Button from './Button.astro';
 <footer class="site-footer">
   <div class="site-footer__inner">
     <Button href={site.social.linkedin} label="linkedin" external />
-    <p class="site-footer__note">
+    <p class="site-footer__note" data-cursor="block">
       made with
-      <span
-        class="site-footer__heart"
-        data-cursor="none"
-        aria-hidden="true"
-      >
+      <span class="site-footer__heart" aria-hidden="true">
         <ion-icon name="heart"></ion-icon>
       </span>
       in Brazil
@@ -60,8 +56,10 @@ import Button from './Button.astro';
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-text-muted);
+    cursor: none;
     -webkit-user-select: none;
     user-select: none;
+    transition: color 0.2s ease;
   }
 
   /* Wrapper: ion-icon uses contain:paint, so scale must live on a parent */
@@ -73,7 +71,6 @@ import Button from './Button.astro';
     font-size: 1.15em;
     line-height: 1;
     color: currentColor;
-    cursor: none;
     transform-origin: center center;
     transition: color 0.2s ease;
   }
@@ -85,7 +82,12 @@ import Button from './Button.astro';
     pointer-events: none;
   }
 
-  .site-footer__heart:hover {
+  /* Hover anywhere on the label → green text + yellow pulsing heart */
+  .site-footer__note:hover {
+    color: #009c3b; /* Brazil flag green */
+  }
+
+  .site-footer__note:hover .site-footer__heart {
     color: #ffdf00; /* Brazil flag yellow */
     /* lub-dub: two quick beats, then rest */
     animation: heart-pulse 1.1s ease-in-out infinite;
@@ -113,7 +115,7 @@ import Button from './Button.astro';
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .site-footer__heart:hover {
+    .site-footer__note:hover .site-footer__heart {
       animation: none;
       transform: scale(1.1);
     }

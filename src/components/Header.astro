@@ -94,7 +94,7 @@ function isActive(href: string) {
       >
         linkedin
       </a>
-      <p class="site-menu__note">
+      <p class="site-menu__note" data-cursor="block">
         made with
         <span class="site-menu__heart" aria-hidden="true">
           <ion-icon name="heart"></ion-icon>
@@ -419,8 +419,10 @@ function isActive(href: string) {
       font-family: var(--font-mono);
       font-size: var(--text-xs);
       color: var(--color-text-muted);
+      cursor: none;
       -webkit-user-select: none;
       user-select: none;
+      transition: color 0.2s ease;
     }
 
     .site-menu__heart {
@@ -430,6 +432,8 @@ function isActive(href: string) {
       font-size: 1.1em;
       line-height: 1;
       color: currentColor;
+      transform-origin: center center;
+      transition: color 0.2s ease;
     }
 
     .site-menu__heart :global(ion-icon) {
@@ -437,6 +441,36 @@ function isActive(href: string) {
       width: 1em;
       height: 1em;
       pointer-events: none;
+    }
+
+    .site-menu__note:hover {
+      color: #009c3b; /* Brazil flag green */
+    }
+
+    .site-menu__note:hover .site-menu__heart {
+      color: #ffdf00; /* Brazil flag yellow */
+      animation: menu-heart-pulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes menu-heart-pulse {
+      0% {
+        transform: scale(1);
+      }
+      12% {
+        transform: scale(1.32);
+      }
+      24% {
+        transform: scale(1);
+      }
+      36% {
+        transform: scale(1.22);
+      }
+      50% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(1);
+      }
     }
   }
 
@@ -453,6 +487,11 @@ function isActive(href: string) {
     .site-header.is-menu-open .site-menu__footer {
       opacity: 1;
       transform: none;
+    }
+
+    .site-menu__note:hover .site-menu__heart {
+      animation: none;
+      transform: scale(1.1);
     }
   }
 </style>

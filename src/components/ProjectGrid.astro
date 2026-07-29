@@ -74,6 +74,9 @@ const showFilter = filterTags.length > 0;
     width: 100%;
     max-width: var(--shell-max);
     margin-inline: auto;
+    /* Query container for row-height calc (cqi must resolve on a parent) */
+    container-type: inline-size;
+    container-name: bento;
   }
 
   .bento__toolbar {
@@ -115,16 +118,38 @@ const showFilter = filterTags.length > 0;
   }
 
   /*
-   * Dense bento: fixed row tracks + spans.
+   * Dense bento: row height tracks column width so 1×1 cells never exceed
+   * --bento-max-aspect (width/height). Fixed 220px rows got too wide on
+   * MacBook Pro / shell-max viewports and over-cropped cover images.
    * Filter reassigns is-lg / is-tall / is-sm via the 2-row packer.
    */
   .project-grid {
+    --bento-cols: 5;
+    --bento-gap: 8px;
+    --bento-pad-x: 16px;
+    /* 1×1 cell width ÷ height ceiling (slightly landscape, not panoramic) */
+    --bento-max-aspect: 1.2;
+    /* Floor so medium widths stay dense before the aspect clamp kicks in */
+    --bento-row-min: 200px;
+
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-auto-rows: 220px;
+    grid-template-columns: repeat(var(--bento-cols), minmax(0, 1fr));
+    /*
+     * 100cqi from .bento. Subtract grid pad + gaps → column width,
+     * then row = col / max-aspect so 1×1 never exceeds that ratio.
+     */
+    grid-auto-rows: max(
+      var(--bento-row-min),
+      calc(
+        (
+            100cqi - 2 * var(--bento-pad-x) - (var(--bento-cols) - 1) *
+              var(--bento-gap)
+          ) / var(--bento-cols) / var(--bento-max-aspect)
+      )
+    );
     grid-auto-flow: dense;
-    gap: 8px;
-    padding: 0 16px 16px;
+    gap: var(--bento-gap);
+    padding: 0 var(--bento-pad-x) 16px;
     width: 100%;
   }
 
@@ -180,8 +205,8 @@ const showFilter = filterTags.length > 0;
 
   @media (max-width: 1100px) {
     .project-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-auto-rows: 200px;
+      --bento-cols: 3;
+      --bento-row-min: 200px;
     }
 
     .is-lg {
@@ -216,12 +241,13 @@ const showFilter = filterTags.length > 0;
     }
 
     .project-grid {
-      grid-template-columns: 1fr;
-      /* Taller mobile cards — room for bottom-left title + tags */
+      --bento-cols: 1;
+      --bento-gap: 12px;
+      --bento-pad-x: 12px;
+      /* Fixed mobile recipe — title + tags need height more than aspect clamp */
       grid-auto-rows: min(300px, 78vw);
       grid-auto-flow: row;
-      padding: 0 12px 12px;
-      gap: 12px;
+      padding: 0 var(--bento-pad-x) 12px;
     }
 
     .is-lg,

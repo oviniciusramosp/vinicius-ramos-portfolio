@@ -253,8 +253,10 @@ export const articles: Article[] = [
     title: 'Candle Guy',
     description:
       'Trashing AI tools online won’t stop the shift. Learning them will.',
-    image: '/articles/dont-be-the-candle-guy.svg',
-    imageAlt: 'Candle next to a light bulb',
+    image: '/articles/dont-be-the-candle-guy.jpg',
+    imageAlt: 'Melted candle with smoke rising next to an unlit light bulb',
+    imageObjectPosition: 'center',
+    imageFit: 'cover',
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7455628157790945281/',
     content: [

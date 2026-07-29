@@ -253,6 +253,8 @@ const tagList = [
     position: relative;
     width: 100%;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
     overflow: visible;
     will-change: transform;
   }
@@ -265,13 +267,16 @@ const tagList = [
   }
 
   /*
-   * Image wrapper (picture or img). Scale provides bleed for hover parallax —
-   * MUST stay overflow:visible so scale overscan paints outside the layer box
-   * (media-stack clips). overflow:hidden here was eating the overscan after
-   * OptimizedImg introduced a <picture> wrapper, so dual-layer mid edges
-   * peeked on Y parallax (e.g. Bubble Habits top-of-card hover).
+   * Image wrapper (picture from OptimizedImg, or inlined SVG div).
+   * :global is required — OptimizedImg puts `project-card__image` on <picture>
+   * without this component’s data-astro-cid, so scoped `.project-card__image`
+   * never matched. Result: picture stayed static, taller than the card via
+   * intrinsic aspect, top-aligned and bottom-clipped (Crypto Bros / Staircase).
+   *
+   * Scale provides bleed for hover parallax. overflow:visible so overscan paints
+   * outside the layer (media-stack clips).
    */
-  .project-card__image {
+  .project-card-shell :global(.project-card__image) {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -284,10 +289,10 @@ const tagList = [
   }
 
   /*
-   * Inner img lives inside OptimizedImg (child component). Scoped `> img`
-   * never matches — must use :global(img). Prefer also objectFit prop (inline).
+   * Inner img lives inside OptimizedImg (child component).
+   * Prefer also objectFit prop (inline) as progressive enhancement.
    */
-  .project-card__image :global(img) {
+  .project-card-shell :global(.project-card__image img) {
     width: 100%;
     height: 100%;
     max-width: none;
@@ -303,7 +308,7 @@ const tagList = [
     --img-scale-hover-mid: 1.28;
   }
 
-  .project-card--fit-contain .project-card__image :global(img) {
+  .project-card--fit-contain :global(.project-card__image img) {
     object-fit: contain;
   }
 
@@ -342,14 +347,14 @@ const tagList = [
     --img-scale-hover-mid: 1.02;
   }
 
-  .project-card--slug-booking .project-card__image {
+  .project-card--slug-booking :global(.project-card__image) {
     inset: 0;
     width: 100%;
     height: 100%;
     transform-origin: center bottom;
   }
 
-  .project-card--slug-booking .project-card__image :global(img) {
+  .project-card--slug-booking :global(.project-card__image img) {
     object-fit: contain;
     object-position: center bottom;
   }
@@ -541,15 +546,15 @@ const tagList = [
     opacity: 1;
   }
 
-  .project-card-shell:hover .project-card__layer--back .project-card__image,
-  .project-card-shell:focus-within .project-card__layer--back .project-card__image,
-  .project-card-shell.is-magnetic .project-card__layer--back .project-card__image {
+  .project-card-shell:hover .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell:focus-within .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-magnetic .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-hover-back));
   }
 
-  .project-card-shell:hover .project-card__layer--mid .project-card__image,
-  .project-card-shell:focus-within .project-card__layer--mid .project-card__image,
-  .project-card-shell.is-magnetic .project-card__layer--mid .project-card__image {
+  .project-card-shell:hover .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell:focus-within .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-magnetic .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-hover-mid));
   }
 
@@ -590,12 +595,12 @@ const tagList = [
    * Each layer has its own duration + enter scale so depth reads as parallax.
    * Armed only when JS sets [data-card-reveal-ready]; settles on .is-inview.
    */
-  .project-card-shell[data-card-reveal-ready] .project-card__layer--back .project-card__image {
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-enter-back));
     transition: transform var(--reveal-img-dur-back) var(--reveal-ease);
   }
 
-  .project-card-shell[data-card-reveal-ready] .project-card__layer--mid .project-card__image {
+  .project-card-shell[data-card-reveal-ready] .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-enter-mid));
     transition: transform var(--reveal-img-dur-mid) var(--reveal-ease);
   }
@@ -610,8 +615,8 @@ const tagList = [
     transition: transform var(--reveal-img-dur-mid) var(--reveal-ease);
   }
 
-  .project-card-shell.is-inview .project-card__layer--back .project-card__image,
-  .project-card-shell.is-inview .project-card__layer--mid .project-card__image {
+  .project-card-shell.is-inview .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-inview .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale));
   }
 
@@ -621,17 +626,17 @@ const tagList = [
   }
 
   /* After settle, hover/magnetic still boost (desktop) — snappy card-dur */
-  .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image,
-  .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image,
-  .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image {
+  .project-card-shell.is-inview:hover .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-inview:focus-within .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-hover-back));
     transition-duration: var(--card-dur);
     transition-timing-function: var(--card-ease);
   }
 
-  .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image,
-  .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image,
-  .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image {
+  .project-card-shell.is-inview:hover .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-inview:focus-within .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+  .project-card-shell.is-inview.is-magnetic .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)) {
     transform: scale(var(--img-scale-hover-mid));
     transition-duration: var(--card-dur);
     transition-timing-function: var(--card-ease);
@@ -703,7 +708,7 @@ const tagList = [
       transform: none;
     }
 
-    .project-card-shell:not([data-card-reveal-ready]) .project-card__image {
+    .project-card-shell:not([data-card-reveal-ready]) :global(.project-card__image:not(.project-card__image--svg)) {
       transform: scale(var(--img-scale));
     }
 
@@ -813,12 +818,12 @@ const tagList = [
     }
 
     /* No hover image boost on touch — keep rest scale after reveal */
-    .project-card-shell.is-inview:hover .project-card__layer--back .project-card__image,
-    .project-card-shell.is-inview:focus-within .project-card__layer--back .project-card__image,
-    .project-card-shell.is-inview.is-magnetic .project-card__layer--back .project-card__image,
-    .project-card-shell.is-inview:hover .project-card__layer--mid .project-card__image,
-    .project-card-shell.is-inview:focus-within .project-card__layer--mid .project-card__image,
-    .project-card-shell.is-inview.is-magnetic .project-card__layer--mid .project-card__image {
+    .project-card-shell.is-inview:hover .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+    .project-card-shell.is-inview:focus-within .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--back :global(.project-card__image:not(.project-card__image--svg)),
+    .project-card-shell.is-inview:hover .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+    .project-card-shell.is-inview:focus-within .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)),
+    .project-card-shell.is-inview.is-magnetic .project-card__layer--mid :global(.project-card__image:not(.project-card__image--svg)) {
       transform: scale(var(--img-scale));
     }
 
@@ -833,7 +838,7 @@ const tagList = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card__image,
+    .project-card-shell :global(.project-card__image),
     .project-card__scrim,
     .project-card__title,
     .project-card__tag-item {
@@ -851,7 +856,7 @@ const tagList = [
       transform: none !important;
     }
 
-    .project-card-shell .project-card__image {
+    .project-card-shell :global(.project-card__image:not(.project-card__image--svg)) {
       transform: scale(var(--img-scale)) !important;
     }
 
