@@ -21,6 +21,14 @@ import {
 } from '../../data/projects';
 import { site } from '../../data/site';
 import { optimizedUrl } from '../../utils/optimized-url';
+import {
+  breadcrumbJsonLd,
+  jsonLdGraph,
+  personJsonLd,
+  projectJsonLd,
+  webPageJsonLd,
+  websiteJsonLd,
+} from '../../utils/seo';
 
 export function getStaticPaths() {
   return getPublishedProjects().map((project) => ({
@@ -113,13 +121,40 @@ function cellClass(cell: CaseBentoCell) {
   if (cell.surface === 'brand') parts.push('case-bento__cell--brand');
   return parts.join(' ');
 }
+
+const pagePath = `/projects/${project.slug}`;
+const pageTitle = `${site.name} · ${project.title}`;
+const pageImageAlt = `${project.title} — project cover`;
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: pagePath,
+    title: pageTitle,
+    description: project.summary,
+    image: ogImage,
+  }),
+  projectJsonLd({
+    path: pagePath,
+    title: project.title,
+    description: project.summary,
+    image: ogImage,
+    year: project.year || undefined,
+    keywords: project.tags,
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: project.title, path: pagePath },
+  ]),
+]);
 ---
 
 <BaseLayout
-  title={`${site.name} · ${project.title}`}
+  title={pageTitle}
   description={project.summary}
   image={ogImage}
-  imageAlt={`${project.title} — project cover`}
+  imageAlt={pageImageAlt}
+  jsonLd={jsonLd}
 >
   <article class="case">
     <header class="page-hero case__hero">

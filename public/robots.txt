@@ -1,0 +1,8 @@
+# https://viniciusramos.com
+User-agent: *
+Allow: /
+
+# Internal type labs — not for search indexes
+Disallow: /preview/
+
+Sitemap: https://viniciusramos.com/sitemap-index.xml

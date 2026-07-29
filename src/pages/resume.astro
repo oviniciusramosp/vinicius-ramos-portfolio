@@ -3,15 +3,40 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import { resume, type ResumeIntroBlock } from '../data/resume';
 import { site } from '../data/site';
+import {
+  breadcrumbJsonLd,
+  jsonLdGraph,
+  personJsonLd,
+  webPageJsonLd,
+  websiteJsonLd,
+} from '../utils/seo';
 
 function isRichIntro(
   block: ResumeIntroBlock,
 ): block is Extract<ResumeIntroBlock, { link: unknown }> {
   return typeof block === 'object' && block !== null && 'link' in block;
 }
+
+const pageTitle = `${site.name} · Resume`;
+const pageDescription = site.pages.resume;
+
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: '/resume',
+    title: pageTitle,
+    description: pageDescription,
+    type: 'ProfilePage',
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Resume', path: '/resume' },
+  ]),
+]);
 ---
 
-<BaseLayout title={`${site.name} · Resume`}>
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
   <article class="resume">
     <!-- Hero — Framer: TitleArea → divider → About Me (gap 20) -->
     <header class="resume__hero">

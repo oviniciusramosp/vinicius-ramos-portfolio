@@ -24,9 +24,18 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# local design captures
+# local design captures / agent workfiles
 .design-ref/
 tmp-*.png
+.tmp*
+.tmp-*/
 local-*.png
 prod-*.png
+# screenshots dropped in .grok/ (skills/ stays tracked)
+.grok/*.png
+.grok/*.jpg
+.grok/*.jpeg
+.grok/*.webp
+.grok/*.gif
+.grok/*.avif
 

@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // GitHub Pages:
 // - Custom domain (viniciusramos.com): base = '/'
@@ -15,6 +16,12 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  integrations: [
+    sitemap({
+      // Exclude internal type labs from search indexes
+      filter: (page) => !page.includes('/preview/'),
+    }),
+  ],
   image: {
     remotePatterns: [
       {

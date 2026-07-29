@@ -4,6 +4,16 @@ import ScrollGallery from '../components/ScrollGallery.astro';
 import { articles, articleHref } from '../data/articles';
 import { site } from '../data/site';
 import type { ScrollGalleryItem } from '../components/ScrollGallery.astro';
+import {
+  breadcrumbJsonLd,
+  jsonLdGraph,
+  personJsonLd,
+  webPageJsonLd,
+  websiteJsonLd,
+} from '../utils/seo';
+
+const pageTitle = `${site.name} · Articles`;
+const pageDescription = site.pages.articles;
 
 const galleryItems: ScrollGalleryItem[] = articles.map((article) => ({
   id: `card-${article.id}`,
@@ -18,12 +28,24 @@ const galleryItems: ScrollGalleryItem[] = articles.map((article) => ({
   actionLabel: `Read ${article.title}`,
   kind: 'article' as const,
 }));
+
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: '/articles',
+    title: pageTitle,
+    description: pageDescription,
+    type: 'CollectionPage',
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Articles', path: '/articles' },
+  ]),
+]);
 ---
 
-<BaseLayout
-  title={`${site.name} · Articles`}
-  description="Writing on product design, craft, and the conversations that sharpen both."
->
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
   {/* Same frame as case study / home .page-hero */}
   <section class="page-hero">
     <div class="page-hero__main">

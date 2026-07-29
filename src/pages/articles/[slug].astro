@@ -15,6 +15,14 @@ import {
 } from '../../data/articles';
 import { site } from '../../data/site';
 import { optimizedUrl } from '../../utils/optimized-url';
+import {
+  articleJsonLd,
+  breadcrumbJsonLd,
+  jsonLdGraph,
+  personJsonLd,
+  webPageJsonLd,
+  websiteJsonLd,
+} from '../../utils/seo';
 
 export function getStaticPaths() {
   return articles.map((article) => ({
@@ -69,13 +77,40 @@ const bodyBeforeVideo = videoMidBody
 const bodyAfterVideo = videoMidBody
   ? article.content.slice(videoInsertAfter! + 1)
   : [];
+
+const pagePath = `/articles/${article.id}`;
+const pageTitle = `${site.name} · ${article.title}`;
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: pagePath,
+    title: pageTitle,
+    description: article.description,
+    image: ogImage,
+  }),
+  articleJsonLd({
+    path: pagePath,
+    title: article.title,
+    description: article.description,
+    image: ogImage,
+    dateDisplay: article.date,
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Articles', path: '/articles' },
+    { name: article.title, path: pagePath },
+  ]),
+]);
 ---
 
 <BaseLayout
-  title={`${site.name} · ${article.title}`}
+  title={pageTitle}
   description={article.description}
   image={ogImage}
   imageAlt={article.imageAlt ?? article.title}
+  ogType="article"
+  jsonLd={jsonLd}
 >
   <article class="article-page">
     <header class="article-page__header">

@@ -3,12 +3,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import { site } from '../data/site';
 import { getHomeProjects } from '../data/projects';
+import {
+  jsonLdGraph,
+  personJsonLd,
+  websiteJsonLd,
+  webPageJsonLd,
+} from '../utils/seo';
 
 const projects = getHomeProjects();
 // Filter chips hidden for now — re-enable with getHomeFilterTags() later
+
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: '/',
+    title: site.title,
+    description: site.description,
+    type: 'ProfilePage',
+    image: site.ogImage,
+  }),
+]);
 ---
 
-<BaseLayout title={site.title} showBanner>
+<BaseLayout title={site.title} description={site.description} jsonLd={jsonLd} showBanner>
   {/* Same frame as case study <header class="page-hero"> (crypto-bros etc.) */}
   <section class="page-hero">
     <div class="page-hero__main">

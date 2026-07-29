@@ -1,9 +1,34 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
+import {
+  breadcrumbJsonLd,
+  jsonLdGraph,
+  personJsonLd,
+  webPageJsonLd,
+  websiteJsonLd,
+} from '../utils/seo';
+
+const pageTitle = `${site.name} · Contact`;
+const pageDescription = site.pages.contact;
+
+const jsonLd = jsonLdGraph([
+  personJsonLd(),
+  websiteJsonLd(),
+  webPageJsonLd({
+    path: '/contact',
+    title: pageTitle,
+    description: pageDescription,
+    type: 'ContactPage',
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Contact', path: '/contact' },
+  ]),
+]);
 ---
 
-<BaseLayout title={`${site.name} · Contact`}>
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
   <section class="contact">
     <header class="contact__title-area">
       <h1 class="display-title contact__title">SAY HI</h1>

@@ -5,6 +5,11 @@ import { site } from '../data/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Banner from '../components/Banner.astro';
+import {
+  absoluteUrl,
+  canonicalUrl,
+  type JsonLd,
+} from '../utils/seo';
 
 interface Props {
   title?: string;
@@ -13,6 +18,18 @@ interface Props {
   image?: string;
   /** Accessible label for the share image */
   imageAlt?: string;
+  /**
+   * Open Graph type. Use `article` for blog posts / case write-ups.
+   * @default 'website'
+   */
+  ogType?: 'website' | 'article';
+  /**
+   * Robots directive. Pass `noindex, nofollow` for labs / drafts.
+   * @default 'index, follow'
+   */
+  robots?: string;
+  /** schema.org JSON-LD object or array (wrapped automatically if needed) */
+  jsonLd?: JsonLd;
   showBanner?: boolean;
 }
 
@@ -21,19 +38,25 @@ const {
   description = site.description,
   image,
   imageAlt,
+  ogType = 'website',
+  robots = 'index, follow',
+  jsonLd,
   showBanner = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, site.url).toString();
-
-/** Resolve absolute URL for Open Graph (crawlers require absolute). */
-function absoluteUrl(pathOrUrl: string) {
-  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
-  return new URL(pathOrUrl, site.url).toString();
-}
-
+const canonical = canonicalUrl(Astro.url.pathname);
 const ogImage = absoluteUrl(image || site.ogImage);
-const ogImageAlt = imageAlt || title;
+const ogImageAlt = imageAlt || site.ogImageAlt;
+const isDefaultOg = !image || absoluteUrl(image) === absoluteUrl(site.ogImage);
+
+const jsonLdPayload =
+  jsonLd == null
+    ? null
+    : Array.isArray(jsonLd)
+      ? { '@context': 'https://schema.org', '@graph': jsonLd }
+      : jsonLd['@context']
+        ? jsonLd
+        : { '@context': 'https://schema.org', ...jsonLd };
 ---
 
 <!doctype html>
@@ -42,23 +65,60 @@ const ogImageAlt = imageAlt || title;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content={site.themeColor} />
+
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <meta name="robots" content={robots} />
+    <meta name="googlebot" content={robots} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href={site.favicon} />
 
-    <meta property="og:type" content="website" />
+    <!-- Preconnect: fonts + icon CDN (LCP / third-party) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Icons (self-hosted; avoids Framer CDN dependency) -->
+    <link rel="icon" href={site.faviconIco} sizes="any" />
+    <link rel="icon" href={site.faviconSvg} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={site.faviconIco} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:alt" content={ogImageAlt} />
-    <meta property="og:url" content={canonical} />
+    {
+      isDefaultOg && (
+        <>
+          <meta property="og:image:width" content={String(site.ogImageWidth)} />
+          <meta property="og:image:height" content={String(site.ogImageHeight)} />
+          <meta property="og:image:type" content="image/jpeg" />
+        </>
+      )
+    }
 
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    {
+      jsonLdPayload && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(jsonLdPayload)}
+        />
+      )
+    }
 
     <!-- Ionicons — site-wide icon library -->
     <script
@@ -73,6 +133,8 @@ const ogImageAlt = imageAlt || title;
     <ClientRouter />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
     <!--
       Transition plate covers navbar + banner (z-index above both).
       Label = clicked target word; circle always covers the viewport.
@@ -99,7 +161,7 @@ const ogImageAlt = imageAlt || title;
           enterDelay={120}
         />
       )}
-      <main class="page-main">
+      <main id="main-content" class="page-main" tabindex="-1">
         <slot />
       </main>
       <Footer />
@@ -131,3 +193,35 @@ const ogImageAlt = imageAlt || title;
     </script>
   </body>
 </html>
+
+<style is:global>
+  /* Skip link: first focusable control for keyboard / screen-reader users */
+  .skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 8px 0;
+    transform: translateY(-120%);
+    transition: transform 0.15s ease;
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Avoid focus ring flash on programmatic skip target */
+  #main-content:focus {
+    outline: none;
+  }
+</style>
