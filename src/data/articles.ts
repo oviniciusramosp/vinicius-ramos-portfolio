@@ -253,7 +253,7 @@ export const articles: Article[] = [
     title: 'Candle Guy',
     description:
       'Trashing AI tools online won’t stop the shift. Learning them will.',
-    image: '/articles/dont-be-the-candle-guy.jpg',
+    image: '/articles/candle-guy.jpg',
     imageAlt: 'Melted candle with smoke rising next to an unlit light bulb',
     imageObjectPosition: 'center',
     imageFit: 'cover',
