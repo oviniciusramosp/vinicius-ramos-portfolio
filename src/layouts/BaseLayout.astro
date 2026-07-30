@@ -80,10 +80,10 @@ const jsonLdPayload =
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-    <!-- Icons (self-hosted; avoids Framer CDN dependency) -->
-    <link rel="icon" href={site.faviconIco} sizes="any" />
+    <!-- Icons: SVG first (brand V), then ICO fallback, then Apple touch -->
     <link rel="icon" href={site.faviconSvg} type="image/svg+xml" />
-    <link rel="apple-touch-icon" href={site.faviconIco} />
+    <link rel="icon" href={site.faviconIco} sizes="48x48" />
+    <link rel="apple-touch-icon" href={site.appleTouchIcon} />
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
