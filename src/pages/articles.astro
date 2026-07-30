@@ -24,6 +24,7 @@ const galleryItems: ScrollGalleryItem[] = articles.map((article) => ({
   imageAlt: article.imageAlt ?? article.title,
   imageObjectPosition: article.imageObjectPosition,
   imageScale: article.imageScale,
+  imageFit: article.imageFit,
   href: articleHref(article.id),
   actionLabel: `Read ${article.title}`,
   kind: 'article' as const,

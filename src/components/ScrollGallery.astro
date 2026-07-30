@@ -33,6 +33,11 @@ export type ScrollGalleryItem = {
   /** Scale art inside the frame (1 = 100%). e.g. 0.8 */
   imageScale?: number;
   /**
+   * How the image fills its frame on the card.
+   * `cover` (default for social/article) crops; `contain` shows full art (fit).
+   */
+  imageFit?: 'cover' | 'contain';
+  /**
    * Quote cards only: portrait shown top-right (header row).
    * Distinct from `image` (product feature art).
    */
@@ -182,6 +187,9 @@ const displayItems = items.map(prepItem);
               const isQuote = item.kind === 'quote';
               const isArticle = item.kind === 'article';
               const isSocial = item.kind === 'social';
+              const imageFit =
+                item.imageFit ??
+                (isSocial || isArticle ? 'cover' : 'contain');
               const actionLabel =
                 item.actionLabel ??
                 (item.label ? `Learn more about ${item.label}` : item.imageAlt ?? 'Open');
@@ -303,6 +311,9 @@ const displayItems = items.map(prepItem);
                                 'feature-card-image-container--center',
                               isSocial && 'feature-card-image-container--social',
                               isArticle && 'feature-card-image-container--article',
+                              isArticle &&
+                                imageFit === 'contain' &&
+                                'feature-card-image-container--article-fit',
                             ]}
                           >
                             <OptimizedImg
@@ -310,6 +321,9 @@ const displayItems = items.map(prepItem);
                                 'feature-card-image',
                                 isSocial && 'feature-card-image--social',
                                 isArticle && 'feature-card-image--article',
+                                isArticle &&
+                                  imageFit === 'contain' &&
+                                  'feature-card-image--article-fit',
                               ]
                                 .filter(Boolean)
                                 .join(' ')}
@@ -319,9 +333,7 @@ const displayItems = items.map(prepItem);
                               loading="lazy"
                               decoding="async"
                               draggable="false"
-                              objectFit={
-                                isSocial || isArticle ? 'cover' : 'contain'
-                              }
+                              objectFit={imageFit}
                               objectPosition={
                                 item.imageObjectPosition ??
                                 (isSocial || isArticle
@@ -1156,6 +1168,12 @@ const displayItems = items.map(prepItem);
     object-fit: cover;
     object-position: center;
     max-height: none;
+  }
+
+  /* Per-card fit (e.g. UI-on-demand): show full art, no crop */
+  .gallery-item--article .feature-card-image--article-fit :global(img) {
+    object-fit: contain;
+    object-position: center;
   }
 
   @media (max-width: 1068px) {

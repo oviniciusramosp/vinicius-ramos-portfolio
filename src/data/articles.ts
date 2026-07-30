@@ -257,6 +257,7 @@ export const articles: Article[] = [
     imageAlt: 'Melted candle with smoke rising next to an unlit light bulb',
     imageObjectPosition: 'center',
     imageFit: 'cover',
+    imageScale: 0.8,
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7455628157790945281/',
     content: [
@@ -277,6 +278,7 @@ export const articles: Article[] = [
     imageAlt: 'Thought bubble next to the Claude app icon with a green checkmark',
     imageObjectPosition: 'center',
     imageFit: 'cover',
+    imageScale: 0.8,
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7450942000440209408/',
     content: [
