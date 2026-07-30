@@ -273,8 +273,10 @@ export const articles: Article[] = [
     title: 'How fast is too fast?',
     description:
       'AI companies aren’t slowing down. They’re swallowing others and shipping more tools every day.',
-    image: '/articles/how-fast-is-too-fast.svg',
-    imageAlt: 'Design and code merging at high speed',
+    image: '/articles/how-fast-is-too-fast.jpg',
+    imageAlt: 'Thought bubble next to the Claude app icon with a green checkmark',
+    imageObjectPosition: 'center',
+    imageFit: 'cover',
     sourceUrl:
       'https://www.linkedin.com/feed/update/urn:li:activity:7450942000440209408/',
     content: [
