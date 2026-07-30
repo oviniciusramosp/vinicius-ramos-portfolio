@@ -11,6 +11,11 @@ interface Props {
   active?: boolean;
   type?: 'button' | 'submit';
   external?: boolean;
+  /**
+   * Native download attribute. `true` uses the URL filename;
+   * a string sets the suggested download name.
+   */
+  download?: boolean | string;
   /** Magnetic parallax matching viniciusramos.com (default true) */
   magnetic?: boolean;
   class?: string;
@@ -31,6 +36,7 @@ const {
   active = false,
   type = 'button',
   external = false,
+  download,
   magnetic = true,
   class: className = '',
   embedOpen,
@@ -48,6 +54,11 @@ const attrs = isButton
   : {
       href: href!,
       ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+      ...(download === true
+        ? { download: true }
+        : typeof download === 'string'
+          ? { download }
+          : {}),
     };
 
 /** Default App Store badge eyebrow when icon is apple and none provided */
