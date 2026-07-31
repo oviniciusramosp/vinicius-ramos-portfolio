@@ -1,10 +1,11 @@
 /**
  * Page transition:
- *   1. OUT — blue circle expands to cover the viewport (no blue title)
- *   2. IN  — solid blue plate + black destination title (scale + width-wave)
- *   3. IN  — circular mask opens when the wave hits the last letters
+ *   1. OUT — blue circle expands once to cover the viewport (no title)
+ *   2. IN  — solid blue plate + black destination title at final scale + width-wave
+ *   3. IN  — circular hole opens once when the wave hits the last letters
  *
- * Covers navbar + banner (page-mask z-index above both).
+ * Title no longer scales 0→final on IN (that second center-expand stacked with
+ * the hole and read as the circle opening twice). Covers navbar + banner.
  */
 
 import {
@@ -25,10 +26,10 @@ const TRANSITION_COLOR = '#008fff';
 const waveData = waveGlyphs as LogoWaveData;
 let labelWave: WaveHandle | null = null;
 
-/** Shell scale 0→final (whole title) */
-const WORD_SCALE_MS = 1400;
-/** Width-wave L→R on the black title (independent of shell scale) */
+/** Width-wave L→R on the black title (shell is already at final scale) */
 const WORD_WAVE_MS = 1800;
+/** Fade-in of the destination title on the blue plate (avoids hard pop-in) */
+const WORD_FADE_MS = 420;
 /** Final word width as a fraction of the viewport (long titles) */
 const WORD_TARGET_VW = 0.8;
 /**
@@ -39,7 +40,7 @@ const WORD_SCALE_MAX = 2.2;
 /** Solid black type on the blue plate during reveal */
 const WORD_REVEAL_COLOR = '#000000';
 
-/** OUT: blue circle expands to full cover (after current-page title wave) */
+/** OUT: blue circle expands to full cover */
 const CIRCLE_OUT_MS = 580;
 /** IN: circular hole open duration */
 const CIRCLE_IN_MS = 580;
@@ -63,6 +64,15 @@ let outRunning = false;
 let awaitingReveal = false;
 /** Prevent double transitionIn (page-load + safety timeout) */
 let revealStarted = false;
+/**
+ * Monotonic nav generation. Bumped on every after-swap so an in-flight
+ * reveal from a superseded navigation cannot open the hole a second time.
+ */
+let navGeneration = 0;
+/** Generation currently running transitionIn (0 = none) */
+let revealGeneration = 0;
+/** Abort the in-flight hole rAF when a newer nav supersedes it */
+let holeRaf = 0;
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -334,13 +344,18 @@ function animateNumber(
 function clearPlateMask(stage: HTMLElement) {
   stage.style.webkitMaskImage = '';
   stage.style.maskImage = '';
+  stage.style.webkitMaskRepeat = '';
+  stage.style.maskRepeat = '';
   stage.style.webkitMaskSize = '';
   stage.style.maskSize = '';
+  stage.style.webkitMaskPosition = '';
+  stage.style.maskPosition = '';
 }
 
 /**
  * Expanding hole in the solid blue plate (0 = sealed, 1 = fully open).
  * No white shapes — the plate stays accent blue until the page shows through.
+ * mask-repeat/size pinned so the radial never tiles (would look like 2× opens).
  */
 function setPlateHole(stage: HTMLElement, progress: number) {
   const p = Math.max(0, Math.min(1, progress));
@@ -355,6 +370,54 @@ function setPlateHole(stage: HTMLElement, progress: number) {
   const grad = `radial-gradient(circle at 50% 50%, transparent ${r}px, #000 ${r + 0.5}px)`;
   stage.style.webkitMaskImage = grad;
   stage.style.maskImage = grad;
+  stage.style.webkitMaskRepeat = 'no-repeat';
+  stage.style.maskRepeat = 'no-repeat';
+  stage.style.webkitMaskSize = '100% 100%';
+  stage.style.maskSize = '100% 100%';
+  stage.style.webkitMaskPosition = 'center';
+  stage.style.maskPosition = 'center';
+}
+
+function cancelHoleRaf() {
+  if (holeRaf) {
+    cancelAnimationFrame(holeRaf);
+    holeRaf = 0;
+  }
+}
+
+/**
+ * Animate a number with optional generation guard — aborts (resolves) if
+ * navGeneration no longer matches, so a superseded reveal cannot keep painting.
+ */
+function animateNumberGuarded(
+  from: number,
+  to: number,
+  duration: number,
+  ease: (p: number) => number,
+  onUpdate: (v: number) => void,
+  gen: number,
+) {
+  return new Promise<void>((resolve) => {
+    cancelHoleRaf();
+    const t0 = performance.now();
+    const step = (now: number) => {
+      if (gen !== navGeneration) {
+        holeRaf = 0;
+        resolve();
+        return;
+      }
+      const p = Math.min(1, (now - t0) / duration);
+      onUpdate(from + (to - from) * ease(p));
+      if (p < 1) {
+        holeRaf = requestAnimationFrame(step);
+      } else {
+        holeRaf = 0;
+        resolve();
+      }
+    };
+    onUpdate(from);
+    holeRaf = requestAnimationFrame(step);
+  });
 }
 
 /** Cover: blue circle only — title comes later (black, after load) */
@@ -457,10 +520,13 @@ async function transitionOut(_fromLabel: string) {
 
 /**
  * IN — destination ready on blue plate.
- * 1. Black destination title: scale-up + letter wave
- * 2. Circular mask opens when the last letter is finishing its animation
+ * 1. Black destination title at final scale: fade-in + letter wave
+ *    (no scale-from-0 — that stacked with the hole and read as “circle 2×”)
+ * 2. Circular mask opens once when the wave hits the last letters
  */
-async function transitionIn() {
+async function transitionIn(gen: number) {
+  if (gen !== navGeneration) return;
+
   const { root, stage, circle, label } = ensureMask();
 
   root.classList.remove('is-out');
@@ -476,18 +542,18 @@ async function transitionIn() {
   setRevealMode(stage, circle, label);
   stage.style.opacity = '1';
   setPlateHole(stage, 0); // sealed blue plate
+  // Circle is cover-only — keep it fully out of the reveal phase
   circle.style.opacity = '0';
+  setCircleScale(circle, 0);
 
-  label.style.opacity = '1';
-  // Whole-title scale 0→final (like the circle); letter width-wave runs in parallel
+  // Final shell scale; opacity starts at 0 for fade-in (setRevealMode forces 1)
   const finalScale = measureWordScale(restW);
-  setLabelScale(label, 0);
+  setLabelScale(label, finalScale);
+  label.style.opacity = '0';
   void label.offsetWidth;
   await waitPaint();
 
-  const wordAnim = animateNumber(0, finalScale, WORD_SCALE_MS, easeOutExpo, (s) => {
-    setLabelScale(label, s);
-  });
+  if (gen !== navGeneration) return;
 
   let holeGo!: () => void;
   let holeArmed = false;
@@ -499,6 +565,14 @@ async function transitionIn() {
     };
   });
 
+  // Fade-in + wave in parallel; hole still waits for last letters
+  const fadeAnim = animateNumber(0, 1, WORD_FADE_MS, easeOutExpo, (o) => {
+    if (gen !== navGeneration) return;
+    // Hole may already be fading the label out — never fight a lower opacity
+    if (holeArmed) return;
+    label.style.opacity = String(o);
+  });
+
   const waveAnim =
     labelWave?.playSweep({
       durationMs: WORD_WAVE_MS,
@@ -507,25 +581,31 @@ async function transitionIn() {
       onLastLetters: () => holeGo(),
     }) ?? Promise.resolve().then(() => holeGo());
 
-  void wait(WAVE_SAFETY_MS).then(() => holeGo());
+  void wait(WAVE_SAFETY_MS).then(() => {
+    if (gen === navGeneration) holeGo();
+  });
 
   const holeAnim = (async () => {
     await holeGate;
-    await animateNumber(0, 1, CIRCLE_IN_MS, easeOutExpo, (p) => {
+    if (gen !== navGeneration) return;
+    // Single hole open for this generation — never re-entered
+    await animateNumberGuarded(0, 1, CIRCLE_IN_MS, easeOutExpo, (p) => {
       setPlateHole(stage, p);
       label.style.opacity = String(Math.max(0, 1 - p * 1.35));
-    });
+    }, gen);
   })();
 
   await holeAnim;
-  void wordAnim;
+  void fadeAnim;
   void waveAnim;
 
-  // Teardown
+  if (gen !== navGeneration) return;
+
+  // Teardown — hide first so clearing the mask never flashes a solid plate
+  stage.style.opacity = '0';
   root.classList.remove('is-active', 'is-out', 'is-in');
   root.classList.add('is-idle');
   resetModes(stage, circle, label);
-  stage.style.opacity = '0';
   setCircleScale(circle, 0);
   setLabelScale(label, 1);
   clearLabelLayout(label);
@@ -533,8 +613,11 @@ async function transitionIn() {
 }
 
 function hardReset() {
+  cancelHoleRaf();
+  navGeneration += 1;
   awaitingReveal = false;
   revealStarted = false;
+  revealGeneration = 0;
   outRunning = false;
   const root = document.getElementById('page-mask');
   if (!root) return;
@@ -649,7 +732,10 @@ async function startRevealWhenReady() {
     return;
   }
 
+  // Capture generation now — after-swap may bump navGeneration later
+  const gen = navGeneration;
   revealStarted = true;
+  revealGeneration = gen;
   awaitingReveal = false;
 
   // Stay locked solid while we wait
@@ -661,9 +747,28 @@ async function startRevealWhenReady() {
     /* still reveal — better than stuck cover */
   }
 
-  await transitionIn();
+  // Superseded by a newer navigation while we waited
+  if (gen !== navGeneration) {
+    if (revealGeneration === gen) {
+      revealStarted = false;
+      revealGeneration = 0;
+    }
+    return;
+  }
+
+  await transitionIn(gen);
+
+  if (gen !== navGeneration) {
+    if (revealGeneration === gen) {
+      revealStarted = false;
+      revealGeneration = 0;
+    }
+    return;
+  }
+
   lastNav = { fromLabel: '', toLabel: '' };
   revealStarted = false;
+  revealGeneration = 0;
   // Page is visible — run deferred entrances (SocialFan, Device3D, …)
   notifyPageRevealed();
 }
@@ -719,9 +824,17 @@ export function initPageMask() {
       return;
     }
 
+    // New navigation — invalidate any in-flight hole / reveal from the previous one
+    cancelHoleRaf();
+    navGeneration += 1;
     // Keep a solid plate — do NOT reveal yet (page may still be blank/unpainted)
     awaitingReveal = true;
-    revealStarted = false;
+    // Only clear revealStarted if no reveal owns the *current* generation yet
+    // (a concurrent page-load for this gen will set it; an old gen must not block us)
+    if (revealGeneration !== navGeneration) {
+      revealStarted = false;
+      revealGeneration = 0;
+    }
     lockSolidCover();
     // Destination (black) title is mounted in transitionIn after page is ready
   });
@@ -738,8 +851,13 @@ export function initPageMask() {
     // Safety: if something left the plate stuck, force a reveal later
     const root = document.getElementById('page-mask');
     if (!root?.classList.contains('is-active') || outRunning) return;
+    const stuckGen = navGeneration;
     window.setTimeout(() => {
-      if (root.classList.contains('is-active') && !revealStarted) {
+      if (
+        stuckGen === navGeneration &&
+        root.classList.contains('is-active') &&
+        !revealStarted
+      ) {
         awaitingReveal = true;
         void startRevealWhenReady();
       }

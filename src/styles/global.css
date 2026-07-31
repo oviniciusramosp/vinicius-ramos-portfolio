@@ -242,9 +242,9 @@ ul {
 }
 
 /*
- * Page transition
- * OUT: word scale-up → delay → circle scale-up (both surface)
- * IN:  same motion as cutouts (destination-out) over a surface plate
+ * Page transition (see scripts/page-mask.ts)
+ * OUT: blue circle expands once to cover
+ * IN:  solid plate + title wave, then one circular hole reveal
  * z-index above site-header (10050) + banner (10040) so the plate covers both.
  * Cursor stays higher (10100).
  */
