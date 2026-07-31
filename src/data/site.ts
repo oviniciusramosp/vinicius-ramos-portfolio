@@ -51,7 +51,7 @@ export const site = {
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogImageAlt: 'Vinicius Ramos — Product Designer portfolio',
-  /** Local favicons in /public (Blatant “V” monogram, brand accent) */
+  /** Local favicons in /public (black tile + white Blatant V, iOS-style corners) */
   faviconSvg: '/favicon.svg',
   faviconIco: '/favicon.ico',
   appleTouchIcon: '/apple-touch-icon.png',
