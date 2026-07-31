@@ -106,6 +106,8 @@ function schedule(run: Run, ms: number, fn: () => void): void {
 
 function clearSpringStyles(toast: HTMLElement): void {
   toast.style.transform = '';
+  toast.style.width = '';
+  toast.style.maxWidth = '';
   toast
     .querySelectorAll<HTMLElement>(
       '[data-dev-toast-intro],[data-dev-toast-bg],[data-dev-toast-text],[data-dev-toast-dismiss]',
@@ -123,6 +125,22 @@ function tokenPx(toast: HTMLElement, name: string, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+/** Max outer width for the toast shell (matches CSS --toast-max). */
+function toastMaxPx(toast: HTMLElement): number {
+  const raw = getComputedStyle(toast).getPropertyValue('--toast-max').trim();
+  // --toast-max is min(calc(...), 420px) — resolve via a probe element
+  if (raw) {
+    const probe = document.createElement('div');
+    probe.style.cssText =
+      'position:absolute;visibility:hidden;pointer-events:none;width:var(--toast-max)';
+    toast.appendChild(probe);
+    const w = probe.getBoundingClientRect().width;
+    probe.remove();
+    if (w > 0) return Math.floor(w);
+  }
+  return Math.min(Math.max(0, window.innerWidth - 32), 420);
+}
+
 function measure(toast: HTMLElement): {
   w: number;
   h: number;
@@ -130,6 +148,8 @@ function measure(toast: HTMLElement): {
   iconTravel: number;
 } {
   clearSpringStyles(toast);
+  toast.style.width = '';
+  toast.style.maxWidth = '';
   toast.classList.add('is-measuring');
   toast.hidden = false;
 
@@ -138,9 +158,30 @@ function measure(toast: HTMLElement): {
   const icon = tokenPx(toast, '--icon-size', 36);
   const aapH = tokenPx(toast, '--aap-h', 56);
   const margin = tokenPx(toast, '--icon-margin', 10);
+  const maxW = toastMaxPx(toast);
 
-  const rect = (content ?? toast).getBoundingClientRect();
-  const w = Math.ceil(rect.width);
+  // Pass 1: natural hug width (short copy stays tight)
+  toast.style.width = 'max-content';
+  toast.style.maxWidth = `${maxW}px`;
+  void toast.offsetWidth;
+
+  let rect = (content ?? toast).getBoundingClientRect();
+  let w = Math.ceil(rect.width);
+
+  // Pass 2: if natural wants more than the viewport cap, force cap so text wraps
+  // and height is measured at the real final width (bg + content stay in sync)
+  if (w >= maxW - 1) {
+    w = maxW;
+    toast.style.width = `${maxW}px`;
+    void toast.offsetWidth;
+    rect = (content ?? toast).getBoundingClientRect();
+  } else {
+    w = Math.min(Math.max(w, icon * 2 + margin * 2), maxW);
+    toast.style.width = `${w}px`;
+    void toast.offsetWidth;
+    rect = (content ?? toast).getBoundingClientRect();
+  }
+
   const h = Math.ceil(Math.max(rect.height, aapH));
 
   let iconTravel = Math.max(0, w * 0.5 - (margin + icon * 0.5));
@@ -160,7 +201,10 @@ function measure(toast: HTMLElement): {
   }
 
   toast.classList.remove('is-measuring');
-  return { w: Math.max(w, icon * 2), h, icon, iconTravel };
+  // Keep measured width on the shell so content/bg share one box after enter
+  toast.style.width = `${w}px`;
+  toast.style.maxWidth = `${maxW}px`;
+  return { w, h, icon, iconTravel };
 }
 
 function stepProps(props: PropMap): boolean {
@@ -419,6 +463,8 @@ function settleInstant(
   toast.hidden = false;
   toast.classList.remove('inactive', 'is-leaving');
   toast.classList.add('is-activated', 'is-bg-live', 'is-interactive', 'is-text-in');
+  toast.style.width = `${width}px`;
+  toast.style.maxWidth = `${toastMaxPx(toast)}px`;
   toast.style.setProperty('--toast-w', `${width}px`);
   toast.style.setProperty('--toast-h', `${height}px`);
   applyAapY(toast, 0);
@@ -432,6 +478,14 @@ function settleInstant(
     text.style.opacity = '1';
   }
   if (icon) applyIcon(icon, 0, -iSize / 2, 1, iSize, iSize);
+}
+
+/** Re-fit glass + shell after viewport changes (orientation / resize). */
+function refitSettled(toast: HTMLElement): void {
+  if (toast.hidden || toast.dataset.entered !== '1') return;
+  if (toast.classList.contains('is-leaving')) return;
+  const { w, h, icon } = measure(toast);
+  settleInstant(toast, w, h, icon);
 }
 
 function playLeave(toast: HTMLElement): void {
@@ -573,4 +627,13 @@ if (typeof document !== 'undefined') {
     boot();
   }
   document.addEventListener('astro:page-load', boot);
+
+  // Keep glass bg + shell in sync when the viewport changes (small phones / rotate)
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      for (const toast of getRoots()) refitSettled(toast);
+    }, 120);
+  });
 }

@@ -84,6 +84,8 @@ const {
     --icon-size: 36px;
     --icon-margin: 10px;
     --button-margin: 10px;
+    /* Shared cap for shell + content + glass bg — one source of truth */
+    --toast-max: min(calc(100vw - 32px), 420px);
 
     position: fixed;
     left: 50%;
@@ -92,8 +94,10 @@ const {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    /* Hug short copy; never wider than viewport gutter */
     width: max-content;
-    max-width: min(calc(100vw - 32px), 420px);
+    max-width: var(--toast-max);
     margin: 0;
     padding: 0;
     border: 0;
@@ -112,14 +116,18 @@ const {
   .dev-toast__element {
     position: relative;
     z-index: 1;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Match shell so bg measure and content share the same box */
+    width: 100%;
+    max-width: 100%;
     min-height: var(--aap-h);
     border-radius: 28px;
     color: var(--color-text);
     opacity: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .dev-toast.is-activated .dev-toast__element {
@@ -168,15 +176,16 @@ const {
   .dev-toast__content {
     position: relative;
     z-index: 2;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    width: max-content;
-    max-width: min(calc(100vw - 32px), 420px);
+    /* Same width as shell/bg — not a second max-content track */
+    width: 100%;
+    max-width: 100%;
     min-height: var(--aap-h);
     /* Grow with wrapped lines — fixed height was clipping long copy */
     height: auto;
     padding: 10px 0;
-    box-sizing: border-box;
     pointer-events: none;
   }
 
@@ -185,11 +194,12 @@ const {
   }
 
   .dev-toast__text {
-    --text-pad-end: calc(var(--icon-size) + var(--icon-margin) + var(--icon-margin));
+    /* Room for absolute dismiss: icon + trailing inset inside the pill */
+    --text-pad-end: calc(var(--icon-size) + var(--icon-margin) * 2);
 
     display: block;
     flex: 1 1 auto;
-    /* Allow shrinking inside max-width so long copy wraps instead of overflowing */
+    /* Allow shrinking so long copy wraps inside the pill */
     min-width: 0;
     max-width: 100%;
     margin: 0;
@@ -201,7 +211,7 @@ const {
     color: var(--color-text-soft);
     text-align: left;
     white-space: normal;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     word-break: break-word;
     opacity: 0;
     transform: scale(0.5);
@@ -216,7 +226,8 @@ const {
 
   .dev-toast__dismiss {
     position: absolute;
-    right: 0;
+    /* Keep the X fully inside the glass (same inset as --icon-margin) */
+    right: var(--icon-margin);
     top: 50%;
     z-index: 3;
     box-sizing: border-box;
@@ -225,10 +236,9 @@ const {
     justify-content: center;
     width: var(--icon-size);
     height: var(--icon-size);
-    min-width: 0;
+    min-width: var(--icon-size);
     max-height: var(--icon-size);
     margin: 0;
-    margin-inline-end: var(--icon-margin);
     padding: 0;
     border: 0;
     border-radius: 999px;
@@ -242,6 +252,7 @@ const {
     transform-origin: center center;
     will-change: transform, width, opacity;
     overflow: hidden;
+    flex-shrink: 0;
     transition: background var(--duration-fast) var(--ease-smooth);
   }
 
@@ -295,7 +306,9 @@ const {
   }
 
   .dev-toast.is-measuring .dev-toast__dismiss {
+    /* Visible for icon-travel math, but not painted */
     opacity: 0 !important;
+    transform: translate3d(0, calc(var(--icon-size) / -2), 0) scale(1) !important;
   }
 
   .dev-toast.is-measuring .dev-toast__bg {
@@ -306,12 +319,18 @@ const {
     .dev-toast {
       --aap-h: 48px;
       --icon-size: 28px;
+      --toast-max: min(calc(100vw - 24px), 420px);
       bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
     }
 
     .dev-toast__text {
       font-size: 11px;
-      padding-left: 16px;
+      padding-left: 14px;
+      line-height: 1.4;
+    }
+
+    .dev-toast__content {
+      padding-block: 8px;
     }
   }
 

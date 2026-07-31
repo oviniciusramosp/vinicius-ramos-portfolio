@@ -203,36 +203,48 @@ const showFilter = filterTags.length > 0;
     grid-row: span 1;
   }
 
-  @media (max-width: 1100px) {
+  /*
+   * Tablet only (not mobile): 2 columns.
+   * Range excludes ≤720px so slug/tall/wide exceptions never leak into phone.
+   *   - Intermex + Gilbarco → tall 1×2
+   *   - Moove → wide 2×1
+   *   - everyone else → 1×1
+   */
+  @media (min-width: 721px) and (max-width: 1100px) {
     .project-grid {
-      --bento-cols: 3;
+      --bento-cols: 2;
       --bento-row-min: 200px;
     }
 
-    .is-lg {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    .is-xl {
-      grid-column: span 2;
-      grid-row: span 3;
-    }
-
-    .is-wide {
-      grid-column: span 2;
+    .is-lg,
+    .is-xl,
+    .is-wide,
+    .is-tall,
+    .is-sm,
+    .is-md {
+      grid-column: span 1;
       grid-row: span 1;
     }
 
-    .is-tall {
+    .project-grid__cell[data-slug='intermex'],
+    .project-grid__cell[data-slug='gilbarco'],
+    .project-grid__cell.is-tall[data-slug='intermex'],
+    .project-grid__cell.is-tall[data-slug='gilbarco'] {
       grid-column: span 1;
       grid-row: span 2;
+    }
+
+    .project-grid__cell[data-slug='moove'],
+    .project-grid__cell.is-wide[data-slug='moove'] {
+      grid-column: span 2;
+      grid-row: span 1;
     }
   }
 
   /*
-   * Mobile: every card same size (1×1). Multi-row spans (lg/tall/xl)
-   * were overlapping neighbors when min-height fought fixed tracks.
+   * Mobile: single column, every card identical W×H.
+   * Reset spans from desktop size classes (is-lg / is-wide / is-tall…)
+   * so nothing keeps a partial track / fake right gutter.
    */
   @media (max-width: 720px) {
     .bento__toolbar {
@@ -244,22 +256,47 @@ const showFilter = filterTags.length > 0;
       --bento-cols: 1;
       --bento-gap: 12px;
       --bento-pad-x: 12px;
-      /* Fixed mobile recipe — title + tags need height more than aspect clamp */
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      /* Equal height for every row */
       grid-auto-rows: min(300px, 78vw);
       grid-auto-flow: row;
+      gap: var(--bento-gap);
       padding: 0 var(--bento-pad-x) 12px;
+      width: 100%;
     }
 
-    .is-lg,
-    .is-xl,
-    .is-wide,
-    .is-tall,
-    .is-sm,
-    .is-md {
-      grid-column: span 1;
-      grid-row: span 1;
+    .project-grid__cell,
+    .project-grid__cell.is-lg,
+    .project-grid__cell.is-xl,
+    .project-grid__cell.is-wide,
+    .project-grid__cell.is-tall,
+    .project-grid__cell.is-sm,
+    .project-grid__cell.is-md,
+    .project-grid__cell[data-slug],
+    .project-grid__cell.is-wide[data-slug],
+    .project-grid__cell.is-tall[data-slug],
+    .project-grid__cell.is-lg[data-slug],
+    .project-grid__cell.is-xl[data-slug] {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       min-height: 0;
       height: 100%;
+      margin: 0;
+      justify-self: stretch;
+      align-self: stretch;
+    }
+
+    .project-grid__cell :global(.project-card-shell),
+    .project-grid__cell :global(.project-card) {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      min-height: 0;
+      margin: 0;
     }
   }
 </style>

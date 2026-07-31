@@ -100,9 +100,84 @@ function getColCount(board: HTMLElement | null): number {
   return cols.length;
 }
 
+/**
+ * Tablet (2-col) size exceptions:
+ * - tall 1×2: Intermex, Gilbarco (portrait art)
+ * - wide 2×1: Moove
+ * Everyone else: sm 1×1 (large tiles dominate this width).
+ */
+const TABLET_TALL_SLUGS = new Set(['intermex', 'gilbarco']);
+const TABLET_WIDE_SLUGS = new Set(['moove']);
+
+/**
+ * Visual placement order on 2-col tablet (CSS grid uses order-modified
+ * document order). Pairs that must sit side-by-side:
+ *   booking | bubble,  intermex | gilbarco
+ * Moove (wide) sits above booking/bubble.
+ */
+const TABLET_ORDER: readonly string[] = [
+  'crypto-bros',
+  'staircase',
+  'hp-printables',
+  'vibecheck',
+  'moove',
+  'booking',
+  'bubble',
+  'intermex',
+  'gilbarco',
+];
+
+function cellSlug(el: HTMLElement): string {
+  return el.dataset.slug ?? '';
+}
+
+function allowsTabletTall(el: HTMLElement): boolean {
+  return TABLET_TALL_SLUGS.has(cellSlug(el));
+}
+
+function allowsTabletWide(el: HTMLElement): boolean {
+  return TABLET_WIDE_SLUGS.has(cellSlug(el));
+}
+
+/** Apply / clear grid `order` so tablet pairs sit inline. */
+function applyFlowOrder(cells: HTMLElement[], cols: number) {
+  // Only 2-col tablet uses a custom flow order
+  if (cols !== 2) {
+    for (const el of cells) {
+      el.style.order = '';
+      delete el.dataset.flowOrder;
+    }
+    return;
+  }
+
+  const rank = new Map(TABLET_ORDER.map((slug, i) => [slug, i]));
+  // Known slugs first (TABLET_ORDER), unknowns after in stable DOM order
+  let extra = TABLET_ORDER.length;
+  for (const el of cells) {
+    const slug = cellSlug(el);
+    const ord = rank.has(slug) ? rank.get(slug)! : extra++;
+    el.style.order = String(ord);
+    el.dataset.flowOrder = String(ord);
+  }
+}
+
+/**
+ * Desktop (5-col): authored size.
+ * Tablet (2-col): slug exceptions → tall/wide; all others → sm.
+ * Mobile (1-col): sm (CSS equalizes height tracks).
+ */
+function clampSizeForCols(size: CellSize, cols: number, el: HTMLElement): CellSize {
+  if (cols >= 5) return size;
+  if (cols <= 1) return 'sm';
+  if (allowsTabletTall(el)) return 'tall';
+  if (allowsTabletWide(el)) return 'wide';
+  return 'sm';
+}
+
 /** Sizes to try if preferred does not fit (never larger than preferred). */
-function shrinkLadder(pref: CellSize): CellSize[] {
-  switch (pref) {
+function shrinkLadder(pref: CellSize, cols: number, el: HTMLElement): CellSize[] {
+  const capped = clampSizeForCols(pref, cols, el);
+  switch (capped) {
     case 'xl':
       return ['xl', 'lg', 'tall', 'wide', 'sm'];
     case 'lg':
@@ -126,9 +201,23 @@ function sizeArea(size: CellSize): number {
  * Growth candidates when leftover space exists.
  * Prefer filling a free column with tall (1×2) before jumping to lg (2×2),
  * which often opens a new band and leaves an empty column.
+ * On tablet: only slug exceptions may grow (tall / wide); never lg/xl.
  */
-function growLadder(cur: CellSize, preferred: CellSize, alone: boolean): CellSize[] {
-  // Sole card may grow all the way to feature size
+function growLadder(
+  cur: CellSize,
+  preferred: CellSize,
+  alone: boolean,
+  cols: number,
+  el: HTMLElement,
+): CellSize[] {
+  // Mobile (1-col): never grow. Tablet (2-col): slug exceptions only.
+  if (cols < 5) {
+    if (cols <= 1) return [];
+    if (allowsTabletTall(el) && (cur === 'sm' || cur === 'md')) return ['tall'];
+    if (allowsTabletWide(el) && (cur === 'sm' || cur === 'md')) return ['wide'];
+    return [];
+  }
+
   if (alone) {
     const all: CellSize[] = ['tall', 'wide', 'lg', 'xl'];
     return all.filter((s) => sizeArea(s) > sizeArea(cur));
@@ -137,12 +226,10 @@ function growLadder(cur: CellSize, preferred: CellSize, alone: boolean): CellSiz
   switch (cur) {
     case 'sm':
     case 'md':
-      // Prefer tall (fill a free column) before lg (needs 2×2 free in-band)
       return ['tall', 'wide', 'lg'];
     case 'wide':
       return preferred === 'xl' ? ['lg', 'xl'] : ['lg'];
     case 'tall':
-      // tall→lg only when preferred is already lg/xl, or sole card
       return preferred === 'lg' || preferred === 'xl' || alone ? ['lg'] : [];
     case 'lg':
       return preferred === 'xl' ? ['xl'] : [];
@@ -161,13 +248,25 @@ function packFiltered(visible: HTMLElement[], cols: number): Map<HTMLElement, Ce
 
   if (cols <= 1) {
     for (const el of visible) {
-      const p = preferredSize(el);
-      plan.set(el, p === 'tall' ? 'tall' : 'sm');
+      plan.set(el, clampSizeForCols(preferredSize(el), cols, el));
     }
     return plan;
   }
 
-  const sortedDesc = [...visible].sort((a, b) => cardPriority(b) - cardPriority(a));
+  /**
+   * On narrow grids, place larger footprints first (wide/tall before sm)
+   * so 2×1 / 1×2 tiles don't get stuck in awkward holes. Desktop keeps
+   * priority-only order for the art-directed 5-col pack.
+   */
+  const sortedDesc = [...visible].sort((a, b) => {
+    if (cols < 5) {
+      const sizeA = clampSizeForCols(preferredSize(a), cols, a);
+      const sizeB = clampSizeForCols(preferredSize(b), cols, b);
+      const areaDiff = sizeArea(sizeB) - sizeArea(sizeA);
+      if (areaDiff !== 0) return areaDiff;
+    }
+    return cardPriority(b) - cardPriority(a);
+  });
   const sortedAsc = [...sortedDesc].reverse();
   const alone = visible.length === 1;
 
@@ -227,9 +326,9 @@ function packFiltered(visible: HTMLElement[], cols: number): Map<HTMLElement, Ce
 
   // —— Pass 1: preferred size (priority order), shrink only if needed ——
   for (const el of sortedDesc) {
-    const pref = preferredSize(el);
+    const pref = clampSizeForCols(preferredSize(el), cols, el);
     let placed = false;
-    for (const size of shrinkLadder(pref)) {
+    for (const size of shrinkLadder(pref, cols, el)) {
       const [w, h] = SIZE_DIMS[size];
       // Prefer packing into existing free cells before opening a new band
       let spot = findSpot(w, h, occ.length, false);
@@ -276,11 +375,14 @@ function packFiltered(visible: HTMLElement[], cols: number): Map<HTMLElement, Ce
 
     for (const el of sortedAsc) {
       const cur = placements.get(el);
-      if (!cur || cur.size === 'lg') continue;
-      const pref = preferredSize(el);
+      // lg/xl already max on desktop; on tablet they should never appear
+      if (!cur || cur.size === 'lg' || cur.size === 'xl') continue;
+      const pref = clampSizeForCols(preferredSize(el), cols, el);
 
-      for (const next of growLadder(cur.size, pref, alone)) {
+      for (const next of growLadder(cur.size, pref, alone, cols, el)) {
         if (sizeArea(next) <= sizeArea(cur.size)) continue;
+        const clamped = clampSizeForCols(next, cols, el);
+        if (clamped !== next) continue;
         const [nw, nh] = SIZE_DIMS[next];
 
         // Simulate remove current
@@ -359,8 +461,9 @@ function planLayout(
   selected: ReadonlySet<string>,
   cols: number,
 ): Map<HTMLElement, CellSize> {
-  // ALL — authored preferred sizes
-  if (selected.size === 0) {
+  // Desktop 5-col ALL — preserve authored preferred sizes (art-directed).
+  // Narrower grids always pack so 2-wide tiles don't leave empty tracks.
+  if (selected.size === 0 && cols >= 5) {
     const plan = new Map<HTMLElement, CellSize>();
     for (const el of visible) plan.set(el, preferredSize(el));
     return plan;
@@ -512,11 +615,24 @@ async function applyFilter(grid: HTMLElement, selected: ReadonlySet<string>) {
     if (next !== current) sizeChanged = true;
   }
 
-  if (leaving.length === 0 && entering.length === 0 && !sizeChanged) {
+  let orderChanged = false;
+  if (cols === 2) {
+    const rank = new Map(TABLET_ORDER.map((slug, i) => [slug, i]));
+    for (const el of willShow) {
+      const slug = cellSlug(el);
+      const want = String(rank.has(slug) ? rank.get(slug)! : 99);
+      if ((el.dataset.flowOrder ?? '') !== want) orderChanged = true;
+    }
+  } else {
+    orderChanged = willShow.some((el) => el.style.order !== '');
+  }
+
+  if (leaving.length === 0 && entering.length === 0 && !sizeChanged && !orderChanged) {
     for (const el of cells) {
       el.hidden = !matchesSelection(el, selected);
       if (!el.hidden) setCellSize(el, plan.get(el) ?? baseSize(el));
     }
+    applyFlowOrder(willShow, cols);
     return;
   }
 
@@ -528,6 +644,10 @@ async function applyFilter(grid: HTMLElement, selected: ReadonlySet<string>) {
       if (show) setCellSize(el, plan.get(el) ?? baseSize(el));
       else setCellSize(el, baseSize(el));
     }
+    applyFlowOrder(
+      cells.filter((el) => matchesSelection(el, selected)),
+      cols,
+    );
   };
 
   if (reducedMotion()) {
@@ -593,7 +713,6 @@ export function initBentoFilter(root: ParentNode = document) {
     grid.dataset.bentoReady = 'true';
 
     const toolbar = grid.querySelector<HTMLElement>('[data-bento-toolbar]');
-    if (!toolbar) return;
 
     for (const el of cellsOf(grid)) {
       el.dataset.layoutSize = baseSize(el);
@@ -601,17 +720,28 @@ export function initBentoFilter(root: ParentNode = document) {
     boardOf(grid)?.removeAttribute('data-fill');
 
     let selected = new Set<string>();
-    syncToolbar(toolbar, selected);
+    if (toolbar) syncToolbar(toolbar, selected);
 
-    // Re-pack on resize when filtered (column count changes)
+    // Initial pack on tablet/mobile (no toolbar required — home ships without filters)
+    const board = boardOf(grid);
+    if (getColCount(board) < 5) {
+      void applyFilter(grid, new Set(selected));
+    }
+
+    // Re-pack when column count changes (ALL on tablet, or any active filter)
     let resizeTimer = 0;
+    let lastCols = getColCount(board);
     window.addEventListener('resize', () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
-        if (selected.size === 0) return;
+        const cols = getColCount(boardOf(grid));
+        if (cols === lastCols && selected.size === 0 && cols >= 5) return;
+        lastCols = cols;
         void applyFilter(grid, new Set(selected));
       }, 120);
     });
+
+    if (!toolbar) return;
 
     toolbar.addEventListener('click', (e) => {
       const target = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-bento-filter]');
