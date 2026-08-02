@@ -1,0 +1,375 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TravelCityCard from '../../components/travel/TravelCityCard.astro';
+import Tag from '../../components/Tag.astro';
+import {
+  travelCities,
+  travelCountryKeys,
+  travelUi,
+} from '../../data/travel';
+import { site } from '../../data/site';
+
+const pageTitle = `${site.name} · Travel`;
+const pageDescription =
+  'Cities and places from Vinicius Ramos’s travels — a personal map, not linked from the main nav.';
+
+const pins = travelCities.map((city) => ({
+  id: city.slug,
+  lat: city.lat,
+  lng: city.lng,
+  label: city.name.en,
+  labelPt: city.name['pt-BR'],
+  href: `/travel/${city.slug}`,
+}));
+
+const pinsJson = JSON.stringify(pins);
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  robots="noindex, nofollow"
+>
+  <section class="travel">
+    {/* Full-bleed map hero — edge to edge, above title */}
+    <div class="travel__map-hero">
+      <div
+        class="travel-map"
+        data-travel-map
+        data-mode="cities"
+        data-pins={pinsJson}
+        data-i18n-en={travelUi.mapAria.en}
+        data-i18n-pt={travelUi.mapAria['pt-BR']}
+        data-i18n-as="aria-label"
+        aria-label={travelUi.mapAria.en}
+      >
+      </div>
+    </div>
+
+    <div class="travel__body" data-travel-feed>
+      <header class="travel__intro">
+        <h1
+          class="travel__title display-title"
+          data-i18n-en={travelUi.title.en}
+          data-i18n-pt={travelUi.title['pt-BR']}
+        >
+          {travelUi.title.en}
+        </h1>
+
+        <label class="travel__search">
+          <span
+            class="visually-hidden"
+            data-i18n-en="Search cities"
+            data-i18n-pt="Buscar cidades"
+          >
+            Search cities
+          </span>
+          <ion-icon
+            class="travel__search-icon"
+            name="search-outline"
+            aria-hidden="true"
+          ></ion-icon>
+          <input
+            type="search"
+            class="travel__search-input"
+            data-travel-search
+            data-i18n-en={travelUi.searchPlaceholder.en}
+            data-i18n-pt={travelUi.searchPlaceholder['pt-BR']}
+            data-i18n-as="placeholder"
+            placeholder={travelUi.searchPlaceholder.en}
+            autocomplete="off"
+          />
+        </label>
+      </header>
+
+      {/* Same chip pattern as homepage bento (Tag variant="chip") */}
+      <div
+        class="travel__filters"
+        role="group"
+        aria-label="Filter cities by country. Select multiple countries."
+      >
+        <button
+          type="button"
+          class="travel__chip is-active"
+          data-travel-filter="all"
+          aria-pressed="true"
+          data-magnetic
+          data-magnetic-range="6"
+          data-i18n-en={travelUi.filterAll.en}
+          data-i18n-pt={travelUi.filterAll['pt-BR']}
+          data-i18n-as="tag-label"
+        >
+          <Tag label={travelUi.filterAll.en} variant="chip" pressed />
+        </button>
+        {
+          travelCountryKeys.map((key) => (
+            <button
+              type="button"
+              class="travel__chip"
+              data-travel-filter={key}
+              aria-pressed="false"
+              data-magnetic
+              data-magnetic-range="6"
+              data-i18n-en={travelUi.countries[key].en}
+              data-i18n-pt={travelUi.countries[key]['pt-BR']}
+              data-i18n-as="tag-label"
+            >
+              <Tag label={travelUi.countries[key].en} variant="chip" />
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="travel__grid">
+        {travelCities.map((city) => <TravelCityCard city={city} />)}
+      </div>
+
+      <p
+        class="travel__empty"
+        data-travel-empty
+        hidden
+        data-i18n-en={travelUi.empty.en}
+        data-i18n-pt={travelUi.empty['pt-BR']}
+      >
+        {travelUi.empty.en}
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { bootTravelI18n } from '../../scripts/travel-i18n';
+  import { bootTravelMap } from '../../scripts/travel-map';
+  import { bootTravelFilter } from '../../scripts/travel-filter';
+  import '../../styles/travel-map.css';
+
+  const boot = () => {
+    bootTravelI18n();
+    // Map first so filter can sync pin visibility
+    bootTravelMap();
+    bootTravelFilter();
+  };
+
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>
+
+<style>
+  .travel {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Edge-to-edge hero map (no card chrome) */
+  .travel__map-hero {
+    position: relative;
+    width: 100%;
+    height: clamp(300px, 48vh, 560px);
+    overflow: hidden;
+    background: #0a0a0e;
+    border-bottom: 1px solid var(--color-border);
+    touch-action: none;
+  }
+
+  .travel__map-hero :global(.travel-map),
+  .travel__map-hero :global(.leaflet-container) {
+    border-radius: 0;
+  }
+
+  .travel__map-hero::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 400;
+    background: linear-gradient(
+      to bottom,
+      transparent 55%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  }
+
+  .travel__body {
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+    padding: 40px var(--page-pad-x-sm) 96px;
+    box-sizing: border-box;
+  }
+
+  /* Title left · search far right */
+  .travel__intro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    width: 100%;
+    margin-bottom: var(--space-8);
+  }
+
+  .travel__title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: clamp(42px, 6vw, 60px);
+    line-height: var(--lh-tight);
+  }
+
+  .travel__search {
+    position: relative;
+    flex: 0 1 320px;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+  }
+
+  .travel__search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .travel__search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px 12px 42px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-input-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    outline: none;
+    transition:
+      border-color var(--duration-fast) var(--ease-smooth),
+      background-color var(--duration-fast) var(--ease-smooth);
+  }
+
+  .travel__search-input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .travel__search-input:focus {
+    border-color: rgba(0, 143, 255, 0.55);
+    background: rgba(0, 143, 255, 0.06);
+  }
+
+  .travel__search:focus-within .travel__search-icon {
+    color: var(--color-accent);
+  }
+
+  /* Category filter chips: one row, horizontal scroll when overflowing */
+  .travel__filters {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: var(--space-8);
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    padding-bottom: 2px;
+  }
+
+  .travel__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .travel__chip {
+    appearance: none;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50px;
+    line-height: 0;
+  }
+
+  .travel__chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .travel__chip:hover :global(.tag--chip:not(.is-pressed)) {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .travel__chip:hover :global(.tag--chip:not(.is-pressed) .tag__glass) {
+    background-color: rgba(18, 18, 24, 0.55);
+  }
+
+  .travel__chip:hover :global(.tag--chip.is-pressed .tag__glass) {
+    background-color: rgba(0, 143, 255, 0.36);
+  }
+
+  .travel__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-6);
+  }
+
+  /* Belt-and-suspenders: hide filtered cards even if display:block wins */
+  .travel__grid :global(.travel-city-card.is-filtered-out),
+  .travel__grid :global(.travel-city-card[hidden]) {
+    display: none !important;
+  }
+
+  .travel__empty {
+    margin: var(--space-9) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 720px) {
+    .travel__intro {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-5);
+    }
+
+    .travel__search {
+      flex: none;
+      max-width: none;
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .travel__map-hero {
+      height: min(42vh, 320px);
+    }
+
+    .travel__body {
+      padding: 28px 16px 72px;
+    }
+  }
+</style>

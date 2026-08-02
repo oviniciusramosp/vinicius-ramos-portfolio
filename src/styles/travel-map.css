@@ -1,0 +1,912 @@
+/* Shared Leaflet chrome for travel maps (theme-aligned) */
+
+.travel-map {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  background: var(--color-surface);
+  border-radius: inherit;
+  z-index: 0;
+  touch-action: none;
+}
+
+/*
+ * Native OS cursor only on the map.
+ * Soft site cursor is suppressed (mode none in cursor.ts); override body
+ * cursor:none so grab/grabbing stay visible.
+ */
+.travel-map,
+.travel-map .leaflet-container,
+.travel-map .leaflet-container * {
+  cursor: grab !important;
+}
+
+.travel-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #0a0a0e;
+  font-family: var(--font-body);
+  border-radius: inherit;
+  touch-action: none;
+}
+
+.travel-map .leaflet-container.leaflet-drag-target,
+.travel-map .leaflet-container.leaflet-dragging,
+.travel-map .leaflet-container.leaflet-dragging * {
+  cursor: grabbing !important;
+}
+
+.travel-map .leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 10px;
+  border-radius: 4px 0 0 0;
+  margin: 0;
+  padding: 2px 6px;
+}
+
+.travel-map .leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.travel-map .leaflet-control-zoom {
+  border: 1px solid var(--color-border-strong) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.travel-map .leaflet-control-zoom a,
+.travel-map .travel-map-fs-btn {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  background: rgba(19, 18, 25, 0.92) !important;
+  color: #fff !important;
+  border-bottom-color: var(--color-border) !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.travel-map .leaflet-control-zoom a:hover,
+.travel-map .travel-map-fs-btn:hover {
+  background: rgba(0, 143, 255, 0.2) !important;
+  color: var(--color-accent) !important;
+}
+
+.travel-map .leaflet-bar a.leaflet-disabled {
+  opacity: 0.35;
+}
+
+/* Fullscreen control — stacked above zoom (same corner) */
+.travel-map .travel-map-fs-control {
+  margin-bottom: 10px !important;
+  border: 1px solid var(--color-border-strong) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.travel-map .travel-map-fs-btn {
+  border-bottom: none !important;
+}
+
+.travel-map .travel-map-fs-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* When map shell/hero is fullscreen, keep controls + panel above tiles */
+.travel__map-shell:fullscreen .leaflet-control-container,
+.travel__map-hero:fullscreen .leaflet-control-container,
+:fullscreen .leaflet-control-container {
+  z-index: 700;
+}
+
+/*
+ * Pins: rest = small colored dot; hover/active = larger badge + category icon.
+ * Near zoom restores the larger rest size (see --zoom-near).
+ */
+.travel-pin-icon {
+  background: transparent !important;
+  border: none !important;
+  /* Opacity only while idle — filter preview fades.
+   * During Leaflet zoom-anim, transform MUST also transition or pins
+   * snap to the final position after the tile scale finishes. */
+  transition: opacity 0.22s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+/*
+ * Leaflet zoom animation moves markers via CSS transform.
+ * Our opacity transition above would win once zoom-anim ends mid-frame, and
+ * any higher-specificity rules / leftover styles must not drop `transform`.
+ * Match Leaflet’s 0.25s curve so pins travel with the map.
+ */
+.travel-map.leaflet-container.leaflet-fade-anim .leaflet-zoom-anim .leaflet-marker-icon.leaflet-zoom-animated,
+.travel-map .leaflet-zoom-anim .leaflet-marker-icon.leaflet-zoom-animated,
+.leaflet-zoom-anim .travel-pin-icon.leaflet-zoom-animated {
+  transition:
+    transform 0.25s cubic-bezier(0, 0, 0.25, 1),
+    opacity 0.22s cubic-bezier(0.44, 0, 0.56, 1) !important;
+}
+
+.travel-pin-icon.is-filter-preview-dim {
+  /* opacity set inline for control; transition from .travel-pin-icon */
+}
+
+.travel-pin-icon.is-filter-preview-fade {
+  /* opacity set inline */
+}
+
+/*
+ * Magnetic shell = Leaflet marker icon (fixed under pointer).
+ * Visual = .travel-pin (translate3d spring from attachPinMagnetic).
+ */
+.travel-map .leaflet-marker-icon.travel-pin-hit {
+  cursor: grab !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+  background: transparent;
+  z-index: 600 !important;
+}
+
+.travel-map .leaflet-marker-icon.travel-pin-hit.is-magnetic {
+  z-index: 700 !important;
+}
+
+.travel-pin {
+  --pin-color: #008fff;
+  --pin-ease: cubic-bezier(0.44, 0, 0.56, 1);
+  --pin-dur: 280ms;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: grab !important;
+  /* Spring owns transform — never CSS-transition it */
+  will-change: transform;
+  pointer-events: none;
+  transition: none !important;
+}
+
+/* Core: default rest ~4px; --zoom-near restores former 12px size */
+.travel-pin__core {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--pin-color);
+  /* Rest: hairline white rim (0.5px @ 10%). Hover: solid 2px white. */
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: #0a0a0e;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition:
+    width var(--pin-dur) var(--pin-ease),
+    height var(--pin-dur) var(--pin-ease),
+    border-color var(--pin-dur) var(--pin-ease),
+    border-width var(--pin-dur) var(--pin-ease),
+    box-shadow var(--pin-dur) var(--pin-ease);
+}
+
+.travel-pin__glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+  transition:
+    opacity 220ms var(--pin-ease) 40ms,
+    transform 280ms var(--pin-ease);
+}
+
+/* Material Symbols / icons inside pin badges */
+.travel-pin__glyph .material-symbols-rounded {
+  display: block;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+  pointer-events: none;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+.travel-pin__glyph ion-icon,
+.travel-pin__glyph svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  color: inherit;
+  pointer-events: none;
+}
+
+.travel-pin__pulse {
+  position: absolute;
+  inset: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--pin-color) 40%, transparent);
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+  transition:
+    opacity 280ms var(--pin-ease),
+    transform 280ms var(--pin-ease);
+}
+
+.travel-map--zoom-near .travel-pin__pulse {
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+}
+
+/* Circular dots only — stars must NOT get CSS border (it draws a square) */
+.travel-pin:not(.travel-pin--star):hover .travel-pin__core,
+.travel-pin:not(.travel-pin--star).is-active .travel-pin__core {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #fff;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--pin-color) 40%, transparent),
+    0 4px 14px color-mix(in srgb, var(--pin-color) 45%, transparent);
+}
+
+.travel-pin:hover .travel-pin__glyph,
+.travel-pin.is-active .travel-pin__glyph {
+  opacity: 1;
+  transform: scale(1);
+  width: 18px;
+  height: 18px;
+}
+
+.travel-pin:hover .travel-pin__glyph .material-symbols-rounded,
+.travel-pin.is-active .travel-pin__glyph .material-symbols-rounded,
+.travel-pin:hover .travel-pin__glyph ion-icon,
+.travel-pin.is-active .travel-pin__glyph ion-icon,
+.travel-pin:hover .travel-pin__glyph svg,
+.travel-pin.is-active .travel-pin__glyph svg {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.travel-pin.is-active .travel-pin__pulse {
+  opacity: 1;
+  transform: scale(2.4);
+  animation: travel-pin-pulse 1.4s ease-out infinite;
+  animation-delay: 0.15s;
+}
+
+/*
+ * Tourist pins — 8-point star replaces the circular dot.
+ *
+ * White rim via SVG stroke under fill (paint-order):
+ * - Rest: stroke-width 1 → ~0.5px visible @ 10% opacity (matches dots)
+ * - Hover: stroke-width 4 → ~2px solid white (matches dots)
+ */
+.travel-pin__core--star {
+  width: 4px;
+  height: 4px;
+  border-radius: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #0a0a0e;
+  overflow: visible;
+  transition:
+    width var(--pin-dur) var(--pin-ease),
+    height var(--pin-dur) var(--pin-ease);
+}
+
+.travel-pin__star-svg {
+  position: absolute;
+  /* Room for hover 2px stroke outside the gold body */
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  color: var(--pin-color);
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  transition: filter var(--pin-dur) var(--pin-ease);
+}
+
+.travel-pin__star-shape {
+  vector-effect: non-scaling-stroke;
+  /* Rest rim: 0.5px visible white @ 10% (stroke half covered by fill) */
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  transition:
+    stroke 280ms cubic-bezier(0.44, 0, 0.56, 1),
+    stroke-width 280ms cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.travel-pin__core--star .travel-pin__glyph {
+  position: relative;
+  z-index: 1;
+}
+
+.travel-pin--star:hover .travel-pin__core--star,
+.travel-pin--star.is-active .travel-pin__core--star {
+  width: 28px;
+  height: 28px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.travel-pin--star:hover .travel-pin__star-shape,
+.travel-pin--star.is-active .travel-pin__star-shape {
+  /* Hover rim follows the star path only (SVG stroke, not CSS border) */
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.travel-pin--star:hover .travel-pin__star-svg,
+.travel-pin--star.is-active .travel-pin__star-svg {
+  /* drop-shadow on the SVG path follows the star silhouette */
+  filter:
+    drop-shadow(0 0 1.5px color-mix(in srgb, var(--pin-color) 55%, transparent))
+    drop-shadow(0 3px 10px rgba(0, 0, 0, 0.45));
+}
+
+.travel-pin--star.is-featured .travel-pin__core--star {
+  width: 5px;
+  height: 5px;
+}
+
+.travel-pin--star.is-featured:hover .travel-pin__core--star,
+.travel-pin--star.is-featured.is-active .travel-pin__core--star {
+  width: 32px;
+  height: 32px;
+}
+
+/* ── Zoom density (class on .travel-map container) ──
+ * Default rest = 4px. Near zoom uses former 12px. Far stays tiny.
+ * Hover/active still scales up to show the icon at any zoom.
+ */
+
+/* Mid: between default and near */
+.travel-map--zoom-mid .travel-pin__core,
+.travel-map--zoom-mid .travel-pin__core--star {
+  width: 6px;
+  height: 6px;
+}
+
+.travel-map--zoom-mid .travel-pin.is-featured .travel-pin__core,
+.travel-map--zoom-mid .travel-pin--star.is-featured .travel-pin__core--star {
+  width: 8px;
+  height: 8px;
+}
+
+/* Far: densest overview */
+.travel-map--zoom-far .travel-pin__core,
+.travel-map--zoom-far .travel-pin__core--star {
+  width: 3px;
+  height: 3px;
+}
+
+.travel-map--zoom-far .travel-pin.is-featured .travel-pin__core,
+.travel-map--zoom-far .travel-pin--star.is-featured .travel-pin__core--star {
+  width: 4px;
+  height: 4px;
+}
+
+/* Near: previous default rest size */
+.travel-map--zoom-near .travel-pin__core,
+.travel-map--zoom-near .travel-pin__core--star {
+  width: 12px;
+  height: 12px;
+}
+
+.travel-map--zoom-near .travel-pin.is-featured .travel-pin__core,
+.travel-map--zoom-near .travel-pin--star.is-featured .travel-pin__core--star {
+  width: 14px;
+  height: 14px;
+}
+
+/*
+ * Hover / active always expands to full badge + icon (any zoom).
+ * Higher specificity than rest zoom sizes above.
+ */
+.travel-map--zoom-mid .travel-pin:hover .travel-pin__core,
+.travel-map--zoom-mid .travel-pin.is-active .travel-pin__core,
+.travel-map--zoom-far .travel-pin:hover .travel-pin__core,
+.travel-map--zoom-far .travel-pin.is-active .travel-pin__core,
+.travel-map--zoom-mid .travel-pin--star:hover .travel-pin__core--star,
+.travel-map--zoom-mid .travel-pin--star.is-active .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star:hover .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star.is-active .travel-pin__core--star {
+  width: 28px;
+  height: 28px;
+}
+
+.travel-map--zoom-mid .travel-pin.is-featured:hover .travel-pin__core,
+.travel-map--zoom-mid .travel-pin.is-featured.is-active .travel-pin__core,
+.travel-map--zoom-far .travel-pin.is-featured:hover .travel-pin__core,
+.travel-map--zoom-far .travel-pin.is-featured.is-active .travel-pin__core,
+.travel-map--zoom-mid .travel-pin--star.is-featured:hover .travel-pin__core--star,
+.travel-map--zoom-mid .travel-pin--star.is-featured.is-active .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star.is-featured:hover .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star.is-featured.is-active .travel-pin__core--star {
+  width: 32px;
+  height: 32px;
+}
+
+/* Dots only — never put CSS border on star cores (square artifact) */
+.travel-map--zoom-mid .travel-pin:not(.travel-pin--star):hover .travel-pin__core,
+.travel-map--zoom-mid .travel-pin:not(.travel-pin--star).is-active .travel-pin__core,
+.travel-map--zoom-far .travel-pin:not(.travel-pin--star):hover .travel-pin__core,
+.travel-map--zoom-far .travel-pin:not(.travel-pin--star).is-active .travel-pin__core {
+  border: 2px solid #fff;
+}
+
+.travel-map--zoom-mid .travel-pin--star:hover .travel-pin__core--star,
+.travel-map--zoom-mid .travel-pin--star.is-active .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star:hover .travel-pin__core--star,
+.travel-map--zoom-far .travel-pin--star.is-active .travel-pin__core--star {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.travel-map--zoom-mid .travel-pin--star:hover .travel-pin__star-shape,
+.travel-map--zoom-mid .travel-pin--star.is-active .travel-pin__star-shape,
+.travel-map--zoom-far .travel-pin--star:hover .travel-pin__star-shape,
+.travel-map--zoom-far .travel-pin--star.is-active .travel-pin__star-shape {
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.travel-map--zoom-far .travel-pin__pulse {
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+}
+
+.travel-pin.is-featured:not(.travel-pin--star) .travel-pin__core {
+  width: 5px;
+  height: 5px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 6px color-mix(in srgb, var(--pin-color) 35%, transparent),
+    0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.travel-pin.is-featured:not(.travel-pin--star):hover .travel-pin__core,
+.travel-pin.is-featured:not(.travel-pin--star).is-active .travel-pin__core {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #fff;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--pin-color) 50%, transparent),
+    0 0 18px color-mix(in srgb, var(--pin-color) 50%, transparent),
+    0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.travel-pin.is-featured:hover .travel-pin__glyph,
+.travel-pin.is-featured.is-active .travel-pin__glyph {
+  width: 20px;
+  height: 20px;
+}
+
+.travel-pin.is-featured:hover .travel-pin__glyph .material-symbols-rounded,
+.travel-pin.is-featured.is-active .travel-pin__glyph .material-symbols-rounded,
+.travel-pin.is-featured:hover .travel-pin__glyph svg,
+.travel-pin.is-featured.is-active .travel-pin__glyph svg,
+.travel-pin.is-featured:hover .travel-pin__glyph ion-icon,
+.travel-pin.is-featured.is-active .travel-pin__glyph ion-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.travel-pin.is-featured .travel-pin__pulse {
+  opacity: 0.4;
+  transform: scale(1.5);
+  animation: travel-pin-pulse 1.8s ease-out infinite;
+}
+
+@keyframes travel-pin-pulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+.travel-map-tooltip {
+  background: rgba(19, 18, 25, 0.94) !important;
+  border: 1px solid color-mix(in srgb, var(--pin-color, #008fff) 40%, transparent) !important;
+  color: #fff !important;
+  border-radius: 5px !important;
+  padding: 3px 7px !important;
+  /* Sans (body), not mono */
+  font-family: var(--font-body), "Inter", system-ui, -apple-system, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.2 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+.travel-map-tooltip.leaflet-tooltip-top::before {
+  border-top-color: rgba(0, 143, 255, 0.3) !important;
+  margin-left: -5px !important;
+  border-width: 5px !important;
+}
+
+/*
+ * Area / line fade: Leaflet writes presentation attrs on <path>;
+ * CSS transitions those attributes for smooth enter/exit.
+ */
+.travel-map .leaflet-overlay-pane path.travel-area {
+  pointer-events: none !important;
+  transition:
+    fill-opacity 0.35s cubic-bezier(0.44, 0, 0.56, 1),
+    stroke-opacity 0.35s cubic-bezier(0.44, 0, 0.56, 1),
+    stroke-width 0.35s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+/* Polygons: fill only (no stroke border) */
+.travel-map .leaflet-overlay-pane path.travel-area--poly {
+  stroke: none !important;
+  stroke-width: 0 !important;
+  stroke-opacity: 0 !important;
+}
+
+.travel-map .leaflet-overlay-pane path.travel-area--line {
+  fill: none !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Metro / route station dots (appear with the line on hover) */
+.travel-map .travel-route-stop {
+  transition:
+    opacity 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+    fill-opacity 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+/* ── Multi-stop route preview (OSRM walking + Google deep link) ── */
+
+.travel-map .leaflet-overlay-pane path.travel-route-preview-line {
+  pointer-events: none !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(0, 143, 255, 0.45));
+}
+
+.travel-map .leaflet-marker-icon.travel-route-stop-badge {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none !important;
+}
+
+.travel-route-stop-badge__n {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #008fff;
+  color: #0a0a0e;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow:
+    0 0 0 2px rgba(10, 10, 14, 0.85),
+    0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* Floating route planner — bottom-left over map hero */
+.travel-route-bar {
+  --route-surface: rgba(18, 18, 24, 0.88);
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 640;
+  width: min(300px, calc(100% - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-card, 14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--route-surface);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-family: var(--font-body), system-ui, sans-serif;
+  pointer-events: auto;
+}
+
+.travel-route-bar[hidden] {
+  display: none !important;
+}
+
+.travel__map-shell:fullscreen .travel-route-bar,
+.travel__map-hero:fullscreen .travel-route-bar,
+:fullscreen .travel-route-bar {
+  z-index: 720;
+}
+
+.travel-route-bar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.travel-route-bar__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.travel-route-bar__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.travel-route-bar__clear:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.travel-route-bar__clear .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.travel-route-bar__stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow: auto;
+}
+
+.travel-route-bar__stop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.travel-route-bar__stop-n {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #008fff;
+  color: #0a0a0e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.travel-route-bar__stop-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.travel-route-bar__stop-rm {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+
+.travel-route-bar__stop-rm:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.travel-route-bar__stop-rm .material-symbols-rounded {
+  font-size: 16px;
+}
+
+.travel-route-bar__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.travel-route-bar__mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.travel-route-bar__mode .material-symbols-rounded {
+  font-size: 16px;
+}
+
+.travel-route-bar__mode:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.travel-route-bar__mode.is-active {
+  border-color: color-mix(in srgb, #008fff 55%, transparent);
+  background: color-mix(in srgb, #008fff 18%, transparent);
+  color: #7dd3fc;
+}
+
+.travel-route-bar__meta {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.travel-route-bar__meta[data-kind='ok'] {
+  color: rgba(125, 211, 252, 0.95);
+}
+
+.travel-route-bar__meta[data-kind='error'] {
+  color: rgba(252, 165, 165, 0.95);
+}
+
+.travel-route-bar__meta[data-kind='loading'] {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.travel-route-bar__meta[data-kind='hint'] {
+  color: rgba(251, 191, 36, 0.9);
+}
+
+.travel-route-bar__google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+  color: #0a0a0e;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+
+.travel-route-bar__google:hover {
+  background: #f0f0f2;
+}
+
+.travel-route-bar__google[hidden] {
+  display: none !important;
+}
+
+.travel-route-bar__google .material-symbols-rounded {
+  font-size: 18px;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+/* When place panel is open on narrow screens, tuck route bar above panel space */
+@media (max-width: 720px) {
+  .travel__map-shell.has-panel .travel-route-bar,
+  .travel__map-hero.has-panel .travel-route-bar {
+    width: min(280px, calc(100% - 24px));
+    bottom: auto;
+    top: 12px;
+    left: 12px;
+  }
+}
+
+/* Mobile form-sheet: lock page scroll; sheet body still scrolls (touch-action not inherited) */
+html.travel-sheet-open,
+html.travel-sheet-open body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Allow vertical scroll + overscroll gestures inside the sheet */
+html.travel-sheet-open .travel-map-panel,
+html.travel-sheet-open .travel-map-panel__body {
+  touch-action: pan-y;
+}
+
+/* Route bar stays above form-sheet grab area on small screens */
+@media (max-width: 640px) {
+  .travel__map-shell.has-panel .travel-route-bar,
+  .travel__map-hero.has-panel .travel-route-bar {
+    top: 10px;
+    left: 10px;
+    bottom: auto;
+    z-index: 700;
+  }
+}

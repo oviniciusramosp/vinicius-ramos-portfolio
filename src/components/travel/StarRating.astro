@@ -1,0 +1,176 @@
+---
+import { clampRating } from '../../data/travel';
+import { materialIconHtml } from '../../data/travel-categories';
+
+interface Props {
+  /** 1–5; omit/null → outlined gray stars, no numeric value */
+  rating?: number | null;
+  /** Accessible name (EN) */
+  label: string;
+  labelPt?: string;
+  /**
+   * Material Symbols Rounded ligature for the leading icon
+   * e.g. "map" (Google), "person" (mine)
+   */
+  icon: string;
+}
+
+const { rating, label, labelPt, icon } = Astro.props;
+const hasRating = rating != null && Number.isFinite(rating);
+const value = hasRating ? clampRating(rating as number) : null;
+const full = value != null ? Math.floor(value) : 0;
+const half = value != null && value - full >= 0.5;
+const empty = value != null ? 5 - full - (half ? 1 : 0) : 5;
+const aria = hasRating
+  ? `${label}: ${value!.toFixed(1)} of 5`
+  : `${label}: no rating`;
+const iconHtml = materialIconHtml(icon);
+---
+
+<div
+  class:list={['star-rating', !hasRating && 'star-rating--empty']}
+  role="img"
+  aria-label={aria}
+  data-i18n-en={aria}
+  data-i18n-pt={
+    hasRating
+      ? `${labelPt ?? label}: ${value!.toFixed(1)} de 5`
+      : `${labelPt ?? label}: sem nota`
+  }
+  data-i18n-as="aria-label"
+>
+  <span
+    class="star-rating__icon"
+    aria-hidden="true"
+    set:html={iconHtml}
+  />
+  {
+    hasRating ? (
+      <span class="star-rating__value" aria-hidden="true">
+        {value!.toFixed(1)}
+      </span>
+    ) : (
+      <span class="star-rating__value star-rating__value--empty" aria-hidden="true">
+        -.-
+      </span>
+    )
+  }
+  <span class="star-rating__stars" aria-hidden="true">
+    {
+      hasRating ? (
+        <>
+          {Array.from({ length: full }).map(() => (
+            <span class="star-rating__star is-full">★</span>
+          ))}
+          {half && (
+            <span class="star-rating__star is-half">
+              <span class="star-rating__half-fill">★</span>
+              <span class="star-rating__half-empty">★</span>
+            </span>
+          )}
+          {Array.from({ length: empty }).map(() => (
+            <span class="star-rating__star is-empty">☆</span>
+          ))}
+        </>
+      ) : (
+        Array.from({ length: 5 }).map(() => (
+          <span class="star-rating__star is-outline">☆</span>
+        ))
+      )
+    }
+  </span>
+</div>
+
+<style>
+  .star-rating {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    /* value ↔ stars tight; icon ↔ rest via icon margin */
+    gap: 4px;
+    font-size: 13px;
+    line-height: 1;
+    color: var(--color-accent);
+    min-width: 0;
+  }
+
+  .star-rating__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    /* Extra space from icon to score/stars */
+    margin-inline-end: 4px;
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  }
+
+  .star-rating__icon :global(.material-symbols-rounded) {
+    font-size: 12px;
+    line-height: 1;
+    color: inherit;
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 20;
+  }
+
+  .star-rating__value {
+    flex: 0 0 auto;
+    margin: 0;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    /* Fixed width so "4.5" and "-.-" align across Google / Mine rows */
+    min-width: 2.4ch;
+    color: var(--color-text-soft, rgba(255, 255, 255, 0.82));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .star-rating__value--empty {
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.4));
+  }
+
+  .star-rating__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .star-rating__star {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    font-family: system-ui, 'Segoe UI Symbol', sans-serif;
+  }
+
+  .star-rating__star.is-empty,
+  .star-rating__star.is-outline {
+    color: rgba(255, 255, 255, 0.28);
+  }
+
+  .star-rating--empty .star-rating__star.is-outline {
+    color: rgba(255, 255, 255, 0.32);
+  }
+
+  .star-rating__star.is-half {
+    color: rgba(255, 255, 255, 0.18);
+  }
+
+  .star-rating__half-fill {
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    overflow: hidden;
+    color: var(--color-accent);
+  }
+
+  .star-rating__half-empty {
+    color: rgba(255, 255, 255, 0.28);
+  }
+</style>

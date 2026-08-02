@@ -67,5 +67,7 @@ export const site = {
       'Resume of Vinicius Ramos: Senior Product Designer and Manager — experience, skills, and education.',
     contact:
       'Get in touch with Vinicius Ramos — product designer and manager. Send a message about product design, AI, or collaboration.',
+    links:
+      'Links from Vinicius Ramos — portfolio and more. A personal link-in-bio page.',
   },
 } as const;

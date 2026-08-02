@@ -1,0 +1,510 @@
+---
+import type { TravelCity, TravelPlace } from '../../data/travel';
+import {
+  googleMapsUrl,
+  placeCategoryMeta,
+  travelUi,
+  formatMoney,
+  formatDuration,
+} from '../../data/travel';
+import {
+  categoryIconHtml,
+  mapsIconHtml,
+} from '../../data/travel-categories';
+import {
+  placeSubcategoryMeta,
+  type PlaceSubcategory,
+} from '../../data/travel-subcategories';
+import StarRating from './StarRating.astro';
+import '../../styles/travel-place-card.css';
+
+interface Props {
+  place: TravelPlace;
+  city: TravelCity;
+  /**
+   * Feed presentation:
+   * - `list` — under category groups (subs only)
+   * - `grid` — flat mixed feed (category only)
+   * Omit for map-panel clones (full details).
+   */
+  variant?: 'list' | 'grid';
+}
+
+const { place, city, variant } = Astro.props;
+const catEn = travelUi.categories[place.category].en;
+const catPt = travelUi.categories[place.category]['pt-BR'];
+const ratingGoogleEn = travelUi.ratingGoogle.en;
+const ratingGooglePt = travelUi.ratingGoogle['pt-BR'];
+const ratingMineEn = travelUi.ratingMine.en;
+const ratingMinePt = travelUi.ratingMine['pt-BR'];
+const mapsHref = googleMapsUrl(place, city);
+const catColor = placeCategoryMeta[place.category].color;
+const catIcon = categoryIconHtml(place.category);
+const mapsIcon = mapsIconHtml();
+const visit = place.visit;
+
+const v = travelUi.visit;
+const avgPriceEn = visit?.avgPricePerPerson
+  ? formatMoney(visit.avgPricePerPerson, 'en')
+  : null;
+const avgPricePt = visit?.avgPricePerPerson
+  ? formatMoney(visit.avgPricePerPerson, 'pt-BR')
+  : null;
+const ticketEn = visit?.ticket ? formatMoney(visit.ticket, 'en') : null;
+const ticketPt = visit?.ticket ? formatMoney(visit.ticket, 'pt-BR') : null;
+const durationEn = visit ? formatDuration(visit, 'en') : null;
+const durationPt = visit ? formatDuration(visit, 'pt-BR') : null;
+const bestTimeEn = visit?.bestTime?.en ?? null;
+const bestTimePt = visit?.bestTime?.['pt-BR'] ?? null;
+const bestDayEn = visit?.bestDay?.en ?? null;
+const bestDayPt = visit?.bestDay?.['pt-BR'] ?? null;
+const tipsEn = visit?.tips?.en ?? null;
+const tipsPt = visit?.tips?.['pt-BR'] ?? null;
+const ticketNoteEn = visit?.ticket?.note?.en;
+const ticketNotePt = visit?.ticket?.note?.['pt-BR'];
+const avgNoteEn = visit?.avgPricePerPerson?.note?.en;
+const avgNotePt = visit?.avgPricePerPerson?.note?.['pt-BR'];
+
+const hasVisitMeta =
+  avgPriceEn ||
+  ticketEn ||
+  durationEn ||
+  bestTimeEn ||
+  bestDayEn ||
+  tipsEn;
+
+const photos = place.photos ?? [];
+const hasPhotos = photos.length > 0;
+const subs = (place.subcategories ?? []) as PlaceSubcategory[];
+const subLabels = subs.map((id) => ({
+  id,
+  en: placeSubcategoryMeta[id]?.label.en ?? id,
+  pt: placeSubcategoryMeta[id]?.label['pt-BR'] ?? id,
+}));
+
+const searchBlob = [
+  place.name.en,
+  place.name['pt-BR'],
+  place.description.en,
+  place.description['pt-BR'],
+  place.address ?? '',
+  place.mapsQuery ?? '',
+  catEn,
+  catPt,
+  place.category,
+  ...subLabels.map((s) => `${s.en} ${s.pt}`),
+  avgPriceEn ?? '',
+  tipsEn ?? '',
+  bestTimeEn ?? '',
+  bestDayEn ?? '',
+].join(' ');
+---
+
+<article
+  class:list={[
+    'travel-place-card',
+    place.featured && 'is-featured',
+    hasPhotos && 'travel-place-card--has-photos',
+    variant === 'list' && 'travel-place-card--list',
+    variant === 'grid' && 'travel-place-card--grid',
+  ]}
+  data-place-id={place.id}
+  data-category={place.category}
+  data-lat={String(place.lat)}
+  data-lng={String(place.lng)}
+  data-search={searchBlob}
+  data-has-area={place.area ? 'true' : 'false'}
+  data-osm-ref={visit?.osmRef ?? undefined}
+  data-feed-variant={variant}
+  style={`--cat-color: ${catColor}`}
+  tabindex="0"
+>
+  {
+    hasPhotos && (
+      <div
+        class="travel-place-card__media"
+        data-photo-slider
+        data-photo-count={String(photos.length)}
+      >
+        <div class="travel-place-card__slides" data-photo-track>
+          {photos.map((photo, i) => (
+            <figure
+              class:list={[
+                'travel-place-card__slide',
+                i === 0 && 'is-active',
+              ]}
+              data-photo-slide
+              data-index={String(i)}
+            >
+              <img
+                class="travel-place-card__img"
+                src={photo.url}
+                alt={photo.alt?.en ?? place.name.en}
+                data-i18n-en={photo.alt?.en ?? place.name.en}
+                data-i18n-pt={photo.alt?.['pt-BR'] ?? place.name['pt-BR']}
+                data-i18n-as="alt"
+                loading="eager"
+                decoding="async"
+                fetchpriority={i === 0 ? 'high' : 'low'}
+                draggable="false"
+              />
+            </figure>
+          ))}
+        </div>
+
+        {/* Close over image (panel only — shown via .travel-place-card--panel) */}
+        <button
+          type="button"
+          class="travel-place-card__close travel-place-card__close--on-media"
+          data-place-close
+          aria-label={travelUi.closePanel.en}
+          data-i18n-en={travelUi.closePanel.en}
+          data-i18n-pt={travelUi.closePanel['pt-BR']}
+          data-i18n-as="aria-label"
+          title={travelUi.closePanel.en}
+          tabindex="-1"
+        >
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+
+        {photos.length > 1 && (
+          <>
+            <div class="travel-place-card__dots" data-photo-dots>
+              {photos.map((_, i) => (
+                <button
+                  type="button"
+                  class:list={[
+                    'travel-place-card__dot',
+                    i === 0 && 'is-active',
+                  ]}
+                  data-photo-dot
+                  data-index={String(i)}
+                  aria-label={`Photo ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              class="travel-place-card__nav travel-place-card__nav--prev"
+              data-photo-prev
+              aria-label="Previous photo"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">
+                chevron_left
+              </span>
+            </button>
+            <button
+              type="button"
+              class="travel-place-card__nav travel-place-card__nav--next"
+              data-photo-next
+              aria-label="Next photo"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">
+                chevron_right
+              </span>
+            </button>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  <!-- Title (same styles with/without photos); close only when no photo header -->
+  <div class="travel-place-card__title-row" data-place-title-row>
+    <h3
+      class="travel-place-card__name"
+      data-i18n-en={place.name.en}
+      data-i18n-pt={place.name['pt-BR']}
+    >
+      {place.name.en}
+    </h3>
+    {
+      !hasPhotos && (
+        <button
+          type="button"
+          class="travel-place-card__close"
+          data-place-close
+          aria-label={travelUi.closePanel.en}
+          data-i18n-en={travelUi.closePanel.en}
+          data-i18n-pt={travelUi.closePanel['pt-BR']}
+          data-i18n-as="aria-label"
+          title={travelUi.closePanel.en}
+          tabindex="-1"
+        >
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      )
+    }
+  </div>
+
+  <!-- [main tag] then [subtags] horizontal scroll -->
+  <div class="travel-place-card__tags">
+    <span class="travel-place-card__cat" style={`--cat-color: ${catColor}`}>
+      <span
+        class="travel-place-card__cat-icon"
+        aria-hidden="true"
+        set:html={catIcon}
+      />
+      <span
+        class="travel-place-card__cat-label"
+        data-i18n-en={catEn}
+        data-i18n-pt={catPt}
+      >
+        {catEn}
+      </span>
+    </span>
+    {
+      subLabels.length > 0 && (
+        <div class="travel-place-card__subs" data-subtags-scroll>
+          {subLabels.map((s) => (
+            <span
+              class="travel-place-card__sub"
+              data-subcategory={s.id}
+              data-i18n-en={s.en}
+              data-i18n-pt={s.pt}
+            >
+              {s.en}
+            </span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+
+  <!-- [description] -->
+  <p
+    class="travel-place-card__desc"
+    data-i18n-en={place.description.en}
+    data-i18n-pt={place.description['pt-BR']}
+  >
+    {place.description.en}
+  </p>
+
+  <!--
+    [icon][score][stars] | [icon][score][stars]
+    Google · Mine — missing rating → outlined gray stars
+  -->
+  <div class="travel-place-card__ratings">
+    <StarRating
+      rating={place.googleRating}
+      label={ratingGoogleEn}
+      labelPt={ratingGooglePt}
+      icon="map"
+    />
+    <span class="travel-place-card__ratings-sep" aria-hidden="true"></span>
+    <StarRating
+      rating={place.rating}
+      label={ratingMineEn}
+      labelPt={ratingMinePt}
+      icon="person"
+    />
+  </div>
+
+  <!-- Optional live opening hours (Overpass) when osmRef is set -->
+  {
+    visit?.osmRef && (
+      <div class="travel-place-card__live" data-live-row hidden>
+        <span
+          class="travel-place-card__live-pill"
+          data-live-hours
+          hidden
+          data-open-en={v.liveOpen.en}
+          data-open-pt={v.liveOpen['pt-BR']}
+          data-closed-en={v.liveClosed.en}
+          data-closed-pt={v.liveClosed['pt-BR']}
+        ></span>
+      </div>
+    )
+  }
+
+  {
+    hasVisitMeta && (
+      <dl class="travel-place-card__meta">
+        {avgPriceEn && (
+          <div class="travel-place-card__meta-row">
+            <dt
+              data-i18n-en={v.avgPrice.en}
+              data-i18n-pt={v.avgPrice['pt-BR']}
+            >
+              {v.avgPrice.en}
+            </dt>
+            <dd>
+              <span data-i18n-en={avgPriceEn} data-i18n-pt={avgPricePt ?? avgPriceEn}>
+                {avgPriceEn}
+              </span>
+              {avgNoteEn && (
+                <span
+                  class="travel-place-card__meta-note"
+                  data-i18n-en={avgNoteEn}
+                  data-i18n-pt={avgNotePt ?? avgNoteEn}
+                >
+                  {avgNoteEn}
+                </span>
+              )}
+            </dd>
+          </div>
+        )}
+        {ticketEn && (
+          <div class="travel-place-card__meta-row">
+            <dt data-i18n-en={v.ticket.en} data-i18n-pt={v.ticket['pt-BR']}>
+              {v.ticket.en}
+            </dt>
+            <dd>
+              <div class="travel-place-card__meta-value">
+                <span data-i18n-en={ticketEn} data-i18n-pt={ticketPt ?? ticketEn}>
+                  {ticketEn}
+                </span>
+                {visit?.ticketUrl && (
+                  <a
+                    class="travel-place-card__ticket-info"
+                    href={visit.ticketUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={v.ticketLink.en}
+                    data-i18n-en={v.ticketLink.en}
+                    data-i18n-pt={v.ticketLink['pt-BR']}
+                    data-i18n-as="aria-label"
+                    title={v.ticketLink.en}
+                  >
+                    <span class="material-symbols-rounded" aria-hidden="true">
+                      info
+                    </span>
+                  </a>
+                )}
+              </div>
+              {ticketNoteEn && (
+                <span
+                  class="travel-place-card__meta-note"
+                  data-i18n-en={ticketNoteEn}
+                  data-i18n-pt={ticketNotePt ?? ticketNoteEn}
+                >
+                  {ticketNoteEn}
+                </span>
+              )}
+            </dd>
+          </div>
+        )}
+        {durationEn && (
+          <div class="travel-place-card__meta-row">
+            <dt
+              data-i18n-en={v.duration.en}
+              data-i18n-pt={v.duration['pt-BR']}
+            >
+              {v.duration.en}
+            </dt>
+            <dd>
+              <span data-i18n-en={durationEn} data-i18n-pt={durationPt ?? durationEn}>
+                {durationEn}
+              </span>
+            </dd>
+          </div>
+        )}
+        {bestTimeEn && (
+          <div class="travel-place-card__meta-row">
+            <dt
+              data-i18n-en={v.bestTime.en}
+              data-i18n-pt={v.bestTime['pt-BR']}
+            >
+              {v.bestTime.en}
+            </dt>
+            <dd>
+              <span data-i18n-en={bestTimeEn} data-i18n-pt={bestTimePt ?? bestTimeEn}>
+                {bestTimeEn}
+              </span>
+            </dd>
+          </div>
+        )}
+        {bestDayEn && (
+          <div class="travel-place-card__meta-row">
+            <dt data-i18n-en={v.bestDay.en} data-i18n-pt={v.bestDay['pt-BR']}>
+              {v.bestDay.en}
+            </dt>
+            <dd>
+              <span data-i18n-en={bestDayEn} data-i18n-pt={bestDayPt ?? bestDayEn}>
+                {bestDayEn}
+              </span>
+            </dd>
+          </div>
+        )}
+        {tipsEn && (
+          <div class="travel-place-card__meta-row travel-place-card__meta-row--tips">
+            <dt data-i18n-en={v.tips.en} data-i18n-pt={v.tips['pt-BR']}>
+              {v.tips.en}
+            </dt>
+            <dd>
+              <span data-i18n-en={tipsEn} data-i18n-pt={tipsPt ?? tipsEn}>
+                {tipsEn}
+              </span>
+            </dd>
+          </div>
+        )}
+      </dl>
+    )
+  }
+
+  <!--
+    Address: label + value row with maps icon inline.
+    Whole value row (address + icon) opens Google Maps.
+  -->
+  <div class="travel-place-card__maps-row">
+    <span
+      class="travel-place-card__maps-label"
+      data-i18n-en={travelUi.address.en}
+      data-i18n-pt={travelUi.address['pt-BR']}
+    >
+      {travelUi.address.en}
+    </span>
+    <a
+      class="travel-place-card__maps-link"
+      href={mapsHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-cursor="block"
+      aria-label={travelUi.openInMaps.en}
+      data-i18n-en={travelUi.openInMaps.en}
+      data-i18n-pt={travelUi.openInMaps['pt-BR']}
+      data-i18n-as="aria-label"
+      title={travelUi.openInMaps.en}
+    >
+      {
+        place.address ? (
+          <span class="travel-place-card__address">{place.address}</span>
+        ) : (
+          <span class="travel-place-card__address travel-place-card__address--empty">
+            —
+          </span>
+        )
+      }
+      <span
+        class="travel-place-card__maps-icon"
+        aria-hidden="true"
+        set:html={mapsIcon}
+      />
+    </a>
+  </div>
+
+  <!-- Multi-stop route planner (city map page) -->
+  <button
+    type="button"
+    class="travel-place-card__route-add"
+    data-route-add
+    data-place-id={place.id}
+    data-cursor="block"
+    aria-pressed="false"
+    data-i18n-en={travelUi.addToRoute.en}
+    data-i18n-pt={travelUi.addToRoute['pt-BR']}
+    data-i18n-as="aria-label"
+    aria-label={travelUi.addToRoute.en}
+    title={travelUi.addToRoute.en}
+  >
+    <span class="material-symbols-rounded" aria-hidden="true">route</span>
+    <span
+      class="travel-place-card__route-add-label"
+      data-route-add-label
+      data-i18n-en={travelUi.addToRoute.en}
+      data-i18n-pt={travelUi.addToRoute['pt-BR']}
+    >
+      {travelUi.addToRoute.en}
+    </span>
+  </button>
+</article>

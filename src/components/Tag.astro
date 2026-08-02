@@ -10,9 +10,17 @@ interface Props {
   variant?: 'reveal' | 'solid' | 'chip';
   /** Filter active / selected state (chip only) */
   pressed?: boolean;
+  /** Optional leading solid SVG (e.g. category icon matching map pins) */
+  iconHtml?: string;
 }
 
-const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.props;
+const {
+  label,
+  tone = 'default',
+  variant = 'solid',
+  pressed = false,
+  iconHtml,
+} = Astro.props;
 ---
 
 <span
@@ -21,9 +29,15 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     `tag--${tone}`,
     `tag--${variant}`,
     pressed && 'is-pressed',
+    iconHtml && 'tag--has-icon',
   ]}
 >
   <span class="tag__glass" aria-hidden="true"></span>
+  {
+    iconHtml && (
+      <span class="tag__icon" aria-hidden="true" set:html={iconHtml} />
+    )
+  }
   <span class="tag__label">{label}</span>
 </span>
 
@@ -37,6 +51,7 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0;
     padding: 6px 12px;
     border-radius: 50px;
     isolation: isolate;
@@ -44,6 +59,11 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     color: #ffffff;
     border: 1px solid var(--color-text-muted);
     background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  .tag--has-icon {
+    gap: 6px;
+    padding-left: 10px;
   }
 
   .tag__glass {
@@ -54,6 +74,35 @@ const { label, tone = 'default', variant = 'solid', pressed = false } = Astro.pr
     pointer-events: none;
     background-color: transparent;
     backdrop-filter: none;
+  }
+
+  .tag__icon {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: inherit;
+    opacity: 0.92;
+  }
+
+  .tag__icon :global(svg),
+  .tag__icon :global(ion-icon),
+  .tag__icon :global(.material-symbols-rounded) {
+    display: block;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    line-height: 1;
+    color: inherit;
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 500,
+      'GRAD' 0,
+      'opsz' 20;
   }
 
   .tag__label {

@@ -1,0 +1,1449 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TravelPlaceCard from '../../components/travel/TravelPlaceCard.astro';
+import Tag from '../../components/Tag.astro';
+import {
+  getTravelCity,
+  travelCities,
+  travelUi,
+  formatCityMeta,
+  cityCategoryKeys,
+  googleMapsUrl,
+  placeCategoryMeta,
+  withResolvedArea,
+  type PlaceCategory,
+  type TravelPlace,
+} from '../../data/travel';
+import { categoryIconHtml } from '../../data/travel-categories';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return travelCities.map((city) => ({
+    params: { slug: city.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const city = getTravelCity(slug!);
+
+if (!city) {
+  return Astro.redirect('/travel');
+}
+
+const pageTitle = `${city.name.en} · Travel · ${site.name}`;
+const pageDescription = formatCityMeta(city, 'en');
+
+/** Places with OSM-accurate polygons when available */
+const places: TravelPlace[] = city.places.map(withResolvedArea);
+
+const pins = places.map((place) => ({
+  id: place.id,
+  lat: place.lat,
+  lng: place.lng,
+  label: place.name.en,
+  labelPt: place.name['pt-BR'],
+  category: place.category,
+  featured: place.featured === true,
+  landmark: place.landmark ?? null,
+  mapsUrl: googleMapsUrl(place, city),
+  area: place.area ?? null,
+  routeStops: place.routeStops
+    ? place.routeStops.map((s) => ({
+        name: s.name.en,
+        namePt: s.name['pt-BR'],
+        lat: s.lat,
+        lng: s.lng,
+      }))
+    : null,
+}));
+
+const pinsJson = JSON.stringify(pins);
+const metaEn = formatCityMeta(city, 'en');
+const metaPt = formatCityMeta(city, 'pt-BR');
+const categories = cityCategoryKeys(city);
+
+const placesByCategory = categories.map((key) => ({
+  key,
+  places: places.filter((p: TravelPlace) => p.category === key),
+  labelEn: travelUi.categories[key as PlaceCategory].en,
+  labelPt: travelUi.categories[key as PlaceCategory]['pt-BR'],
+}));
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  robots="noindex, nofollow"
+>
+  <section class="travel-city">
+    {/*
+      Shell wraps map + place panel. Panel is a sibling of the map hero so
+      overflow:hidden on the map does not clip the mobile form-sheet (fixed).
+    */}
+    <div class="travel__map-shell">
+      <div class="travel__map-hero">
+        <div
+          class="travel-map"
+          data-travel-map
+          data-mode="places"
+          data-pins={pinsJson}
+          data-center-lat={String(city.lat)}
+          data-center-lng={String(city.lng)}
+          data-zoom={String(city.zoom)}
+          data-i18n-en={travelUi.cityMapAria.en}
+          data-i18n-pt={travelUi.cityMapAria['pt-BR']}
+          data-i18n-as="aria-label"
+          data-fullscreen-enter={travelUi.fullscreenEnter.en}
+          data-fullscreen-exit={travelUi.fullscreenExit.en}
+          data-add-en={travelUi.addToRoute.en}
+          data-add-pt={travelUi.addToRoute['pt-BR']}
+          data-remove-en={travelUi.removeFromRoute.en}
+          data-remove-pt={travelUi.removeFromRoute['pt-BR']}
+          data-title-en={travelUi.routeTitle.en}
+          data-title-pt={travelUi.routeTitle['pt-BR']}
+          data-walk-en={travelUi.routeWalk.en}
+          data-walk-pt={travelUi.routeWalk['pt-BR']}
+          data-transit-en={travelUi.routeTransit.en}
+          data-transit-pt={travelUi.routeTransit['pt-BR']}
+          data-open-en={travelUi.routeOpenGoogle.en}
+          data-open-pt={travelUi.routeOpenGoogle['pt-BR']}
+          data-need-en={travelUi.routeNeedStops.en}
+          data-need-pt={travelUi.routeNeedStops['pt-BR']}
+          data-loading-en={travelUi.routeLoading.en}
+          data-loading-pt={travelUi.routeLoading['pt-BR']}
+          data-error-en={travelUi.routeError.en}
+          data-error-pt={travelUi.routeError['pt-BR']}
+          data-transit-hint-en={travelUi.routeTransitHint.en}
+          data-transit-hint-pt={travelUi.routeTransitHint['pt-BR']}
+          data-clear-en={travelUi.routeClear.en}
+          data-clear-pt={travelUi.routeClear['pt-BR']}
+          data-preview-en={travelUi.routePreviewLabel.en}
+          data-preview-pt={travelUi.routePreviewLabel['pt-BR']}
+          aria-label={travelUi.cityMapAria.en}
+        >
+        </div>
+      </div>
+
+      {/* Scrim: mobile form-sheet only (tap outside to close) */}
+      <div
+        class="travel-map-panel-scrim"
+        data-travel-map-panel-scrim
+        hidden
+        aria-hidden="true"
+      ></div>
+
+      <aside
+        class="travel-map-panel"
+        data-travel-map-panel
+        data-close-label={travelUi.closePanel.en}
+        hidden
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+      >
+        {/*
+          Sticky chrome (mobile form-sheet): grab + close stay fixed while body scrolls.
+          Hidden on desktop — card keeps its own close control.
+        */}
+        <div class="travel-map-panel__chrome" data-travel-map-panel-chrome>
+          <div
+            class="travel-map-panel__grab"
+            data-sheet-grab
+            aria-hidden="true"
+          >
+            <span class="travel-map-panel__grab-pill"></span>
+          </div>
+          <button
+            type="button"
+            class="travel-map-panel__close"
+            data-panel-close
+            aria-label={travelUi.closePanel.en}
+            data-i18n-en={travelUi.closePanel.en}
+            data-i18n-pt={travelUi.closePanel['pt-BR']}
+            data-i18n-as="aria-label"
+            title={travelUi.closePanel.en}
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+        <div class="travel-map-panel__body" data-travel-map-panel-body></div>
+      </aside>
+    </div>
+
+    <div class="travel-city__body" data-travel-places>
+      <a
+        class="travel-city__back"
+        href="/travel"
+        data-cursor="block"
+        data-magnetic
+        data-magnetic-range="3"
+      >
+        <ion-icon
+          class="travel-city__back-icon"
+          name="chevron-back-outline"
+          aria-hidden="true"
+        ></ion-icon>
+        <span
+          class="travel-city__back-label"
+          data-i18n-en={travelUi.back.en}
+          data-i18n-pt={travelUi.back['pt-BR']}
+        >
+          {travelUi.back.en}
+        </span>
+      </a>
+
+      <header class="travel__intro">
+        <div class="travel-city__heading">
+          <h1
+            class="travel__title display-title"
+            data-i18n-en={city.name.en}
+            data-i18n-pt={city.name['pt-BR']}
+          >
+            {city.name.en}
+          </h1>
+          <p
+            class="travel-city__meta"
+            data-i18n-en={metaEn}
+            data-i18n-pt={metaPt}
+          >
+            {metaEn}
+          </p>
+        </div>
+
+        <div class="travel__search-row">
+          <label class="travel__search">
+            <span
+              class="visually-hidden"
+              data-i18n-en="Search places"
+              data-i18n-pt="Buscar lugares"
+            >
+              Search places
+            </span>
+            <ion-icon
+              class="travel__search-icon"
+              name="search-outline"
+              aria-hidden="true"
+            ></ion-icon>
+            <input
+              type="search"
+              class="travel__search-input"
+              data-travel-search
+              data-i18n-en={travelUi.searchPlacesPlaceholder.en}
+              data-i18n-pt={travelUi.searchPlacesPlaceholder['pt-BR']}
+              data-i18n-as="placeholder"
+              placeholder={travelUi.searchPlacesPlaceholder.en}
+              autocomplete="off"
+            />
+          </label>
+
+          <div class="travel__view-controls">
+            <button
+              type="button"
+              class="travel__expand-toggle"
+              data-travel-expand-toggle
+              data-expanded="false"
+              aria-expanded="false"
+              data-magnetic
+              data-magnetic-range="4"
+              data-cursor="block"
+              data-collapse-en={travelUi.collapseAll.en}
+              data-collapse-pt={travelUi.collapseAll['pt-BR']}
+              data-expand-en={travelUi.expandAll.en}
+              data-expand-pt={travelUi.expandAll['pt-BR']}
+              data-i18n-en={travelUi.expandAll.en}
+              data-i18n-pt={travelUi.expandAll['pt-BR']}
+              data-i18n-as="aria-label"
+              aria-label={travelUi.expandAll.en}
+              title={travelUi.expandAll.en}
+            >
+              <ion-icon
+                class="travel__expand-toggle-icon"
+                name="chevron-down-outline"
+                aria-hidden="true"
+                data-travel-expand-icon
+              ></ion-icon>
+            </button>
+
+            <div
+              class="travel__view-toggle"
+              role="group"
+              data-travel-view-toggle
+              data-i18n-en={travelUi.viewModeGroup.en}
+              data-i18n-pt={travelUi.viewModeGroup['pt-BR']}
+              data-i18n-as="aria-label"
+              aria-label={travelUi.viewModeGroup.en}
+            >
+              <button
+                type="button"
+                class="travel__view-btn"
+                data-travel-view="grid"
+                aria-pressed="false"
+                data-magnetic
+                data-magnetic-range="3"
+                data-cursor="block"
+                data-i18n-en={travelUi.viewGrid.en}
+                data-i18n-pt={travelUi.viewGrid['pt-BR']}
+                data-i18n-as="aria-label"
+                aria-label={travelUi.viewGrid.en}
+                title={travelUi.viewGrid.en}
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">
+                  grid_view
+                </span>
+              </button>
+              <button
+                type="button"
+                class="travel__view-btn is-active"
+                data-travel-view="list"
+                aria-pressed="true"
+                data-magnetic
+                data-magnetic-range="3"
+                data-cursor="block"
+                data-i18n-en={travelUi.viewList.en}
+                data-i18n-pt={travelUi.viewList['pt-BR']}
+                data-i18n-as="aria-label"
+                aria-label={travelUi.viewList.en}
+                title={travelUi.viewList.en}
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">
+                  view_list
+                </span>
+              </button>
+              <button
+                type="button"
+                class="travel__view-btn"
+                data-travel-view="itinerary"
+                aria-pressed="false"
+                data-magnetic
+                data-magnetic-range="3"
+                data-cursor="block"
+                data-i18n-en={travelUi.viewItinerary.en}
+                data-i18n-pt={travelUi.viewItinerary['pt-BR']}
+                data-i18n-as="aria-label"
+                aria-label={travelUi.viewItinerary.en}
+                title={travelUi.viewItinerary.en}
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">
+                  route
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="travel__filters-row">
+        <div
+          class="travel__filters"
+          role="group"
+          aria-label="Filter places by category. Select multiple categories."
+        >
+          <button
+            type="button"
+            class="travel__chip is-active"
+            data-travel-filter="all"
+            aria-pressed="true"
+            data-magnetic
+            data-magnetic-range="6"
+            data-i18n-en={travelUi.filterAll.en}
+            data-i18n-pt={travelUi.filterAll['pt-BR']}
+            data-i18n-as="tag-label"
+          >
+            <Tag label={travelUi.filterAll.en} variant="chip" pressed />
+          </button>
+          {
+            categories.map((key) => (
+              <button
+                type="button"
+                class="travel__chip"
+                data-travel-filter={key}
+                data-category={key}
+                style={`--cat-color: ${placeCategoryMeta[key].color}`}
+                aria-pressed="false"
+                data-magnetic
+                data-magnetic-range="6"
+                data-i18n-en={travelUi.categories[key].en}
+                data-i18n-pt={travelUi.categories[key]['pt-BR']}
+                data-i18n-as="tag-label"
+              >
+                <Tag
+                  label={travelUi.categories[key].en}
+                  variant="chip"
+                  iconHtml={categoryIconHtml(key)}
+                />
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="travel-city__views" data-places-view="list">
+        {/* Grid: flat, all categories mixed — category tag only */}
+        <div
+          class="travel-city__grid"
+          data-view-panel="grid"
+          hidden
+        >
+          {
+            places.map((place) => (
+              <TravelPlaceCard place={place} city={city} variant="grid" />
+            ))
+          }
+        </div>
+
+        {/* List: grouped by category (current) — colored category tags */}
+        <div class="travel-city__groups" data-view-panel="list">
+          {
+            placesByCategory.map((group) => (
+              <details
+                class="travel-group"
+                data-travel-group
+                data-category={group.key}
+                style={`--cat-color: ${placeCategoryMeta[group.key as PlaceCategory].color}`}
+              >
+                <summary class="travel-group__summary">
+                  <span
+                    class="travel-group__tag"
+                    data-i18n-en={group.labelEn}
+                    data-i18n-pt={group.labelPt}
+                    data-i18n-as="tag-label"
+                  >
+                    <Tag
+                      label={group.labelEn}
+                      variant="chip"
+                      iconHtml={categoryIconHtml(group.key)}
+                    />
+                  </span>
+                  <span class="travel-group__count" data-group-count>
+                    {group.places.length}
+                  </span>
+                  <ion-icon
+                    class="travel-group__chevron"
+                    name="chevron-down-outline"
+                    aria-hidden="true"
+                  ></ion-icon>
+                </summary>
+                <div class="travel-city__list">
+                  {group.places.map((place) => (
+                    <TravelPlaceCard place={place} city={city} variant="list" />
+                  ))}
+                </div>
+              </details>
+            ))
+          }
+        </div>
+
+        {/* Itinerary: day-by-day — scaffold for per-city data later */}
+        <div
+          class="travel-city__itinerary"
+          data-view-panel="itinerary"
+          hidden
+        >
+          <p
+            class="travel-city__itinerary-empty"
+            data-i18n-en={travelUi.itineraryEmpty.en}
+            data-i18n-pt={travelUi.itineraryEmpty['pt-BR']}
+          >
+            {travelUi.itineraryEmpty.en}
+          </p>
+        </div>
+      </div>
+
+      <p
+        class="travel__empty"
+        data-travel-empty
+        hidden
+        data-i18n-en={travelUi.emptyPlaces.en}
+        data-i18n-pt={travelUi.emptyPlaces['pt-BR']}
+      >
+        {travelUi.emptyPlaces.en}
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { bootTravelI18n } from '../../scripts/travel-i18n';
+  import { bootTravelMap } from '../../scripts/travel-map';
+  import { bootTravelFilter } from '../../scripts/travel-filter';
+  import { bootTravelPanel } from '../../scripts/travel-panel';
+  import { bootTravelLive } from '../../scripts/travel-live';
+  import { bootTravelPhotoSliders } from '../../scripts/travel-photo-slider';
+  import { bootTravelRoute } from '../../scripts/travel-route-ui';
+  import '../../styles/travel-map.css';
+
+  const boot = () => {
+    bootTravelI18n();
+    bootTravelMap();
+    bootTravelFilter();
+    bootTravelPanel();
+    bootTravelRoute();
+    bootTravelLive();
+    bootTravelPhotoSliders();
+  };
+
+  boot();
+  document.addEventListener('astro:page-load', boot);
+</script>
+
+<style>
+  .travel-city {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Positions desktop side panel relative to map; no overflow clip on shell */
+  .travel__map-shell {
+    position: relative;
+    width: 100%;
+  }
+
+  .travel__map-hero {
+    position: relative;
+    width: 100%;
+    height: clamp(300px, 48vh, 560px);
+    overflow: hidden;
+    background: #0a0a0e;
+    border-bottom: 1px solid var(--color-border);
+    touch-action: none;
+  }
+
+  .travel__map-hero:fullscreen {
+    width: 100%;
+    height: 100%;
+    border-bottom: none;
+  }
+
+  /* Fullscreen targets shell so panel/scrim stay with the map */
+  .travel__map-shell:fullscreen {
+    width: 100%;
+    height: 100%;
+    background: #0a0a0e;
+  }
+
+  .travel__map-shell:fullscreen .travel__map-hero {
+    height: 100%;
+    border-bottom: none;
+  }
+
+  .travel__map-hero :global(.travel-map),
+  .travel__map-hero :global(.leaflet-container) {
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .travel__map-hero::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 400;
+    background: linear-gradient(
+      to bottom,
+      transparent 55%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  }
+
+  /* Scrim only used on mobile form-sheet */
+  .travel-map-panel-scrim {
+    display: none;
+  }
+
+  /* Desktop: frosted glass card over the map (right) — relative to shell */
+  .travel-map-panel {
+    /* ~80% opacity surface; border = half of --color-border-strong (0.2 → 0.1) */
+    --card-surface: rgba(18, 18, 24, 0.8);
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 650;
+    width: min(340px, calc(100% - 24px));
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-surface);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    transform: translateX(12px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      transform 0.32s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel-map-panel.is-open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .travel-map-panel[hidden] {
+    display: none !important;
+  }
+
+  .travel-map-panel.is-open[hidden] {
+    display: flex !important;
+  }
+
+  /* Grab styles live in travel-place-card.css (global; JS-injected) */
+
+  /* Sticky grab + close — only active on mobile form-sheet */
+  .travel-map-panel__chrome {
+    display: none;
+  }
+
+  .travel-map-panel__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Panel place card: pad + section gap share the same token */
+  .travel-map-panel__body :global(.travel-place-card--panel) {
+    --card-surface: rgba(18, 18, 24, 0.8);
+    --card-pad: 16px;
+    --card-pad-x: 16px;
+    /* Label → value: half of the previous ½ pad (was card-pad/2 → now /4) */
+    --label-value-gap: calc(var(--card-pad) / 4);
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: var(--card-pad) !important;
+    gap: var(--card-pad);
+  }
+
+  .travel-map-panel__body
+    :global(.travel-place-card--panel.travel-place-card--has-photos) {
+    padding: 0 0 var(--card-pad) !important;
+    gap: 0;
+  }
+
+  .travel-map-panel__body
+    :global(
+      .travel-place-card--panel.travel-place-card--has-photos
+        > :not(.travel-place-card__media)
+    ) {
+    margin-left: var(--card-pad-x) !important;
+    margin-right: var(--card-pad-x) !important;
+  }
+
+  .travel-map-panel__body
+    :global(
+      .travel-place-card--panel.travel-place-card--has-photos
+        > .travel-place-card__title-row
+    ) {
+    margin-top: 0;
+    margin-bottom: var(--card-pad);
+  }
+
+  .travel-map-panel__body
+    :global(
+      .travel-place-card--panel.travel-place-card--has-photos > :last-child
+    ) {
+    /* Outer inset via panel body / card pad — never skew button padding */
+    margin-bottom: var(--card-pad) !important;
+  }
+
+  .travel-map-panel__body
+    :global(
+      .travel-place-card--panel.travel-place-card--has-photos
+        > .travel-place-card__route-add:last-child
+    ) {
+    /* Keep equal 10px vertical padding inside the control */
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    margin-bottom: var(--card-pad) !important;
+    /* Side margins already on the element — never width:100% of full card */
+    width: auto !important;
+    max-width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
+  }
+
+  .travel-map-panel__body
+    :global(.travel-place-card--panel .travel-place-card__route-add) {
+    width: auto;
+    max-width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
+  }
+
+  .travel-map-panel__body
+    :global(.travel-place-card--panel .travel-place-card__maps-row) {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .travel-map-panel__body
+    :global(.travel-place-card--panel .travel-place-card__media) {
+    border-radius: 0;
+  }
+
+  /*
+   * Mobile: iOS-style form sheet — fixed bottom sheet so the map stays
+   * visible above (absolute card inside the short map hero was unusable).
+   */
+  @media (max-width: 640px) {
+    /*
+     * Above site-header (z-index 10050) so grab / close stay tappable.
+     * Sheet must never sit under the navbar.
+     */
+    .travel-map-panel-scrim {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 10080;
+      background: rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .travel-map-panel-scrim.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Keep in tree while fading out (JS clears hidden after transition) */
+    .travel-map-panel-scrim[hidden]:not(.is-open) {
+      display: none !important;
+    }
+
+    .travel-map-panel-scrim.is-open[hidden] {
+      display: block !important;
+    }
+
+    .travel-map-panel {
+      --sheet-radius: 18px;
+      --sheet-mid-h: min(55dvh, 520px);
+      /*
+       * Full = exactly the visible viewport. Never taller than the view
+       * (bottom: 0 + height ≤ 100dvh keeps the top edge + radius + grab on-screen).
+       */
+      --sheet-full-h: 100dvh;
+      position: fixed;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: none;
+      /* Mid snap: leave a clear map strip above the sheet */
+      max-height: var(--sheet-mid-h);
+      height: var(--sheet-mid-h);
+      border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+      border-bottom: none;
+      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.55);
+      /* Closed: fully off-screen; open slides up */
+      transform: translateY(110%);
+      opacity: 1;
+      z-index: 10090;
+      padding-top: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-sizing: border-box;
+      transition:
+        transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+        height 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+        max-height 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+        opacity 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+      will-change: transform, height;
+    }
+
+    .travel-map-panel.is-open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /*
+     * Full snap: top edge stops at the viewport top.
+     * Keep radius + grab — they define the sheet top (never border-radius: 0).
+     */
+    .travel-map-panel.is-open.is-expanded {
+      height: var(--sheet-full-h);
+      max-height: var(--sheet-full-h);
+      border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+      padding-top: 0;
+    }
+
+    /*
+     * While dragging: height/transform are inline and must not transition
+     * (otherwise the sheet lags behind the finger).
+     */
+    .travel-map-panel.is-dragging {
+      transition: none !important;
+      will-change: height, transform;
+      /* Hard cap: never paint taller than the viewport */
+      max-height: 100dvh !important;
+    }
+
+    .travel-map-panel.is-closing {
+      transform: translateY(110%);
+      pointer-events: none;
+    }
+
+    /*
+     * Sticky chrome: fixed to the sheet top (not the scrolling body).
+     * Grab + close stay put while place content scrolls underneath.
+     */
+    .travel-map-panel__chrome {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      height: 44px;
+      pointer-events: none;
+      /* Soft read on photo headers */
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.12) 55%,
+        transparent 100%
+      );
+    }
+
+    .travel-map-panel__grab {
+      display: flex;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+      background: transparent;
+    }
+
+    .travel-map-panel__grab-pill {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+
+    .travel-map-panel__close {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      pointer-events: auto;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+    }
+
+    .travel-map-panel__close:hover,
+    .travel-map-panel__close:focus-visible {
+      background: rgba(0, 143, 255, 0.35);
+      filter: none;
+      outline: none;
+    }
+
+    .travel-map-panel__close ion-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+
+    /* In-card close / injected grab unused on mobile sheet */
+    .travel-map-panel__body
+      :global(.travel-place-card--panel .travel-place-card__close),
+    .travel-map-panel__body
+      :global(.travel-place-card--panel .travel-map-panel__grab) {
+      display: none !important;
+    }
+
+    /* Dots sit below sticky chrome */
+    .travel-map-panel__body
+      :global(.travel-place-card--panel .travel-place-card__dots) {
+      top: 40px;
+    }
+
+    /* Body is the scroll surface; overscroll-at-top is handled in JS */
+    .travel-map-panel__body {
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Allow enter/exit animation while still “open” in the layout sense */
+    .travel-map-panel[hidden] {
+      /* JS sets hidden only after exit transition; while animating keep flex */
+      display: none !important;
+    }
+
+    .travel-map-panel.is-open[hidden],
+    .travel-map-panel.is-closing[hidden] {
+      display: flex !important;
+    }
+
+    /* Media top corners match sheet radius */
+    .travel-map-panel__body
+      :global(.travel-place-card--panel .travel-place-card__media) {
+      border-radius: 18px 18px 0 0;
+    }
+  }
+
+  .travel-city__body {
+    width: 100%;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+    padding: 40px var(--page-pad-x-sm) 96px;
+    box-sizing: border-box;
+  }
+
+  .travel-city__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: var(--space-6);
+    padding: 8px 14px 8px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(12, 12, 16, 0.35);
+    backdrop-filter: blur(14px) saturate(160%);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    transition:
+      color var(--duration-fast) var(--ease-smooth),
+      border-color var(--duration-fast) var(--ease-smooth),
+      background-color var(--duration-fast) var(--ease-smooth);
+  }
+
+  .travel-city__back-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .travel-city__back-label {
+    line-height: 1;
+  }
+
+  .travel-city__back:hover {
+    color: #fff;
+    border-color: rgba(0, 143, 255, 0.45);
+    background: rgba(0, 143, 255, 0.14);
+  }
+
+  .travel-city__back:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .travel__intro {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-6);
+    width: 100%;
+    margin-bottom: var(--space-8);
+  }
+
+  .travel-city__heading {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .travel__title {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(36px, 5vw, 52px);
+    line-height: var(--lh-tight);
+  }
+
+  .travel-city__meta {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-soft);
+  }
+
+  /* Search + view modes on the same row (right of title) */
+  .travel__search-row {
+    --travel-control-h: 42px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+    margin-left: auto;
+    margin-top: 6px;
+    min-width: 0;
+  }
+
+  .travel__search {
+    position: relative;
+    flex: 1 1 240px;
+    width: 100%;
+    min-width: 0;
+    max-width: 320px;
+  }
+
+  .travel__search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .travel__search-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: var(--travel-control-h);
+    padding: 0 16px 0 42px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-input-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    outline: none;
+    transition:
+      border-color var(--duration-fast) var(--ease-smooth),
+      background-color var(--duration-fast) var(--ease-smooth);
+  }
+
+  .travel__search-input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .travel__search-input:focus {
+    border-color: rgba(0, 143, 255, 0.55);
+    background: rgba(0, 143, 255, 0.06);
+  }
+
+  .travel__search:focus-within .travel__search-icon {
+    color: var(--color-accent);
+  }
+
+  .travel__filters-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /*
+   * Category filter chips: single horizontal row.
+   * When wider than the page, scroll — do not wrap to multiple lines.
+   */
+  .travel__filters {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    padding-bottom: 2px;
+  }
+
+  .travel__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .travel__chip {
+    appearance: none;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50px;
+    line-height: 0;
+    transition: opacity 0.2s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel__chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /*
+   * Hover preview on category chips:
+   * dim chips that are neither selected nor the one under the pointer.
+   */
+  .travel__filters.is-chip-preview .travel__chip {
+    opacity: 0.32;
+  }
+
+  .travel__filters.is-chip-preview .travel__chip.is-active,
+  .travel__filters.is-chip-preview .travel__chip.is-preview-hover {
+    opacity: 1;
+  }
+
+  .travel__chip:hover :global(.tag--chip:not(.is-pressed)) {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .travel__chip:hover :global(.tag--chip:not(.is-pressed) .tag__glass) {
+    background-color: rgba(18, 18, 24, 0.55);
+  }
+
+  .travel__chip:hover :global(.tag--chip.is-pressed .tag__glass) {
+    background-color: rgba(0, 143, 255, 0.36);
+  }
+
+  /* Category tint when chip is selected */
+  .travel__chip[data-category].is-active :global(.tag--chip),
+  .travel__chip[data-category] :global(.tag--chip.is-pressed) {
+    border-color: color-mix(in srgb, var(--cat-color) 55%, transparent);
+    color: #fff;
+  }
+
+  .travel__chip[data-category].is-active :global(.tag--chip .tag__glass),
+  .travel__chip[data-category] :global(.tag--chip.is-pressed .tag__glass) {
+    background-color: color-mix(in srgb, var(--cat-color) 32%, transparent);
+  }
+
+  /* Expand (list only) + view toggle — same height as search input */
+  .travel__view-controls {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: var(--travel-control-h);
+  }
+
+  .travel__expand-toggle {
+    flex: 0 0 auto;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: var(--travel-control-h);
+    height: var(--travel-control-h);
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(12, 12, 16, 0.35);
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    backdrop-filter: blur(14px) saturate(160%);
+    transition:
+      color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel__expand-toggle[hidden] {
+    display: none !important;
+  }
+
+  .travel__expand-toggle:hover {
+    color: #fff;
+    border-color: rgba(0, 143, 255, 0.45);
+    background: rgba(0, 143, 255, 0.16);
+  }
+
+  .travel__expand-toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .travel__expand-toggle-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel__expand-toggle[data-expanded='false'] .travel__expand-toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .travel__view-toggle {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: var(--travel-control-h);
+    padding: 3px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(12, 12, 16, 0.35);
+    backdrop-filter: blur(14px) saturate(160%);
+    gap: 2px;
+  }
+
+  .travel__view-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: calc(var(--travel-control-h) - 8px);
+    height: calc(var(--travel-control-h) - 8px);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition:
+      color 0.22s cubic-bezier(0.44, 0, 0.56, 1),
+      background-color 0.22s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel__view-btn .material-symbols-rounded {
+    font-size: 18px;
+    line-height: 1;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 20;
+  }
+
+  .travel__view-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .travel__view-btn.is-active {
+    color: #fff;
+    background: rgba(0, 143, 255, 0.28);
+  }
+
+  .travel__view-btn.is-active .material-symbols-rounded {
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 500,
+      'GRAD' 0,
+      'opsz' 20;
+  }
+
+  .travel__view-btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* View panels */
+  .travel-city__views {
+    width: 100%;
+  }
+
+  .travel-city__views [data-view-panel][hidden] {
+    display: none !important;
+  }
+
+  /* Grid: flat mixed places */
+  .travel-city__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .travel-city__grid :global(.travel-place-card.is-filtered-out),
+  .travel-city__grid :global(.travel-place-card[hidden]) {
+    display: none !important;
+  }
+
+  /* Category expandables (list view) */
+  .travel-city__groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .travel-group {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: rgba(19, 18, 25, 0.45);
+    overflow: hidden;
+  }
+
+  .travel-group[hidden],
+  .travel-group.is-filtered-out {
+    display: none !important;
+  }
+
+  .travel-group__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: 14px 18px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .travel-group__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .travel-group__summary::marker {
+    content: '';
+  }
+
+  .travel-group__summary:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  /*
+   * Colored category tag — same size as filter chips; text/icon = cat color
+   * (matches place-card category badge language).
+   */
+  .travel-group__tag {
+    line-height: 0;
+  }
+
+  .travel-group__tag :global(.tag--chip) {
+    color: var(--cat-color);
+    border-color: color-mix(in srgb, var(--cat-color) 40%, transparent);
+  }
+
+  .travel-group__tag :global(.tag--chip .tag__glass) {
+    background-color: color-mix(in srgb, var(--cat-color) 20%, transparent);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  .travel-group__count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+
+  .travel-group__chevron {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-soft);
+    transition: transform 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel-group[open] .travel-group__chevron {
+    transform: rotate(180deg);
+  }
+
+  .travel-city__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+    padding: 0 18px 18px;
+    align-items: stretch;
+  }
+
+  /* Equal-height cards so stars + route CTA share a baseline */
+  .travel-city__list :global(.travel-place-card) {
+    height: 100%;
+    min-height: 0;
+    min-width: 0; /* allow tag row to shrink and scroll horizontally */
+  }
+
+  .travel-city__list :global(.travel-place-card.is-filtered-out),
+  .travel-city__list :global(.travel-place-card[hidden]) {
+    display: none !important;
+  }
+
+  /* Itinerary scaffold */
+  .travel-city__itinerary {
+    padding: var(--space-9) var(--space-6);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-card);
+    background: rgba(19, 18, 25, 0.3);
+    text-align: center;
+  }
+
+  .travel-city__itinerary-empty {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .travel__empty {
+    margin: var(--space-9) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 720px) {
+    .travel__intro {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-5);
+    }
+
+    .travel__search-row {
+      margin-left: 0;
+      margin-top: 0;
+      width: 100%;
+    }
+
+    .travel__search {
+      flex: 1 1 auto;
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .travel__map-hero {
+      height: min(42vh, 320px);
+    }
+
+    .travel-city__body {
+      padding: 28px 16px 72px;
+    }
+  }
+</style>

@@ -1,0 +1,152 @@
+---
+import type { TravelCity } from '../../data/travel';
+import { travelUi } from '../../data/travel';
+
+interface Props {
+  city: TravelCity;
+}
+
+const { city } = Astro.props;
+
+/** Secondary line: "SP · Brazil" or just country — never repeats city name */
+const regionEn = city.region
+  ? `${city.region} · ${city.country.en}`
+  : city.country.en;
+const regionPt = city.region
+  ? `${city.region} · ${city.country['pt-BR']}`
+  : city.country['pt-BR'];
+
+const placeCount = city.places.length;
+const searchBlob = [
+  city.name.en,
+  city.name['pt-BR'],
+  city.region ?? '',
+  city.country.en,
+  city.country['pt-BR'],
+  city.countryKey,
+  travelUi.countries[city.countryKey].en,
+  travelUi.countries[city.countryKey]['pt-BR'],
+].join(' ');
+---
+
+<a
+  class="travel-city-card"
+  href={`/travel/${city.slug}`}
+  data-travel-city
+  data-city-id={city.slug}
+  data-country={city.countryKey}
+  data-search={searchBlob}
+  data-magnetic
+  data-magnetic-range="2"
+  data-cursor="block"
+>
+  <span class="travel-city-card__visual" data-magnetic-visual>
+    <span
+      class="travel-city-card__name"
+      data-i18n-en={city.name.en}
+      data-i18n-pt={city.name['pt-BR']}
+    >
+      {city.name.en}
+    </span>
+    <span
+      class="travel-city-card__region"
+      data-i18n-en={regionEn}
+      data-i18n-pt={regionPt}
+    >
+      {regionEn}
+    </span>
+    <span class="travel-city-card__footer">
+      <span class="travel-city-card__count">
+        <span
+          data-i18n-en={`${placeCount} place${placeCount === 1 ? '' : 's'}`}
+          data-i18n-pt={`${placeCount} lugar${placeCount === 1 ? '' : 'es'}`}
+        >
+          {placeCount} places
+        </span>
+      </span>
+      <span class="travel-city-card__arrow" aria-hidden="true">→</span>
+    </span>
+  </span>
+</a>
+
+<style>
+  .travel-city-card {
+    display: block;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      border-color var(--duration-base) var(--ease-smooth),
+      background-color var(--duration-base) var(--ease-smooth),
+      transform var(--duration-base) var(--ease-smooth);
+  }
+
+  /*
+   * Component `display: block` outranks the UA `[hidden] { display: none }`
+   * rule (same specificity, later in cascade) — force hide for filters.
+   */
+  .travel-city-card[hidden] {
+    display: none !important;
+  }
+
+  .travel-city-card__visual {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-8);
+    min-height: 140px;
+  }
+
+  .travel-city-card__name {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-tight);
+  }
+
+  .travel-city-card__region {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-soft);
+  }
+
+  .travel-city-card__footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .travel-city-card__count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .travel-city-card__arrow {
+    color: var(--color-accent);
+    font-size: 16px;
+    transition: transform var(--duration-fast) var(--ease-smooth);
+  }
+
+  .travel-city-card:hover,
+  .travel-city-card:focus-visible {
+    border-color: rgba(0, 143, 255, 0.35);
+    background: var(--color-surface-elevated);
+    outline: none;
+  }
+
+  .travel-city-card:hover .travel-city-card__arrow,
+  .travel-city-card:focus-visible .travel-city-card__arrow {
+    transform: translateX(4px);
+  }
+</style>

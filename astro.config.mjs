@@ -18,8 +18,9 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      // Exclude internal type labs from search indexes
-      filter: (page) => !page.includes('/preview/'),
+      // Exclude internal type labs + personal travel from search indexes
+      filter: (page) =>
+        !page.includes('/preview/') && !page.includes('/travel'),
     }),
   ],
   image: {

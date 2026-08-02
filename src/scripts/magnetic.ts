@@ -139,9 +139,18 @@ function startLoop(state: MagneticState) {
   state.raf = requestAnimationFrame((t) => tick(state, t));
 }
 
-function bindMagnetic(el: HTMLElement) {
+/**
+ * Bind magnetic spring offset to one shell element.
+ * Use for dynamically created targets (e.g. Leaflet map pins).
+ *
+ * Shell = fixed hit area; [data-magnetic-visual] (or shell) receives translate3d.
+ * Pointer listeners use capture so map/canvas parents don't swallow moves.
+ */
+export function bindMagnetic(el: HTMLElement) {
   if (el.dataset.magneticReady === 'true') return;
   el.dataset.magneticReady = 'true';
+
+  if (prefersReducedMotion() || !hasFinePointer()) return;
 
   const visual =
     el.querySelector<HTMLElement>('[data-magnetic-visual]') || el;
@@ -165,7 +174,7 @@ function bindMagnetic(el: HTMLElement) {
     lastTime: performance.now(),
   };
 
-  el.addEventListener('pointerenter', (e) => {
+  const onEnter = (e: PointerEvent) => {
     if (e.pointerType === 'touch') return;
     state.hovering = true;
     el.classList.add('is-magnetic');
@@ -173,23 +182,30 @@ function bindMagnetic(el: HTMLElement) {
     state.targetX = x;
     state.targetY = y;
     startLoop(state);
-  });
+  };
 
-  el.addEventListener('pointermove', (e) => {
+  const onMove = (e: PointerEvent) => {
     if (e.pointerType === 'touch' || !state.hovering) return;
     const { x, y } = offsetFromEvent(state.shell, e.clientX, e.clientY, state.range);
     state.targetX = x;
     state.targetY = y;
     startLoop(state);
-  });
+  };
 
-  el.addEventListener('pointerleave', () => {
+  const onLeave = () => {
     state.hovering = false;
     state.targetX = 0;
     state.targetY = 0;
     el.classList.remove('is-magnetic');
     startLoop(state);
-  });
+  };
+
+  // Capture phase: more reliable over Leaflet panes
+  el.addEventListener('pointerenter', onEnter);
+  el.addEventListener('pointermove', onMove, { capture: true });
+  el.addEventListener('pointerleave', onLeave);
+  // Fallback if pointerleave is flaky after map interactions
+  el.addEventListener('pointercancel', onLeave);
 }
 
 /** Init all [data-magnetic] elements (buttons, cards, …) */

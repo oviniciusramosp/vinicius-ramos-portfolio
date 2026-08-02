@@ -120,6 +120,12 @@ function resolveMode(node: EventTarget | null): {
   const hideEl = node.closest<HTMLElement>('[data-cursor="none"]');
   if (hideEl) return { mode: 'none', target: hideEl };
 
+  // Travel map: native system cursor only (no soft site cursor)
+  if (node.closest('.travel-map, .leaflet-container')) {
+    const mapEl = node.closest<HTMLElement>('.travel-map, .leaflet-container');
+    return { mode: 'none', target: mapEl };
+  }
+
   const interactive = node.closest<HTMLElement>(
     '[data-cursor="block"], [data-cursor="pointer"], [data-cursor="soon"], [data-magnetic], a.btn, button.btn, a[href], button',
   );

@@ -31,6 +31,10 @@ interface Props {
   /** schema.org JSON-LD object or array (wrapped automatically if needed) */
   jsonLd?: JsonLd;
   showBanner?: boolean;
+  /** Site header (logo + nav). Default true. */
+  showHeader?: boolean;
+  /** Site footer (linkedin + note, horizontal). Default true. */
+  showFooter?: boolean;
 }
 
 const {
@@ -42,6 +46,8 @@ const {
   robots = 'index, follow',
   jsonLd,
   showBanner = false,
+  showHeader = true,
+  showFooter = true,
 } = Astro.props;
 
 const canonical = canonicalUrl(Astro.url.pathname);
@@ -120,7 +126,7 @@ const jsonLdPayload =
       )
     }
 
-    <!-- Ionicons — site-wide icon library -->
+    <!-- Ionicons — site-wide (nav, chrome) -->
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"
@@ -129,6 +135,12 @@ const jsonLdPayload =
       nomodule
       src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js"
     ></script>
+
+    <!-- Material Symbols Rounded — travel map / category / maps icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200&display=swap"
+    />
 
     <ClientRouter />
   </head>
@@ -153,7 +165,7 @@ const jsonLdPayload =
     </div>
 
     <div class="page-shell">
-      <Header />
+      {showHeader && <Header />}
       {showBanner && site.banner && (
         <Banner
           message={site.banner}
@@ -164,7 +176,7 @@ const jsonLdPayload =
       <main id="main-content" class="page-main" tabindex="-1">
         <slot />
       </main>
-      <Footer />
+      {showFooter && <Footer />}
     </div>
 
     <script>

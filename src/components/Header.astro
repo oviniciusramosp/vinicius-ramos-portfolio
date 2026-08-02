@@ -160,6 +160,13 @@ function isActive(href: string) {
     min-width: 0;
   }
 
+  /* Desktop nav CTAs: all-caps, smaller than default btn */
+  .nav-links :global(.btn__label) {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
   .nav-border {
     position: relative;
     z-index: 2;
