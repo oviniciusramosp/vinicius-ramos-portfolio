@@ -1,9 +1,12 @@
 ---
 import { site } from '../data/site';
+import { travelUi } from '../data/travel';
 import Button from './Button.astro';
 import LogoWave from './LogoWave.astro';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isTravelRoute =
+  pathname === '/travel' || pathname.startsWith('/travel/');
 
 const menuLinks = [
   { label: 'HOME', href: '/' },
@@ -25,6 +28,7 @@ function isActive(href: string) {
   transition:persist — header never re-mounts on ClientRouter navigations,
   so it stays out of the page-transition animation entirely.
   Active states are synced in page-mask.ts (syncNavActive).
+  Travel prefs visibility is toggled client-side (travel-theme / travel-i18n).
 -->
 <header class="site-header" transition:persist="site-header" data-site-header>
   <nav class="site-nav" aria-label="Primary">
@@ -39,6 +43,91 @@ function isActive(href: string) {
           />
         ))
       }
+    </div>
+
+    {/*
+      Travel only: language + theme. Hidden off /travel (SSR + client toggle).
+      Header persists across SPA nav, so show/hide is re-synced on page-load.
+    */}
+    <div
+      class="nav-travel-prefs"
+      data-travel-nav-prefs
+      hidden={!isTravelRoute}
+      aria-hidden={isTravelRoute ? 'false' : 'true'}
+    >
+      <div
+        class="nav-travel-lang"
+        role="group"
+        data-i18n-en={travelUi.langGroup.en}
+        data-i18n-pt={travelUi.langGroup['pt-BR']}
+        data-i18n-as="aria-label"
+        aria-label={travelUi.langGroup.en}
+      >
+        <button
+          type="button"
+          class="nav-travel-lang__btn is-active"
+          data-travel-lang="en"
+          aria-pressed="true"
+          data-magnetic
+          data-magnetic-range="3"
+          data-cursor="block"
+          data-i18n-en={travelUi.langEn.en}
+          data-i18n-pt={travelUi.langEn['pt-BR']}
+          data-i18n-as="aria-label"
+          aria-label={travelUi.langEn.en}
+          title={travelUi.langEn.en}
+        >
+          EN
+        </button>
+        <button
+          type="button"
+          class="nav-travel-lang__btn"
+          data-travel-lang="pt-BR"
+          aria-pressed="false"
+          data-magnetic
+          data-magnetic-range="3"
+          data-cursor="block"
+          data-i18n-en={travelUi.langPt.en}
+          data-i18n-pt={travelUi.langPt['pt-BR']}
+          data-i18n-as="aria-label"
+          aria-label={travelUi.langPt.en}
+          title={travelUi.langPt.en}
+        >
+          PT
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="travel__theme-toggle nav-travel-theme"
+        data-travel-theme-toggle
+        aria-pressed="false"
+        data-magnetic
+        data-magnetic-range="3"
+        data-cursor="block"
+        data-theme-light-en={travelUi.themeLight.en}
+        data-theme-light-pt={travelUi.themeLight['pt-BR']}
+        data-theme-dark-en={travelUi.themeDark.en}
+        data-theme-dark-pt={travelUi.themeDark['pt-BR']}
+        data-i18n-en={travelUi.themeLight.en}
+        data-i18n-pt={travelUi.themeLight['pt-BR']}
+        data-i18n-as="aria-label"
+        aria-label={travelUi.themeLight.en}
+        title={travelUi.themeLight.en}
+      >
+        <span
+          class="material-symbols-rounded travel__theme-toggle__icon--moon"
+          aria-hidden="true"
+        >
+          dark_mode
+        </span>
+        <span
+          class="material-symbols-rounded travel__theme-toggle__icon--sun"
+          aria-hidden="true"
+        >
+          light_mode
+        </span>
+      </button>
     </div>
 
     <!-- Mobile only: Ionicons menu toggle -->
@@ -167,6 +256,181 @@ function isActive(href: string) {
     letter-spacing: 0.04em;
   }
 
+  /* —— Travel-only prefs (language + theme) —— */
+  .nav-travel-prefs {
+    --nav-travel-control-h: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    margin-left: var(--space-4);
+  }
+
+  .nav-travel-prefs[hidden] {
+    display: none !important;
+  }
+
+  .nav-travel-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    box-sizing: border-box;
+    height: var(--nav-travel-control-h);
+    padding: 3px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(12, 12, 16, 0.35);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  .nav-travel-lang__btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 34px;
+    height: calc(var(--nav-travel-control-h) - 6px);
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      color 0.22s cubic-bezier(0.44, 0, 0.56, 1),
+      background-color 0.22s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .nav-travel-lang__btn:hover {
+    color: #fff;
+  }
+
+  .nav-travel-lang__btn.is-active,
+  .nav-travel-lang__btn[aria-pressed='true'] {
+    color: #fff;
+    background: rgba(0, 143, 255, 0.88);
+  }
+
+  .nav-travel-lang__btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Theme toggle — self-contained so nav works without travel page CSS */
+  .nav-travel-prefs :global(.travel__theme-toggle.nav-travel-theme) {
+    --travel-control-h: var(--nav-travel-control-h);
+    appearance: none;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: var(--nav-travel-control-h);
+    height: var(--nav-travel-control-h);
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(12, 12, 16, 0.35);
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    backdrop-filter: blur(14px) saturate(160%);
+    transition:
+      color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+      background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .nav-travel-prefs :global(.travel__theme-toggle .material-symbols-rounded) {
+    font-size: 18px;
+    line-height: 1;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+
+  .nav-travel-prefs :global(.travel__theme-toggle:hover),
+  .nav-travel-prefs :global(.travel__theme-toggle:focus-visible) {
+    color: #fff;
+    border-color: rgba(0, 143, 255, 0.45);
+    background: rgba(0, 143, 255, 0.16);
+  }
+
+  .nav-travel-prefs :global(.travel__theme-toggle:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .nav-travel-prefs :global(.travel__theme-toggle__icon--sun) {
+    display: block;
+  }
+
+  .nav-travel-prefs :global(.travel__theme-toggle__icon--moon) {
+    display: none;
+  }
+
+  :global(html[data-theme='light'])
+    .nav-travel-prefs
+    :global(.travel__theme-toggle__icon--sun) {
+    display: none;
+  }
+
+  :global(html[data-theme='light'])
+    .nav-travel-prefs
+    :global(.travel__theme-toggle__icon--moon) {
+    display: block;
+  }
+
+  :global(html[data-theme='light']) .nav-travel-lang {
+    border-color: rgba(18, 19, 26, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 1px 4px rgba(18, 19, 26, 0.06);
+  }
+
+  :global(html[data-theme='light']) .nav-travel-lang__btn {
+    color: rgba(18, 19, 26, 0.5);
+  }
+
+  :global(html[data-theme='light']) .nav-travel-lang__btn:hover {
+    color: rgba(18, 19, 26, 0.85);
+  }
+
+  :global(html[data-theme='light']) .nav-travel-lang__btn.is-active,
+  :global(html[data-theme='light'])
+    .nav-travel-lang__btn[aria-pressed='true'] {
+    color: #fff;
+    background: rgba(0, 143, 255, 0.88);
+  }
+
+  :global(html[data-theme='light'])
+    .nav-travel-prefs
+    :global(.travel__theme-toggle.nav-travel-theme) {
+    border-color: rgba(18, 19, 26, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    color: rgba(18, 19, 26, 0.7);
+    box-shadow: 0 1px 4px rgba(18, 19, 26, 0.06);
+  }
+
+  :global(html[data-theme='light'])
+    .nav-travel-prefs
+    :global(.travel__theme-toggle:hover),
+  :global(html[data-theme='light'])
+    .nav-travel-prefs
+    :global(.travel__theme-toggle:focus-visible) {
+    color: var(--color-accent);
+    border-color: rgba(0, 143, 255, 0.4);
+    background: rgba(0, 143, 255, 0.1);
+  }
+
   .nav-border {
     position: relative;
     z-index: 2;
@@ -268,10 +532,29 @@ function isActive(href: string) {
       height: var(--nav-control-size);
     }
 
+    /* Travel prefs stay visible on mobile between logo and menu */
+    .nav-travel-prefs {
+      --nav-travel-control-h: 32px;
+      margin-left: auto;
+      margin-right: 4px;
+      gap: 6px;
+    }
+
+    .nav-travel-lang__btn {
+      min-width: 30px;
+      padding: 0 8px;
+      font-size: 10px;
+    }
+
     .nav-menu-toggle {
       display: inline-flex;
-      margin-left: auto;
+      margin-left: 0;
       --nav-control-size: 24px;
+    }
+
+    /* When prefs are hidden (non-travel), menu still docks right */
+    .nav-travel-prefs[hidden] + .nav-menu-toggle {
+      margin-left: auto;
     }
 
     .site-header.is-menu-open {

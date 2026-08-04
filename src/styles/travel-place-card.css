@@ -89,27 +89,26 @@
 }
 
 /*
- * Mask fades slider opacity at the bottom (not a painted color overlay),
+ * Mask fades slider opacity only in the last ~1/4 (not a painted overlay),
  * so frosted-glass panels and solid card surfaces both blend correctly.
  * Close / dots / nav stay outside this layer and remain fully opaque.
  */
 .travel-place-card__slides {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 38%,
-    rgba(0, 0, 0, 0.72) 58%,
-    rgba(0, 0, 0, 0.28) 78%,
+    #000 75%,
+    rgba(0, 0, 0, 0.55) 90%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 38%,
-    rgba(0, 0, 0, 0.72) 58%,
-    rgba(0, 0, 0, 0.28) 78%,
+    #000 75%,
+    rgba(0, 0, 0, 0.55) 90%,
     transparent 100%
   );
   -webkit-mask-size: 100% 100%;
@@ -122,6 +121,7 @@
   position: absolute;
   inset: 0;
   margin: 0;
+  overflow: hidden;
   opacity: 0;
   /* Do NOT use visibility:hidden — browsers skip loading images in hidden
      subtrees even with loading="eager", so only the first slide would fetch. */
@@ -136,12 +136,90 @@
   z-index: 1;
 }
 
+/* Broken remote URL — removed from slider rotation (see travel-photo-slider.ts) */
+.travel-place-card__slide.is-broken {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Every photo failed — keep media box, hide dead slides (placeholder injected in JS) */
+.travel-place-card__media.is-all-broken .travel-place-card__slides,
+.travel-place-card__media.is-all-broken .travel-place-card__dots,
+.travel-place-card__media.is-all-broken .travel-place-card__nav {
+  display: none !important;
+}
+
+/* Fill frame edge-to-edge, crop centered (portrait/landscape both work) */
 .travel-place-card__img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
+}
+
+/* Category-tinted placeholder when a place has no gallery photo */
+.travel-place-card__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(
+      120% 90% at 50% 20%,
+      color-mix(in srgb, var(--cat-color) 34%, transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--cat-color) 22%, #16161c) 0%,
+      #0e0e14 55%,
+      #0a0a10 100%
+    );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.travel-place-card__placeholder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--cat-color) 35%, transparent);
+  background: color-mix(in srgb, var(--cat-color) 14%, transparent);
+  color: var(--cat-color);
+  opacity: 0.92;
+}
+
+.travel-place-card__placeholder-icon .material-symbols-rounded,
+.travel-place-card__placeholder-icon ion-icon,
+.travel-place-card__placeholder-icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--cat-color);
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 28;
+}
+
+/* Placeholder media: no photo fade mask */
+.travel-place-card--placeholder-media .travel-place-card__slides {
+  display: none;
+}
+
+.travel-place-card--placeholder-media .travel-place-card__media {
+  background: #0e0e14;
 }
 
 /* Pagination dots — top of media */
@@ -299,8 +377,8 @@
 }
 
 /*
- * Feed cards (list + grid) are a summary: name · tags · description · rating.
- * Full media / visit meta / address live only in the map panel clone.
+ * Feed cards (list + grid): cover image · name · compact tags · short desc · rating.
+ * Visit meta / address / close stay panel-only.
  *
  * - List view: subcategories only (no main category) — group header has the cat.
  * - Grid view: main category only (no subcategories) — flat mixed feed.
@@ -309,11 +387,52 @@
   cursor: pointer;
 }
 
-.travel-place-card:not(.travel-place-card--panel) .travel-place-card__media,
 .travel-place-card:not(.travel-place-card--panel) .travel-place-card__close,
 .travel-place-card:not(.travel-place-card--panel) .travel-place-card__live,
 .travel-place-card:not(.travel-place-card--panel) .travel-place-card__meta,
 .travel-place-card:not(.travel-place-card--panel) .travel-place-card__maps-row {
+  display: none !important;
+}
+
+/* Cover photo in feed (static first frame — no slider chrome) */
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__media,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__media {
+  display: block !important;
+  flex: 0 0 auto;
+  /* Mild portrait — not full 3:4 phone-card tall */
+  aspect-ratio: 5 / 4;
+  min-height: 0;
+  max-height: 220px;
+  /* Softer bottom blend into card body */
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__slides,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__slides {
+  /* Same last-quarter fade as panel / detail sliders */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 75%,
+    rgba(0, 0, 0, 0.55) 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 75%,
+    rgba(0, 0, 0, 0.55) 90%,
+    transparent 100%
+  );
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__dots,
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__nav,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__dots,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__nav {
   display: none !important;
 }
 
@@ -328,33 +447,106 @@
 }
 
 /*
- * List feed layout:
- * - gap = half card padding
- * - equal-height cards in the grid
- * - description clamps so it doesn’t push stars/CTA unevenly
- * - rating + route button pinned to the bottom (same baseline across cards)
+ * List + grid feed layout (vertical card):
+ * - cover image on top (3:4)
+ * - compact tags + 2-line desc
+ * - equal-height cards; ratings pinned to bottom
+ * - route = icon button top-right (on cover when present)
  */
-.travel-place-card--list:not(.travel-place-card--panel) {
+.travel-place-card--list:not(.travel-place-card--panel),
+.travel-place-card--grid:not(.travel-place-card--panel) {
+  --feed-pad: 12px;
+  --feed-pad-x: 12px;
+  --feed-gap: 8px;
   height: 100%;
-  gap: calc(var(--card-pad) / 2);
   min-width: 0;
+  gap: var(--feed-gap);
+  padding: var(--feed-pad) var(--feed-pad-x);
 }
 
-.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__name {
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__name,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__name {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  font-size: 0.95rem;
+  line-height: 1.25;
 }
 
-.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__tags {
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__favorite .material-symbols-rounded,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__favorite .material-symbols-rounded {
+  font-size: 1rem;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__tags,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__tags {
   flex-shrink: 0;
   min-height: 0;
   min-width: 0;
   width: 100%;
   max-width: 100%;
-  /* Contain chips; horizontal scroll lives on .subs */
   overflow: hidden;
+  --tag-chip-gap: 4px;
+}
+
+/* Compact chips in feed */
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__cat,
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__sub,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__cat,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__sub {
+  padding: 3px 7px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  gap: 4px;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__cat-icon,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__cat-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__cat-icon
+  .material-symbols-rounded,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__cat-icon
+  .material-symbols-rounded {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+}
+
+/* Ratings a bit tighter on narrow vertical feed cards */
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__ratings,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__ratings {
+  gap: 4px;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__ratings
+  .star-rating,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__ratings
+  .star-rating {
+  gap: 3px;
+  padding: 6px 8px;
+  border-radius: var(--radius-btn, 30px);
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .star-rating__value,
+.travel-place-card--grid:not(.travel-place-card--panel) .star-rating__value {
+  font-size: 11px;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .star-rating__star,
+.travel-place-card--grid:not(.travel-place-card--panel) .star-rating__star {
+  font-size: 11px;
 }
 
 /*
@@ -385,31 +577,28 @@
   flex: 0 0 auto;
 }
 
-.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__desc {
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__desc,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__desc {
   flex: 0 0 auto;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
-  /*
-   * Fixed 3-line box (uses the desc font-size) so short copy doesn’t
-   * collapse and push stars/CTA to different heights.
-   */
-  height: calc(var(--text-sm, 0.875rem) * var(--lh-body, 1.5) * 3);
-  max-height: calc(var(--text-sm, 0.875rem) * var(--lh-body, 1.5) * 3);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.62));
+  /* Fixed 2-line box so short copy doesn’t collapse card heights */
+  height: calc(0.75rem * 1.4 * 2);
+  max-height: calc(0.75rem * 1.4 * 2);
 }
 
 .travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__ratings,
+.travel-place-card--grid:not(.travel-place-card--panel)
   .travel-place-card__ratings {
   flex-shrink: 0;
-  /* Pin ratings + route button to the bottom of equal-height cards */
   margin-top: auto;
-}
-
-.travel-place-card--list:not(.travel-place-card--panel)
-  .travel-place-card__route-add {
-  flex-shrink: 0;
 }
 
 /* —— Grid: show category, hide subs —— */
@@ -422,64 +611,134 @@
   display: none;
 }
 
-/* Photos only in panel: feed keeps normal card padding + section gap */
-.travel-place-card--has-photos:not(.travel-place-card--panel) {
-  padding: var(--card-pad) var(--card-pad-x);
-  gap: var(--card-pad);
-}
-
-/* List half-gap wins over has-photos feed default */
+/*
+ * Feed with cover: edge-to-edge media on top, compact body padding below.
+ */
 .travel-place-card--list.travel-place-card--has-photos:not(
     .travel-place-card--panel
+  ),
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
   ) {
-  gap: calc(var(--card-pad) / 2);
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: var(--feed-pad, 12px);
+  gap: 0;
 }
 
-.travel-place-card--has-photos:not(.travel-place-card--panel)
-  > :not(.travel-place-card__media) {
-  margin-left: 0;
-  margin-right: 0;
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > :not(.travel-place-card__media):not(.travel-place-card__route-add),
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > :not(.travel-place-card__media):not(.travel-place-card__route-add) {
+  margin-left: var(--feed-pad-x, 12px);
+  margin-right: var(--feed-pad-x, 12px);
 }
 
-.travel-place-card--has-photos:not(.travel-place-card--panel)
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
   > .travel-place-card__title-row,
-.travel-place-card--has-photos:not(.travel-place-card--panel)
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__title-row {
+  margin-top: var(--feed-gap, 8px);
+  margin-bottom: var(--feed-gap, 8px);
+}
+
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
   > .travel-place-card__tags,
-.travel-place-card--has-photos:not(.travel-place-card--panel)
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
   > .travel-place-card__desc,
-.travel-place-card--has-photos:not(.travel-place-card--panel)
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__ratings,
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__tags,
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__desc,
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
   > .travel-place-card__ratings {
   margin-top: 0;
+  margin-bottom: var(--feed-gap, 8px);
+}
+
+.travel-place-card--list.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__ratings,
+.travel-place-card--grid.travel-place-card--has-photos:not(
+    .travel-place-card--panel
+  )
+  > .travel-place-card__ratings {
+  margin-top: auto;
   margin-bottom: 0;
 }
 
 /*
- * Feed cards still carry --has-photos (media is display:none).
- * Never zero padding on the route button — that shifts icon/label off-center.
- * Only reset leftover section padding on non-button last children.
+ * Feed route control: icon-only, top-right corner over the media header.
  */
-.travel-place-card--has-photos:not(.travel-place-card--panel) > :last-child:not(
-    .travel-place-card__route-add
-  ) {
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-
 .travel-place-card--list:not(.travel-place-card--panel)
   .travel-place-card__route-add,
 .travel-place-card--grid:not(.travel-place-card--panel)
   .travel-place-card__route-add {
-  /* Win over any has-photos :last-child padding rules */
-  padding: 8px 10px !important;
-  margin-bottom: 0 !important;
-  margin-top: 0;
-  min-height: 36px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  flex: 0 0 auto;
+  align-self: auto;
+  width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0;
+  border-radius: 10px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(12, 12, 16, 0.55);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
 }
 
-/* List ratings need margin-top:auto even when has-photos resets margins */
 .travel-place-card--list:not(.travel-place-card--panel)
-  > .travel-place-card__ratings {
-  margin-top: auto;
+  .travel-place-card__route-add
+  .material-symbols-rounded,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__route-add
+  .material-symbols-rounded {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+  display: block;
+  text-align: center;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel)
+  .travel-place-card__route-add-label,
+.travel-place-card--grid:not(.travel-place-card--panel)
+  .travel-place-card__route-add-label {
+  display: none !important;
 }
 
 /* Feed tags sit as a simple horizontal row */
@@ -505,26 +764,71 @@
   outline: none;
 }
 
-/* —— Title row: [title][x] —— */
+/* —— Title row: [name ♥][x] —— */
 .travel-place-card__title-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  width: 100%;
+  /* auto + stretch (not width:100%) so horizontal margins don’t overflow the card */
+  width: auto;
+  max-width: 100%;
   min-width: 0;
+  box-sizing: border-box;
+}
+
+.travel-place-card__title-main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .travel-place-card__name {
   margin: 0;
   flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
   font-family: var(--font-display-regular), system-ui, sans-serif;
   font-size: var(--text-lg, 1.125rem);
   line-height: var(--lh-snug, 1.25);
   letter-spacing: var(--ls-tight, -0.02em);
   color: inherit;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Panel detail: multi-line titles (long names like Michalak | Étienne Marcel) */
+.travel-place-card--panel .travel-place-card__name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Personal favorite — filled heart beside the place name */
+.travel-place-card__favorite {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: #e11d48;
+  line-height: 1;
+}
+
+.travel-place-card__favorite .material-symbols-rounded {
+  font-size: 1.125rem;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
 }
 
 /* Close: only in panel (title-row or over media) */
@@ -655,7 +959,7 @@
 
 /* Panel: keep subs slightly quieter so main category remains primary */
 .travel-place-card--panel .travel-place-card__sub {
-  border-color: rgba(255, 255, 255, 0.1);
+  border: none;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.62);
   font-size: 10px;
@@ -663,6 +967,11 @@
   letter-spacing: 0.05em;
   line-height: 1;
   padding: 5px 10px;
+}
+
+/* Title top spacing = horizontal card pad (same inset as left/right) */
+.travel-place-card--panel.travel-place-card--has-photos > .travel-place-card__title-row {
+  margin-top: var(--card-pad-x, var(--card-pad));
 }
 
 .travel-place-card--panel .travel-place-card__cat {
@@ -712,28 +1021,55 @@
   color: var(--color-text-soft, rgba(255, 255, 255, 0.72));
 }
 
-/* [icon][score][stars] | [icon][score][stars] */
+/* Two soft rating cards: Google | Mine — no border, tight gap, btn radius */
 .travel-place-card__ratings {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  gap: 4px;
   min-width: 0;
 }
 
+/* Separator removed in favor of gap between cards */
 .travel-place-card__ratings-sep {
-  flex: 0 0 auto;
-  width: 1px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 1px;
+  display: none;
 }
 
 .travel-place-card__rating {
   display: flex;
   align-items: center;
   min-width: 0;
+}
+
+/* Each StarRating fills a soft card; score + stars centered */
+.travel-place-card__ratings .star-rating {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius-btn, 30px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme='light'] .travel-place-card__ratings .star-rating {
+  background: rgba(18, 19, 26, 0.06);
+}
+
+/* Panel detail card: same tight gap, slightly taller hit area */
+.travel-place-card--panel .travel-place-card__ratings {
+  gap: 4px;
+}
+
+.travel-place-card--panel .travel-place-card__ratings .star-rating {
+  padding: 10px 12px;
+  border-radius: var(--radius-btn, 30px);
 }
 
 /* Live crowd / hours pills */
@@ -1055,31 +1391,7 @@
     'opsz' 20;
 }
 
-/* Compact type in grid/list (padding set above with !important) */
-.travel-place-card--list .travel-place-card__route-add,
-.travel-place-card--grid .travel-place-card__route-add {
-  font-size: 11px;
-}
-
-.travel-place-card--list .travel-place-card__route-add .material-symbols-rounded,
-.travel-place-card--grid .travel-place-card__route-add .material-symbols-rounded {
-  flex: 0 0 16px;
-  width: 16px;
-  height: 16px;
-  font-size: 16px;
-  /* Kill global material icon baseline quirks inside the control */
-  display: block;
-  line-height: 16px;
-  text-align: center;
-}
-
-.travel-place-card--list .travel-place-card__route-add-label,
-.travel-place-card--grid .travel-place-card__route-add-label {
-  display: block;
-  line-height: 16px;
-  padding: 0;
-  margin: 0;
-}
+/* Panel keeps full labeled route CTA; feed is icon-only (rules above). */
 
 .travel-place-card.is-featured {
   border-color: color-mix(in srgb, var(--cat-color) 40%, var(--color-border));

@@ -30,6 +30,19 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Fresh editorial places on every deploy when secret is configured.
+      # Without NOTION_TOKEN, build uses the committed travel-notion snapshot.
+      - name: Pull travel places from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "NOTION_TOKEN not set — using committed travel-notion snapshot"
+            exit 0
+          fi
+          npm run travel:notion:pull
+
       - name: Test
         run: npm test
 

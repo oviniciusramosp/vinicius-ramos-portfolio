@@ -47,7 +47,14 @@ export type PlaceSubcategory =
   | 'metro'
   | 'shopping'
   // Lodging
-  | 'hotel';
+  | 'hotel'
+  // Commons food types (main category already says “Chains”)
+  | 'burgers'
+  | 'chicken'
+  // Markets / shopping extras
+  | 'market'
+  | 'department'
+  | 'mall';
 
 export type LString = { en: string; 'pt-BR': string };
 
@@ -155,7 +162,7 @@ export const placeSubcategoryMeta: Record<
   },
   'market-street': {
     label: { en: 'Market street', 'pt-BR': 'Rua de comércio' },
-    parents: ['parks'],
+    parents: ['parks', 'markets'],
   },
   architecture: {
     label: { en: 'Architecture', 'pt-BR': 'Arquitetura' },
@@ -191,15 +198,36 @@ export const placeSubcategoryMeta: Record<
   },
   metro: {
     label: { en: 'Metro', 'pt-BR': 'Metrô' },
-    parents: ['photo'],
+    parents: ['transport', 'photo'],
   },
   shopping: {
     label: { en: 'Shopping', 'pt-BR': 'Compras' },
-    parents: ['photo'],
+    parents: ['shopping', 'photo'],
   },
   hotel: {
     label: { en: 'Hotel', 'pt-BR': 'Hotel' },
     parents: ['lodging'],
+  },
+  burgers: {
+    label: { en: 'Burgers', 'pt-BR': 'Burgers' },
+    parents: ['commons', 'restaurants'],
+  },
+  chicken: {
+    label: { en: 'Chicken', 'pt-BR': 'Frango' },
+    parents: ['commons', 'restaurants'],
+  },
+  /** Covered market hall / marché */
+  market: {
+    label: { en: 'Market hall', 'pt-BR': 'Mercado coberto' },
+    parents: ['markets'],
+  },
+  department: {
+    label: { en: 'Department store', 'pt-BR': 'Grand magasin' },
+    parents: ['shopping'],
+  },
+  mall: {
+    label: { en: 'Mall', 'pt-BR': 'Shopping center' },
+    parents: ['shopping'],
   },
 };
 
@@ -240,6 +268,11 @@ export const placeSubcategoryOrder: PlaceSubcategory[] = [
   'metro',
   'shopping',
   'hotel',
+  'burgers',
+  'chicken',
+  'market',
+  'department',
+  'mall',
 ];
 
 /**
@@ -274,15 +307,25 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-eclair-genie': ['pastry'],
   'par-maison-isabelle': ['pastry', 'bakery'],
   'par-michalak': ['pastry'],
+  'par-michalak-etienne': ['pastry'],
   'par-bohemia': ['coffee-shop'],
   'par-amorino': ['ice-cream'],
   'par-jeffrey-cagnes': ['pastry'],
   'par-bakery-gaite': ['bakery'],
-  'par-maison-doucet': ['pastry', 'bakery'],
+  'par-artizans': ['french', 'bistro'],
 
   // Parks & walks
   'par-champ-mars': ['park', 'garden'],
   'par-la-defense': ['architecture', 'neighborhood'],
+  'par-paul-defense': ['bakery', 'coffee-shop'],
+  'par-orly-m14': ['metro'],
+  'par-orly-paul': ['bakery', 'coffee-shop'],
+  'par-cdg-paul': ['bakery', 'coffee-shop'],
+  'par-cdg-rer': ['metro'],
+  'par-noisy-le-sec-rer': ['metro'],
+  'par-grande-arche': ['architecture', 'viewpoint'],
+  'par-esplanade-de-gaulle': ['architecture', 'viewpoint'],
+  'par-monoprix-rivoli': ['market'],
   'par-tuileries': ['garden', 'park'],
   'par-champs-elysees': ['avenue'],
   'par-maison-balzac': ['museum'],
@@ -322,20 +365,64 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-pompidou': ['museum', 'architecture'],
   'par-madeleine': ['church', 'monument'],
   'par-montparnasse': ['tower', 'viewpoint'],
-  'par-fondation-lv': ['museum', 'architecture'],
+  'par-fondation-lv': ['architecture', 'viewpoint'],
   'par-chateau-vincennes': ['castle', 'monument'],
 
   // Photo
   'par-trocadero': ['viewpoint', 'architecture'],
   'par-alexandre-iii': ['bridge', 'architecture'],
   'par-vendome': ['square', 'architecture'],
-  'par-galeries-lafayette': ['shopping', 'architecture', 'viewpoint'],
-  'par-printemps': ['shopping', 'architecture', 'viewpoint'],
+  'par-galeries-lafayette': ['department', 'architecture', 'viewpoint'],
+  'par-printemps': ['department', 'architecture', 'viewpoint'],
+  'par-bon-marche': ['department', 'architecture'],
+  'par-forum-halles': ['mall'],
+  'par-bhv-marais': ['department'],
+  'par-shakespeare': ['coffee-shop', 'shopping'],
+  'par-mcdonalds-champs': ['burgers'],
+  'par-burger-king-opera': ['burgers'],
+  'par-starbucks-opera': ['coffee-shop'],
+  'par-five-guys-rivoli': ['burgers'],
+  'par-kfc-les-halles': ['chicken'],
+  'par-marche-enfants-rouges': ['market'],
+  'par-marche-aligre': ['market'],
+  'par-marche-bastille': ['market'],
+  'par-rue-cler': ['market', 'market-street'],
+  'par-place-dauphine': ['square'],
+  'par-belleville': ['park', 'viewpoint'],
+  'par-promenade-plantee': ['park', 'avenue'],
+  'par-disneyland': ['park', 'show'],
+  'par-versailles': ['palace', 'monument', 'garden'],
   'par-saint-michel': ['square', 'architecture'],
   'par-hotel-ville': ['square', 'architecture'],
   'par-horloge': ['architecture', 'monument'],
   'par-metro-6': ['metro', 'viewpoint'],
   'par-metro-2': ['metro', 'viewpoint'],
+};
+
+/**
+ * Rome place → subcategories (multi).
+ * Merged by resolvePlaceSubcategories via the shared map lookup.
+ */
+export const romeSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
+  'rom-termini': ['metro'],
+  'rom-gallina-bianca': ['italian'],
+  'rom-alfredo-ada': ['italian'],
+  'rom-antico-vinaio': ['italian', 'charcuterie'],
+  'rom-baffetto': ['italian'],
+  'rom-suppli': ['italian'],
+  'rom-norcineria': ['italian', 'charcuterie', 'meat'],
+  'rom-said': ['ice-cream'],
+  'rom-forno-trevi': ['bakery', 'pastry', 'coffee-shop'],
+  'rom-colosseum': ['monument'],
+  'rom-forum': ['monument', 'architecture'],
+  'rom-pantheon': ['monument', 'church', 'architecture'],
+  'rom-piazza-venezia': ['square'],
+  'rom-trevi': ['monument', 'viewpoint'],
+  'rom-vatican': ['museum', 'palace'],
+  'rom-sistine': ['church', 'museum'],
+  'rom-st-peter': ['church', 'monument'],
+  'rom-vittoriano': ['monument', 'viewpoint', 'architecture'],
+  'rom-window-on-rome': ['hotel'],
 };
 
 export function isPlaceSubcategory(id: string): id is PlaceSubcategory {
@@ -365,5 +452,8 @@ export function resolvePlaceSubcategories(
   if (authored && authored.length > 0) {
     return normalizeSubcategories(authored);
   }
-  return normalizeSubcategories(parisSubcategoriesByPlaceId[placeId]);
+  return normalizeSubcategories(
+    parisSubcategoriesByPlaceId[placeId] ??
+      romeSubcategoriesByPlaceId[placeId],
+  );
 }

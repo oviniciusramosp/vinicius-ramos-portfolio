@@ -1,0 +1,5259 @@
+{
+  "generatedAt": "2026-08-04T20:00:44.148Z",
+  "databaseId": "3812da8d81348023afe1ef676eb515f7",
+  "count": 139,
+  "byCity": {
+    "paris": 119,
+    "sao-paulo": 20
+  },
+  "places": [
+    {
+      "notionPageId": "3b22da8d-8134-81e4-ab35-d64a511cc0ac",
+      "id": "par-amorino",
+      "city": "paris",
+      "name": {
+        "en": "Amorino",
+        "pt-BR": "Amorino"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Flower-shaped gelato. Easy win near the river islands.",
+        "pt-BR": "Gelato em forma de flor. Vitória fácil perto das ilhas."
+      },
+      "lat": 48.8607322,
+      "lng": 2.3510395,
+      "address": "47 Rue Saint-Louis en l'Île, 75004 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/Lxk8rWHcsR3QveJW9",
+      "mapsQuery": "Amorino Paris Île",
+      "rating": 3.5,
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "ice-cream"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Amorino_Gelato_Flowers.jpg/1280px-Amorino_Gelato_Flowers.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Amorino_Gelato_Flowers.jpg/1280px-Amorino_Gelato_Flowers.jpg",
+          "alt": {
+            "en": "Amorino",
+            "pt-BR": "Amorino"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8188-be63-da9c5c870463",
+      "id": "par-arc-triomphe",
+      "city": "paris",
+      "name": {
+        "en": "Arc de Triomphe",
+        "pt-BR": "Arco do Triunfo"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Climb for the axis view over the city.",
+        "pt-BR": "Suba pela vista do eixo sobre a cidade."
+      },
+      "lat": 48.8738,
+      "lng": 2.295,
+      "address": "Place Charles de Gaulle, 75008 Paris",
+      "mapsQuery": "Arc de Triomphe Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "landmark": "arc",
+      "subcategories": [
+        "monument",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Arc_de_Triomphe%2C_Paris_21_October_2010.jpg/1280px-Arc_de_Triomphe%2C_Paris_21_October_2010.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Arc_de_Triomphe%2C_Paris_21_October_2010.jpg/1280px-Arc_de_Triomphe%2C_Paris_21_October_2010.jpg",
+          "alt": {
+            "en": "Arc de Triomphe",
+            "pt-BR": "Arco do Triunfo"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8106-b611-cf9f74a08387",
+      "id": "par-auptitgrec",
+      "city": "paris",
+      "name": {
+        "en": "Au P'tit Grec",
+        "pt-BR": "Au P'tit Grec"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Late crêpes and Latin Quarter fuel.",
+        "pt-BR": "Crêpes até tarde e combustível do Quartier Latin."
+      },
+      "lat": 48.8476825,
+      "lng": 2.3424713,
+      "address": "126 Rue Mouffetard, 75005 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/24XKWbRP9i2aLFjS6",
+      "mapsQuery": "Au P'tit Grec crêperie Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Facade_de_magasin_Au_p%27tit_grec_%C3%A0_l%27angle_des_rues_Cujas_et_Mouffetard.jpg/1280px-Facade_de_magasin_Au_p%27tit_grec_%C3%A0_l%27angle_des_rues_Cujas_et_Mouffetard.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Facade_de_magasin_Au_p%27tit_grec_%C3%A0_l%27angle_des_rues_Cujas_et_Mouffetard.jpg/1280px-Facade_de_magasin_Au_p%27tit_grec_%C3%A0_l%27angle_des_rues_Cujas_et_Mouffetard.jpg",
+          "alt": {
+            "en": "Au P'tit Grec",
+            "pt-BR": "Au P'tit Grec"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8182-89d8-c960f5ffe0a2",
+      "id": "par-auchan-noisy",
+      "city": "paris",
+      "name": {
+        "en": "Auchan Supermarché (Noisy-le-Sec)",
+        "pt-BR": "Auchan Supermarché (Noisy-le-Sec)"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Full supermarket ~5 min walk from Casa do Gui — basics, produce, drinks, and household stock for the stay.",
+        "pt-BR": "Supermercado completo a ~5 min a pé da Casa do Gui — básicos, hortifruti, bebidas e estoque da casa."
+      },
+      "lat": 48.8942003,
+      "lng": 2.4582537,
+      "address": "90 Rue Jean Jaurès, 93130 Noisy-le-Sec",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Auchan+Supermarch%C3%A9+90+Rue+Jean+Jaur%C3%A8s+Noisy-le-Sec",
+      "mapsQuery": "Auchan Supermarché 90 Rue Jean Jaurès Noisy-le-Sec",
+      "googleRating": 3.8,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f3-8fab-ec2fd4462a98",
+      "id": "par-bateaux-mouches",
+      "city": "paris",
+      "name": {
+        "en": "Bateaux-Mouches",
+        "pt-BR": "Bateaux-Mouches"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Seine cruise classic from the Alma side.",
+        "pt-BR": "Clássico de cruzeiro no Sena do lado de Alma."
+      },
+      "lat": 48.8640106,
+      "lng": 2.3059374,
+      "address": "Port de la Conférence, 75008 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Bateau-mouche/@48.8629662,2.306493,16.25z",
+      "mapsQuery": "Bateaux-Mouches Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "boat"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlkamvAmLuu9HadRULncd6dlec-JkHS2mvKdAPumGuKgcmKw5mydCIyoZ8jouzdmaQyLpGnbwoOaGlb47dgnnoy_vArk_h9sSEXT3J9LPSha25mCb9HCKYhquZSBFO_doZjpmZfMqWR9bk=s348-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlkamvAmLuu9HadRULncd6dlec-JkHS2mvKdAPumGuKgcmKw5mydCIyoZ8jouzdmaQyLpGnbwoOaGlb47dgnnoy_vArk_h9sSEXT3J9LPSha25mCb9HCKYhquZSBFO_doZjpmZfMqWR9bk=s348-k-no",
+          "alt": {
+            "en": "Bateaux-Mouches",
+            "pt-BR": "Bateaux-Mouches"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8146-8912-ef6f24f48a4f",
+      "id": "par-bhv-marais",
+      "city": "paris",
+      "name": {
+        "en": "BHV Marais",
+        "pt-BR": "BHV Marais"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Department store by Hôtel de Ville — DIY floors, fashion, and a solid rooftop café.",
+        "pt-BR": "Grand magasin ao lado do Hôtel de Ville — DIY, moda e terraço com café."
+      },
+      "lat": 48.8573,
+      "lng": 2.3535,
+      "address": "52 Rue de Rivoli, 75004 Paris",
+      "mapsQuery": "BHV Marais Paris",
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "department"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnEY8D0ehGDCxCzy0LMqSo4b8RK894HTeV4gyaZiAkpiT0oG819zWmpZYBzLqZyP0TeADzZZ1NLwfFDz7m2X5HJ4A6Xl4eVhlwu8d4-oxypqYypndljnn3Qlk8lXMTmjYTL7v-fJg=s811-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnEY8D0ehGDCxCzy0LMqSo4b8RK894HTeV4gyaZiAkpiT0oG819zWmpZYBzLqZyP0TeADzZZ1NLwfFDz7m2X5HJ4A6Xl4eVhlwu8d4-oxypqYypndljnn3Qlk8lXMTmjYTL7v-fJg=s811-k-no",
+          "alt": {
+            "en": "BHV Marais",
+            "pt-BR": "BHV Marais"
+          }
+        }
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-811e-bd16-e07ee37bb477",
+      "id": "par-bnf",
+      "city": "paris",
+      "name": {
+        "en": "Bibliothèque nationale",
+        "pt-BR": "Biblioteca Nacional"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Richelieu or François-Mitterrand depending on the day.",
+        "pt-BR": "Richelieu ou François-Mitterrand, conforme o dia."
+      },
+      "lat": 48.8338,
+      "lng": 2.376,
+      "address": "Quai François Mauriac, 75013 Paris",
+      "mapsQuery": "Bibliothèque nationale de France",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "library",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg/3840px-Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg/3840px-Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg",
+          "alt": {
+            "en": "Bibliothèque nationale",
+            "pt-BR": "Biblioteca Nacional"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8178-bc57-cedd667246aa",
+      "id": "par-bien-eleve",
+      "city": "paris",
+      "name": {
+        "en": "Bien Élevé",
+        "pt-BR": "Bien Élevé"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Butcher-table dining. Order meat-forward and share.",
+        "pt-BR": "Mesa de açougueiro. Peça carne e divida."
+      },
+      "lat": 48.8645,
+      "lng": 2.365,
+      "address": "47 Rue Richer, 75009 Paris",
+      "mapsQuery": "Bien Élevé Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "meat",
+        "french"
+      ],
+      "coverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY4m17cZwr6AWZ3zvfmBP1u6cYz8BnFjijBliOyvTfFsI9W-qcFz9MSYwl&s=10",
+      "photos": [
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY4m17cZwr6AWZ3zvfmBP1u6cYz8BnFjijBliOyvTfFsI9W-qcFz9MSYwl&s=10",
+          "alt": {
+            "en": "Bien Élevé",
+            "pt-BR": "Bien Élevé"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8119-9aef-da1467e8e5cc",
+      "id": "par-bike",
+      "city": "paris",
+      "name": {
+        "en": "Bike around Paris",
+        "pt-BR": "Alugar bike em Paris"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Rent a bike (Vélib’ or similar) and ride the city — parks, river quays, and long avenues. One of the best ways to feel Paris at street level.",
+        "pt-BR": "Alugar bike (Vélib’ ou similar) e dar uma volta por Paris — parques, margens do rio e avenidas. Uma das melhores formas de sentir a cidade na rua."
+      },
+      "lat": 48.85733,
+      "lng": 2.35146,
+      "address": "Station Vélib' Place de l'Hôtel de Ville, 75004 Paris",
+      "mapsQuery": "Station Vélib Place de l'Hôtel de Ville Paris",
+      "googleRating": 4.9,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bouillon",
+        "french",
+        "self-service"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/V%C3%A9lib%27_Paris.jpg/1280px-V%C3%A9lib%27_Paris.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/V%C3%A9lib%27_Paris.jpg/1280px-V%C3%A9lib%27_Paris.jpg",
+          "alt": {
+            "en": "Bike around Paris",
+            "pt-BR": "Alugar bike em Paris"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8100-bb32-e5a5762d6f2c",
+      "id": "par-artizans",
+      "city": "paris",
+      "name": {
+        "en": "Bistro les Artizans",
+        "pt-BR": "Bistro les Artizans"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Bistro on Rue Montorgueil — solid French plates on the food street.",
+        "pt-BR": "Bistrô na Rue Montorgueil — pratos franceses sólidos na rua gastronômica."
+      },
+      "lat": 48.8637686,
+      "lng": 2.3465503,
+      "address": "30 Rue Montorgueil, 75001 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/dc8VjE69wviBaiJv6",
+      "mapsQuery": "Bistro les Artizans Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chez_Chartier_1.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chez_Chartier_1.JPG",
+          "alt": {
+            "en": "Bistro les Artizans",
+            "pt-BR": "Bistro les Artizans"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8186-b24b-fe459bcf0908",
+      "id": "par-bohemia",
+      "city": "paris",
+      "name": {
+        "en": "Bohemia Café",
+        "pt-BR": "Bohemia Café"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Club sandwich and Club Loco de Blueberries.",
+        "pt-BR": "Club sandwich e Club Loco de Blueberries."
+      },
+      "lat": 48.8655,
+      "lng": 2.335,
+      "address": "30 Rue de Richelieu, 75001 Paris",
+      "mapsQuery": "Bohemia Café brunch Paris",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+          "alt": {
+            "en": "Bohemia Café",
+            "pt-BR": "Bohemia Café"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8146-a125-d98e9c28911f",
+      "id": "par-boulogne",
+      "city": "paris",
+      "name": {
+        "en": "Bois de Boulogne",
+        "pt-BR": "Bois de Boulogne"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Huge beautiful “forest” of Paris in the 16th. Lakes, long walks, and excellent cafés and restaurants inside.",
+        "pt-BR": "Parque bonito e gigante — a “floresta” de Paris no 16ème. Lagos, caminhadas longas e ótimos restaurantes e cafés dentro."
+      },
+      "lat": 48.86409,
+      "lng": 2.24826,
+      "address": "Bois de Boulogne, 75016 Paris",
+      "mapsQuery": "Bois de Boulogne Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/La_D%C3%A9fense_and_Bois_de_Boulogne_from_the_Eiffel_Tower%2C_11_June_2017_001.jpg/3840px-La_D%C3%A9fense_and_Bois_de_Boulogne_from_the_Eiffel_Tower%2C_11_June_2017_001.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/La_D%C3%A9fense_and_Bois_de_Boulogne_from_the_Eiffel_Tower%2C_11_June_2017_001.jpg/3840px-La_D%C3%A9fense_and_Bois_de_Boulogne_from_the_Eiffel_Tower%2C_11_June_2017_001.jpg",
+          "alt": {
+            "en": "Bois de Boulogne",
+            "pt-BR": "Bois de Boulogne"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81cb-8ecf-da52a6f27007",
+      "id": "par-vincennes",
+      "city": "paris",
+      "name": {
+        "en": "Bois de Vincennes",
+        "pt-BR": "Bois de Vincennes"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Huge beautiful park east of Paris. Lakes, long walks, and the green lung next to Vincennes town.",
+        "pt-BR": "Parque grande e bonito a leste de Paris. Lagos, caminhadas longas e o pulmão verde ao lado da cidade de Vincennes."
+      },
+      "lat": 48.828,
+      "lng": 2.433,
+      "address": "Bois de Vincennes, Paris",
+      "mapsQuery": "Bois de Vincennes Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Bois_de_Vincennes_20060816_16.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Bois_de_Vincennes_20060816_16.jpg",
+          "alt": {
+            "en": "Bois de Vincennes",
+            "pt-BR": "Bois de Vincennes"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c2-be48-cee9ffcb26f8",
+      "id": "par-bouillon",
+      "city": "paris",
+      "name": {
+        "en": "Bouillon",
+        "pt-BR": "Bouillon"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Classic French dining, affordable, famous, and very good. Several locations (3rd, 6th, 9th, 18th…). Book for a table inside, or takeaway in ~5 minutes — great idea: grab food and eat at a park or by the canal.",
+        "pt-BR": "Restaurante bem francês, preço acessível, famoso e gostoso. Várias unidades (3º, 6º, 9º, 18ème…). Reserve para comer dentro, ou peça para levar (~5 min). Ideia: pegar para viagem e comer em parque ou no canal."
+      },
+      "lat": 48.87194,
+      "lng": 2.34301,
+      "address": "7 Rue du Faubourg Montmartre, 75009 Paris",
+      "mapsQuery": "Bouillon Chartier Paris",
+      "googleRating": 4.9,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chez_Chartier_1.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chez_Chartier_1.JPG",
+          "alt": {
+            "en": "Bouillon",
+            "pt-BR": "Bouillon"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-817d-ab50-c602d6c7aafa",
+      "id": "par-brasserie-pres",
+      "city": "paris",
+      "name": {
+        "en": "Brasserie des Prés",
+        "pt-BR": "Brasserie des Prés"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Saint-Germain brasserie energy near the passage.",
+        "pt-BR": "Energia de brasserie em Saint-Germain perto da passagem."
+      },
+      "lat": 48.8529451,
+      "lng": 2.3391987,
+      "address": "6 Cour du Commerce Saint-André, 75006 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Brasserie+des+Pr%C3%A9s/@48.853095,2.3383737,18.5z",
+      "mapsQuery": "Brasserie des Prés Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "brasserie",
+        "french"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/P1020083_Paris_VI_Cour_du_Commerce-Saint-Andr%C3%A9_reductwk.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/P1020083_Paris_VI_Cour_du_Commerce-Saint-Andr%C3%A9_reductwk.JPG",
+          "alt": {
+            "en": "Brasserie des Prés",
+            "pt-BR": "Brasserie des Prés"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-815b-8e68-d0d4ddf3ce54",
+      "id": "par-burger-king-opera",
+      "city": "paris",
+      "name": {
+        "en": "Burger King Opéra",
+        "pt-BR": "Burger King Opéra"
+      },
+      "category": "commons",
+      "description": {
+        "en": "Central BK near Opéra — reliable chain stop between department stores and métro.",
+        "pt-BR": "BK no centro perto da Opéra — parada de rede entre grands magasins e metrô."
+      },
+      "lat": 48.8714,
+      "lng": 2.3312,
+      "address": "4 Bd des Capucines, 75009 Paris",
+      "mapsQuery": "Burger King Opéra Paris",
+      "googleRating": 3.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "burgers"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl25elIupAOZi6Ix80qTzI64wQeX4a9k5rqXuAR9tlRjlowJHGCX6xcUvGs5_ymGdp54IdP3LSu2eKa4MLW-4tNcH0koI25LIjdeal2KNXTDe-pE643Lyde20Bpi2aQ1bvcF2bOJg=s696-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl25elIupAOZi6Ix80qTzI64wQeX4a9k5rqXuAR9tlRjlowJHGCX6xcUvGs5_ymGdp54IdP3LSu2eKa4MLW-4tNcH0koI25LIjdeal2KNXTDe-pE643Lyde20Bpi2aQ1bvcF2bOJg=s696-k-no",
+          "alt": {
+            "en": "Burger King Opéra",
+            "pt-BR": "Burger King Opéra"
+          }
+        }
+      ],
+      "tags": [
+        "🍔 Chains"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8108-a74f-fbbea699bcf0",
+      "id": "par-cafe-flore",
+      "city": "paris",
+      "name": {
+        "en": "Café de Flore",
+        "pt-BR": "Café de Flore"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Saint-Germain classic still loved by locals and writers — pricey but iconic.",
+        "pt-BR": "Clássico de Saint-Germain ainda frequentado por locais e escritores — caro, mas icônico."
+      },
+      "lat": 48.8541,
+      "lng": 2.3326,
+      "address": "172 Boulevard Saint-Germain, 75006 Paris",
+      "mapsQuery": "Café de Flore Paris",
+      "googleRating": 4.1,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_chocolate_p1150797.jpg/1280px-Hot_chocolate_p1150797.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_chocolate_p1150797.jpg/1280px-Hot_chocolate_p1150797.jpg",
+          "alt": {
+            "en": "Café de Flore",
+            "pt-BR": "Café de Flore"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:30:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8126-8a77-e38e235ac122",
+      "id": "par-casa-do-gui",
+      "city": "paris",
+      "name": {
+        "en": "Casa do Gui",
+        "pt-BR": "Casa do Gui"
+      },
+      "category": "lodging",
+      "description": {
+        "en": "Home base in Noisy-le-Sec — east of Paris, easy RER access into the city.",
+        "pt-BR": "Base em Noisy-le-Sec — leste de Paris, com bom acesso de RER ao centro."
+      },
+      "lat": 48.893017,
+      "lng": 2.454059,
+      "address": "30 Rue des Bergeries, 93130 Noisy-le-Sec",
+      "mapsQuery": "30 Rue des Bergeries, 93130 Noisy-le-Sec",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🛏️ Stay"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8163-ba86-d569cc666cc1",
+      "id": "par-cdg-rer",
+      "city": "paris",
+      "name": {
+        "en": "CDG 2 TGV · Navigo",
+        "pt-BR": "CDG 2 TGV · Navigo"
+      },
+      "category": "transport",
+      "description": {
+        "en": "RER B under Terminal 2 — buy Navigo Easy here, then ride into Paris (Magenta / Gare du Nord).",
+        "pt-BR": "RER B sob o Terminal 2 — compre Navigo Easy aqui e siga para Paris (Magenta / Gare du Nord)."
+      },
+      "lat": 49.0039,
+      "lng": 2.5708,
+      "address": "Gare Aéroport Charles de Gaulle 2 TGV, 95700 Roissy-en-France",
+      "mapsQuery": "Gare Aéroport Charles de Gaulle 2 TGV Navigo",
+      "googleRating": 3.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "metro"
+      ],
+      "tags": [
+        "🚆 Transport"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f6-b65b-fa92bba59ffe",
+      "id": "par-cedric-grolet",
+      "city": "paris",
+      "name": {
+        "en": "Cédric Grolet",
+        "pt-BR": "Cédric Grolet"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Pastry spectacle. Expect a line; worth the wait if you care.",
+        "pt-BR": "Espetáculo de confeitaria. Espere fila; vale se você curte."
+      },
+      "lat": 48.8678522,
+      "lng": 2.3332982,
+      "address": "35 Avenue de l'Opéra, 75002 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/C%C3%A9dric+Grolet/@48.8678522,2.3307233,17z",
+      "mapsQuery": "Cédric Grolet Paris",
+      "rating": 5,
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://cdn.sortiraparis.com/images/80/76511/340058-la-patisserie-de-cedric-grolet-au-meurice.jpg",
+      "photos": [
+        {
+          "url": "https://cdn.sortiraparis.com/images/80/76511/340058-la-patisserie-de-cedric-grolet-au-meurice.jpg",
+          "alt": {
+            "en": "Cédric Grolet",
+            "pt-BR": "Cédric Grolet"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8144-bb8e-fdd9487f5453",
+      "id": "par-pompidou",
+      "city": "paris",
+      "name": {
+        "en": "Centre Pompidou",
+        "pt-BR": "Centre Pompidou"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Inside-out museum. Plaza energy even from outside.",
+        "pt-BR": "Museu do avesso. Energia da praça mesmo por fora."
+      },
+      "lat": 48.8606,
+      "lng": 2.3522,
+      "address": "Pl. Georges-Pompidou, 75004 Paris",
+      "mapsQuery": "Centre Pompidou Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "landmark": "pompidou",
+      "subcategories": [
+        "museum",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Pompidou_Centre.jpg/1280px-Pompidou_Centre.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Pompidou_Centre.jpg/1280px-Pompidou_Centre.jpg",
+          "alt": {
+            "en": "Centre Pompidou",
+            "pt-BR": "Centre Pompidou"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81cf-9795-eb745c0a7f59",
+      "id": "par-champ-mars",
+      "city": "paris",
+      "name": {
+        "en": "Champ de Mars",
+        "pt-BR": "Champ de Mars"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The lawn under the Tower. Sunset picnic territory.",
+        "pt-BR": "O gramado sob a Torre. Território de piquenique no pôr do sol."
+      },
+      "lat": 48.8556,
+      "lng": 2.2986,
+      "address": "Champ de Mars, 75007 Paris",
+      "mapsQuery": "Champ de Mars Paris",
+      "rating": 5,
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "garden"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Champ_de_Mars_from_the_Eiffel_Tower_-_July_2006_edit.jpg/1280px-Champ_de_Mars_from_the_Eiffel_Tower_-_July_2006_edit.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Champ_de_Mars_from_the_Eiffel_Tower_-_July_2006_edit.jpg/1280px-Champ_de_Mars_from_the_Eiffel_Tower_-_July_2006_edit.jpg",
+          "alt": {
+            "en": "Champ de Mars",
+            "pt-BR": "Champ de Mars"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f9-a398-c8b35f9121ab",
+      "id": "par-champs-elysees",
+      "city": "paris",
+      "name": {
+        "en": "Champs-Élysées",
+        "pt-BR": "Champs-Élysées"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The avenue. Walk from Concorde up to the Arc.",
+        "pt-BR": "A avenida. Suba da Concorde até o Arco."
+      },
+      "lat": 48.8698,
+      "lng": 2.3078,
+      "address": "Av. des Champs-Élysées, 75008 Paris",
+      "mapsQuery": "Champs-Élysées Paris",
+      "rating": 4.5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "avenue"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Avenue_des_Champs-%C3%89lys%C3%A9es_July_24%2C_2009_N1.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Avenue_des_Champs-%C3%89lys%C3%A9es_July_24%2C_2009_N1.jpg",
+          "alt": {
+            "en": "Champs-Élysées",
+            "pt-BR": "Champs-Élysées"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-812f-8647-f11d46655697",
+      "id": "par-arnaud-nicolas",
+      "city": "paris",
+      "name": {
+        "en": "Charcuterie Arnaud Nicolas",
+        "pt-BR": "Charcuterie Arnaud Nicolas"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Serious charcuterie near Lévis. Perfect for a picnic haul.",
+        "pt-BR": "Charcutaria séria perto de Lévis. Perfeita para montar piquenique."
+      },
+      "lat": 48.8818624,
+      "lng": 2.3161397,
+      "address": "46 Rue de Lévis, 75017 Paris",
+      "mapsUrl": "https://www.google.com/maps/place/Charcuterie+Arnaud+Nicolas+L%C3%A9vis/@48.8757052,2.3221345,13.75z",
+      "mapsQuery": "Charcuterie Arnaud Nicolas Lévis Paris",
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "charcuterie",
+        "meat",
+        "french"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9e/P1160897_Paris_XVII_rue_de_L%C3%A9vis_rwk.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/P1160897_Paris_XVII_rue_de_L%C3%A9vis_rwk.jpg",
+          "alt": {
+            "en": "Charcuterie Arnaud Nicolas",
+            "pt-BR": "Charcuterie Arnaud Nicolas"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-814d-acf3-cdc374276d9e",
+      "id": "par-cdg",
+      "city": "paris",
+      "name": {
+        "en": "Charles de Gaulle Airport (CDG)",
+        "pt-BR": "Aeroporto Charles de Gaulle (CDG)"
+      },
+      "category": "airport",
+      "description": {
+        "en": "Main long-haul hub north of Paris. RER B into the city (~45–60 min to the center).",
+        "pt-BR": "Principal hub de longos voos ao norte de Paris. RER B até a cidade (~45–60 min ao centro)."
+      },
+      "lat": 49.0097,
+      "lng": 2.5479,
+      "address": "95700 Roissy-en-France, France",
+      "mapsQuery": "Aéroport de Paris-Charles de Gaulle CDG",
+      "googleRating": 3.6,
+      "favorite": false,
+      "featured": true,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Aerial_view_of_Paris-Charles_de_Gaulle_airport.jpg/1280px-Aerial_view_of_Paris-Charles_de_Gaulle_airport.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Aerial_view_of_Paris-Charles_de_Gaulle_airport.jpg/1280px-Aerial_view_of_Paris-Charles_de_Gaulle_airport.jpg",
+          "alt": {
+            "en": "Charles de Gaulle Airport (CDG)",
+            "pt-BR": "Aeroporto Charles de Gaulle (CDG)"
+          }
+        }
+      ],
+      "tags": [
+        "✈️ Airport"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8128-b259-de0a311429d8",
+      "id": "par-versailles",
+      "city": "paris",
+      "name": {
+        "en": "Château de Versailles",
+        "pt-BR": "Château de Versailles"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Louis XIV’s palace + gardens + Trianon — full day via RER C (Rive Gauche) + ~10 min walk. Passport ~€32–35; closed Mondays.",
+        "pt-BR": "Palácio de Luís XIV + jardins + Trianon — dia inteiro via RER C (Rive Gauche) + ~10 min a pé. Passport ~€32–35; fecha às segundas."
+      },
+      "lat": 48.8049,
+      "lng": 2.1204,
+      "address": "Place d'Armes, 78000 Versailles",
+      "mapsQuery": "Château de Versailles",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "palace",
+        "monument",
+        "garden"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg/1280px-Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg/1280px-Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg",
+          "alt": {
+            "en": "Château de Versailles",
+            "pt-BR": "Château de Versailles"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8158-976f-c643d3e9a25e",
+      "id": "par-chateau-vincennes",
+      "city": "paris",
+      "name": {
+        "en": "Château de Vincennes",
+        "pt-BR": "Castelo de Vincennes"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Medieval castle next to the Bois. Keep, walls, and history on the east side of Paris.",
+        "pt-BR": "Castelo medieval ao lado do bosque. Torre, muralhas e história no leste de Paris."
+      },
+      "lat": 48.84291,
+      "lng": 2.43581,
+      "address": "Avenue de Paris, 94300 Vincennes",
+      "mapsQuery": "Château de Vincennes",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "castle",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Vincennes_-_Chateau_02.jpg/3840px-Vincennes_-_Chateau_02.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Vincennes_-_Chateau_02.jpg/3840px-Vincennes_-_Chateau_02.jpg",
+          "alt": {
+            "en": "Château de Vincennes",
+            "pt-BR": "Castelo de Vincennes"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-815b-b972-db58c563175b",
+      "id": "par-chez-elo",
+      "city": "paris",
+      "name": {
+        "en": "Chez Elo",
+        "pt-BR": "Chez Elo"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Neighborhood table. Keep it simple and local.",
+        "pt-BR": "Mesa de bairro. Simples e local."
+      },
+      "lat": 48.865,
+      "lng": 2.355,
+      "address": "61 Rue de Bretagne, 75003 Paris",
+      "mapsQuery": "Chez Elo Paris",
+      "googleRating": 4.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+          "alt": {
+            "en": "Chez Elo",
+            "pt-BR": "Chez Elo"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81bf-b1a4-d3732706bf0c",
+      "id": "par-chez-janou",
+      "city": "paris",
+      "name": {
+        "en": "Chez Janou",
+        "pt-BR": "Chez Janou"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Provençal vibes and chocolate mousse legend.",
+        "pt-BR": "Clima provençal e a lenda da mousse de chocolate."
+      },
+      "lat": 48.856,
+      "lng": 2.3658,
+      "address": "2 Rue Roger Verlomme, 75003 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/Zqpj2W2iLWngwcFC7",
+      "mapsQuery": "Chez Janou Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://live.staticflickr.com/55/143096731_7a3ef7ff8f_b.jpg",
+      "photos": [
+        {
+          "url": "https://live.staticflickr.com/55/143096731_7a3ef7ff8f_b.jpg",
+          "alt": {
+            "en": "Chez Janou",
+            "pt-BR": "Chez Janou"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8132-9313-d4b302d44881",
+      "id": "par-horloge",
+      "city": "paris",
+      "name": {
+        "en": "Conciergerie Clock",
+        "pt-BR": "Relógio da Conciergerie"
+      },
+      "category": "photo",
+      "description": {
+        "en": "One of the oldest public clocks in Paris. Look up on the tower.",
+        "pt-BR": "Um dos relógios públicos mais antigos de Paris. Olhe a torre."
+      },
+      "lat": 48.8559,
+      "lng": 2.3456,
+      "address": "2 Bd du Palais, 75001 Paris",
+      "mapsQuery": "Horloge Conciergerie Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "architecture",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Paris_Conciergerie_265.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Paris_Conciergerie_265.jpg",
+          "alt": {
+            "en": "Conciergerie Clock",
+            "pt-BR": "Relógio da Conciergerie"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8196-9cf1-c5f26eeff8f6",
+      "id": "par-cour-commerce",
+      "city": "paris",
+      "name": {
+        "en": "Cour du Commerce Saint-André",
+        "pt-BR": "Cour du Commerce Saint-André"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Covered passage with history and good wandering.",
+        "pt-BR": "Passagem coberta com história e boa para vaguear."
+      },
+      "lat": 48.8530736,
+      "lng": 2.3390876,
+      "address": "Cr du Commerce Saint-André, 75006 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Cr+du+Commerce+Saint-Andr%C3%A9,+75006+Paris/@48.853095,2.3383737,18.5z",
+      "mapsQuery": "Cour du Commerce Saint-André Paris",
+      "googleRating": 5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market-street",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Plaque_Sainte-Beuve%2C_2_cour_du_Commerce-Saint-Andr%C3%A9%2C_Paris_6e.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Plaque_Sainte-Beuve%2C_2_cour_du_Commerce-Saint-Andr%C3%A9%2C_Paris_6e.jpg",
+          "alt": {
+            "en": "Cour du Commerce Saint-André",
+            "pt-BR": "Cour du Commerce Saint-André"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81fe-9743-dc555a35fc82",
+      "id": "par-creperie-arts",
+      "city": "paris",
+      "name": {
+        "en": "Crêperie des Arts",
+        "pt-BR": "Crêperie des Arts"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Crêpes on Rue Saint-André des Arts.",
+        "pt-BR": "Crêpes na Rue Saint-André des Arts."
+      },
+      "lat": 48.8532,
+      "lng": 2.3405,
+      "address": "27 Rue Saint-André des Arts, 75006 Paris",
+      "mapsUrl": "https://www.google.com/maps?q=Cr%C3%AAperie+des+Arts,+27+Rue+Saint-Andr%C3%A9+des+Arts,+75006+Paris",
+      "mapsQuery": "Crêperie des Arts Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "creperie",
+        "french"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/Cr%C3%AAperie_des_Arts%2C_27_Rue_Saint-Andr%C3%A9-des-Arts_%28Paris%29_2010-07-29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Cr%C3%AAperie_des_Arts%2C_27_Rue_Saint-Andr%C3%A9-des-Arts_%28Paris%29_2010-07-29.jpg",
+          "alt": {
+            "en": "Crêperie des Arts",
+            "pt-BR": "Crêperie des Arts"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8194-b5c9-efb1ec38dbcf",
+      "id": "par-disneyland",
+      "city": "paris",
+      "name": {
+        "en": "Disneyland Paris",
+        "pt-BR": "Disneyland Paris"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Two theme parks in Marne-la-Vallée (Disneyland Park + Adventure World). RER A to Chessy (~40 min) + short walk; full day of rides and parades.",
+        "pt-BR": "Dois parques temáticos em Marne-la-Vallée (Disneyland Park + Adventure World). RER A até Chessy (~40 min) + caminhada curta; dia inteiro de brinquedos e paradas."
+      },
+      "lat": 48.871,
+      "lng": 2.7765,
+      "address": "Boulevard de Parc, 77700 Chessy",
+      "mapsQuery": "Disneyland Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "show"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Sleeping_Beauty_Castle_DLP_Jan_2013.jpg/1280px-Sleeping_Beauty_Castle_DLP_Jan_2013.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Sleeping_Beauty_Castle_DLP_Jan_2013.jpg/1280px-Sleeping_Beauty_Castle_DLP_Jan_2013.jpg",
+          "alt": {
+            "en": "Disneyland Paris",
+            "pt-BR": "Disneyland Paris"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-814a-b14a-c78d8e747a22",
+      "id": "par-madeleine",
+      "city": "paris",
+      "name": {
+        "en": "Église de la Madeleine",
+        "pt-BR": "Église de la Madeleine"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Temple-like church and the surrounding food streets.",
+        "pt-BR": "Igreja em forma de templo e as ruas de comida ao redor."
+      },
+      "lat": 48.87,
+      "lng": 2.3244,
+      "address": "Pl. de la Madeleine, 75008 Paris",
+      "mapsUrl": "https://www.foyerdelamadeleine.fr/restaurant",
+      "mapsQuery": "Église de la Madeleine Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "church",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Eglise_de_la_Madeleine_2024.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Eglise_de_la_Madeleine_2024.jpg",
+          "alt": {
+            "en": "Église de la Madeleine",
+            "pt-BR": "Église de la Madeleine"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81e1-abd8-fb2fd843e6df",
+      "id": "par-eiffel",
+      "city": "paris",
+      "name": {
+        "en": "Eiffel Tower",
+        "pt-BR": "Torre Eiffel"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Still worth it. Go early or late for better light.",
+        "pt-BR": "Ainda vale. Vá cedo ou tarde pela luz."
+      },
+      "lat": 48.8584,
+      "lng": 2.2945,
+      "address": "Champ de Mars, 5 Av. Anatole France, 75007 Paris",
+      "placeId": "ChIJLU7jZClu5kcR4pc9BdEGZig",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Tour%20Eiffel%20Paris&query_place_id=ChIJLU7jZClu5kcR4pc9BdEGZig",
+      "mapsQuery": "Tour Eiffel Paris",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": true,
+      "landmark": "eiffel",
+      "subcategories": [
+        "monument",
+        "tower",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/1280px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/1280px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",
+          "alt": {
+            "en": "Eiffel Tower",
+            "pt-BR": "Torre Eiffel"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8110-861d-cd755b0ef776",
+      "id": "par-esplanade-de-gaulle",
+      "city": "paris",
+      "name": {
+        "en": "Esplanade du Général de Gaulle",
+        "pt-BR": "Esplanade du Général de Gaulle"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Long open esplanade under the towers — skyline, fountains, and the axis toward Paris.",
+        "pt-BR": "Esplanada longa sob as torres — skyline, fontes e o eixo em direção a Paris."
+      },
+      "lat": 48.8889,
+      "lng": 2.2468,
+      "address": "Esplanade du Général de Gaulle, 92800 Puteaux",
+      "mapsQuery": "Esplanade du Général de Gaulle La Défense",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "architecture",
+        "viewpoint"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmLEK9QnMY98qZVpGsRj5nO0eWncgd-vKOPRLmpxv994Z8T6kalIa1YMqKr9Ib0trrWlWBW0ahvB9_DOv8JIRuhVr4qfH0PeXwjA79OXK_McyKSB33lz02N1cohcPXR7YCSyfRQ=s1219-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmLEK9QnMY98qZVpGsRj5nO0eWncgd-vKOPRLmpxv994Z8T6kalIa1YMqKr9Ib0trrWlWBW0ahvB9_DOv8JIRuhVr4qfH0PeXwjA79OXK_McyKSB33lz02N1cohcPXR7YCSyfRQ=s1219-k-no",
+          "alt": {
+            "en": "Esplanade du Général de Gaulle",
+            "pt-BR": "Esplanade du Général de Gaulle"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-816a-aa9f-d07336b4c86a",
+      "id": "par-five-guys-rivoli",
+      "city": "paris",
+      "name": {
+        "en": "Five Guys Rivoli",
+        "pt-BR": "Five Guys Rivoli"
+      },
+      "category": "commons",
+      "description": {
+        "en": "US chain burgers near the Louvre corridor — messy, filling, no reservation drama.",
+        "pt-BR": "Burgers da rede americana perto do eixo do Louvre — bagunçado, enche, sem drama de reserva."
+      },
+      "lat": 48.8608,
+      "lng": 2.3365,
+      "address": "105 Rue de Rivoli, 75001 Paris",
+      "mapsQuery": "Five Guys Rue de Rivoli Paris",
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "burgers"
+      ],
+      "tags": [
+        "🍔 Chains"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81ea-a9e8-f7516dce0c14",
+      "id": "par-fondation-lv",
+      "city": "paris",
+      "name": {
+        "en": "Fondation Louis Vuitton",
+        "pt-BR": "Fondation Louis Vuitton"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Frank Gehry sails in the Bois de Boulogne — go for the building photos more than the blockbuster museum queue.",
+        "pt-BR": "Velas do Gehry no Bois de Boulogne — vale mais pela foto do prédio do que pela fila de museu."
+      },
+      "lat": 48.87665,
+      "lng": 2.26334,
+      "address": "8 Av. du Mahatma Gandhi, 75116 Paris",
+      "mapsQuery": "Fondation Louis Vuitton Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "architecture",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/en/0/03/Fondation_Louis_Vuitton_-_Paris_%2850569906682%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/en/0/03/Fondation_Louis_Vuitton_-_Paris_%2850569906682%29.jpg",
+          "alt": {
+            "en": "Fondation Louis Vuitton",
+            "pt-BR": "Fondation Louis Vuitton"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81e3-924e-f54fcd13bedd",
+      "id": "par-forum-halles",
+      "city": "paris",
+      "name": {
+        "en": "Forum des Halles",
+        "pt-BR": "Forum des Halles"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Central mall under the Canopée — chains, cinemas, and métro hub.",
+        "pt-BR": "Shopping central sob a Canopée — redes, cinema e hub de metrô."
+      },
+      "lat": 48.862,
+      "lng": 2.3465,
+      "address": "Forum des Halles, 75001 Paris",
+      "mapsQuery": "Forum des Halles Paris",
+      "googleRating": 3.9,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "mall"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkIc4UdAVBkz5wAbJ8WviLm915QyPqJLdAlrF3iV3NIDAD-5GOWnA-_WxJ-roqa8y4oCY4tYMRwVmb9607O7hTeq1W6v6rBRasHAx2FT3sN32u5qcK1f-aV-8tcSJ21uaKSvkhrXQGDkZZ8=s696-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkIc4UdAVBkz5wAbJ8WviLm915QyPqJLdAlrF3iV3NIDAD-5GOWnA-_WxJ-roqa8y4oCY4tYMRwVmb9607O7hTeq1W6v6rBRasHAx2FT3sN32u5qcK1f-aV-8tcSJ21uaKSvkhrXQGDkZZ8=s696-k-no",
+          "alt": {
+            "en": "Forum des Halles",
+            "pt-BR": "Forum des Halles"
+          }
+        }
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f3-b5fa-f5297fdd269e",
+      "id": "par-francette",
+      "city": "paris",
+      "name": {
+        "en": "Francette",
+        "pt-BR": "Francette"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Port de Suffren terrace energy by the river.",
+        "pt-BR": "Energia de terraço no Port de Suffren, beira-rio."
+      },
+      "lat": 48.8558,
+      "lng": 2.2905,
+      "address": "1 Port de Suffren, 75007 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/saWLoSvCKrQWzaw79",
+      "mapsQuery": "Francette Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/P1080375_Paris_XV_Port_de_Suffren_rwk.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/a/aa/P1080375_Paris_XV_Port_de_Suffren_rwk.JPG",
+          "alt": {
+            "en": "Francette",
+            "pt-BR": "Francette"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8109-80be-d9160bba8d6d",
+      "id": "par-fric-frac",
+      "city": "paris",
+      "name": {
+        "en": "Fric-Frac",
+        "pt-BR": "Fric-Frac"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Croque-monsieur specialists up by Canal Saint-Martin energy.",
+        "pt-BR": "Especialistas em croque perto da energia do Canal Saint-Martin."
+      },
+      "lat": 48.8838194,
+      "lng": 2.3416479,
+      "address": "99 Quai de Valmy, 75010 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Fric-Frac/@48.8838194,2.339073,17z",
+      "mapsQuery": "Fric-Frac Paris",
+      "googleRating": 4.9,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Canal_Saint-Martin_P1060441.JPG/3840px-Canal_Saint-Martin_P1060441.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Canal_Saint-Martin_P1060441.JPG/3840px-Canal_Saint-Martin_P1060441.JPG",
+          "alt": {
+            "en": "Fric-Frac",
+            "pt-BR": "Fric-Frac"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8180-a458-dbba843a6a0b",
+      "id": "par-galeries-lafayette",
+      "city": "paris",
+      "name": {
+        "en": "Galeries Lafayette",
+        "pt-BR": "Galeries Lafayette"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Dome, rooftop view, and department-store theater.",
+        "pt-BR": "Cúpula, terraço e teatro de loja de departamento."
+      },
+      "lat": 48.8738,
+      "lng": 2.332,
+      "address": "40 Bd Haussmann, 75009 Paris",
+      "mapsQuery": "Galeries Lafayette Haussmann",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "department",
+        "architecture",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg",
+          "alt": {
+            "en": "Galeries Lafayette",
+            "pt-BR": "Galeries Lafayette"
+          }
+        }
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81ac-9795-e45cd007e199",
+      "id": "par-grande-arche",
+      "city": "paris",
+      "name": {
+        "en": "Grande Arche de la Défense",
+        "pt-BR": "Grande Arche de la Défense"
+      },
+      "category": "photo",
+      "description": {
+        "en": "The “Great Arch” — cube frame on the historic axis. Best photos from the parvis and steps.",
+        "pt-BR": "O “Grande Arco” — cubo no eixo histórico. Melhores fotos no parvis e na escadaria."
+      },
+      "lat": 48.8927,
+      "lng": 2.2359,
+      "address": "1 Parvis de la Défense, 92040 Paris La Défense",
+      "mapsQuery": "Grande Arche de la Défense",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "architecture",
+        "viewpoint"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmahbvRwF1cvKduou9vRtXurYY3w9gIBNKAlCk0TA1UXpLv04fzMzPniM-ewJjT2K4fA7BvxwdRJbdvJu8LsnJR34B63YMk2pXYooIOWoG5zKcZdUIHNs2lxWfh2iIO2WLkC1bH-A=s1219-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmahbvRwF1cvKduou9vRtXurYY3w9gIBNKAlCk0TA1UXpLv04fzMzPniM-ewJjT2K4fA7BvxwdRJbdvJu8LsnJR34B63YMk2pXYooIOWoG5zKcZdUIHNs2lxWfh2iIO2WLkC1bH-A=s1219-k-no",
+          "alt": {
+            "en": "Grande Arche de la Défense",
+            "pt-BR": "Grande Arche de la Défense"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81a6-b37a-d612abd08cb1",
+      "id": "par-hotel-ville",
+      "city": "paris",
+      "name": {
+        "en": "Hôtel de Ville",
+        "pt-BR": "Hôtel de Ville"
+      },
+      "category": "photo",
+      "description": {
+        "en": "City hall square. Often hosts outdoor installations.",
+        "pt-BR": "Praça da prefeitura. Costuma ter instalações ao ar livre."
+      },
+      "lat": 48.8566,
+      "lng": 2.3522,
+      "address": "Pl. de l'Hôtel de Ville, 75004 Paris",
+      "mapsQuery": "Hôtel de Ville Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/H%C3%B4tel_ville_fa%C3%A7ade_principale_Paris_11.jpg/3840px-H%C3%B4tel_ville_fa%C3%A7ade_principale_Paris_11.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/H%C3%B4tel_ville_fa%C3%A7ade_principale_Paris_11.jpg/3840px-H%C3%B4tel_ville_fa%C3%A7ade_principale_Paris_11.jpg",
+          "alt": {
+            "en": "Hôtel de Ville",
+            "pt-BR": "Hôtel de Ville"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81cc-8115-d9561918a242",
+      "id": "par-invalides",
+      "city": "paris",
+      "name": {
+        "en": "Invalides",
+        "pt-BR": "Invalides"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Dome, museums, and a wide open esplanade.",
+        "pt-BR": "Cúpula, museus e esplanada aberta."
+      },
+      "lat": 48.8565,
+      "lng": 2.3125,
+      "address": "129 Rue de Grenelle, 75007 Paris",
+      "mapsQuery": "Invalides Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "monument",
+        "museum",
+        "palace"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/H%C3%B4tel_des_Invalides_from_the_Eiffel_Tower%2C_23_July_2009.jpg/3840px-H%C3%B4tel_des_Invalides_from_the_Eiffel_Tower%2C_23_July_2009.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/H%C3%B4tel_des_Invalides_from_the_Eiffel_Tower%2C_23_July_2009.jpg/3840px-H%C3%B4tel_des_Invalides_from_the_Eiffel_Tower%2C_23_July_2009.jpg",
+          "alt": {
+            "en": "Invalides",
+            "pt-BR": "Invalides"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8184-857a-debb7174a9dd",
+      "id": "par-serres-auteuil",
+      "city": "paris",
+      "name": {
+        "en": "Jardin des Serres d'Auteuil",
+        "pt-BR": "Jardin des Serres d'Auteuil"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Large historic greenhouse garden on the edge of the Bois de Boulogne. Old glass, plants, and beauty.",
+        "pt-BR": "Estufa grande e antiga na beira do Bois de Boulogne. Vidro antigo, plantas e bem bonita."
+      },
+      "lat": 48.8467,
+      "lng": 2.2526,
+      "address": "3 Av. de la Porte d'Auteuil, 75016 Paris",
+      "mapsQuery": "Jardin des Serres d'Auteuil Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "garden"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/74/Serianthes_calycina_au_Jardin_des_Serres_d%27Auteuil_%28Paris%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/74/Serianthes_calycina_au_Jardin_des_Serres_d%27Auteuil_%28Paris%29.jpg",
+          "alt": {
+            "en": "Jardin des Serres d'Auteuil",
+            "pt-BR": "Jardin des Serres d'Auteuil"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-818c-a6fe-cd48efc57676",
+      "id": "par-jeffrey-cagnes",
+      "city": "paris",
+      "name": {
+        "en": "Jeffrey Cagnes",
+        "pt-BR": "Jeffrey Cagnes"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Pastry counter in the 1st. Sweet break between sights.",
+        "pt-BR": "Balcão de confeitaria no 1º. Pausa doce entre atrações."
+      },
+      "lat": 48.8697133,
+      "lng": 2.327773,
+      "address": "1 Boulevard de la Madeleine, 75009 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/7ftDEDXvdHtxPYndA",
+      "mapsQuery": "Jeffrey Cagnes Paris 1er",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://cdn.sortiraparis.com/images/80/95310/680422-la-patisserie-de-jeffrey-cagnes-les-photos.jpg",
+      "photos": [
+        {
+          "url": "https://cdn.sortiraparis.com/images/80/95310/680422-la-patisserie-de-jeffrey-cagnes-les-photos.jpg",
+          "alt": {
+            "en": "Jeffrey Cagnes",
+            "pt-BR": "Jeffrey Cagnes"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-815f-a6cd-d5852522babd",
+      "id": "par-kfc-les-halles",
+      "city": "paris",
+      "name": {
+        "en": "KFC Les Halles",
+        "pt-BR": "KFC Les Halles"
+      },
+      "category": "commons",
+      "description": {
+        "en": "KFC in the Forum des Halles cluster — quick fried chicken when the city is loud.",
+        "pt-BR": "KFC no cluster do Forum des Halles — frango rápido quando a cidade está barulhenta."
+      },
+      "lat": 48.8615,
+      "lng": 2.3472,
+      "address": "Forum des Halles, 75001 Paris",
+      "mapsQuery": "KFC Forum des Halles Paris",
+      "googleRating": 3.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "chicken"
+      ],
+      "tags": [
+        "🍔 Chains"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-812a-aa90-cfe850c75517",
+      "id": "par-eclair-genie",
+      "city": "paris",
+      "name": {
+        "en": "L'Éclair de Génie",
+        "pt-BR": "L'Éclair de Génie"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Éclair specialists. Grab one and walk.",
+        "pt-BR": "Especialistas em éclair. Pegue um e caminhe."
+      },
+      "lat": 48.8731537,
+      "lng": 2.3304052,
+      "address": "32 Rue Notre-Dame-des-Victoires, 75002 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/L'Eclair+De+Genie/@48.8731535,2.325899,17z",
+      "mapsQuery": "L'Éclair de Génie Paris",
+      "googleRating": 4.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhMAM7N2tcdxVfxVPeyk8nRURyi11fzq8FSMdaOG7zWqVZA8D7aGTgyKU&s=10",
+      "photos": [
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhMAM7N2tcdxVfxVPeyk8nRURyi11fzq8FSMdaOG7zWqVZA8D7aGTgyKU&s=10",
+          "alt": {
+            "en": "L'Éclair de Génie",
+            "pt-BR": "L'Éclair de Génie"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-810d-b204-fcb77d97bf44",
+      "id": "par-la-defense",
+      "city": "paris",
+      "name": {
+        "en": "La Défense",
+        "pt-BR": "La Défense"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Business skyline and the Grande Arche axis.",
+        "pt-BR": "Skyline corporativo e o eixo da Grande Arche."
+      },
+      "lat": 48.891,
+      "lng": 2.241,
+      "address": "La Défense, 92800 Puteaux",
+      "mapsQuery": "La Défense Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "architecture",
+        "neighborhood"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/La_D%C3%A9fense_Juin_2025.jpg/3840px-La_D%C3%A9fense_Juin_2025.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/La_D%C3%A9fense_Juin_2025.jpg/3840px-La_D%C3%A9fense_Juin_2025.jpg",
+          "alt": {
+            "en": "La Défense",
+            "pt-BR": "La Défense"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8181-92fa-d4524858f56f",
+      "id": "par-felicita",
+      "city": "paris",
+      "name": {
+        "en": "La Felicità",
+        "pt-BR": "La Felicità"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Huge food hall at Station F. Go hungry.",
+        "pt-BR": "Food hall enorme na Station F. Vá com fome."
+      },
+      "lat": 48.8339,
+      "lng": 2.371,
+      "address": "5 Parvis Alan Turing, 75013 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/qhqK9AntK4mxKyWy7",
+      "mapsQuery": "La Felicità Station F Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "self-service",
+        "italian"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/1/17/Bar_et_restaurant_dans_La_Felicit%C3%A0%2C_Paris._02.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/Bar_et_restaurant_dans_La_Felicit%C3%A0%2C_Paris._02.jpg",
+          "alt": {
+            "en": "La Felicità",
+            "pt-BR": "La Felicità"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-813a-8094-f75ca84af6fe",
+      "id": "par-maison-isabelle",
+      "city": "paris",
+      "name": {
+        "en": "La Maison d'Isabelle",
+        "pt-BR": "La Maison d'Isabelle"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "One of the most awarded croissants in Paris.",
+        "pt-BR": "Um dos croissants mais premiados de Paris."
+      },
+      "lat": 48.8498436,
+      "lng": 2.3482751,
+      "address": "47 Boulevard Saint-Germain, 75005 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/La+Maison+d'Isabelle/@48.8498436,2.3457002,17z",
+      "mapsQuery": "La Maison d'Isabelle Paris",
+      "rating": 5,
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "pastry",
+        "bakery"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk0gzwLpcH_UdtOadluoLz-GOpOPH3CA9DYt3dHWZUGsU9pqbUhfgKRWFl2UVKFizBRq1bqr17yM81ewmNKy36Oenp3cMYqw9CW60z0AqIxzByyP7op0p3x0_FNUQmYXeFsn1eCjfnxhZPN=s773-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk0gzwLpcH_UdtOadluoLz-GOpOPH3CA9DYt3dHWZUGsU9pqbUhfgKRWFl2UVKFizBRq1bqr17yM81ewmNKy36Oenp3cMYqw9CW60z0AqIxzByyP7op0p3x0_FNUQmYXeFsn1eCjfnxhZPN=s773-k-no",
+          "alt": {
+            "en": "La Maison d'Isabelle",
+            "pt-BR": "La Maison d'Isabelle"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81a6-ab0b-e2e8532fd87d",
+      "id": "par-baron-rouge",
+      "city": "paris",
+      "name": {
+        "en": "Le Baron Rouge",
+        "pt-BR": "Le Baron Rouge"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Legendary wine bar by Marché d’Aligre — barrel wine + weekend oysters.",
+        "pt-BR": "Bar a vin lendário ao lado do Marché d’Aligre — vinho do barril + ostras no fim de semana."
+      },
+      "lat": 48.8494,
+      "lng": 2.3775,
+      "address": "1 Rue Théophile Roussel, 75012 Paris",
+      "mapsQuery": "Le Baron Rouge Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:30:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f7-94f9-dc537494e64c",
+      "id": "par-bon-marche",
+      "city": "paris",
+      "name": {
+        "en": "Le Bon Marché",
+        "pt-BR": "Le Bon Marché"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Left-bank grand magasin — elegant floors and the legendary Grande Épicerie.",
+        "pt-BR": "Grand magasin da margem esquerda — andares elegantes e a lendária Grande Épicerie."
+      },
+      "lat": 48.8511,
+      "lng": 2.3244,
+      "address": "24 Rue de Sèvres, 75007 Paris",
+      "mapsQuery": "Le Bon Marché Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "department",
+        "architecture"
+      ],
+      "coverUrl": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/35/35/68/le-bon-marche.jpg?w=1200&h=-1&s=1",
+      "photos": [
+        {
+          "url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/35/35/68/le-bon-marche.jpg?w=1200&h=-1&s=1",
+          "alt": {
+            "en": "Le Bon Marché",
+            "pt-BR": "Le Bon Marché"
+          }
+        }
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8180-80b5-c8edba5fc788",
+      "id": "par-bake-blend",
+      "city": "paris",
+      "name": {
+        "en": "Le café by Maison Bergeron",
+        "pt-BR": "Le café by Maison Bergeron"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Coffee and bakery stop near the Champ de Mars.",
+        "pt-BR": "Café e padaria perto do Champ de Mars."
+      },
+      "lat": 48.8584,
+      "lng": 2.3008,
+      "address": "1 Rue Amélie, 75007 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/ezkYGpjLCM1ZrFuC8",
+      "mapsQuery": "Le café by Maison Bergeron Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "coffee-shop"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWldBjMg13upIn99jRPyDfD4dh8tuB7AnKHDUd9No_zbcT2134mE43O_M6B6tzOIYeB9UCgTCHgEGek2iUPKLZB2hVjQbM1cxh0vmvbQKK2ha7r5XnvV-ydkGK_ZsIHejFQztzKN9siBV_4p=s392-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWldBjMg13upIn99jRPyDfD4dh8tuB7AnKHDUd9No_zbcT2134mE43O_M6B6tzOIYeB9UCgTCHgEGek2iUPKLZB2hVjQbM1cxh0vmvbQKK2ha7r5XnvV-ydkGK_ZsIHejFQztzKN9siBV_4p=s392-k-no",
+          "alt": {
+            "en": "Le café by Maison Bergeron",
+            "pt-BR": "Le café by Maison Bergeron"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8196-99d6-f4d8dc0d9bad",
+      "id": "par-franklin-passy",
+      "city": "paris",
+      "name": {
+        "en": "Le Franklin Passy",
+        "pt-BR": "Le Franklin Passy"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Passy classic near Trocadéro.",
+        "pt-BR": "Clássico de Passy perto do Trocadéro."
+      },
+      "lat": 48.8596,
+      "lng": 2.2872,
+      "address": "1 Rue Benjamin Franklin, 75016 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/nBDjajGsKQVvVZxq6",
+      "mapsQuery": "LE FRANKLIN Passy Paris",
+      "googleRating": 3.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "brasserie"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Statue_de_Benjamin_Franklin%2C_square_de_Yorktown%2C_Paris_16e_9.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Statue_de_Benjamin_Franklin%2C_square_de_Yorktown%2C_Paris_16e_9.jpg",
+          "alt": {
+            "en": "Le Franklin Passy",
+            "pt-BR": "Le Franklin Passy"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8104-a2eb-de5d953b1689",
+      "id": "par-marais",
+      "city": "paris",
+      "name": {
+        "en": "Le Marais",
+        "pt-BR": "Le Marais"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Cafés, vintage shops, and golden-hour streets.",
+        "pt-BR": "Cafés, brechós e ruas de luz dourada."
+      },
+      "lat": 48.8575,
+      "lng": 2.359,
+      "address": "Le Marais, 75004 Paris",
+      "mapsQuery": "Le Marais Paris",
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood",
+        "architecture",
+        "market-street"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+          "alt": {
+            "en": "Le Marais",
+            "pt-BR": "Le Marais"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8157-b718-ef0b51da1f7c",
+      "id": "par-procope",
+      "city": "paris",
+      "name": {
+        "en": "Le Procope",
+        "pt-BR": "Le Procope"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Historic café-restaurant. Old Paris atmosphere.",
+        "pt-BR": "Café-restaurante histórico. Atmosfera de Paris antiga."
+      },
+      "lat": 48.8529913,
+      "lng": 2.3387975,
+      "address": "13 Rue de l'Ancienne Comédie, 75006 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Le+Procope/@48.853095,2.3383737,18.5z",
+      "mapsQuery": "Le Procope Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "brasserie"
+      ],
+      "coverUrl": "https://live.staticflickr.com/3597/3496995066_69ae2de882_b.jpg",
+      "photos": [
+        {
+          "url": "https://live.staticflickr.com/3597/3496995066_69ae2de882_b.jpg",
+          "alt": {
+            "en": "Le Procope",
+            "pt-BR": "Le Procope"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-819a-b5e0-cd7f54283f65",
+      "id": "par-entrecote",
+      "city": "paris",
+      "name": {
+        "en": "Le Relais de l'Entrecôte",
+        "pt-BR": "Le Relais de l'Entrecôte"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Steak-frites only — generous portions, great value. No menu stress.",
+        "pt-BR": "Opção de fritas com steak de carne — come-se bastante, ótimo custo/benefício."
+      },
+      "lat": 48.868142,
+      "lng": 2.3027971,
+      "address": "15 Rue Marbeuf, 75008 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/tU5yiW73wogbF68A9",
+      "mapsQuery": "Le Relais de l'Entrecôte Paris",
+      "rating": 4.5,
+      "googleRating": 4.2,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "meat",
+        "french"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlXwdN3JsZ0VmQ2oyQUTkHhGR6YB6Rjdj4F6kPjivHBnixSTgWeTGOPGvNqJ4h2HYxFWQLMqJ40nzWYr5UsGdSG8NoAsNr27vJOajmyi-3CXdJI6m4rx5ma3IFgaaSdDwAhCl4Y_SRdw5xK=s348-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlXwdN3JsZ0VmQ2oyQUTkHhGR6YB6Rjdj4F6kPjivHBnixSTgWeTGOPGvNqJ4h2HYxFWQLMqJ40nzWYr5UsGdSG8NoAsNr27vJOajmyi-3CXdJI6m4rx5ma3IFgaaSdDwAhCl4Y_SRdw5xK=s348-k-no",
+          "alt": {
+            "en": "Le Relais de l'Entrecôte",
+            "pt-BR": "Le Relais de l'Entrecôte"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c3-a24e-f98771a2b395",
+      "id": "par-royal-cambronne",
+      "city": "paris",
+      "name": {
+        "en": "Le Royal Cambronne",
+        "pt-BR": "Le Royal Cambronne"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Very Parisian terrace vibe in the 15th: afternoon drink watching the street, open square, Metro Line 6 passing in front.",
+        "pt-BR": "Restaurante com vibe bem parisiense no 15ème: tomar algo à tarde olhando o movimento da rua, praça aberta, linha 6 passando na frente."
+      },
+      "lat": 48.84767,
+      "lng": 2.30097,
+      "address": "1 Place Cambronne, 75015 Paris",
+      "mapsQuery": "Le Royal Cambronne Paris",
+      "googleRating": 3.9,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "brasserie",
+        "french"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg/3840px-Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg/3840px-Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg",
+          "alt": {
+            "en": "Le Royal Cambronne",
+            "pt-BR": "Le Royal Cambronne"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81ea-bf48-c15a7028a923",
+      "id": "par-train-bleu",
+      "city": "paris",
+      "name": {
+        "en": "Le Train Bleu",
+        "pt-BR": "Le Train Bleu"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Gilded dining hall inside Gare de Lyon. Theatrical.",
+        "pt-BR": "Salão dourado dentro da Gare de Lyon. Teatral."
+      },
+      "lat": 48.8447,
+      "lng": 2.3735,
+      "address": "Place Louis-Armand, 75012 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/uwXCi4aTvP2i5QXW6",
+      "mapsQuery": "Le Train Bleu Gare de Lyon",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "brasserie"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Le_Train_Bleu.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Le_Train_Bleu.jpg",
+          "alt": {
+            "en": "Le Train Bleu",
+            "pt-BR": "Le Train Bleu"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81ee-9474-f352df91b845",
+      "id": "par-louvre",
+      "city": "paris",
+      "name": {
+        "en": "Louvre",
+        "pt-BR": "Louvre"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Plan a route. The building is half the experience.",
+        "pt-BR": "Planeje um roteiro. O prédio é metade da experiência."
+      },
+      "lat": 48.8606,
+      "lng": 2.3376,
+      "address": "Rue de Rivoli, 75001 Paris",
+      "mapsQuery": "Musée du Louvre Paris",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": true,
+      "landmark": "louvre",
+      "subcategories": [
+        "museum",
+        "palace"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/1280px-Louvre_Museum_Wikimedia_Commons.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/1280px-Louvre_Museum_Wikimedia_Commons.jpg",
+          "alt": {
+            "en": "Louvre",
+            "pt-BR": "Louvre"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8179-aa03-f90cbc01ef22",
+      "id": "par-luxembourg",
+      "city": "paris",
+      "name": {
+        "en": "Luxembourg Garden",
+        "pt-BR": "Jardim de Luxemburgo"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Paris park perfection. Chairs, trees, and slow hours.",
+        "pt-BR": "Parque parisiense perfeito. Cadeiras, árvores e horas lentas."
+      },
+      "lat": 48.8462,
+      "lng": 2.3372,
+      "address": "Rue de Médicis / Pl. Edmond Rostand, 75006 Paris",
+      "mapsQuery": "Jardin du Luxembourg Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/LuxembourgMontparnasse.JPG/1280px-LuxembourgMontparnasse.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/LuxembourgMontparnasse.JPG/1280px-LuxembourgMontparnasse.JPG",
+          "alt": {
+            "en": "Luxembourg Garden",
+            "pt-BR": "Jardim de Luxemburgo"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8193-a628-d65f651c5ae0",
+      "id": "par-maison-balzac",
+      "city": "paris",
+      "name": {
+        "en": "Maison de Balzac",
+        "pt-BR": "Maison de Balzac"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Quiet museum house in Passy with a garden pause.",
+        "pt-BR": "Casa-museu quieta em Passy com pausa no jardim."
+      },
+      "lat": 48.8554541,
+      "lng": 2.2809102,
+      "address": "47 Rue Raynouard, 75016 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Maison+de+Balzac/@48.8520676,2.2646642,14z",
+      "mapsQuery": "Maison de Balzac Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "museum"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Maison_de_Balzac%2C_Paris_16e_5.jpg/1280px-Maison_de_Balzac%2C_Paris_16e_5.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Maison_de_Balzac%2C_Paris_16e_5.jpg/1280px-Maison_de_Balzac%2C_Paris_16e_5.jpg",
+          "alt": {
+            "en": "Maison de Balzac",
+            "pt-BR": "Maison de Balzac"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c7-ab5c-c7c59792e520",
+      "id": "par-marche-bastille",
+      "city": "paris",
+      "name": {
+        "en": "Marché Bastille",
+        "pt-BR": "Marché Bastille"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Big open-air market on Bd Richard-Lenoir — Thursday & Sunday mornings.",
+        "pt-BR": "Grande feira ao ar livre no Bd Richard-Lenoir — manhãs de quinta e domingo."
+      },
+      "lat": 48.8555,
+      "lng": 2.3705,
+      "address": "Bd Richard-Lenoir, 75011 Paris",
+      "mapsQuery": "Marché Bastille Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmkLsVvYlhMCeproeoRDB-ytYLFBXS9T4j665o1mhUUPwScsShMUJK2J0vysxQDR1a9TRrrZNEsv1M1vYSaqnatPThdAV9rif1arvcZ3TUuk_7t_t8nwm1pWjsdNNIRkUCtOdHKu19SdaI=s696-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmkLsVvYlhMCeproeoRDB-ytYLFBXS9T4j665o1mhUUPwScsShMUJK2J0vysxQDR1a9TRrrZNEsv1M1vYSaqnatPThdAV9rif1arvcZ3TUuk_7t_t8nwm1pWjsdNNIRkUCtOdHKu19SdaI=s696-k-no",
+          "alt": {
+            "en": "Marché Bastille",
+            "pt-BR": "Marché Bastille"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8105-8810-c284c88bb906",
+      "id": "par-marche-aligre",
+      "city": "paris",
+      "name": {
+        "en": "Marché d'Aligre",
+        "pt-BR": "Marché d'Aligre"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Lively outdoor + covered market — cheap produce and a very local 12e energy.",
+        "pt-BR": "Mercado de rua + coberto bem vivo — hortifruti barato e clima bem local do 12e."
+      },
+      "lat": 48.8492,
+      "lng": 2.3779,
+      "address": "Place d'Aligre, 75012 Paris",
+      "mapsQuery": "Marché d'Aligre Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlLr2ZyOyW0DW2yWYYo4kVh58E1iOPA0jVK6G7txkkVOQJseB8F1ZChnkX6l4TN1KKHtAA4flY9Q6_dpEM9HCo16N9IoKVCMLD3DYJS7AN3SFMTaZQGj8oZyjLIvT8o8vrukLfk-jDltn80=s1219-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlLr2ZyOyW0DW2yWYYo4kVh58E1iOPA0jVK6G7txkkVOQJseB8F1ZChnkX6l4TN1KKHtAA4flY9Q6_dpEM9HCo16N9IoKVCMLD3DYJS7AN3SFMTaZQGj8oZyjLIvT8o8vrukLfk-jDltn80=s1219-k-no",
+          "alt": {
+            "en": "Marché d'Aligre",
+            "pt-BR": "Marché d'Aligre"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c3-92c1-e1bbe7c8d268",
+      "id": "par-marche-enfants-rouges",
+      "city": "paris",
+      "name": {
+        "en": "Marché des Enfants Rouges",
+        "pt-BR": "Marché des Enfants Rouges"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Paris’s oldest covered market — multicultural lunch stalls in the Marais.",
+        "pt-BR": "Mercado coberto mais antigo de Paris — barracas de almoço multiculturais no Marais."
+      },
+      "lat": 48.86305,
+      "lng": 2.36185,
+      "address": "39 Rue de Bretagne, 75003 Paris",
+      "mapsQuery": "Marché des Enfants Rouges Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMAd6auG6O4KUWeuPpeXVLW8_l_lZzvf1YdAV0v2J8wA20ru7IzgGhMq6sX5ruThNNhEIWVJ1LSho8ANt_GEFbosLGS5k2YEYOEBZwnlZbYYUKt14y1U-dOxMFdF3VSQngxpYcJVDY6cKC=s608-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMAd6auG6O4KUWeuPpeXVLW8_l_lZzvf1YdAV0v2J8wA20ru7IzgGhMq6sX5ruThNNhEIWVJ1LSho8ANt_GEFbosLGS5k2YEYOEBZwnlZbYYUKt14y1U-dOxMFdF3VSQngxpYcJVDY6cKC=s608-k-no",
+          "alt": {
+            "en": "Marché des Enfants Rouges",
+            "pt-BR": "Marché des Enfants Rouges"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81ce-a379-f480c9f06fe7",
+      "id": "par-mcdonalds-champs",
+      "city": "paris",
+      "name": {
+        "en": "McDonald's Champs-Élysées",
+        "pt-BR": "McDonald's Champs-Élysées"
+      },
+      "category": "commons",
+      "description": {
+        "en": "The famous Champs-Élysées McDonald’s — touristy, open late, known quantity when you need something easy.",
+        "pt-BR": "O McDonald’s famoso da Champs-Élysées — turístico, abre tarde, opção fácil quando você quer algo previsível."
+      },
+      "lat": 48.87185,
+      "lng": 2.30155,
+      "address": "140 Av. des Champs-Élysées, 75008 Paris",
+      "mapsQuery": "McDonald's Champs-Élysées Paris",
+      "googleRating": 3.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "burgers"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn7b5zps0QDEwMsyLDpD9tMW2NFs39BvTaRgYil5dwc2jL38jTtM6X2GHg82SvTxwvExjxdApF7o8lJ_BGQsnhsgl7N9mcIDOf8KmludLUCkCjxyEkR1bh-3qyWG7Zt52441k9jIw=s348-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn7b5zps0QDEwMsyLDpD9tMW2NFs39BvTaRgYil5dwc2jL38jTtM6X2GHg82SvTxwvExjxdApF7o8lJ_BGQsnhsgl7N9mcIDOf8KmludLUCkCjxyEkR1bh-3qyWG7Zt52441k9jIw=s348-k-no",
+          "alt": {
+            "en": "McDonald's Champs-Élysées",
+            "pt-BR": "McDonald's Champs-Élysées"
+          }
+        }
+      ],
+      "tags": [
+        "🍔 Chains"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81bd-bf31-ed1064f5fa53",
+      "id": "par-metro-2",
+      "city": "paris",
+      "name": {
+        "en": "Metro Line 2",
+        "pt-BR": "Linha 2 do metrô"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Elevated stretches with panoramic city views — great return after the canals / La Villette. Ride it on purpose.",
+        "pt-BR": "Trechos elevados com vista panorâmica da cidade — ótimo na volta dos canais / La Villette. Pegue de propósito."
+      },
+      "lat": 48.8828,
+      "lng": 2.3499,
+      "address": "Métro ligne 2, Paris",
+      "mapsQuery": "Métro ligne 2 Paris",
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "metro",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/3/35/Musician_Mohamed_Lamouri_in_Paris_Metro_line_2.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Musician_Mohamed_Lamouri_in_Paris_Metro_line_2.jpg",
+          "alt": {
+            "en": "Metro Line 2",
+            "pt-BR": "Linha 2 do metrô"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81fe-8100-ecb0e5c9e038",
+      "id": "par-metro-6",
+      "city": "paris",
+      "name": {
+        "en": "Metro Line 6",
+        "pt-BR": "Linha 6 do metrô"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Elevated stretches with Tower views. Ride it on purpose — hover to see the full line and stations.",
+        "pt-BR": "Trechos elevados com vista da Torre. Pegue de propósito — no hover você vê a linha inteira e as estações."
+      },
+      "lat": 48.8539,
+      "lng": 2.2893,
+      "address": "Métro ligne 6, Paris",
+      "mapsQuery": "Métro ligne 6 Paris",
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "metro",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/0/01/Pont_de_Bir-Hakeim%2C_may_2025.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Pont_de_Bir-Hakeim%2C_may_2025.jpg",
+          "alt": {
+            "en": "Metro Line 6",
+            "pt-BR": "Linha 6 do metrô"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8121-9375-fc736aaffc1d",
+      "id": "par-monoprix-rivoli",
+      "city": "paris",
+      "name": {
+        "en": "Monoprix Opéra (picnic)",
+        "pt-BR": "Monoprix Opéra (piquenique)"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Monoprix on Av. de l’Opéra — sandwiches, fruit, drinks for a Tuileries picnic.",
+        "pt-BR": "Monoprix na Av. de l’Opéra — sanduíches, fruta e bebidas pro piquenique nas Tuileries."
+      },
+      "lat": 48.8664526,
+      "lng": 2.333868,
+      "address": "23 Av. de l'Opéra, 75001 Paris",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Monoprix+23+Avenue+de+l%27Op%C3%A9ra+Paris",
+      "mapsQuery": "Monoprix 23 Avenue de l'Opéra Paris",
+      "googleRating": 4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnF1uhrNplnaayle-0aAhogQhyHeKRYWNa74nWrt9O-96-pgRgEK-xzYnQKZyd8brJJilHYUF6zVPuR9dmAUF5gacQBWiqkg6Rgr81ufZRfYtFRlxGl_L4HTWWSjg2aeECSOaa8=s811-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnF1uhrNplnaayle-0aAhogQhyHeKRYWNa74nWrt9O-96-pgRgEK-xzYnQKZyd8brJJilHYUF6zVPuR9dmAUF5gacQBWiqkg6Rgr81ufZRfYtFRlxGl_L4HTWWSjg2aeECSOaa8=s811-k-no",
+          "alt": {
+            "en": "Monoprix Opéra (picnic)",
+            "pt-BR": "Monoprix Opéra (piquenique)"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81dc-9ef2-ecba3e893a3c",
+      "id": "par-montmartre",
+      "city": "paris",
+      "name": {
+        "en": "Montmartre",
+        "pt-BR": "Montmartre"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Hill village vibe. Wander before the Sacré-Cœur crowds peak.",
+        "pt-BR": "Clima de vilarejo na colina. Vagueie antes do pico no Sacré-Cœur."
+      },
+      "lat": 48.8867,
+      "lng": 2.3431,
+      "address": "Montmartre, 75018 Paris",
+      "mapsQuery": "Montmartre Paris",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "neighborhood",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/View_from_Notre-Dame_de_Paris%2C_24_June_2014_004.jpg/3840px-View_from_Notre-Dame_de_Paris%2C_24_June_2014_004.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/View_from_Notre-Dame_de_Paris%2C_24_June_2014_004.jpg/3840px-View_from_Notre-Dame_de_Paris%2C_24_June_2014_004.jpg",
+          "alt": {
+            "en": "Montmartre",
+            "pt-BR": "Montmartre"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-818f-aad7-f4f2712642b7",
+      "id": "par-montorgueil",
+      "city": "paris",
+      "name": {
+        "en": "Montorgueil",
+        "pt-BR": "Montorgueil"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Pedestrian food street — bakeries, oysters, wine bars.",
+        "pt-BR": "Rua peatonizada de comida — padarias, ostras, wine bars."
+      },
+      "lat": 48.864494,
+      "lng": 2.346697,
+      "address": "Rue Montorgueil, 75001 Paris",
+      "mapsQuery": "Rue Montorgueil Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market-street",
+        "neighborhood"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmTANTGhyQyKBA0XK_LvDPsanTWcJTp8ugWIRwz8HhBogvZrM1O-Z-skoqOykpqEig7iV1T8tKXeiyMqPCsDa_DJ8SYDFeeDNQRvVIRKYZTILKa7tlL9cxLaeYUBSRKeUUAXiqf=s457-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmTANTGhyQyKBA0XK_LvDPsanTWcJTp8ugWIRwz8HhBogvZrM1O-Z-skoqOykpqEig7iV1T8tKXeiyMqPCsDa_DJ8SYDFeeDNQRvVIRKYZTILKa7tlL9cxLaeYUBSRKeUUAXiqf=s457-k-no",
+          "alt": {
+            "en": "Montorgueil",
+            "pt-BR": "Montorgueil"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8171-a21d-c582df2dd93a",
+      "id": "par-moulin-rouge",
+      "city": "paris",
+      "name": {
+        "en": "Moulin Rouge",
+        "pt-BR": "Moulin Rouge"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Pigalle icon. Worth the photo even if you skip the show.",
+        "pt-BR": "Ícone de Pigalle. Vale a foto mesmo sem o show."
+      },
+      "lat": 48.8841,
+      "lng": 2.3322,
+      "address": "82 Bd de Clichy, 75018 Paris",
+      "mapsQuery": "Moulin Rouge Paris",
+      "rating": 3.5,
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "show"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Moulin_Rouge%2C_17_April_2011.jpg/3840px-Moulin_Rouge%2C_17_April_2011.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Moulin_Rouge%2C_17_April_2011.jpg/3840px-Moulin_Rouge%2C_17_April_2011.jpg",
+          "alt": {
+            "en": "Moulin Rouge",
+            "pt-BR": "Moulin Rouge"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-812b-a455-e26bfafad545",
+      "id": "par-orsay",
+      "city": "paris",
+      "name": {
+        "en": "Musée d'Orsay",
+        "pt-BR": "Musée d'Orsay"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Major museum in a grand old station building — beautiful modern space inside. Across the river from the Louvre. Famous clock with views from the Louvre toward Sacré-Cœur; great photos. Paintings, sculpture, models — Monet, Van Gogh, and more. Restaurant inside.",
+        "pt-BR": "Museu grande num prédio antigo (como o Louvre), com espaço interno moderno e bonito. Do outro lado do rio, em frente ao Louvre. Famoso pelo relógio — dá para ver do Louvre até o Sacré-Cœur; ótimo para fotos. Quadros, esculturas e maquetes; Monet, Van Gogh e outros. Tem restaurante dentro."
+      },
+      "lat": 48.85992,
+      "lng": 2.32658,
+      "address": "1 Rue de la Légion d'Honneur, 75007 Paris",
+      "mapsQuery": "Musée d'Orsay Paris",
+      "googleRating": 4.8,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Mus%C3%A9e_d%27Orsay%2C_North-West_view%2C_Paris_7e_140402.jpg/1280px-Mus%C3%A9e_d%27Orsay%2C_North-West_view%2C_Paris_7e_140402.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Mus%C3%A9e_d%27Orsay%2C_North-West_view%2C_Paris_7e_140402.jpg/1280px-Mus%C3%A9e_d%27Orsay%2C_North-West_view%2C_Paris_7e_140402.jpg",
+          "alt": {
+            "en": "Musée d'Orsay",
+            "pt-BR": "Musée d'Orsay"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8120-a0c2-e372020adf28",
+      "id": "par-orangerie",
+      "city": "paris",
+      "name": {
+        "en": "Musée de l'Orangerie",
+        "pt-BR": "Musée de l'Orangerie"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Smaller museum inside the Tuileries. Famous for Monet’s Water Lilies — intimate and beautiful.",
+        "pt-BR": "Museu menor, dentro do Jardin des Tuileries. Famoso pelas obras do Monet (Nenúfares) — íntimo e bonito."
+      },
+      "lat": 48.86377,
+      "lng": 2.32266,
+      "address": "Jardin des Tuileries, 75001 Paris",
+      "mapsQuery": "Musée de l'Orangerie Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Mus%C3%A9e_de_l%E2%80%99Orangerie_exterior.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Mus%C3%A9e_de_l%E2%80%99Orangerie_exterior.JPG",
+          "alt": {
+            "en": "Musée de l'Orangerie",
+            "pt-BR": "Musée de l'Orangerie"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c1-9fc7-e8388f798f8c",
+      "id": "par-noisy-le-sec-rer",
+      "city": "paris",
+      "name": {
+        "en": "Noisy-le-Sec station",
+        "pt-BR": "Gare de Noisy-le-Sec"
+      },
+      "category": "transport",
+      "description": {
+        "en": "RER E stop for Casa do Gui — short walk to Rue des Bergeries.",
+        "pt-BR": "Estação RER E da Casa do Gui — caminhada curta até a Rue des Bergeries."
+      },
+      "lat": 48.8907,
+      "lng": 2.4608,
+      "address": "Place Jean-Jaurès, 93130 Noisy-le-Sec",
+      "mapsQuery": "Gare de Noisy-le-Sec RER E",
+      "googleRating": 3.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "metro"
+      ],
+      "tags": [
+        "🚆 Transport"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-813a-bbc2-d5cd01140d22",
+      "id": "par-notre-dame",
+      "city": "paris",
+      "name": {
+        "en": "Notre-Dame",
+        "pt-BR": "Notre-Dame"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Île de la Cité centerpiece. Walk the square and the bridges.",
+        "pt-BR": "Centro da Île de la Cité. Caminhe a praça e as pontes."
+      },
+      "lat": 48.853,
+      "lng": 2.3499,
+      "address": "6 Parvis Notre-Dame, 75004 Paris",
+      "mapsQuery": "Cathédrale Notre-Dame de Paris",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "landmark": "notre-dame",
+      "subcategories": [
+        "church",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/1280px-Notre-Dame_de_Paris%2C_4_October_2017.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/1280px-Notre-Dame_de_Paris%2C_4_October_2017.jpg",
+          "alt": {
+            "en": "Notre-Dame",
+            "pt-BR": "Notre-Dame"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-817a-804d-c2f67214f522",
+      "id": "par-opera",
+      "city": "paris",
+      "name": {
+        "en": "Opéra Garnier",
+        "pt-BR": "Ópera Garnier"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Beaux-Arts overload. Interior if you can.",
+        "pt-BR": "Excesso Beaux-Arts. Interior se puder."
+      },
+      "lat": 48.8719,
+      "lng": 2.3317,
+      "address": "Pl. de l'Opéra, 75009 Paris",
+      "mapsQuery": "Opéra Garnier Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "landmark": "opera",
+      "subcategories": [
+        "monument",
+        "architecture",
+        "show"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Paris_Opera_full_frontal_architecture%2C_May_2009.jpg/1280px-Paris_Opera_full_frontal_architecture%2C_May_2009.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Paris_Opera_full_frontal_architecture%2C_May_2009.jpg/1280px-Paris_Opera_full_frontal_architecture%2C_May_2009.jpg",
+          "alt": {
+            "en": "Opéra Garnier",
+            "pt-BR": "Ópera Garnier"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8176-9eab-c3b95f164df4",
+      "id": "par-ory",
+      "city": "paris",
+      "name": {
+        "en": "Orly Airport (ORY)",
+        "pt-BR": "Aeroporto de Orly (ORY)"
+      },
+      "category": "airport",
+      "description": {
+        "en": "Southern Paris gateway. Often smoother than CDG for shorter hops.",
+        "pt-BR": "Porta sul de Paris. Costuma ser mais tranquilo que o CDG em voos curtos."
+      },
+      "lat": 48.7233,
+      "lng": 2.3794,
+      "address": "94390 Orly, France",
+      "mapsQuery": "Aéroport de Paris-Orly ORY",
+      "googleRating": 3.7,
+      "favorite": false,
+      "featured": true,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Paris-Orly_Aerial.jpg/1280px-Paris-Orly_Aerial.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Paris-Orly_Aerial.jpg/1280px-Paris-Orly_Aerial.jpg",
+          "alt": {
+            "en": "Orly Airport (ORY)",
+            "pt-BR": "Aeroporto de Orly (ORY)"
+          }
+        }
+      ],
+      "tags": [
+        "✈️ Airport"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8117-9846-cd4ddc9bff40",
+      "id": "par-orly-m14",
+      "city": "paris",
+      "name": {
+        "en": "Orly Metro 14 · Navigo",
+        "pt-BR": "Metrô 14 Orly · Navigo"
+      },
+      "category": "transport",
+      "description": {
+        "en": "Closest RATP point after landing — buy Navigo Easy cards for everyone, then ride M14 into Paris.",
+        "pt-BR": "Ponto RATP mais perto após o desembarque — compre Navigo Easy para todos e pegue a M14 para Paris."
+      },
+      "lat": 48.7292,
+      "lng": 2.3698,
+      "address": "Gare Orly 1-2-3 / Orly 4, Métro ligne 14",
+      "mapsQuery": "Métro Orly ligne 14 Navigo",
+      "googleRating": 4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "metro"
+      ],
+      "tags": [
+        "🚆 Transport"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-813f-bb5a-cb63d4b10d31",
+      "id": "par-palais-royal",
+      "city": "paris",
+      "name": {
+        "en": "Palais-Royal",
+        "pt-BR": "Palais-Royal"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Colonades, garden, and the striped columns courtyard.",
+        "pt-BR": "Colunatas, jardim e o pátio das colunas listradas."
+      },
+      "lat": 48.8638,
+      "lng": 2.3371,
+      "address": "8 Rue de Montpensier, 75001 Paris",
+      "mapsQuery": "Palais-Royal Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Conseil_d%27Etat_Paris_WA.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Conseil_d%27Etat_Paris_WA.jpg",
+          "alt": {
+            "en": "Palais-Royal",
+            "pt-BR": "Palais-Royal"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81b3-b38b-d02867992400",
+      "id": "par-paname-brewing",
+      "city": "paris",
+      "name": {
+        "en": "Paname Brewing Company",
+        "pt-BR": "Paname Brewing Company"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Brewpub on the Bassin de la Villette. Their own beer, waterfront terrace — great stop on the canal walk.",
+        "pt-BR": "Bar com cerveja própria no Bassin de la Villette. Terraço na água — ótima parada no passeio pelos canais."
+      },
+      "lat": 48.88783,
+      "lng": 2.37876,
+      "address": "41 bis Quai de la Loire, 75019 Paris",
+      "mapsQuery": "Paname Brewing Company Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg/1280px-Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg/1280px-Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg",
+          "alt": {
+            "en": "Paname Brewing Company",
+            "pt-BR": "Paname Brewing Company"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81c6-8299-f60a1225270c",
+      "id": "par-pantheon",
+      "city": "paris",
+      "name": {
+        "en": "Panthéon",
+        "pt-BR": "Panteão"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Latin Quarter landmark. Dome views when open.",
+        "pt-BR": "Marco do Quartier Latin. Vista da cúpula quando aberta."
+      },
+      "lat": 48.8462,
+      "lng": 2.346,
+      "address": "Pl. du Panthéon, 75005 Paris",
+      "mapsQuery": "Panthéon Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "monument",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Pantheon_of_Paris_007.JPG/1280px-Pantheon_of_Paris_007.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Pantheon_of_Paris_007.JPG/1280px-Pantheon_of_Paris_007.JPG",
+          "alt": {
+            "en": "Panthéon",
+            "pt-BR": "Panteão"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8174-90fa-d549adb7f0fe",
+      "id": "par-andre-citroen",
+      "city": "paris",
+      "name": {
+        "en": "Parc André Citroën",
+        "pt-BR": "Parc André Citroën"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Beautiful modern park in the 15th. Lawns, themed gardens, and open sky by the Seine.",
+        "pt-BR": "Parque moderno e bonito no 15ème. Gramados, jardins temáticos e céu aberto à beira do Sena."
+      },
+      "lat": 48.84119,
+      "lng": 2.27454,
+      "address": "2 Rue Cauchy, 75015 Paris",
+      "mapsQuery": "Parc André Citroën Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/0/03/Serres_Parc-Andr%C3%A9-Citro%C3%ABn-Paris.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Serres_Parc-Andr%C3%A9-Citro%C3%ABn-Paris.jpg",
+          "alt": {
+            "en": "Parc André Citroën",
+            "pt-BR": "Parc André Citroën"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81d5-9bef-d4556934dc4e",
+      "id": "par-belleville",
+      "city": "paris",
+      "name": {
+        "en": "Parc de Belleville",
+        "pt-BR": "Parc de Belleville"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Panoramic city view + street art — still feels like a real neighborhood park.",
+        "pt-BR": "Vista panorâmica da cidade + street art — ainda parece parque de bairro de verdade."
+      },
+      "lat": 48.8715,
+      "lng": 2.3848,
+      "address": "47 Rue des Couronnes, 75020 Paris",
+      "mapsQuery": "Parc de Belleville Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "viewpoint"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8106-9b9a-e71d8fb09275",
+      "id": "par-la-villette",
+      "city": "paris",
+      "name": {
+        "en": "Parc de la Villette",
+        "pt-BR": "Parc de la Villette"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Large park at the end of the canal walk. Museums, theatre, Philharmonie, and open space to wander.",
+        "pt-BR": "Parque grande no fim do passeio dos canais. Museus, teatro, philharmonie e espaço aberto para explorar."
+      },
+      "lat": 48.89489,
+      "lng": 2.38844,
+      "address": "211 Av. Jean Jaurès, 75019 Paris",
+      "mapsQuery": "Parc de la Villette Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Rio_Samba_School_statue_%40_Parc_de_La_Villette_%40_Paris_%2828881779791%29.jpg/3840px-Rio_Samba_School_statue_%40_Parc_de_La_Villette_%40_Paris_%2828881779791%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Rio_Samba_School_statue_%40_Parc_de_La_Villette_%40_Paris_%2828881779791%29.jpg/3840px-Rio_Samba_School_statue_%40_Parc_de_La_Villette_%40_Paris_%2828881779791%29.jpg",
+          "alt": {
+            "en": "Parc de la Villette",
+            "pt-BR": "Parc de la Villette"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8142-9ab4-ee61c9c4bd83",
+      "id": "par-buttes-chaumont",
+      "city": "paris",
+      "name": {
+        "en": "Parc des Buttes-Chaumont",
+        "pt-BR": "Parc des Buttes-Chaumont"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Beautiful dramatic park in the 19th. Cliffs, lake, temple belvedere — not the flat Paris green.",
+        "pt-BR": "Parque bonito e dramático no 19ème. Penhascos, lago, templo no mirante — nada de gramado plano."
+      },
+      "lat": 48.87956,
+      "lng": 2.3821,
+      "address": "1 Rue Botzaris, 75019 Paris",
+      "mapsQuery": "Parc des Buttes-Chaumont Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Passerelle_suspendue%2C_Buttes_Chaumont%2C_Paris_14_April_2014.jpg/3840px-Passerelle_suspendue%2C_Buttes_Chaumont%2C_Paris_14_April_2014.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Passerelle_suspendue%2C_Buttes_Chaumont%2C_Paris_14_April_2014.jpg/3840px-Passerelle_suspendue%2C_Buttes_Chaumont%2C_Paris_14_April_2014.jpg",
+          "alt": {
+            "en": "Parc des Buttes-Chaumont",
+            "pt-BR": "Parc des Buttes-Chaumont"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81a4-a5a1-c7b19546c40d",
+      "id": "par-monceau",
+      "city": "paris",
+      "name": {
+        "en": "Parc Monceau",
+        "pt-BR": "Parc Monceau"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Beautiful 8th-arrondissement park. Elegant green with follies and soft Paris atmosphere.",
+        "pt-BR": "Parque bonito no 8ème. Verde elegante, fabriques e clima parisiense suave."
+      },
+      "lat": 48.8797,
+      "lng": 2.309,
+      "address": "35 Bd de Courcelles, 75008 Paris",
+      "mapsQuery": "Parc Monceau Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "garden"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Rotonde_Chartres_Paris_3.jpg/3840px-Rotonde_Chartres_Paris_3.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Rotonde_Chartres_Paris_3.jpg/3840px-Rotonde_Chartres_Paris_3.jpg",
+          "alt": {
+            "en": "Parc Monceau",
+            "pt-BR": "Parc Monceau"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8199-a0d2-eaa8a12eed5a",
+      "id": "par-bakery-gaite",
+      "city": "paris",
+      "name": {
+        "en": "Paris Bakery & Co Gaîté",
+        "pt-BR": "Paris Bakery & Co Gaîté"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Bakery stop near Montparnasse / Gaîté.",
+        "pt-BR": "Parada de padaria perto de Montparnasse / Gaîté."
+      },
+      "lat": 48.8385671,
+      "lng": 2.3227985,
+      "address": "49 Rue de la Gaîté, 75014 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/D6J9toZBdG54v6bF8",
+      "mapsQuery": "Paris Bakery and Co Gaite",
+      "googleRating": 3.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bakery"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Typical_French_bakery_pastries.jpg/1280px-Typical_French_bakery_pastries.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Typical_French_bakery_pastries.jpg/1280px-Typical_French_bakery_pastries.jpg",
+          "alt": {
+            "en": "Paris Bakery & Co Gaîté",
+            "pt-BR": "Paris Bakery & Co Gaîté"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8137-bcd0-fbf74b120941",
+      "id": "par-canals",
+      "city": "paris",
+      "name": {
+        "en": "Paris canals walk",
+        "pt-BR": "Canais de Paris"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Walk from Place de la République along the canals to Bassin de la Villette — a very Parisian outing. Stop by the water to eat (Jardin Villemin is a great spot). At the Bassin: bars and restaurants, including Paname Brewing Company. A bit further: Parc de la Villette. On the way back, Metro Line 2 has elevated panoramic views over the city.",
+        "pt-BR": "Andar da Place de la République pelos canais até o Bassin de la Villette — atividade bem gostosa e parisiense. Pare na beira para comer (em frente ao Jardin Villemin é um bom spot). No Bassin: vários bares e restaurantes; Paname Brewing Company tem cerveja própria. Um pouco mais: La Villette. Na volta, a linha 2 do metrô tem vista panorâmica — anda sobre a cidade."
+      },
+      "lat": 48.87515,
+      "lng": 2.36185,
+      "address": "Canal Saint-Martin → Bassin de la Villette, Paris",
+      "mapsQuery": "Canal Saint-Martin Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
+          "alt": {
+            "en": "Paris canals walk",
+            "pt-BR": "Canais de Paris"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81bb-9de5-e9b2a552d969",
+      "id": "par-michalak",
+      "city": "paris",
+      "name": {
+        "en": "Pâtisserie Michalak",
+        "pt-BR": "Pâtisserie Michalak"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Christophe Michalak pastries in Neuilly.",
+        "pt-BR": "Doces do Christophe Michalak em Neuilly."
+      },
+      "lat": 48.8805647,
+      "lng": 2.268,
+      "address": "16 Avenue de la Motte-Picquet, 75007 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/xTaw91nG8tXmDimq8",
+      "mapsQuery": "Pâtisserie Michalak Neuilly",
+      "googleRating": 4.1,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Religieuses_au_chocolat.jpg/1280px-Religieuses_au_chocolat.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Religieuses_au_chocolat.jpg/1280px-Religieuses_au_chocolat.jpg",
+          "alt": {
+            "en": "Pâtisserie Michalak",
+            "pt-BR": "Pâtisserie Michalak"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-816a-8f7e-d920e81d9632",
+      "id": "par-michalak-etienne",
+      "city": "paris",
+      "name": {
+        "en": "Pâtisserie Michalak | Etienne Marcel",
+        "pt-BR": "Pâtisserie Michalak | Etienne Marcel"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Christophe Michalak counter on Rue Étienne Marcel — pastries near Les Halles / Montorgueil.",
+        "pt-BR": "Balcão do Christophe Michalak na Rue Étienne Marcel — doces perto de Les Halles / Montorgueil."
+      },
+      "lat": 48.8644817,
+      "lng": 2.3460786,
+      "address": "37 Rue Étienne Marcel, 75002 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/hsYjfSBmJESa8o8S9",
+      "mapsQuery": "Pâtisserie Michalak Etienne Marcel Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl_F5T32X9QyZREvawZVe0bOJ2aylxLUkh2inyD3ANQM5IkiiFHLAQFUaYpmYl8d5pHi_RCF7ALb3W0d8y60PiKLZZtI4BS_BFTYl0hBrkNcU-kxkcLAYMTu3Ve3GB-vtEmg2PbFg=w203-h360-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl_F5T32X9QyZREvawZVe0bOJ2aylxLUkh2inyD3ANQM5IkiiFHLAQFUaYpmYl8d5pHi_RCF7ALb3W0d8y60PiKLZZtI4BS_BFTYl0hBrkNcU-kxkcLAYMTu3Ve3GB-vtEmg2PbFg=w203-h360-k-no",
+          "alt": {
+            "en": "Pâtisserie Michalak | Etienne Marcel",
+            "pt-BR": "Pâtisserie Michalak | Etienne Marcel"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-811d-96c4-cb2783e4523c",
+      "id": "par-cdg-paul",
+      "city": "paris",
+      "name": {
+        "en": "PAUL CDG",
+        "pt-BR": "PAUL CDG"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Bakery-café in Terminal 2 — croissants and coffee on the way to the RER.",
+        "pt-BR": "Padaria-café no Terminal 2 — croissants e café a caminho do RER."
+      },
+      "lat": 49.0046,
+      "lng": 2.5718,
+      "address": "Aéroport Paris-Charles de Gaulle, Terminal 2, 95700 Roissy-en-France",
+      "mapsQuery": "PAUL Aéroport Charles de Gaulle Terminal 2",
+      "googleRating": 3.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "coffee-shop"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Pain_au_chocolat_Luc_Viatour.jpg/1280px-Pain_au_chocolat_Luc_Viatour.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Pain_au_chocolat_Luc_Viatour.jpg/1280px-Pain_au_chocolat_Luc_Viatour.jpg",
+          "alt": {
+            "en": "PAUL CDG",
+            "pt-BR": "PAUL CDG"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8118-93d3-cf3233e1717f",
+      "id": "par-paul-defense",
+      "city": "paris",
+      "name": {
+        "en": "PAUL La Défense",
+        "pt-BR": "PAUL La Défense"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Reliable bakery-café at La Défense — croissants, coffee, and a quick start before the Arche.",
+        "pt-BR": "Padaria-café confiável em La Défense — croissants, café e largada rápida antes da Arche."
+      },
+      "lat": 48.8904,
+      "lng": 2.2378,
+      "address": "Parvis de la Défense / Les Quatre Temps, 92800 Puteaux",
+      "mapsQuery": "PAUL La Défense Parvis",
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "coffee-shop"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlIXnW00fy0Lc5DC9DmAB5cqZN9s3smQ5tdSvYGMp8fGNavpxIKCq8UZvVVVtrP-e5UhfD9YKGcYXYe83UFbHbdaNGetbAsmaubU2bmVW1kNh5g0Z79iz3UtPV1GiD9hEJtxrCrC0hiIV59=s928-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlIXnW00fy0Lc5DC9DmAB5cqZN9s3smQ5tdSvYGMp8fGNavpxIKCq8UZvVVVtrP-e5UhfD9YKGcYXYe83UFbHbdaNGetbAsmaubU2bmVW1kNh5g0Z79iz3UtPV1GiD9hEJtxrCrC0hiIV59=s928-k-no",
+          "alt": {
+            "en": "PAUL La Défense",
+            "pt-BR": "PAUL La Défense"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8122-9e2a-e7f986f285a1",
+      "id": "par-orly-paul",
+      "city": "paris",
+      "name": {
+        "en": "PAUL Orly",
+        "pt-BR": "PAUL Orly"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Bakery-café at Orly — croissants and coffee right after Navigo setup.",
+        "pt-BR": "Padaria-café em Orly — croissants e café logo após comprar o Navigo."
+      },
+      "lat": 48.7285,
+      "lng": 2.3685,
+      "address": "Aéroport d’Orly, 94390 Orly",
+      "mapsQuery": "PAUL Aéroport Orly",
+      "googleRating": 3.9,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "coffee-shop"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkU4PmcTDXuC46zcsWSnJJ1SGYdjlg0cnm98pKosrcZu0dgXMSbQbaqXxhU4Du3UY5T-svxcrBe2KFVcRerynbAwaDLNlrynDFTkKXOvWZxYiskgRn6lnJRieX2VJjQ3IcCb-xT=s901-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkU4PmcTDXuC46zcsWSnJJ1SGYdjlg0cnm98pKosrcZu0dgXMSbQbaqXxhU4Du3UY5T-svxcrBe2KFVcRerynbAwaDLNlrynDFTkKXOvWZxYiskgRn6lnJRieX2VJjQ3IcCb-xT=s901-k-no",
+          "alt": {
+            "en": "PAUL Orly",
+            "pt-BR": "PAUL Orly"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-04T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81b2-98dc-c5b46cf00756",
+      "id": "par-palais",
+      "city": "paris",
+      "name": {
+        "en": "Petit & Grand Palais",
+        "pt-BR": "Petit e Grand Palais"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Exhibition palaces on the Seine. Check what is open.",
+        "pt-BR": "Palácios de exposição no Sena. Veja o que está aberto."
+      },
+      "lat": 48.8661,
+      "lng": 2.3126,
+      "address": "Av. Winston Churchill, 75008 Paris",
+      "mapsQuery": "Grand Palais Petit Palais Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "museum",
+        "palace",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg/1280px-France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg/1280px-France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg",
+          "alt": {
+            "en": "Petit & Grand Palais",
+            "pt-BR": "Petit e Grand Palais"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81d7-b51d-df58e133a710",
+      "id": "par-pierre-herme",
+      "city": "paris",
+      "name": {
+        "en": "Pierre Hermé",
+        "pt-BR": "Pierre Hermé"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Macaron pilgrimage. Pick a signature box.",
+        "pt-BR": "Peregrinação de macaron. Pegue uma caixa assinatura."
+      },
+      "lat": 48.871363,
+      "lng": 2.3037531,
+      "address": "86 Av. des Champs-Élysées, 75008 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Pierre+Herm%C3%A9/@48.871363,2.3015,18z",
+      "mapsQuery": "Pierre Hermé Paris",
+      "rating": 4,
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Various_Pierre_Herme_macarons.jpg/1280px-Various_Pierre_Herme_macarons.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Various_Pierre_Herme_macarons.jpg/1280px-Various_Pierre_Herme_macarons.jpg",
+          "alt": {
+            "en": "Pierre Hermé",
+            "pt-BR": "Pierre Hermé"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-817a-870f-fca4d03942a5",
+      "id": "par-place-dauphine",
+      "city": "paris",
+      "name": {
+        "en": "Place Dauphine",
+        "pt-BR": "Place Dauphine"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Quiet triangular square on Île de la Cité — charming, less obvious, good for a drink.",
+        "pt-BR": "Praça triangular calma na Île de la Cité — charmosa, menos óbvia, boa para um drink."
+      },
+      "lat": 48.8565,
+      "lng": 2.3423,
+      "address": "Place Dauphine, 75001 Paris",
+      "mapsQuery": "Place Dauphine Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-818c-a5a9-f4df530c3983",
+      "id": "par-bastille",
+      "city": "paris",
+      "name": {
+        "en": "Place de la Bastille",
+        "pt-BR": "Place de la Bastille"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Column and crossroads. Night energy nearby.",
+        "pt-BR": "Coluna e cruzamento. Energia noturna por perto."
+      },
+      "lat": 48.8532,
+      "lng": 2.3691,
+      "address": "Pl. de la Bastille, 75011 Paris",
+      "mapsQuery": "Place de la Bastille Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Place_de_la_Bastille%2C_avril_2021.jpg/3840px-Place_de_la_Bastille%2C_avril_2021.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Place_de_la_Bastille%2C_avril_2021.jpg/3840px-Place_de_la_Bastille%2C_avril_2021.jpg",
+          "alt": {
+            "en": "Place de la Bastille",
+            "pt-BR": "Place de la Bastille"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:31:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-810f-9b80-d76f07ab36fc",
+      "id": "par-vosges",
+      "city": "paris",
+      "name": {
+        "en": "Place des Vosges",
+        "pt-BR": "Place des Vosges"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Perfect arcades and the softest Marais square.",
+        "pt-BR": "Arcadas perfeitas e a praça mais suave do Marais."
+      },
+      "lat": 48.8556,
+      "lng": 2.3655,
+      "address": "Place des Vosges, 75004 Paris",
+      "mapsQuery": "Place des Vosges Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Place_des_Vosges_vue_a%C3%A9rienne.png",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Place_des_Vosges_vue_a%C3%A9rienne.png",
+          "alt": {
+            "en": "Place des Vosges",
+            "pt-BR": "Place des Vosges"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-814c-948d-d930f225a2a5",
+      "id": "par-chatelet",
+      "city": "paris",
+      "name": {
+        "en": "Place du Châtelet",
+        "pt-BR": "Place du Châtelet"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Central square and metro maze. Fountains, theaters, pure Paris chaos.",
+        "pt-BR": "Praça central e labirinto de metrô. Fontes, teatros, caos parisiense puro."
+      },
+      "lat": 48.8575,
+      "lng": 2.3472,
+      "address": "Place du Châtelet, 75001 Paris",
+      "mapsUrl": "https://maps.app.goo.gl/5tQAPLnfS4xLxkYV6",
+      "mapsQuery": "Place du Châtelet Paris",
+      "rating": 4,
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "neighborhood"
+      ],
+      "coverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7BGcefKa4C2d8TJ7eV4SrT4Rc5LH-La-EeaqFA90gMBKSK5DMoZA30b6n&s=10",
+      "photos": [
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7BGcefKa4C2d8TJ7eV4SrT4Rc5LH-La-EeaqFA90gMBKSK5DMoZA30b6n&s=10",
+          "alt": {
+            "en": "Place du Châtelet",
+            "pt-BR": "Place du Châtelet"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-811d-9cb2-d9284af3fa9a",
+      "id": "par-saint-michel",
+      "city": "paris",
+      "name": {
+        "en": "Place Saint-Michel",
+        "pt-BR": "Place Saint-Michel"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Fountain, students, and the river steps nearby.",
+        "pt-BR": "Fonte, estudantes e as escadas do rio por perto."
+      },
+      "lat": 48.8534,
+      "lng": 2.344,
+      "address": "Pl. Saint-Michel, 75005 Paris",
+      "mapsQuery": "Place Saint-Michel Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "architecture"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkjWrOpg-Wiii47W4fvwH1Kn1dHCJwK9ipDVRjcKSHcxhBpaTXbl5oDxEtBtuWOhd9eZrTXbL3U7WWDmSAWIdyP-w9ks1ngTjvSlEkqrrI2qgiwM80p_B74XYFASFRQ0rBgh4dV=s365-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkjWrOpg-Wiii47W4fvwH1Kn1dHCJwK9ipDVRjcKSHcxhBpaTXbl5oDxEtBtuWOhd9eZrTXbL3U7WWDmSAWIdyP-w9ks1ngTjvSlEkqrrI2qgiwM80p_B74XYFASFRQ0rBgh4dV=s365-k-no",
+          "alt": {
+            "en": "Place Saint-Michel",
+            "pt-BR": "Place Saint-Michel"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81fe-9925-c3707c480824",
+      "id": "par-vendome",
+      "city": "paris",
+      "name": {
+        "en": "Place Vendôme",
+        "pt-BR": "Place Vendôme"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Luxury square and column. Clean geometry for photos.",
+        "pt-BR": "Praça de luxo e a coluna. Geometria limpa para fotos."
+      },
+      "lat": 48.8674,
+      "lng": 2.3295,
+      "address": "Place Vendôme, 75001 Paris",
+      "mapsQuery": "Place Vendôme Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Place_Vendome%2C_Paris_20_April_2011.jpg/3840px-Place_Vendome%2C_Paris_20_April_2011.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Place_Vendome%2C_Paris_20_April_2011.jpg/3840px-Place_Vendome%2C_Paris_20_April_2011.jpg",
+          "alt": {
+            "en": "Place Vendôme",
+            "pt-BR": "Place Vendôme"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81a2-a034-f114e32efead",
+      "id": "par-alexandre-iii",
+      "city": "paris",
+      "name": {
+        "en": "Pont Alexandre III",
+        "pt-BR": "Ponte Alexandre III"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Most ornate bridge in the city. Golden hour magic.",
+        "pt-BR": "A ponte mais ornamentada da cidade. Magia no golden hour."
+      },
+      "lat": 48.8638,
+      "lng": 2.3135,
+      "address": "Pont Alexandre III, 75008 Paris",
+      "mapsQuery": "Pont Alexandre III Paris",
+      "googleRating": 4.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "bridge",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Pont_Alexandre_III_depuis_pont_de_la_Concorde_Paris.jpg/1280px-Pont_Alexandre_III_depuis_pont_de_la_Concorde_Paris.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Pont_Alexandre_III_depuis_pont_de_la_Concorde_Paris.jpg/1280px-Pont_Alexandre_III_depuis_pont_de_la_Concorde_Paris.jpg",
+          "alt": {
+            "en": "Pont Alexandre III",
+            "pt-BR": "Ponte Alexandre III"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8134-9eff-c5444662a14b",
+      "id": "par-printemps",
+      "city": "paris",
+      "name": {
+        "en": "Printemps",
+        "pt-BR": "Printemps"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Haussmann landmark with a strong rooftop stop.",
+        "pt-BR": "Marco de Haussmann com terraço forte."
+      },
+      "lat": 48.8737,
+      "lng": 2.328,
+      "address": "64 Bd Haussmann, 75009 Paris",
+      "mapsQuery": "Printemps Haussmann Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "department",
+        "architecture",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Printemps_Haussmann.jpg/1280px-Printemps_Haussmann.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Printemps_Haussmann.jpg/1280px-Printemps_Haussmann.jpg",
+          "alt": {
+            "en": "Printemps",
+            "pt-BR": "Printemps"
+          }
+        }
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81f3-88ba-f484a5508909",
+      "id": "par-promenade-plantee",
+      "city": "paris",
+      "name": {
+        "en": "Promenade Plantée (Coulée Verte)",
+        "pt-BR": "Promenade Plantée (Coulée Verte)"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Elevated green walk from Bastille — local alternative to the central gardens.",
+        "pt-BR": "Caminhada elevada e verde a partir da Bastille — alternativa local aos jardins do centro."
+      },
+      "lat": 48.847,
+      "lng": 2.375,
+      "address": "1 Coulée verte René-Dumont, 75012 Paris",
+      "mapsQuery": "Promenade Plantée Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "avenue"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlfkY0zLztqFv-OeWPjr25HkcqNMuXkRXH3OUrJUtL_vmqvLjDqKVE82TzTGVKpE9D2gdqkRMwhz_IH0UfHJHCC-ZrkydfGeSq0CtknZDrVyHKinoWs4JZLVebCpOMYOKbLvz0A=s391-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlfkY0zLztqFv-OeWPjr25HkcqNMuXkRXH3OUrJUtL_vmqvLjDqKVE82TzTGVKpE9D2gdqkRMwhz_IH0UfHJHCC-ZrkydfGeSq0CtknZDrVyHKinoWs4JZLVebCpOMYOKbLvz0A=s391-k-no",
+          "alt": {
+            "en": "Promenade Plantée (Coulée Verte)",
+            "pt-BR": "Promenade Plantée (Coulée Verte)"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81fa-9ca0-f0bb3c22856f",
+      "id": "par-rosa-bonheur",
+      "city": "paris",
+      "name": {
+        "en": "Rosa Bonheur (Buttes-Chaumont)",
+        "pt-BR": "Rosa Bonheur (Buttes-Chaumont)"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Guinguette inside Buttes-Chaumont — very Parisian, relaxed drinks and food.",
+        "pt-BR": "Guinguette dentro do Buttes-Chaumont — bem parisiense, drinks e comida descontraídos."
+      },
+      "lat": 48.8797,
+      "lng": 2.3825,
+      "address": "2 Allée de la Cascade, 75019 Paris",
+      "mapsQuery": "Rosa Bonheur Buttes Chaumont Paris",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:30:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8193-b44c-e6ab28fd8c22",
+      "id": "par-rue-cler",
+      "city": "paris",
+      "name": {
+        "en": "Rue Cler market street",
+        "pt-BR": "Rua Cler (mercado)"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Pedestrian food street near the Eiffel Tower — fromageries, bakers, and produce.",
+        "pt-BR": "Rua pedonal de comida perto da Torre — queijarias, padarias e hortifruti."
+      },
+      "lat": 48.8566,
+      "lng": 2.3067,
+      "address": "Rue Cler, 75007 Paris",
+      "mapsQuery": "Rue Cler Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market",
+        "market-street"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkeiO7DDL5xXmFeahNjey_zHAtL_o11evVGW2uraioxRsfrTBaLC5A7yS_8KOKf-qwGrjIssjgWX6HmoZLcAB4AzhqTLLuL63BWO38QHOR0cdDYFB7bStui0mL_-tTGC5mdQfJ1eg=s696-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkeiO7DDL5xXmFeahNjey_zHAtL_o11evVGW2uraioxRsfrTBaLC5A7yS_8KOKf-qwGrjIssjgWX6HmoZLcAB4AzhqTLLuL63BWO38QHOR0cdDYFB7bStui0mL_-tTGC5mdQfJ1eg=s696-k-no",
+          "alt": {
+            "en": "Rue Cler market street",
+            "pt-BR": "Rua Cler (mercado)"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-81fa-b732-e8112645b5d0",
+      "id": "par-sorbonne",
+      "city": "paris",
+      "name": {
+        "en": "Rue de la Sorbonne",
+        "pt-BR": "Rue de la Sorbonne"
+      },
+      "category": "parks",
+      "description": {
+        "en": "University street energy around the old colleges.",
+        "pt-BR": "Energia de rua universitária entre os colégios antigos."
+      },
+      "lat": 48.8493577,
+      "lng": 2.3432944,
+      "address": "Rue de la Sorbonne, 75005 Paris",
+      "mapsUrl": "https://www.google.fr/maps/place/Rue+de+la+Sorbonne,+75005+Paris/@48.8492618,2.3395419,17z",
+      "mapsQuery": "Rue de la Sorbonne Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/P1300734_Paris_V_place_de_la_Sorbonne_rwk.jpg/1280px-P1300734_Paris_V_place_de_la_Sorbonne_rwk.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/P1300734_Paris_V_place_de_la_Sorbonne_rwk.jpg/1280px-P1300734_Paris_V_place_de_la_Sorbonne_rwk.jpg",
+          "alt": {
+            "en": "Rue de la Sorbonne",
+            "pt-BR": "Rue de la Sorbonne"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8147-9445-d30524d99037",
+      "id": "par-sacre-coeur",
+      "city": "paris",
+      "name": {
+        "en": "Sacré-Cœur",
+        "pt-BR": "Sacré-Cœur"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "White dome over the city. Steps are half the point.",
+        "pt-BR": "Cúpula branca sobre a cidade. As escadas são metade da graça."
+      },
+      "lat": 48.8867,
+      "lng": 2.3431,
+      "address": "35 Rue du Chevalier de la Barre, 75018 Paris",
+      "mapsQuery": "Basilique du Sacré-Cœur de Montmartre",
+      "rating": 5,
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "landmark": "sacre-coeur",
+      "subcategories": [
+        "church",
+        "monument",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Basilique_du_Sacr%C3%A9-C%C5%93ur_de_Montmartre_-_Paris_-_GT-01_-_2024.jpg/1280px-Basilique_du_Sacr%C3%A9-C%C5%93ur_de_Montmartre_-_Paris_-_GT-01_-_2024.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Basilique_du_Sacr%C3%A9-C%C5%93ur_de_Montmartre_-_Paris_-_GT-01_-_2024.jpg/1280px-Basilique_du_Sacr%C3%A9-C%C5%93ur_de_Montmartre_-_Paris_-_GT-01_-_2024.jpg",
+          "alt": {
+            "en": "Sacré-Cœur",
+            "pt-BR": "Sacré-Cœur"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-819b-99b9-d6eb7caf31bc",
+      "id": "par-saint-eustache",
+      "city": "paris",
+      "name": {
+        "en": "Saint-Eustache",
+        "pt-BR": "Saint-Eustache"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Gothic giant by Les Halles. Free interior, huge organ, market-edge calm.",
+        "pt-BR": "Gigante gótico ao lado de Les Halles. Interior grátis, órgão enorme, calma na beira do mercado."
+      },
+      "lat": 48.8634,
+      "lng": 2.3451,
+      "address": "2 Imp. Saint-Eustache, 75001 Paris",
+      "mapsQuery": "Église Saint-Eustache Paris",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "church",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Paris_-_Eglise_Saint-Eustache_-_Vue_g%C3%A9n%C3%A9rale.jpg/1280px-Paris_-_Eglise_Saint-Eustache_-_Vue_g%C3%A9n%C3%A9rale.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Paris_-_Eglise_Saint-Eustache_-_Vue_g%C3%A9n%C3%A9rale.jpg/1280px-Paris_-_Eglise_Saint-Eustache_-_Vue_g%C3%A9n%C3%A9rale.jpg",
+          "alt": {
+            "en": "Saint-Eustache",
+            "pt-BR": "Saint-Eustache"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8163-a9be-e6f5d13af28b",
+      "id": "par-sainte-chapelle",
+      "city": "paris",
+      "name": {
+        "en": "Sainte-Chapelle",
+        "pt-BR": "Sainte-Chapelle"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Stained glass overload. Book ahead when you can.",
+        "pt-BR": "Excesso de vitrais. Reserve com antecedência se puder."
+      },
+      "lat": 48.8554,
+      "lng": 2.345,
+      "address": "10 Bd du Palais, 75001 Paris",
+      "mapsQuery": "Sainte-Chapelle Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "church",
+        "monument"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Sainte_Chapelle_-_Upper_level_1.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Sainte_Chapelle_-_Upper_level_1.jpg",
+          "alt": {
+            "en": "Sainte-Chapelle",
+            "pt-BR": "Sainte-Chapelle"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8199-9f0f-d4b0b1dad058",
+      "id": "par-shakespeare",
+      "city": "paris",
+      "name": {
+        "en": "Shakespeare and Company",
+        "pt-BR": "Shakespeare and Company"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Café by the Seine with the iconic English bookshop next door — coffee, queues, history, and first-edition energy.",
+        "pt-BR": "Café à beira do Sena com a icônica livraria em inglês ao lado — café, fila, história e clima de primeira edição."
+      },
+      "lat": 48.8526,
+      "lng": 2.3471,
+      "address": "37 Rue de la Bûcherie, 75005 Paris",
+      "mapsQuery": "Shakespeare and Company Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop",
+        "shopping"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnYJiEHyO5MHM2kAbH2cbi1w2LBAeYS_xuFSqotP3no10MQuYiU_R32a-643KZ1sg01A_8XjyDCM3BcfCm2LQQBvlkm-madcx7ywnHRtIuGa5QHAazhqJavA6Bd0X9xsVb45ACfoeb5bHB5=w408-h544-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnYJiEHyO5MHM2kAbH2cbi1w2LBAeYS_xuFSqotP3no10MQuYiU_R32a-643KZ1sg01A_8XjyDCM3BcfCm2LQQBvlkm-madcx7ywnHRtIuGa5QHAazhqJavA6Bd0X9xsVb45ACfoeb5bHB5=w408-h544-k-no",
+          "alt": {
+            "en": "Shakespeare and Company",
+            "pt-BR": "Shakespeare and Company"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-817c-9775-df592e34168c",
+      "id": "par-starbucks-opera",
+      "city": "paris",
+      "name": {
+        "en": "Starbucks Opéra",
+        "pt-BR": "Starbucks Opéra"
+      },
+      "category": "commons",
+      "description": {
+        "en": "Starbucks on the Opéra corner — Wi‑Fi, AC, and a familiar order between museums.",
+        "pt-BR": "Starbucks na esquina da Opéra — Wi‑Fi, ar-condicionado e pedido familiar entre museus."
+      },
+      "lat": 48.8709,
+      "lng": 2.3321,
+      "address": "3 Bd des Capucines, 75002 Paris",
+      "mapsQuery": "Starbucks Opéra Capucines Paris",
+      "googleRating": 3.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop"
+      ],
+      "tags": [
+        "🍔 Chains"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-811e-b3a5-dd31a1946cd5",
+      "id": "par-montparnasse",
+      "city": "paris",
+      "name": {
+        "en": "Tour Montparnasse",
+        "pt-BR": "Tour Montparnasse"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Best Tower view is from here. Timing matters.",
+        "pt-BR": "A melhor vista da Torre é daqui. Timing importa."
+      },
+      "lat": 48.8421,
+      "lng": 2.3219,
+      "address": "33 Av. du Maine, 75015 Paris",
+      "mapsQuery": "Tour Montparnasse observation deck",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "landmark": "montparnasse",
+      "subcategories": [
+        "tower",
+        "viewpoint"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Parc_de_Saint-Cloud_avec_vue_sur_la_Tour_Montparnasse.jpg/1280px-Parc_de_Saint-Cloud_avec_vue_sur_la_Tour_Montparnasse.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Parc_de_Saint-Cloud_avec_vue_sur_la_Tour_Montparnasse.jpg/1280px-Parc_de_Saint-Cloud_avec_vue_sur_la_Tour_Montparnasse.jpg",
+          "alt": {
+            "en": "Tour Montparnasse",
+            "pt-BR": "Tour Montparnasse"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8139-b4a1-ff6dfba9ce0e",
+      "id": "par-trocadero",
+      "city": "paris",
+      "name": {
+        "en": "Trocadéro",
+        "pt-BR": "Trocadéro"
+      },
+      "category": "photo",
+      "description": {
+        "en": "The classic postcard angle of the Tower.",
+        "pt-BR": "O ângulo clássico de cartão-postal da Torre."
+      },
+      "lat": 48.862,
+      "lng": 2.2877,
+      "address": "Place du Trocadéro, 75016 Paris",
+      "mapsQuery": "Trocadéro Paris",
+      "rating": 5,
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "landmark": "monument",
+      "subcategories": [
+        "viewpoint",
+        "architecture"
+      ],
+      "coverUrl": "https://live.staticflickr.com/4010/4175210166_4b92dc7454_b.jpg",
+      "photos": [
+        {
+          "url": "https://live.staticflickr.com/4010/4175210166_4b92dc7454_b.jpg",
+          "alt": {
+            "en": "Trocadéro",
+            "pt-BR": "Trocadéro"
+          }
+        }
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8113-ad1a-f4b390299966",
+      "id": "par-tuileries",
+      "city": "paris",
+      "name": {
+        "en": "Tuileries Garden",
+        "pt-BR": "Jardim das Tulherias"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Between Louvre and Concorde. Perfect walking spine.",
+        "pt-BR": "Entre o Louvre e a Concorde. Eixo perfeito para caminhar."
+      },
+      "lat": 48.8634,
+      "lng": 2.3275,
+      "address": "Place de la Concorde, 75001 Paris",
+      "mapsQuery": "Jardin des Tuileries Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "park"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkK49900OAdl00ZSQzk_G0mkEiXKn-gaTwy-4SQr-V3Q7ZTeQsolGuJ9XnFE5hLB-mQk1R93WcHmlMlJEMqD-an9jW4sIxK14PKsbvtvD0zaWRjSliEIhPOuklQ3K2M4Ko2768u=s783-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkK49900OAdl00ZSQzk_G0mkEiXKn-gaTwy-4SQr-V3Q7ZTeQsolGuJ9XnFE5hLB-mQk1R93WcHmlMlJEMqD-an9jW4sIxK14PKsbvtvD0zaWRjSliEIhPOuklQ3K2M4Ko2768u=s783-k-no",
+          "alt": {
+            "en": "Tuileries Garden",
+            "pt-BR": "Jardim das Tulherias"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:59:00.000Z"
+    },
+    {
+      "notionPageId": "3b22da8d-8134-8123-8f3f-c3514d2c05a7",
+      "id": "par-vincennes-town",
+      "city": "paris",
+      "name": {
+        "en": "Vincennes",
+        "pt-BR": "Vincennes"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Cozy calm town on the edge of Paris. Pedestrian feel, local shops, restaurants, and cafés — plus a great park and a medieval castle nearby.",
+        "pt-BR": "Cidadezinha nos arredores de Paris, acolhedora e calma. Calçadão, lojinhas, restaurantes, cafés e coisas locais — além de parque grande e castelo medieval."
+      },
+      "lat": 48.84745,
+      "lng": 2.43967,
+      "address": "Place du Général-Leclerc, 94300 Vincennes",
+      "mapsQuery": "Vincennes centre-ville",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/4/44/Ch%C3%A2teau_de_Vincennes_Paris_FRA_002.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Ch%C3%A2teau_de_Vincennes_Paris_FRA_002.jpg",
+          "alt": {
+            "en": "Vincennes",
+            "pt-BR": "Vincennes"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:58:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8021-b639-f0b4e1f0d172",
+      "id": "sp-aeroporto-congonhas",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Aeroporto Congonhas",
+        "pt-BR": "Aeroporto Congonhas"
+      },
+      "category": "airport",
+      "description": {
+        "en": "Aeroporto Congonhas",
+        "pt-BR": "Aeroporto Congonhas"
+      },
+      "lat": -23.61971,
+      "lng": -46.66319,
+      "address": "Aeroporto Congonhas, Rua Baronesa de Bela Vista, 228, Campo Belo, Sao Paulo - SP, 04612-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "✈️ Airport"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8054-90e0-c2a37477fe21",
+      "id": "sp-airbnb-oscar-itaim",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Airbnb: Oscar Itaim",
+        "pt-BR": "Airbnb: Oscar Itaim"
+      },
+      "category": "lodging",
+      "description": {
+        "en": "Airbnb: Oscar Itaim",
+        "pt-BR": "Airbnb: Oscar Itaim"
+      },
+      "lat": -23.57867,
+      "lng": -46.67282,
+      "address": "Rua Urimonduba, 144, Itaim Bibi, Sao Paulo - SP, 04530-080, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🛏️ Stay"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8016-abea-faaa511ea133",
+      "id": "sp-being-coffee",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Being Coffee",
+        "pt-BR": "Being Coffee"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Being Coffee",
+        "pt-BR": "Being Coffee"
+      },
+      "lat": -23.56813,
+      "lng": -46.6651,
+      "address": "Rua Barão de Capanema, 220, Jardim Paulista, Sao Paulo - SP, 01411-010, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8022-a204-fdeadfde40da",
+      "id": "sp-broca",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Broca",
+        "pt-BR": "Broca"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Broca",
+        "pt-BR": "Broca"
+      },
+      "lat": -23.55757,
+      "lng": -46.6893,
+      "address": "Rua Aspicuelta, 429, Pinheiros, Sao Paulo - SP, 05433-011, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": "2026-06-19T12:00:00.000-03:00",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8063-82df-df9b2414ad0d",
+      "id": "sp-cafe-zinn",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Cafe Zinn",
+        "pt-BR": "Cafe Zinn"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Cafe Zinn",
+        "pt-BR": "Cafe Zinn"
+      },
+      "lat": -23.56418,
+      "lng": -46.66847,
+      "address": "Rua Haddock Lobo, 1574, Jardim Paulista, Sao Paulo - SP, 01414-002, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": "2026-06-19T09:00:00.000-03:00",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-807f-a676-d381564281eb",
+      "id": "sp-casa-cazetv",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Casa CazéTV",
+        "pt-BR": "Casa CazéTV"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Casa CazéTV",
+        "pt-BR": "Casa CazéTV"
+      },
+      "lat": -23.54439,
+      "lng": -46.72004,
+      "address": "Avenida Professor Fonseca Rodrigues, 1983, Alto de Pinheiros, Sao Paulo - SP, 05461-010, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": "2026-06-19T15:00:00.000-03:00",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8008-aaaf-fcffb14dd16b",
+      "id": "sp-compras-no-bras",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Compras no Brás",
+        "pt-BR": "Compras no Brás"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Compras no Brás",
+        "pt-BR": "Compras no Brás"
+      },
+      "lat": -23.53783,
+      "lng": -46.61836,
+      "address": "Rua Oriente, 391, Brás, Sao Paulo - SP, 03016-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": "2026-06-18",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-802b-b5e7-e5d19a49859b",
+      "id": "sp-futuro-refeitorio",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Futuro Refeitório",
+        "pt-BR": "Futuro Refeitório"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Futuro Refeitório",
+        "pt-BR": "Futuro Refeitório"
+      },
+      "lat": -23.56215,
+      "lng": -46.68179,
+      "address": "Rua Cônego Eugênio Leite, 808, Pinheiros, Sao Paulo - SP, 05414-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": "2026-06-18",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8048-a6e4-d94b0bfec6df",
+      "id": "sp-hello-kitty-eat-asia",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Hello Kitty Eat Asia",
+        "pt-BR": "Hello Kitty Eat Asia"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Hello Kitty Eat Asia",
+        "pt-BR": "Hello Kitty Eat Asia"
+      },
+      "lat": -23.55723,
+      "lng": -46.63478,
+      "address": "Rua Américo de Campos, 118, Liberdade, Sao Paulo - SP, 01506-010, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8036-82b8-f3067d797f2d",
+      "id": "sp-jardim-oriental-liberdade",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Jardim Oriental Liberdade",
+        "pt-BR": "Jardim Oriental Liberdade"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Jardim Oriental Liberdade",
+        "pt-BR": "Jardim Oriental Liberdade"
+      },
+      "lat": -23.55445,
+      "lng": -46.63524,
+      "address": "Rua Galvão Bueno, 71, Sé, Sao Paulo - SP, 01506-000, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-804f-ac51-e9057792b0a5",
+      "id": "sp-korea-mart",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Korea Mart",
+        "pt-BR": "Korea Mart"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Korea Mart",
+        "pt-BR": "Korea Mart"
+      },
+      "lat": -23.5554,
+      "lng": -46.63476,
+      "address": "Rua dos Estudantes, 41, Sé, Sao Paulo - SP, 01505-000, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8088-ae72-c8bcba2e1979",
+      "id": "sp-lamen-aska",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Lamen ASKA",
+        "pt-BR": "Lamen ASKA"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Lamen ASKA",
+        "pt-BR": "Lamen ASKA"
+      },
+      "lat": -23.55837,
+      "lng": -46.63448,
+      "address": "Rua Barão de Iguape, 260, Liberdade, Sao Paulo - SP, 01503-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8003-b761-d9c4cabd6a73",
+      "id": "sp-modern-mamma-osteria",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Modern Mamma Osteria",
+        "pt-BR": "Modern Mamma Osteria"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Modern Mamma Osteria",
+        "pt-BR": "Modern Mamma Osteria"
+      },
+      "lat": -23.5819,
+      "lng": -46.67984,
+      "address": "Rua Manuel Guedes, 160, Itaim Bibi, Sao Paulo - SP, 04536-070, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8032-b43b-cda9b7b42e08",
+      "id": "sp-mooi-mooi",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Mooi Mooi",
+        "pt-BR": "Mooi Mooi"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Mooi Mooi",
+        "pt-BR": "Mooi Mooi"
+      },
+      "lat": -23.58269,
+      "lng": -46.67938,
+      "address": "Rua Manuel Guedes, 249, Itaim Bibi, Sao Paulo - SP, 04536-070, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-803b-8d35-de9e3962167f",
+      "id": "sp-paul-s-boutique-pizza-itaim-bibi",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Paul's Boutique Pizza - Itaim Bibi",
+        "pt-BR": "Paul's Boutique Pizza - Itaim Bibi"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Paul's Boutique Pizza - Itaim Bibi",
+        "pt-BR": "Paul's Boutique Pizza - Itaim Bibi"
+      },
+      "lat": -23.58008,
+      "lng": -46.6747,
+      "address": "Rua Doutor Renato Paes de Barros, 167, Itaim Bibi, Sao Paulo - SP, 04530-000, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-8019-92c0-ee75ffa093c8",
+      "id": "sp-rascal",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Ráscal",
+        "pt-BR": "Ráscal"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Ráscal",
+        "pt-BR": "Ráscal"
+      },
+      "lat": -23.57659,
+      "lng": -46.68761,
+      "address": "Shopping Iguatemi, Avenida Brigadeiro Faria Lima, 2232, Pinheiros, Sao Paulo - SP, 01452-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-80b6-b021-da42fd782c2e",
+      "id": "sp-shopping-iguatemi-sp",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Shopping Iguatemi SP",
+        "pt-BR": "Shopping Iguatemi SP"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Shopping Iguatemi SP",
+        "pt-BR": "Shopping Iguatemi SP"
+      },
+      "lat": -23.57659,
+      "lng": -46.68761,
+      "address": "Shopping Iguatemi, Avenida Brigadeiro Faria Lima, 2232, Pinheiros, Sao Paulo - SP, 01452-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": "2026-06-17",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-80af-8de4-f9840a9ab32d",
+      "id": "sp-sogo-plaza-shopping",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Sogo Plaza Shopping",
+        "pt-BR": "Sogo Plaza Shopping"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Sogo Plaza Shopping",
+        "pt-BR": "Sogo Plaza Shopping"
+      },
+      "lat": -23.556,
+      "lng": -46.63565,
+      "address": "Avenida da Liberdade, 363, Sé, Sao Paulo - SP, 01502-000, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": false,
+      "date": "2026-06-20",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-80ee-996e-eab1f50749c3",
+      "id": "sp-tour-nubank-park",
+      "city": "sao-paulo",
+      "name": {
+        "en": "Tour Nubank Park",
+        "pt-BR": "Tour Nubank Park"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Tour Nubank Park",
+        "pt-BR": "Tour Nubank Park"
+      },
+      "lat": -23.52735,
+      "lng": -46.67926,
+      "address": "Avenida Francisco Matarazzo, 1705, Barra Funda, Sao Paulo - SP, 05001-200, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": "2026-06-18T11:30:00.000-03:00",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    },
+    {
+      "notionPageId": "3812da8d-8134-80c9-9d1a-d6cd70f8d10d",
+      "id": "sp-we-coffee-faria-lima",
+      "city": "sao-paulo",
+      "name": {
+        "en": "We Coffee Faria Lima",
+        "pt-BR": "We Coffee Faria Lima"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "We Coffee Faria Lima",
+        "pt-BR": "We Coffee Faria Lima"
+      },
+      "lat": -23.57241,
+      "lng": -46.69021,
+      "address": "Avenida Brigadeiro Faria Lima, 1690, Pinheiros, Sao Paulo - SP, 01451-001, Brazil",
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": false,
+      "date": "2026-06-21T10:30:00.000-03:00",
+      "lastEdited": "2026-08-04T19:33:00.000Z"
+    }
+  ]
+}

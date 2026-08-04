@@ -1,0 +1,84 @@
+# Pull editorial travel places from Notion → commit snapshot → redeploy.
+#
+# Secrets (repo → Settings → Secrets and variables → Actions):
+#   NOTION_TOKEN          required — integration token (read access to "Lugares" is enough)
+#   NOTION_DATABASE_ID    optional — defaults to the Lugares DB id in the sync script
+#
+# Triggers:
+#   - schedule: every 6 hours
+#   - workflow_dispatch: Actions → "Sync travel from Notion" → Run workflow
+
+name: Sync travel from Notion
+
+on:
+  schedule:
+    # 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: travel-notion-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history not required; fetch default branch for push
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Pull places from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::error::NOTION_TOKEN secret is not set. Add it under repo Settings → Secrets → Actions."
+            exit 1
+          fi
+          npm run travel:notion:pull
+
+      - name: Detect snapshot changes
+        id: diff
+        run: |
+          git add src/data/travel-notion.json src/data/travel-notion.generated.ts
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No Notion snapshot changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Snapshot changed:"
+            git diff --cached --stat
+          fi
+
+      - name: Commit snapshot
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(travel): sync places from Notion"
+          git push
+
+      - name: Trigger Pages deploy
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # GITHUB_TOKEN commits do not re-trigger push workflows; dispatch deploy explicitly.
+          gh workflow run "Deploy to GitHub Pages" --ref "${{ github.ref_name }}"

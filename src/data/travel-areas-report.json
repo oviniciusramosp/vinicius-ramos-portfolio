@@ -1,0 +1,13 @@
+{
+  "ok": [
+    {
+      "id": "par-cdg",
+      "kind": "polygon",
+      "points": 64,
+      "dist_m": 0.0
+    }
+  ],
+  "fail": [],
+  "skip": [],
+  "preserved": []
+}

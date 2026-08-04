@@ -22,7 +22,8 @@ const pins = travelCities.map((city) => ({
   href: `/travel/${city.slug}`,
 }));
 
-const pinsJson = JSON.stringify(pins);
+/** Escape `<` so `</script>` inside string values cannot break the JSON script tag */
+const pinsJson = JSON.stringify(pins).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout
@@ -37,13 +38,17 @@ const pinsJson = JSON.stringify(pins);
         class="travel-map"
         data-travel-map
         data-mode="cities"
-        data-pins={pinsJson}
         data-i18n-en={travelUi.mapAria.en}
         data-i18n-pt={travelUi.mapAria['pt-BR']}
         data-i18n-as="aria-label"
         aria-label={travelUi.mapAria.en}
       >
       </div>
+      <script
+        type="application/json"
+        data-travel-map-pins
+        set:html={pinsJson}
+      />
     </div>
 
     <div class="travel__body" data-travel-feed>
@@ -56,33 +61,36 @@ const pinsJson = JSON.stringify(pins);
           {travelUi.title.en}
         </h1>
 
-        <label class="travel__search">
-          <span
-            class="visually-hidden"
-            data-i18n-en="Search cities"
-            data-i18n-pt="Buscar cidades"
-          >
-            Search cities
-          </span>
-          <ion-icon
-            class="travel__search-icon"
-            name="search-outline"
-            aria-hidden="true"
-          ></ion-icon>
-          <input
-            type="search"
-            class="travel__search-input"
-            data-travel-search
-            data-i18n-en={travelUi.searchPlaceholder.en}
-            data-i18n-pt={travelUi.searchPlaceholder['pt-BR']}
-            data-i18n-as="placeholder"
-            placeholder={travelUi.searchPlaceholder.en}
-            autocomplete="off"
-          />
-        </label>
+        <div class="travel__intro-actions">
+          <label class="travel__search">
+            <span
+              class="visually-hidden"
+              data-i18n-en="Search cities"
+              data-i18n-pt="Buscar cidades"
+            >
+              Search cities
+            </span>
+            <ion-icon
+              class="travel__search-icon"
+              name="search-outline"
+              aria-hidden="true"
+            ></ion-icon>
+            <input
+              type="search"
+              class="travel__search-input"
+              data-travel-search
+              data-i18n-en={travelUi.searchPlaceholder.en}
+              data-i18n-pt={travelUi.searchPlaceholder['pt-BR']}
+              data-i18n-as="placeholder"
+              placeholder={travelUi.searchPlaceholder.en}
+              autocomplete="off"
+            />
+          </label>
+        </div>
       </header>
 
       {/* Same chip pattern as homepage bento (Tag variant="chip") */}
+      <div class="travel__filters-row">
       <div
         class="travel__filters"
         role="group"
@@ -119,6 +127,7 @@ const pinsJson = JSON.stringify(pins);
           ))
         }
       </div>
+      </div>
 
       <div class="travel__grid">
         {travelCities.map((city) => <TravelCityCard city={city} />)}
@@ -141,9 +150,11 @@ const pinsJson = JSON.stringify(pins);
   import { bootTravelI18n } from '../../scripts/travel-i18n';
   import { bootTravelMap } from '../../scripts/travel-map';
   import { bootTravelFilter } from '../../scripts/travel-filter';
+  import { bootTravelTheme } from '../../scripts/travel-theme';
   import '../../styles/travel-map.css';
 
   const boot = () => {
+    bootTravelTheme();
     bootTravelI18n();
     // Map first so filter can sync pin visibility
     bootTravelMap();
@@ -197,8 +208,9 @@ const pinsJson = JSON.stringify(pins);
     box-sizing: border-box;
   }
 
-  /* Title left · search far right */
+  /* Title left · search + theme toggle far right */
   .travel__intro {
+    --travel-control-h: 42px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -215,12 +227,20 @@ const pinsJson = JSON.stringify(pins);
     line-height: var(--lh-tight);
   }
 
+  .travel__intro-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+    margin-left: auto;
+    min-width: 0;
+  }
+
   .travel__search {
     position: relative;
     flex: 0 1 320px;
     width: 100%;
     max-width: 320px;
-    margin-left: auto;
   }
 
   .travel__search-icon {
@@ -264,13 +284,62 @@ const pinsJson = JSON.stringify(pins);
     color: var(--color-accent);
   }
 
+  .travel__filters-row {
+    --filters-fade-size: 40px;
+    position: relative;
+    margin-bottom: var(--space-8);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Edge fades pinned to the row — see city page for same pattern */
+  .travel__filters-row.is-scroll-fade-host::before,
+  .travel__filters-row.is-scroll-fade-host::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--filters-fade-size);
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .travel__filters-row.is-scroll-fade-host::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      var(--color-bg) 0%,
+      color-mix(in srgb, var(--color-bg) 65%, transparent) 55%,
+      transparent 100%
+    );
+  }
+
+  .travel__filters-row.is-scroll-fade-host::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      var(--color-bg) 0%,
+      color-mix(in srgb, var(--color-bg) 65%, transparent) 55%,
+      transparent 100%
+    );
+  }
+
+  .travel__filters-row.is-scroll-fade-host.is-fade-left::before {
+    opacity: 1;
+  }
+
+  .travel__filters-row.is-scroll-fade-host.is-fade-right::after {
+    opacity: 1;
+  }
+
   /* Category filter chips: one row, horizontal scroll when overflowing */
   .travel__filters {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: var(--space-8);
     min-width: 0;
     max-width: 100%;
     overflow-x: auto;
@@ -356,10 +425,14 @@ const pinsJson = JSON.stringify(pins);
       gap: var(--space-5);
     }
 
-    .travel__search {
-      flex: none;
-      max-width: none;
+    .travel__intro-actions {
       margin-left: 0;
+      width: 100%;
+    }
+
+    .travel__search {
+      flex: 1 1 auto;
+      max-width: none;
     }
   }
 

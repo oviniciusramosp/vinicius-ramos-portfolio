@@ -40,6 +40,11 @@ export interface MoneyInfo {
 export interface VisitInfo {
   /** Restaurants / cafés: typical spend per person (food + drink). */
   avgPricePerPerson?: MoneyInfo;
+  /**
+   * Hotels / lodging: approximate room rate per night (often a range).
+   * Use min–max for low/high season or room types; confirm on booking sites.
+   */
+  pricePerNight?: MoneyInfo;
   /** Entrance / event ticket (adult full price when applicable). */
   ticket?: MoneyInfo;
   /** Official ticket page for live prices */
@@ -100,14 +105,18 @@ function parkVisit(partial: Partial<VisitInfo> = {}): VisitInfo {
   };
 }
 
+/**
+ * @param typical - average / typical spend per person (used in budgets & cards)
+ * @param upper - optional upper bound (kept for data; not used as the main price)
+ */
 function restaurantVisit(
-  min: number,
-  max: number,
+  typical: number,
+  upper: number,
   partial: Partial<VisitInfo> = {},
 ): VisitInfo {
   // No duration / bestTime for restaurants — not meaningful for a meal stop.
   return {
-    avgPricePerPerson: money(min, max),
+    avgPricePerPerson: money(typical, upper),
     bestDay: L('Weekdays, lunch', 'Dias de semana, almoço'),
     tips: L(
       'Weekday lunch is easier for a table. Book ahead for dinner; walk-ins work better at lunch.',
@@ -117,14 +126,18 @@ function restaurantVisit(
   };
 }
 
+/**
+ * @param typical - average / typical spend per person
+ * @param upper - optional upper bound
+ */
 function cafeVisit(
-  min: number,
-  max: number,
+  typical: number,
+  upper: number,
   partial: Partial<VisitInfo> = {},
 ): VisitInfo {
   // No duration — pastry / coffee stops are open-ended.
   return {
-    avgPricePerPerson: money(min, max),
+    avgPricePerPerson: money(typical, upper),
     bestDay: L('Any day — avoid peak brunch weekends', 'Qualquer dia — evite brunch de fim de semana'),
     tips: L(
       'Standing at the bar is often cheaper than sitting on the terrace.',
@@ -177,8 +190,36 @@ function landmarkOutdoor(partial: Partial<VisitInfo> = {}): VisitInfo {
 }
 
 /**
+ * Hotel / guest house stay.
+ * @param minNight - lower bound per night (e.g. off-season double)
+ * @param maxNight - upper bound per night (e.g. peak / larger room)
+ */
+function lodgingVisit(
+  minNight: number,
+  maxNight: number,
+  partial: Partial<VisitInfo> = {},
+): VisitInfo {
+  return {
+    pricePerNight: money(
+      minNight,
+      maxNight,
+      L(
+        'Approx. per night — varies by season & room',
+        'Aprox. por noite — varia com temporada e quarto',
+      ),
+    ),
+    crowdProfile: 'local',
+    bestTime: L(
+      'Check-in afternoon; book peak weekends early',
+      'Check-in à tarde; em alta temporada reserve cedo',
+    ),
+    ...partial,
+  };
+}
+
+/**
  * Curated visit info keyed by place id.
- * Paris places are fully covered; other cities can be filled later.
+ * Paris and Rome are fully covered; other cities can be filled later.
  */
 export const visitByPlaceId: Record<string, VisitInfo> = {
   // —— Air / logistics ——
@@ -194,16 +235,114 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
       'Deixe folga para RER/Orlyval + segurança. Orly costuma ser mais tranquilo que CDG em voos curtos.',
     ),
   },
+  'par-cdg': {
+    ticket: free,
+    durationMin: 60,
+    durationMax: 150,
+    bestTime: L('Off-peak flights when possible', 'Voos fora de pico quando possível'),
+    bestDay: L('Mid-week arrivals are calmer', 'Chegadas no meio da semana são mais calmas'),
+    crowdProfile: 'airport',
+    tips: L(
+      'RER B from Aéroport Charles de Gaulle 1 / 2 TGV into Paris (~45–60 min). Allow buffer for security, Terminal Link CDGVAL, and long walks between terminals. Magenta/Gare du Nord are common city exits.',
+      'RER B a partir de Aéroport Charles de Gaulle 1 / 2 TGV até Paris (~45–60 min). Deixe folga para segurança, CDGVAL entre terminais e longas caminhadas. Magenta / Gare du Nord são saídas comuns no centro.',
+    ),
+  },
+  'par-cdg-paul': cafeVisit(6, 12, {
+    tips: L(
+      'Breakfast on the walk toward CDG 2 TGV — keep it light before the long RER ride east.',
+      'Café da manhã a caminho do CDG 2 TGV — leve antes do longo trajeto de RER para o leste.',
+    ),
+  }),
+  'par-cdg-rer': {
+    ticket: money(
+      2,
+      2,
+      L(
+        'Navigo Easy blank card (~€2). Load rides or a day pass after.',
+        'Cartão Navigo Easy em branco (~€2). Carregue viagens ou passe diário depois.',
+      ),
+    ),
+    durationMin: 15,
+    durationMax: 40,
+    bestTime: L('Right after coffee / baggage claim', 'Logo após o café / bagagem'),
+    crowdProfile: 'transit',
+    tips: L(
+      'RATP machines sell Navigo Easy. Board RER B toward Paris; change at Magenta (or Gare du Nord → Magenta) for RER E to Noisy-le-Sec.',
+      'Máquinas RATP vendem Navigo Easy. Pegue o RER B para Paris; troque em Magenta (ou Gare du Nord → Magenta) no RER E até Noisy-le-Sec.',
+    ),
+  },
+  'par-orly-m14': {
+    ticket: money(
+      2,
+      2,
+      L(
+        'Navigo Easy blank card (~€2). Load rides or a day pass after.',
+        'Cartão Navigo Easy em branco (~€2). Carregue viagens ou passe diário depois.',
+      ),
+    ),
+    durationMin: 15,
+    durationMax: 40,
+    bestTime: L('Right after baggage claim', 'Logo após a bagagem'),
+    crowdProfile: 'transit',
+    tips: L(
+      'Machines sell Navigo Easy for the whole group. Then board Métro 14 toward Saint-Lazare / Paris.',
+      'Máquinas vendem Navigo Easy para o grupo. Em seguida pegue a linha 14 rumo a Saint-Lazare / Paris.',
+    ),
+  },
+  'par-orly-paul': cafeVisit(6, 12, {
+    tips: L(
+      'Breakfast after Navigo — keep it light before the ride to Noisy-le-Sec.',
+      'Café da manhã depois do Navigo — leve antes do trajeto até Noisy-le-Sec.',
+    ),
+  }),
+  'par-noisy-le-sec-rer': {
+    ticket: free,
+    durationMin: 10,
+    durationMax: 20,
+    crowdProfile: 'transit',
+    tips: L(
+      'RER E stop — 5–10 min walk to Casa do Gui on Rue des Bergeries.',
+      'Parada do RER E — 5–10 min a pé até a Casa do Gui na Rue des Bergeries.',
+    ),
+  },
+  'par-casa-do-gui': {
+    durationMin: 20,
+    durationMax: 40,
+    crowdProfile: 'local',
+    tips: L(
+      'Drop bags on arrival; end the day back here. Auchan is ~5 min walk for basics.',
+      'Deixe as malas na chegada; termine o dia de volta aqui. Auchan fica a ~5 min a pé para os básicos.',
+    ),
+  },
+  'par-auchan-noisy': {
+    avgPricePerPerson: money(
+      15,
+      25,
+      L(
+        'Groceries / person share (basics + snacks)',
+        'Compras / pessoa (básicos + lanches)',
+      ),
+    ),
+    durationMin: 45,
+    durationMax: 45,
+    duration: L('~45 min', '~45 min'),
+    bestTime: L('Right after drop-off at home base', 'Logo após deixar as malas na base'),
+    crowdProfile: 'shop',
+    tips: L(
+      'Full supermarket on Rue Jean Jaurès (~€15/person share) — water, breakfast staples, snacks, basics. ~5 min walk from Casa do Gui; drop bags back home before the Tower afternoon.',
+      'Supermercado completo na Rue Jean Jaurès (~€15/pessoa) — água, café da manhã, lanches, básicos. ~5 min a pé da Casa do Gui; deixe as compras em casa antes da tarde na Torre.',
+    ),
+  },
 
   // —— Parks & walks ——
   'par-champ-mars': parkVisit({
-    durationMin: 45,
-    durationMax: 150,
-    bestTime: L('Sunset picnic (1h before dusk)', 'Piquenique no pôr do sol (1h antes do escurecer)'),
-    bestDay: L('Weekday evening', 'Noite de dia de semana'),
+    durationMin: 60,
+    durationMax: 120,
+    bestTime: L('Late afternoon picnic under the Tower', 'Fim de tarde em piquenique sob a Torre'),
+    bestDay: L('Weekday afternoon / early evening', 'Tarde / início de noite em dia de semana'),
     tips: L(
-      'Best lawn views of the Tower. Security checks on big event days.',
-      'Melhor gramado com vista da Torre. Controle de segurança em dias de evento.',
+      'Long lawn pause — eat what you grabbed at Bake & Blend, photos, first real outdoor breath. Security checks on big event days.',
+      'Parada longa no gramado — coma o que pegou no Bake & Blend, fotos, primeiro respiro ao ar livre. Controle de segurança em dias de evento.',
     ),
   }),
   'par-tuileries': parkVisit({
@@ -417,6 +556,41 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
       'Eixo da Grande Arche + skyline moderno em contraste com o Paris clássico.',
     ),
   }),
+  'par-paul-defense': cafeVisit(5, 12, {
+    tips: L(
+      'Solid croissant + coffee before the Arche. Open early for office traffic.',
+      'Croissant + café sólido antes da Arche. Abre cedo pelo fluxo de escritórios.',
+    ),
+  }),
+  'par-grande-arche': landmarkOutdoor({
+    durationMin: 20,
+    durationMax: 45,
+    bestTime: L('Morning light on the parvis', 'Luz da manhã no parvis'),
+    tips: L(
+      'Photo stop from the steps and the axis — rooftop visit optional and timed.',
+      'Parada de foto na escadaria e no eixo — terraço opcional e com horário.',
+    ),
+  }),
+  'par-esplanade-de-gaulle': landmarkOutdoor({
+    durationMin: 15,
+    durationMax: 40,
+    bestTime: L('Morning before office rush peaks', 'Manhã antes do pico corporativo'),
+    tips: L(
+      'Walk the esplanade toward the city — towers + open sky frames.',
+      'Ande a esplanada em direção à cidade — torres + céu aberto no enquadramento.',
+    ),
+  }),
+  'par-monoprix-rivoli': {
+    avgPricePerPerson: money(6, 12, L('Picnic supplies / person', 'Suprimentos de piquenique / pessoa')),
+    durationMin: 15,
+    durationMax: 30,
+    bestTime: L('Late morning before picnic', 'Fim da manhã antes do piquenique'),
+    crowdProfile: 'shop',
+    tips: L(
+      '23 Av. de l’Opéra (open store). Grab sandwiches, fruit, drinks for Tuileries — ~€6/person. Food is usually at the back.',
+      '23 Av. de l’Opéra (loja aberta). Pegue sanduíches, fruta e bebidas para as Tuileries — ~€6/pessoa. Comida costuma ficar no fundo.',
+    ),
+  },
   'par-palais-royal': parkVisit({
     durationMin: 30,
     durationMax: 60,
@@ -478,12 +652,12 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     ),
   },
   'par-trocadero': landmarkOutdoor({
-    durationMin: 20,
-    durationMax: 45,
-    bestTime: L('Sunrise or dusk (tower lights)', 'Nascer do sol ou entardecer (luzes da torre)'),
+    durationMin: 45,
+    durationMax: 75,
+    bestTime: L('Afternoon light or dusk (tower lights)', 'Luz da tarde ou entardecer (luzes da torre)'),
     tips: L(
-      'Classic Tower postcard angle. Watch for street scams and vendors.',
-      'Ângulo clássico de cartão-postal da Torre. Cuidado com golpes e ambulantes.',
+      'Long postcard stop — steps, fountains, and the full Tower axis. Watch for street scams and vendors.',
+      'Parada longa de cartão-postal — escadaria, fontes e o eixo inteiro da Torre. Cuidado com golpes e ambulantes.',
     ),
   }),
   'par-louvre': museumVisit(32, {
@@ -841,8 +1015,8 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
   'par-chez-elo': restaurantVisit(25, 45),
   'par-entrecote': restaurantVisit(30, 45, {
     tips: L(
-      'No menu stress: steak-frites + secret sauce. Expect a queue.',
-      'Sem estresse de cardápio: steak-frites + molho secreto. Espere fila.',
+      'Reserve ahead or arrive early to skip the queue — especially at dinner. Generous steak-frites + secret sauce.',
+      'Recomendado reservar ou chegar cedo para evitar fila, principalmente no jantar. Steak-frites generoso + molho secreto.',
     ),
   }),
   'par-train-bleu': restaurantVisit(55, 90, {
@@ -858,10 +1032,12 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     ),
   }),
   'par-royal-cambronne': restaurantVisit(18, 35, {
-    bestDay: L('Weekdays, afternoon', 'Dias de semana, tarde'),
+    durationMin: 75,
+    durationMax: 100,
+    bestDay: L('Weekdays, evening', 'Dias de semana, noite'),
     tips: L(
-      'Paris terrace vibe for a drink watching the street and Line 6 — open square in front.',
-      'Esplanada para tomar algo olhando a rua e a linha 6 — praça aberta na frente.',
+      'Paris terrace vibe for dinner watching the street and Line 6 — open square in front. Afterward RER home via Cambronne / Montparnasse.',
+      'Esplanada para jantar olhando a rua e a linha 6 — praça aberta na frente. Depois RER para casa via Cambronne / Montparnasse.',
     ),
   }),
   'par-paname-brewing': restaurantVisit(15, 30, {
@@ -879,8 +1055,8 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
   'par-bohemia': restaurantVisit(18, 35, {
     bestDay: L('Weekdays, brunch', 'Dias de semana, brunch'),
     tips: L(
-      'Brunch spot — weekends fill up fast; weekday is easier for a table.',
-      'Spot de brunch — fim de semana enche rápido; dia de semana é mais fácil para mesa.',
+      'Order the club sandwich or Club Loco de Blueberries. Weekends fill up — weekday is easier for a table.',
+      'Peça o club sandwich ou o Club Loco de Blueberries. Fim de semana enche — dia de semana é mais fácil para mesa.',
     ),
   }),
   'par-arnaud-nicolas': restaurantVisit(25, 50, {
@@ -888,7 +1064,14 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
   }),
 
   // —— Cafés / pastry ——
-  'par-bake-blend': cafeVisit(6, 14),
+  'par-bake-blend': cafeVisit(6, 14, {
+    durationMin: 20,
+    durationMax: 30,
+    tips: L(
+      'Grab bakery + coffee to go — eat while walking to the Champ de Mars.',
+      'Pegue padaria + café para levar — coma andando até o Champ de Mars.',
+    ),
+  }),
   'par-bakery-gaite': cafeVisit(5, 12),
   'par-pierre-herme': cafeVisit(8, 20, {
     tips: L(
@@ -904,18 +1087,30 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
   }),
   'par-eclair-genie': cafeVisit(6, 15),
   'par-maison-isabelle': cafeVisit(4, 10, {
-    tips: L('Croissant / bakery stop — morning best.', 'Parada de croissant — melhor de manhã.'),
-  }),
-  'par-maison-doucet': cafeVisit(4, 10, {
-    tips: L('Butter-first croissant priorities.', 'Prioridade croissant de manteiga.'),
+    tips: L(
+      'Often a queue — go early if you can. Award-winning croissants.',
+      'Costuma formar fila — vá cedo se puder. Croissants premiados.',
+    ),
   }),
   'par-jeffrey-cagnes': cafeVisit(6, 14),
   'par-michalak': cafeVisit(8, 20),
+  'par-michalak-etienne': cafeVisit(6, 15, {
+    tips: L(
+      'Etienne Marcel counter near Montorgueil — go early for the best selection.',
+      'Balcão na Etienne Marcel perto de Montorgueil — vá cedo para a melhor seleção.',
+    ),
+  }),
+  'par-artizans': restaurantVisit(25, 45, {
+    tips: L(
+      'Montorgueil bistro — good stop while walking the food street.',
+      'Bistrô em Montorgueil — boa parada no passeio da rua gastronômica.',
+    ),
+  }),
   'par-amorino': cafeVisit(5, 12, {
     tips: L('Gelato flower scoops — touristy but fun on a warm day.', 'Gelato em flor — turístico, mas legal no calor.'),
   }),
 
-  // —— Shopping (soft “visit”) ——
+  // —— Shopping ——
   'par-galeries-lafayette': {
     ticket: free,
     durationMin: 45,
@@ -940,6 +1135,425 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
       'Grand magasin Haussmann — terraço/café com vista quando aberto.',
     ),
   },
+  'par-bon-marche': {
+    ticket: free,
+    durationMin: 40,
+    durationMax: 120,
+    bestTime: L('Morning for the Grande Épicerie', 'Manhã na Grande Épicerie'),
+    bestDay: L('Weekday', 'Dia de semana'),
+    crowdProfile: 'shop',
+    tips: L(
+      'Left-bank elegance — food hall downstairs is half the visit.',
+      'Elegância da margem esquerda — a épicerie embaixo é metade da visita.',
+    ),
+  },
+  'par-forum-halles': {
+    ticket: free,
+    durationMin: 30,
+    durationMax: 90,
+    bestTime: L('Daytime', 'De dia'),
+    crowdProfile: 'shop',
+    tips: L('Underground mall + Canopée park above — useful, not romantic.', 'Shopping subterrâneo + parque da Canopée em cima — útil, não romântico.'),
+  },
+  'par-bhv-marais': {
+    ticket: free,
+    durationMin: 40,
+    durationMax: 100,
+    bestTime: L('Weekday afternoon', 'Tarde de dia de semana'),
+    crowdProfile: 'shop',
+    tips: L('Rooftop café when open — good Hôtel de Ville views.', 'Café no terraço quando aberto — boa vista do Hôtel de Ville.'),
+  },
+  'par-shakespeare': {
+    ticket: free,
+    durationMin: 20,
+    durationMax: 60,
+    bestTime: L('Opening hour — queues grow fast', 'Abertura — a fila cresce rápido'),
+    crowdProfile: 'cafe',
+    tips: L(
+      'Café + English bookshop by the Seine — browse shelves, then coffee; expect a line.',
+      'Café + livraria em inglês no Sena — percorra as prateleiras e depois o café; espere fila.',
+    ),
+  },
+
+  // —— Commons (chains) ——
+  'par-mcdonalds-champs': {
+    avgPricePerPerson: money(8, 16),
+    durationMin: 20,
+    durationMax: 45,
+    bestTime: L('Late night when little else is open', 'Madrugada quando pouco está aberto'),
+    crowdProfile: 'local',
+    tips: L('Tourist McDo — useful, not a food destination.', 'McDo turístico — útil, não é destino gastronômico.'),
+  },
+  'par-burger-king-opera': {
+    avgPricePerPerson: money(8, 15),
+    durationMin: 15,
+    durationMax: 40,
+    crowdProfile: 'local',
+  },
+  'par-starbucks-opera': {
+    avgPricePerPerson: money(5, 12),
+    durationMin: 20,
+    durationMax: 60,
+    crowdProfile: 'cafe',
+    tips: L('Wi‑Fi + AC between department stores.', 'Wi‑Fi + ar entre grands magasins.'),
+  },
+  'par-five-guys-rivoli': {
+    avgPricePerPerson: money(12, 22),
+    durationMin: 25,
+    durationMax: 50,
+    crowdProfile: 'restaurant',
+  },
+  'par-kfc-les-halles': {
+    avgPricePerPerson: money(8, 16),
+    durationMin: 15,
+    durationMax: 40,
+    crowdProfile: 'local',
+  },
+
+  // —— Markets ——
+  'par-marche-enfants-rouges': {
+    avgPricePerPerson: money(10, 25),
+    durationMin: 45,
+    durationMax: 90,
+    bestTime: L('Lunch 11:00–14:00', 'Almoço 11h–14h'),
+    bestDay: L('Tue–Sun (closed Monday)', 'Ter–dom (fecha segunda)'),
+    crowdProfile: 'local',
+    tips: L(
+      'Oldest covered market — pick a stall, share plates, sit outside if warm.',
+      'Mercado coberto mais antigo — escolha uma barraca, divida pratos, sente fora se fizer calor.',
+    ),
+  },
+  'par-marche-aligre': {
+    avgPricePerPerson: money(5, 15),
+    durationMin: 40,
+    durationMax: 90,
+    bestTime: L('Morning until ~13:00–14:00', 'Manhã até ~13h–14h'),
+    bestDay: L('Tue–Sun morning', 'Manhã de ter–dom'),
+    crowdProfile: 'local',
+    tips: L('Pair with Le Baron Rouge for wine after.', 'Combine com o Le Baron Rouge para vinho depois.'),
+  },
+  'par-marche-bastille': {
+    avgPricePerPerson: money(5, 20),
+    durationMin: 40,
+    durationMax: 90,
+    bestTime: L('Morning', 'Manhã'),
+    bestDay: L('Thursday & Sunday mornings', 'Manhãs de quinta e domingo'),
+    crowdProfile: 'local',
+  },
+  'par-rue-cler': {
+    avgPricePerPerson: money(8, 25),
+    durationMin: 30,
+    durationMax: 75,
+    bestTime: L('Morning market hours', 'Horário de manhã do mercado'),
+    bestDay: L('Weekday morning', 'Manhã de dia de semana'),
+    crowdProfile: 'local',
+    tips: L('Near the Tower — great picnic shopping street.', 'Perto da Torre — ótima rua para montar piquenique.'),
+  },
+
+  // —— Roteiro CSV (≤ €40) additions ——
+  'par-place-dauphine': parkVisit({
+    durationMin: 30,
+    durationMax: 90,
+    bestTime: L('Late afternoon / early evening 17:00–20:00', 'Final de tarde / início da noite 17h–20h'),
+    tips: L('Quiet square — wine bars around the edges.', 'Praça calma — bares de vinho nas bordas.'),
+  }),
+  'par-cafe-flore': cafeVisit(15, 40, {
+    bestTime: L('Early morning 7:30–10:00 or late afternoon', 'Manhã cedo 7h30–10h ou final da tarde'),
+    bestDay: L('Weekday', 'Dia de semana'),
+    tips: L('Iconic and pricey — coffee/pastry is enough.', 'Icônico e caro — café/pâtisserie basta.'),
+  }),
+  'par-rosa-bonheur': {
+    avgPricePerPerson: money(15, 30),
+    durationMin: 60,
+    durationMax: 150,
+    bestTime: L('Late afternoon into evening', 'Final de tarde até a noite'),
+    bestDay: L('Wed–Sun from noon; weekends arrive early', 'Qua–dom a partir do meio-dia; fim de semana chegue cedo'),
+    crowdProfile: 'nightlife',
+    tips: L(
+      'Inside Buttes-Chaumont — guinguette vibe, very local.',
+      'Dentro do Buttes-Chaumont — clima de guinguette, bem local.',
+    ),
+  },
+  'par-belleville': parkVisit({
+    durationMin: 45,
+    durationMax: 120,
+    bestTime: L('Sunset', 'Pôr do sol'),
+    tips: L('Best free panoramic view of the city skyline.', 'Melhor vista panorâmica grátis do skyline.'),
+  }),
+  'par-disneyland': {
+    ticket: money(
+      56,
+      120,
+      L(
+        '1-day 1-park from ~€56; 2-park from ~€81+ (dynamic by date)',
+        '1 dia 1 parque a partir de ~€56; 2 parques a partir de ~€81+ (dinâmico por data)',
+      ),
+    ),
+    ticketUrl: 'https://tickets.disneylandparis.com/',
+    durationMin: 480,
+    durationMax: 720,
+    duration: L('Full day (plan 8–12 h)', 'Dia inteiro (planeje 8–12 h)'),
+    bestTime: L('Rope drop / first entry', 'Abertura / primeiros horários'),
+    bestDay: L('Weekday outside school holidays', 'Dia de semana fora de férias escolares'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'RER A → Marne-la-Vallée–Chessy (~40 min from Châtelet / Gare de Lyon) + ~2 min walk to the gates. Metro-Train-RER ticket ~€2.50–2.55 one way (2026 flat Île-de-France fare). Buy dated park tickets online — not sold at the gate on most days. Two parks: Disneyland Park + Disney Adventure World (ex-Studios).',
+      'RER A → Marne-la-Vallée–Chessy (~40 min de Châtelet / Gare de Lyon) + ~2 min a pé até os portões. Bilhete Metro-Train-RER ~€2,50–2,55 ida (tarifa plana Île-de-France 2026). Compre ingresso datado online — na maioria dos dias não vende na porta. Dois parques: Disneyland Park + Disney Adventure World (ex-Studios).',
+    ),
+  },
+  'par-versailles': {
+    ticket: money(
+      32,
+      35,
+      L(
+        'Passport timed entry (estate); from 15:00 often cheaper',
+        'Passport com horário (domínio); a partir das 15h costuma ser mais barato',
+      ),
+    ),
+    ticketUrl: 'https://en.chateauversailles.fr/plan-your-visit/tickets-and-prices',
+    durationMin: 240,
+    durationMax: 480,
+    duration: L('Full day (Palace + gardens ± Trianon)', 'Dia inteiro (Palácio + jardins ± Trianon)'),
+    bestTime: L('Arrive for opening (~9:00)', 'Chegue na abertura (~9h)'),
+    bestDay: L('Tue–Fri; closed Monday', 'Ter–sex; fecha segunda'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Best: RER C → Versailles Château–Rive Gauche + ~10 min walk to Place d’Armes. Alternatives: SNCF N/U → Versailles Chantiers (~18 min walk) or L → Rive Droite (~17 min walk). Book Passport timed slot online (Palace + Trianon + gardens; shows on fountain days). Gardens free most days; free under 18 / EU under 26 (still need a free timed slot). Closed Mon + 1 Jan / 1 May / 25 Dec.',
+      'Melhor: RER C → Versailles Château–Rive Gauche + ~10 min a pé até a Place d’Armes. Alternativas: SNCF N/U → Versailles Chantiers (~18 min a pé) ou L → Rive Droite (~17 min a pé). Reserve Passport com horário online (Palácio + Trianon + jardins; shows nos dias de fontes). Jardins grátis na maioria dos dias; grátis <18 / UE <26 (ainda precisa de horário gratuito). Fecha seg + 1 jan / 1 mai / 25 dez.',
+    ),
+  },
+  'par-baron-rouge': {
+    avgPricePerPerson: money(10, 25),
+    durationMin: 30,
+    durationMax: 90,
+    bestTime: L('Sat–Sun morning for oysters; weekday evenings too', 'Sáb–dom de manhã para ostras; noites em dias de semana também'),
+    crowdProfile: 'local',
+    tips: L(
+      'Wine from the barrel + market next door (Aligre).',
+      'Vinho do barril + mercado ao lado (Aligre).',
+    ),
+  },
+  'par-promenade-plantee': parkVisit({
+    durationMin: 45,
+    durationMax: 120,
+    bestTime: L('Morning or late afternoon', 'Manhã ou final da tarde'),
+    tips: L(
+      'Elevated park walk from Bastille — cooler alternative to the Tuileries crowds.',
+      'Passeio elevado a partir da Bastille — alternativa mais fresca à multidão das Tuileries.',
+    ),
+  }),
+
+  // —— Rome ——
+  'rom-fco': {
+    ticket: free,
+    durationMin: 60,
+    durationMax: 120,
+    bestTime: L('Off-peak flights when possible', 'Voos fora de pico quando possível'),
+    bestDay: L('Mid-week arrivals are calmer', 'Chegadas no meio da semana são mais calmas'),
+    crowdProfile: 'airport',
+    tips: L(
+      'Leonardo Express to Roma Termini ~€14, ~32 min (non-stop). FL1 regional is cheaper but slower / more stops. Buy tickets before boarding — validate if paper. Taxis use fixed fares into the city center.',
+      'Leonardo Express até Roma Termini ~€14, ~32 min (direto). FL1 regional é mais barato, mas mais lento / com paradas. Compre o bilhete antes de embarcar — valide se for papel. Táxi tem tarifa fixa para o centro.',
+    ),
+  },
+  'rom-termini': {
+    ticket: free,
+    durationMin: 15,
+    durationMax: 40,
+    bestTime: L('Anytime — watch pickpockets in the hall', 'Qualquer hora — atenção a carteiristas no saguão'),
+    crowdProfile: 'transit',
+    tips: L(
+      'Metro A (orange) and B/B1 (blue) under the station. High-speed (Frecciarossa/Italo) and Leonardo Express from FCO. Keep bags close — busy tourist station.',
+      'Metrô A (laranja) e B/B1 (azul) sob a estação. Alta velocidade (Frecciarossa/Italo) e Leonardo Express de FCO. Cuide das malas — estação turística e movimentada.',
+    ),
+  },
+  'rom-gallina-bianca': restaurantVisit(14, 22, {
+    tips: L(
+      'Go for the carbonara (~€14). Truffle carbonara was ~€18. Book or arrive early — tourist-heavy near Termini.',
+      'Vá de carbonara (~€14). A trufada saiu ~€18. Reserve ou chegue cedo — zona turística perto da Termini.',
+    ),
+  }),
+  'rom-alfredo-ada': restaurantVisit(12, 18, {
+    tips: L(
+      'Homey pastas and lasagna. Small room — lunch is easier than dinner without a booking.',
+      'Massas e lasanha de casa. Sala pequena — almoço é mais fácil que jantar sem reserva.',
+    ),
+  }),
+  'rom-antico-vinaio': restaurantVisit(12, 15, {
+    tips: L(
+      'Schiacciata sandwiches ~€12. Lines move; delivery exists. Near the Pantheon (Piazza della Maddalena).',
+      'Sanduíches de schiacciata ~€12. Fila anda; tem delivery. Perto do Panteão (Piazza della Maddalena).',
+    ),
+  }),
+  'rom-baffetto': restaurantVisit(12, 18, {
+    tips: L(
+      'Individual pizzas ~€8–15. Expect a queue at peak; thin Roman-style crust.',
+      'Pizza individual ~€8–15. Espere fila no pico; massa fina à romana.',
+    ),
+  }),
+  'rom-suppli': restaurantVisit(4, 8, {
+    avgPricePerPerson: money(4, 8),
+    tips: L(
+      'Rice balls ~€2 each — try cacio e pepe, carbonara, or plain cheese. Perfect walk-and-eat stop in Trastevere.',
+      'Bolinhos ~€2 cada — experimente cacio e pepe, carbonara ou queijo. Ótimo para comer andando em Trastevere.',
+    ),
+  }),
+  'rom-norcineria': restaurantVisit(6, 12, {
+    tips: L(
+      'Porchetta sandwich is the move. Classic norcineria hours (often closed mid-afternoon).',
+      'O sanduíche de porchetta é o pedido. Horário de norcineria (muitas vezes fecha no meio da tarde).',
+    ),
+  }),
+  'rom-said': cafeVisit(4, 8, {
+    tips: L(
+      'Gelato / chocolate scoops ~€2.40–3.40. Historic brand since 1923 — also a full chocolate café concept.',
+      'Sorvete / chocolate ~€2,40–3,40 a unidade. Marca histórica desde 1923 — também café de chocolate completo.',
+    ),
+  }),
+  'rom-forno-trevi': cafeVisit(3, 6, {
+    tips: L(
+      'Stand at the counter facing Trevi: plain croissant €1.50, chocolate €2.30, pistachio €3; americano €1.60. Sitting costs more.',
+      'Coma na bancada em pé de frente para a Trevi: croissant €1,50, chocolate €2,30, pistache €3; americano €1,60. Sentar custa mais.',
+    ),
+  }),
+  'rom-colosseum': {
+    ticket: money(
+      16,
+      24,
+      L(
+        '~€16–18 Colosseum + Forum + Palatine; ~€22–24 with arena floor',
+        '~€16–18 Coliseu + Fórum + Palatino; ~€22–24 com acesso à arena',
+      ),
+    ),
+    ticketUrl: 'https://colosseo.it/en/ticket/',
+    durationMin: 90,
+    durationMax: 180,
+    bestTime: L('First entry slot of the day', 'Primeiro horário do dia'),
+    bestDay: L('Weekday; book timed entry always', 'Dia de semana; reserve horário sempre'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Same ticket usually covers Forum & Palatine. Arena upgrade is the ~€22–24 band. Security is the time sink.',
+      'O mesmo ingresso costuma incluir Fórum e Palatino. Upgrade da arena fica na faixa ~€22–24. A segurança come o tempo.',
+    ),
+  },
+  'rom-forum': {
+    ticket: money(
+      16,
+      18,
+      L(
+        'Usually included with Colosseum combo (~€16–18)',
+        'Em geral no combo do Coliseu (~€16–18)',
+      ),
+    ),
+    ticketUrl: 'https://colosseo.it/en/ticket/',
+    durationMin: 75,
+    durationMax: 150,
+    bestTime: L('Morning with Colosseum loop', 'Manhã no circuito do Coliseu'),
+    bestDay: L('Weekday', 'Dia de semana'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Wear shoes for uneven stones. Pair with Colosseum the same day — one timed ticket.',
+      'Use sapato bom para pedras irregulares. Combine com o Coliseu no mesmo dia — um ingresso com horário.',
+    ),
+  },
+  'rom-pantheon': museumVisit(5, {
+    ticketUrl: 'https://www.pantheonroma.com/',
+    durationMin: 30,
+    durationMax: 60,
+    bestTime: L('Opening hour or late afternoon', 'Na abertura ou fim da tarde'),
+    bestDay: L('Weekday morning', 'Manhã de dia de semana'),
+    tips: L(
+      'Adult ~€5. Look up for the oculus — free rain on wet days. Modest dress not required like churches, but still a basilica.',
+      'Adulto ~€5. Olhe o óculo no teto — chuva entra em dias molhados. Ainda é basílica; respeito no interior.',
+    ),
+  }),
+  'rom-piazza-venezia': landmarkOutdoor({
+    durationMin: 15,
+    durationMax: 30,
+    bestTime: L('Anytime as orientation hub', 'Qualquer hora como ponto de orientação'),
+    tips: L(
+      'Traffic square under the Vittoriano — good photo + metro orientation, not a long stay.',
+      'Praça de trânsito sob o Vittoriano — boa foto e orientação de metrô, não é parada longa.',
+    ),
+  }),
+  'rom-trevi': landmarkOutdoor({
+    durationMin: 20,
+    durationMax: 45,
+    bestTime: L('Before 8:00 or late night', 'Antes das 8h ou de madrugada'),
+    bestDay: L('Weekday early morning', 'Manhã cedo em dia de semana'),
+    tips: L(
+      'Viewing the fountain is free. A closer controlled access can cost ~€2 — optional. Pair with the Forno croissants across the square.',
+      'Ver a fonte é grátis. Acesso controlado mais perto pode custar ~€2 — opcional. Combine com croissants do Forno na praça.',
+    ),
+  }),
+  'rom-vatican': museumVisit(
+    { min: 20, max: 30 },
+    {
+      ticketUrl: 'https://tickets.museivaticani.va/',
+      durationMin: 150,
+      durationMax: 300,
+      duration: L('3–5 hours (museums + Sistine)', '3–5 horas (museus + Sistina)'),
+      bestTime: L('First morning slot', 'Primeiro horário da manhã'),
+      bestDay: L('Weekday; skip free last-Sunday if you hate crowds', 'Dia de semana; evite domingo grátis se odiar fila'),
+      tips: L(
+        'St. Peter’s Square is free; museums are paid and include the route to the Sistine Chapel. Book online, dress code (shoulders/knees).',
+        'A praça de São Pedro é grátis; museus são pagos e incluem o caminho da Capela Sistina. Reserve online, dress code (ombros/joelhos).',
+      ),
+    },
+  ),
+  'rom-sistine': museumVisit(
+    { min: 20, max: 30 },
+    {
+      ticketUrl: 'https://tickets.museivaticani.va/',
+      durationMin: 30,
+      durationMax: 60,
+      bestTime: L('Right after museum opening (before the crush)', 'Logo na abertura do museu (antes da multidão)'),
+      bestDay: L('Weekday morning', 'Manhã de dia de semana'),
+      tips: L(
+        'Not a separate ticket from the Vatican Museums. No photos inside. Exit may dump you near St. Peter’s — perfect order: museums → Sistine → Basilica.',
+        'Não é ingresso separado dos Museus do Vaticano. Sem fotos no interior. A saída pode te deixar perto de São Pedro — ordem ideal: museus → Sistina → Basílica.',
+      ),
+    },
+  ),
+  'rom-st-peter': {
+    ticket: {
+      currency: 'EUR',
+      free: true,
+      note: L(
+        'Basilica free; dome climb paid (stairs cheaper than lift)',
+        'Basílica grátis; cúpula paga (escada mais barata que elevador)',
+      ),
+    },
+    ticketUrl: 'https://www.basilicasanpietro.va/',
+    durationMin: 45,
+    durationMax: 120,
+    bestTime: L('Early morning before security peaks', 'Cedo de manhã antes do pico da segurança'),
+    bestDay: L('Weekday morning', 'Manhã de dia de semana'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Entry free with security screening. Dome (cupola) is a separate fee. Strict dress code — cover shoulders and knees.',
+      'Entrada grátis com segurança. Cúpula é taxa à parte. Dress code rígido — cubra ombros e joelhos.',
+    ),
+  },
+  'rom-vittoriano': landmarkOutdoor({
+    durationMin: 30,
+    durationMax: 75,
+    bestTime: L('Late afternoon light on the façade', 'Luz de fim de tarde na fachada'),
+    tips: L(
+      'Monument and terraces are free. Great panorama over the Forum side and Piazza Venezia. Elevator to higher terrace may have a small fee — check on site.',
+      'Monumento e terraços são gratuitos. Ótima vista para o Fórum e a Piazza Venezia. Elevador do terraço alto pode ter taxa — confira no local.',
+    ),
+  }),
+  'rom-window-on-rome': lodgingVisit(100, 180, {
+    bestTime: L(
+      'Check-in afternoon; evenings out in Trastevere',
+      'Check-in à tarde; noites saindo em Trastevere',
+    ),
+    tips: L(
+      'Guest house on Piazza Sonnino in Trastevere (Canal dos Caçadores tip). Strong nightlife / dinner neighborhood — walkable bars and restaurants after dark. Cross the Tiber for Centro Storico. Confirm nightly rate on booking sites.',
+      'Hospedagem na Piazza Sonnino, em Trastevere (indicação do Canal dos Caçadores). Bairro bom pra sair a noitinha — bares e restaurantes a pé. Cruza o Tibre pro Centro Histórico. Confirme o valor da diária no site de reserva.',
+    ),
+  }),
 };
 
 /** Merge curated visit onto a place (place.visit wins). */
@@ -963,6 +1577,27 @@ export function formatMoney(m: MoneyInfo, locale: Locale = 'en'): string {
   if (m.min != null) return `${sym}${fmt(m.min)}`;
   if (m.max != null) return `${sym}${fmt(m.max)}`;
   return '—';
+}
+
+/**
+ * Average / typical price per person for food.
+ * Curated ranges store min = typical average, max = upper bound —
+ * show the typical (min), not the expensive end or a high midpoint.
+ */
+export function formatMoneyTypical(
+  m: MoneyInfo,
+  locale: Locale = 'en',
+): string {
+  if (m.free) return locale === 'pt-BR' ? 'Grátis' : 'Free';
+
+  const sym =
+    m.currency === 'EUR' ? '€' : m.currency === 'BRL' ? 'R$' : '$';
+
+  const n = m.min ?? m.max;
+  if (n == null || !Number.isFinite(n)) return '—';
+
+  const fmt = Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.00$/, '');
+  return `${sym}${fmt}`;
 }
 
 export function formatDuration(
@@ -1008,6 +1643,7 @@ export function formatDuration(
 /** Fields shown on the place card (only non-empty). */
 export type VisitFieldKey =
   | 'avgPrice'
+  | 'pricePerNight'
   | 'ticket'
   | 'duration'
   | 'bestTime'
@@ -1023,9 +1659,19 @@ export function visitFieldsForDisplay(
   if (visit.avgPricePerPerson) {
     out.push({
       key: 'avgPrice',
-      value: formatMoney(visit.avgPricePerPerson, locale),
+      value: formatMoneyTypical(visit.avgPricePerPerson, locale),
       note: visit.avgPricePerPerson.note
         ? visit.avgPricePerPerson.note[locale] ?? visit.avgPricePerPerson.note.en
+        : undefined,
+    });
+  }
+  if (visit.pricePerNight) {
+    out.push({
+      key: 'pricePerNight',
+      // Full min–max range (hotels show a band, not a single typical plate price)
+      value: formatMoney(visit.pricePerNight, locale),
+      note: visit.pricePerNight.note
+        ? visit.pricePerNight.note[locale] ?? visit.pricePerNight.note.en
         : undefined,
     });
   }

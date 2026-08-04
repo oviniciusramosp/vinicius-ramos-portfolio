@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TravelPlaceCard from '../../components/travel/TravelPlaceCard.astro';
+import TravelItineraryDayCard from '../../components/travel/TravelItineraryDayCard.astro';
 import Tag from '../../components/Tag.astro';
 import {
   getTravelCity,
@@ -11,6 +12,8 @@ import {
   googleMapsUrl,
   placeCategoryMeta,
   withResolvedArea,
+  itineraryForCity,
+  computeTripBudget,
   type PlaceCategory,
   type TravelPlace,
 } from '../../data/travel';
@@ -57,7 +60,8 @@ const pins = places.map((place) => ({
     : null,
 }));
 
-const pinsJson = JSON.stringify(pins);
+/** Escape `<` so `</script>` inside string values cannot break the JSON script tag */
+const pinsJson = JSON.stringify(pins).replace(/</g, '\\u003c');
 const metaEn = formatCityMeta(city, 'en');
 const metaPt = formatCityMeta(city, 'pt-BR');
 const categories = cityCategoryKeys(city);
@@ -68,128 +72,46 @@ const placesByCategory = categories.map((key) => ({
   labelEn: travelUi.categories[key as PlaceCategory].en,
   labelPt: travelUi.categories[key as PlaceCategory]['pt-BR'],
 }));
+
+const itinerary = itineraryForCity(city.slug);
+const placesById = new Map(places.map((p) => [p.id, p]));
+const tripBudget = itinerary
+  ? computeTripBudget(itinerary, placesById)
+  : null;
+
+function formatTripEur(n: number): string {
+  const rounded = Math.round(n * 100) / 100;
+  if (Number.isInteger(rounded)) return `€${rounded}`;
+  return `€${rounded.toFixed(2).replace('.', ',')}`;
+}
 ---
 
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
   robots="noindex, nofollow"
+  showFooter={false}
 >
+  {/*
+    Desktop: left sidebar (places/itinerary) + full-height map.
+    Mobile: map on top, list below (flex order).
+  */}
   <section class="travel-city">
-    {/*
-      Shell wraps map + place panel. Panel is a sibling of the map hero so
-      overflow:hidden on the map does not clip the mobile form-sheet (fixed).
-    */}
-    <div class="travel__map-shell">
-      <div class="travel__map-hero">
-        <div
-          class="travel-map"
-          data-travel-map
-          data-mode="places"
-          data-pins={pinsJson}
-          data-center-lat={String(city.lat)}
-          data-center-lng={String(city.lng)}
-          data-zoom={String(city.zoom)}
-          data-i18n-en={travelUi.cityMapAria.en}
-          data-i18n-pt={travelUi.cityMapAria['pt-BR']}
-          data-i18n-as="aria-label"
-          data-fullscreen-enter={travelUi.fullscreenEnter.en}
-          data-fullscreen-exit={travelUi.fullscreenExit.en}
-          data-add-en={travelUi.addToRoute.en}
-          data-add-pt={travelUi.addToRoute['pt-BR']}
-          data-remove-en={travelUi.removeFromRoute.en}
-          data-remove-pt={travelUi.removeFromRoute['pt-BR']}
-          data-title-en={travelUi.routeTitle.en}
-          data-title-pt={travelUi.routeTitle['pt-BR']}
-          data-walk-en={travelUi.routeWalk.en}
-          data-walk-pt={travelUi.routeWalk['pt-BR']}
-          data-transit-en={travelUi.routeTransit.en}
-          data-transit-pt={travelUi.routeTransit['pt-BR']}
-          data-open-en={travelUi.routeOpenGoogle.en}
-          data-open-pt={travelUi.routeOpenGoogle['pt-BR']}
-          data-need-en={travelUi.routeNeedStops.en}
-          data-need-pt={travelUi.routeNeedStops['pt-BR']}
-          data-loading-en={travelUi.routeLoading.en}
-          data-loading-pt={travelUi.routeLoading['pt-BR']}
-          data-error-en={travelUi.routeError.en}
-          data-error-pt={travelUi.routeError['pt-BR']}
-          data-transit-hint-en={travelUi.routeTransitHint.en}
-          data-transit-hint-pt={travelUi.routeTransitHint['pt-BR']}
-          data-clear-en={travelUi.routeClear.en}
-          data-clear-pt={travelUi.routeClear['pt-BR']}
-          data-preview-en={travelUi.routePreviewLabel.en}
-          data-preview-pt={travelUi.routePreviewLabel['pt-BR']}
-          aria-label={travelUi.cityMapAria.en}
-        >
-        </div>
-      </div>
-
-      {/* Scrim: mobile form-sheet only (tap outside to close) */}
-      <div
-        class="travel-map-panel-scrim"
-        data-travel-map-panel-scrim
-        hidden
-        aria-hidden="true"
-      ></div>
-
-      <aside
-        class="travel-map-panel"
-        data-travel-map-panel
-        data-close-label={travelUi.closePanel.en}
-        hidden
-        aria-hidden="true"
-        role="dialog"
-        aria-modal="true"
-      >
-        {/*
-          Sticky chrome (mobile form-sheet): grab + close stay fixed while body scrolls.
-          Hidden on desktop — card keeps its own close control.
-        */}
-        <div class="travel-map-panel__chrome" data-travel-map-panel-chrome>
-          <div
-            class="travel-map-panel__grab"
-            data-sheet-grab
-            aria-hidden="true"
-          >
-            <span class="travel-map-panel__grab-pill"></span>
-          </div>
-          <button
-            type="button"
-            class="travel-map-panel__close"
-            data-panel-close
-            aria-label={travelUi.closePanel.en}
-            data-i18n-en={travelUi.closePanel.en}
-            data-i18n-pt={travelUi.closePanel['pt-BR']}
-            data-i18n-as="aria-label"
-            title={travelUi.closePanel.en}
-          >
-            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
-          </button>
-        </div>
-        <div class="travel-map-panel__body" data-travel-map-panel-body></div>
-      </aside>
-    </div>
-
-    <div class="travel-city__body" data-travel-places>
+    <div
+      class="travel-city__body"
+      data-travel-places
+      id="travel-city-sidebar"
+    >
       <a
         class="travel-city__back"
         href="/travel"
         data-cursor="block"
         data-magnetic
         data-magnetic-range="3"
+        data-i18n-en={travelUi.back.en}
+        data-i18n-pt={travelUi.back['pt-BR']}
       >
-        <ion-icon
-          class="travel-city__back-icon"
-          name="chevron-back-outline"
-          aria-hidden="true"
-        ></ion-icon>
-        <span
-          class="travel-city__back-label"
-          data-i18n-en={travelUi.back.en}
-          data-i18n-pt={travelUi.back['pt-BR']}
-        >
-          {travelUi.back.en}
-        </span>
+        {travelUi.back.en}
       </a>
 
       <header class="travel__intro">
@@ -237,32 +159,88 @@ const placesByCategory = categories.map((key) => ({
           </label>
 
           <div class="travel__view-controls">
-            <button
-              type="button"
-              class="travel__expand-toggle"
-              data-travel-expand-toggle
-              data-expanded="false"
-              aria-expanded="false"
-              data-magnetic
-              data-magnetic-range="4"
-              data-cursor="block"
-              data-collapse-en={travelUi.collapseAll.en}
-              data-collapse-pt={travelUi.collapseAll['pt-BR']}
-              data-expand-en={travelUi.expandAll.en}
-              data-expand-pt={travelUi.expandAll['pt-BR']}
-              data-i18n-en={travelUi.expandAll.en}
-              data-i18n-pt={travelUi.expandAll['pt-BR']}
-              data-i18n-as="aria-label"
-              aria-label={travelUi.expandAll.en}
-              title={travelUi.expandAll.en}
+            {/* Category filter: button + multi-select checkbox popover */}
+            <div
+              class="travel__filter-wrap"
+              data-travel-filter-mode="categories"
             >
-              <ion-icon
-                class="travel__expand-toggle-icon"
-                name="chevron-down-outline"
-                aria-hidden="true"
-                data-travel-expand-icon
-              ></ion-icon>
-            </button>
+              <button
+                type="button"
+                class="travel__filter-btn"
+                data-travel-filter-toggle
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="travel-filter-popover"
+                data-magnetic
+                data-magnetic-range="4"
+                data-cursor="block"
+                data-i18n-en={travelUi.filterCategories.en}
+                data-i18n-pt={travelUi.filterCategories['pt-BR']}
+                data-i18n-as="aria-label"
+                aria-label={travelUi.filterCategories.en}
+                title={travelUi.filterCategories.en}
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">
+                  filter_list
+                </span>
+                <span
+                  class="travel__filter-btn-badge"
+                  data-travel-filter-count
+                  hidden
+                ></span>
+              </button>
+
+              <div
+                class="travel__filter-popover"
+                id="travel-filter-popover"
+                data-travel-filter-popover
+                role="dialog"
+                aria-label={travelUi.filterCategories.en}
+                data-i18n-en={travelUi.filterCategories.en}
+                data-i18n-pt={travelUi.filterCategories['pt-BR']}
+                data-i18n-as="aria-label"
+                hidden
+              >
+                <ul class="travel__filter-list" role="group">
+                  {
+                    categories.map((key) => {
+                      const onByDefault =
+                        key !== 'commons' && key !== 'markets';
+                      return (
+                        <li class="travel__filter-item">
+                          <label
+                            class="travel__filter-option"
+                            data-category={key}
+                            style={`--cat-color: ${placeCategoryMeta[key].color}`}
+                          >
+                            <input
+                              type="checkbox"
+                              class="travel__filter-check"
+                              data-travel-filter={key}
+                              checked={onByDefault}
+                            />
+                            <span
+                              class="travel__filter-option-icon"
+                              aria-hidden="true"
+                              set:html={categoryIconHtml(key)}
+                            />
+                            <span
+                              class="travel__filter-option-label"
+                              data-i18n-en={travelUi.categories[key].en}
+                              data-i18n-pt={
+                                travelUi.categories[key]['pt-BR']
+                              }
+                            >
+                              {travelUi.categories[key].en}
+                            </span>
+                          </label>
+                        </li>
+                      );
+                    })
+                  }
+                </ul>
+              </div>
+            </div>
 
             <div
               class="travel__view-toggle"
@@ -332,51 +310,6 @@ const placesByCategory = categories.map((key) => ({
         </div>
       </header>
 
-      <div class="travel__filters-row">
-        <div
-          class="travel__filters"
-          role="group"
-          aria-label="Filter places by category. Select multiple categories."
-        >
-          <button
-            type="button"
-            class="travel__chip is-active"
-            data-travel-filter="all"
-            aria-pressed="true"
-            data-magnetic
-            data-magnetic-range="6"
-            data-i18n-en={travelUi.filterAll.en}
-            data-i18n-pt={travelUi.filterAll['pt-BR']}
-            data-i18n-as="tag-label"
-          >
-            <Tag label={travelUi.filterAll.en} variant="chip" pressed />
-          </button>
-          {
-            categories.map((key) => (
-              <button
-                type="button"
-                class="travel__chip"
-                data-travel-filter={key}
-                data-category={key}
-                style={`--cat-color: ${placeCategoryMeta[key].color}`}
-                aria-pressed="false"
-                data-magnetic
-                data-magnetic-range="6"
-                data-i18n-en={travelUi.categories[key].en}
-                data-i18n-pt={travelUi.categories[key]['pt-BR']}
-                data-i18n-as="tag-label"
-              >
-                <Tag
-                  label={travelUi.categories[key].en}
-                  variant="chip"
-                  iconHtml={categoryIconHtml(key)}
-                />
-              </button>
-            ))
-          }
-        </div>
-      </div>
-
       <div class="travel-city__views" data-places-view="list">
         {/* Grid: flat, all categories mixed — category tag only */}
         <div
@@ -391,8 +324,26 @@ const placesByCategory = categories.map((key) => ({
           }
         </div>
 
-        {/* List: grouped by category (current) — colored category tags */}
+        {/* List: grouped by category — expand label above groups */}
         <div class="travel-city__groups" data-view-panel="list">
+          <div class="travel-city__list-actions">
+            <button
+              type="button"
+              class="travel__expand-label"
+              data-travel-expand-toggle
+              data-expanded="false"
+              aria-expanded="false"
+              data-cursor="block"
+              data-collapse-en={travelUi.collapseAll.en}
+              data-collapse-pt={travelUi.collapseAll['pt-BR']}
+              data-expand-en={travelUi.expandAll.en}
+              data-expand-pt={travelUi.expandAll['pt-BR']}
+              data-i18n-en={travelUi.expandAll.en}
+              data-i18n-pt={travelUi.expandAll['pt-BR']}
+            >
+              {travelUi.expandAll.en}
+            </button>
+          </div>
           {
             placesByCategory.map((group) => (
               <details
@@ -433,19 +384,112 @@ const placesByCategory = categories.map((key) => ({
           }
         </div>
 
-        {/* Itinerary: day-by-day — scaffold for per-city data later */}
+        {/* Itinerary: day-by-day curated routes */}
         <div
           class="travel-city__itinerary"
           data-view-panel="itinerary"
+          data-travel-itinerary
+          data-on-map-en={travelUi.itineraryOnMap.en}
+          data-on-map-pt={travelUi.itineraryOnMap['pt-BR']}
+          data-slot-off-map-en={travelUi.itinerarySlotOffMap.en}
+          data-slot-off-map-pt={travelUi.itinerarySlotOffMap['pt-BR']}
           hidden
         >
-          <p
-            class="travel-city__itinerary-empty"
-            data-i18n-en={travelUi.itineraryEmpty.en}
-            data-i18n-pt={travelUi.itineraryEmpty['pt-BR']}
-          >
-            {travelUi.itineraryEmpty.en}
-          </p>
+          {
+            itinerary ? (
+              <>
+                <header class="travel-city__itinerary-head">
+                  <h2
+                    class="travel-city__itinerary-title"
+                    data-i18n-en={itinerary.title.en}
+                    data-i18n-pt={itinerary.title['pt-BR']}
+                  >
+                    {itinerary.title.en}
+                  </h2>
+                  {
+                    tripBudget && (
+                      <div
+                        class="travel-day-card__budgets travel-city__itinerary-budgets"
+                        role="group"
+                        data-i18n-en={travelUi.itineraryTripBudgetGroup.en}
+                        data-i18n-pt={travelUi.itineraryTripBudgetGroup['pt-BR']}
+                        data-i18n-as="aria-label"
+                        aria-label={travelUi.itineraryTripBudgetGroup.en}
+                      >
+                        <div
+                          class="travel-day-card__budget-card travel-day-card__budget-card--food"
+                          title={travelUi.itineraryFood.en}
+                          data-i18n-en={travelUi.itineraryFood.en}
+                          data-i18n-pt={travelUi.itineraryFood['pt-BR']}
+                          data-i18n-as="title"
+                        >
+                          <span
+                            class="material-symbols-rounded"
+                            aria-hidden="true"
+                          >
+                            restaurant
+                          </span>
+                          <span class="travel-day-card__budget-card-value">
+                            <strong>{formatTripEur(tripBudget.foodEur)}</strong>
+                            <span
+                              class="travel-day-card__budget-card-unit"
+                              data-i18n-en={travelUi.itineraryPerPerson.en}
+                              data-i18n-pt={travelUi.itineraryPerPerson['pt-BR']}
+                            >
+                              {travelUi.itineraryPerPerson.en}
+                            </span>
+                          </span>
+                        </div>
+                        <div
+                          class="travel-day-card__budget-card travel-day-card__budget-card--ticket"
+                          title={travelUi.itineraryParks.en}
+                          data-i18n-en={travelUi.itineraryParks.en}
+                          data-i18n-pt={travelUi.itineraryParks['pt-BR']}
+                          data-i18n-as="title"
+                        >
+                          <span
+                            class="material-symbols-rounded"
+                            aria-hidden="true"
+                          >
+                            confirmation_number
+                          </span>
+                          <span class="travel-day-card__budget-card-value">
+                            <strong>
+                              {formatTripEur(tripBudget.ticketsEur)}
+                            </strong>
+                            <span
+                              class="travel-day-card__budget-card-unit"
+                              data-i18n-en={travelUi.itineraryPerPerson.en}
+                              data-i18n-pt={travelUi.itineraryPerPerson['pt-BR']}
+                            >
+                              {travelUi.itineraryPerPerson.en}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  }
+                </header>
+                <div class="travel-city__itinerary-days">
+                  {itinerary.days.map((day) => (
+                    <TravelItineraryDayCard
+                      day={day}
+                      city={city}
+                      placesById={placesById}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p
+                class="travel-city__itinerary-empty"
+                data-i18n-en={travelUi.itineraryEmpty.en}
+                data-i18n-pt={travelUi.itineraryEmpty['pt-BR']}
+              >
+                {travelUi.itineraryEmpty.en}
+              </p>
+            )
+          }
         </div>
       </div>
 
@@ -459,27 +503,299 @@ const placesByCategory = categories.map((key) => ({
         {travelUi.emptyPlaces.en}
       </p>
     </div>
+
+    {/*
+      Shell wraps map + place panel. Panel is a sibling of the map hero so
+      overflow:hidden on the map does not clip the mobile form-sheet (fixed).
+    */}
+    <div class="travel__map-shell">
+      <div class="travel__map-hero">
+        <div
+          class="travel-map"
+          data-travel-map
+          data-mode="places"
+          data-center-lat={String(city.lat)}
+          data-center-lng={String(city.lng)}
+          data-zoom={String(city.zoom)}
+          data-i18n-en={travelUi.cityMapAria.en}
+          data-i18n-pt={travelUi.cityMapAria['pt-BR']}
+          data-i18n-as="aria-label"
+          data-fullscreen-enter={travelUi.fullscreenEnter.en}
+          data-fullscreen-exit={travelUi.fullscreenExit.en}
+          data-add-en={travelUi.addToRoute.en}
+          data-add-pt={travelUi.addToRoute['pt-BR']}
+          data-remove-en={travelUi.removeFromRoute.en}
+          data-remove-pt={travelUi.removeFromRoute['pt-BR']}
+          data-title-en={travelUi.routeTitle.en}
+          data-title-pt={travelUi.routeTitle['pt-BR']}
+          data-walk-en={travelUi.routeWalk.en}
+          data-walk-pt={travelUi.routeWalk['pt-BR']}
+          data-transit-en={travelUi.routeTransit.en}
+          data-transit-pt={travelUi.routeTransit['pt-BR']}
+          data-open-en={travelUi.routeOpenGoogle.en}
+          data-open-pt={travelUi.routeOpenGoogle['pt-BR']}
+          data-need-en={travelUi.routeNeedStops.en}
+          data-need-pt={travelUi.routeNeedStops['pt-BR']}
+          data-loading-en={travelUi.routeLoading.en}
+          data-loading-pt={travelUi.routeLoading['pt-BR']}
+          data-error-en={travelUi.routeError.en}
+          data-error-pt={travelUi.routeError['pt-BR']}
+          data-transit-hint-en={travelUi.routeTransitHint.en}
+          data-transit-hint-pt={travelUi.routeTransitHint['pt-BR']}
+          data-clear-en={travelUi.routeClear.en}
+          data-clear-pt={travelUi.routeClear['pt-BR']}
+          data-preview-en={travelUi.routePreviewLabel.en}
+          data-preview-pt={travelUi.routePreviewLabel['pt-BR']}
+          data-my-loc-en={travelUi.myLocation.en}
+          data-my-loc-pt={travelUi.myLocation['pt-BR']}
+          data-start-from-en={travelUi.startFromMyLocation.en}
+          data-start-from-pt={travelUi.startFromMyLocation['pt-BR']}
+          data-locating-en={travelUi.locating.en}
+          data-locating-pt={travelUi.locating['pt-BR']}
+          data-locate-denied-en={travelUi.locateDenied.en}
+          data-locate-denied-pt={travelUi.locateDenied['pt-BR']}
+          data-locate-unavailable-en={travelUi.locateUnavailable.en}
+          data-locate-unavailable-pt={travelUi.locateUnavailable['pt-BR']}
+          data-locate-far-en={travelUi.locateFar.en}
+          data-locate-far-pt={travelUi.locateFar['pt-BR']}
+          data-locate-label={travelUi.locateMe.en}
+          aria-label={travelUi.cityMapAria.en}
+        >
+        </div>
+        {/* Pins JSON outside attributes — large city payloads break / race SPA remounts when stuffed into data-pins */}
+        <script
+          type="application/json"
+          data-travel-map-pins
+          set:html={pinsJson}
+        />
+      </div>
+
+      {/* Scrim: mobile form-sheet only (tap outside to close) */}
+      <div
+        class="travel-map-panel-scrim"
+        data-travel-map-panel-scrim
+        hidden
+        aria-hidden="true"
+      ></div>
+
+      <aside
+        class="travel-map-panel"
+        data-travel-map-panel
+        data-close-label={travelUi.closePanel.en}
+        hidden
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+      >
+        {/*
+          Sticky chrome: close stays fixed while body scrolls (desktop + mobile).
+          Grab is mobile form-sheet only.
+        */}
+        <div class="travel-map-panel__chrome" data-travel-map-panel-chrome>
+          <div
+            class="travel-map-panel__grab"
+            data-sheet-grab
+            aria-hidden="true"
+          >
+            <span class="travel-map-panel__grab-pill"></span>
+          </div>
+          <button
+            type="button"
+            class="travel-map-panel__close"
+            data-panel-close
+            aria-label={travelUi.closePanel.en}
+            data-i18n-en={travelUi.closePanel.en}
+            data-i18n-pt={travelUi.closePanel['pt-BR']}
+            data-i18n-as="aria-label"
+            title={travelUi.closePanel.en}
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+        <div class="travel-map-panel__body" data-travel-map-panel-body></div>
+      </aside>
+    </div>
+
+    {/*
+      Desktop: collapse / expand left sidebar.
+      Sibling of body + map so it can sit above the floating panel (z-index).
+    */}
+    <button
+      type="button"
+      class="travel-city__sidebar-toggle"
+      data-travel-sidebar-toggle
+      aria-expanded="true"
+      aria-controls="travel-city-sidebar"
+      data-magnetic
+      data-magnetic-range="4"
+      data-cursor="block"
+      data-collapse-en={travelUi.collapseSidebar.en}
+      data-collapse-pt={travelUi.collapseSidebar['pt-BR']}
+      data-expand-en={travelUi.expandSidebar.en}
+      data-expand-pt={travelUi.expandSidebar['pt-BR']}
+      data-i18n-en={travelUi.collapseSidebar.en}
+      data-i18n-pt={travelUi.collapseSidebar['pt-BR']}
+      data-i18n-as="aria-label"
+      aria-label={travelUi.collapseSidebar.en}
+      title={travelUi.collapseSidebar.en}
+    >
+      <ion-icon
+        class="travel-city__sidebar-toggle-icon"
+        name="chevron-back-outline"
+        aria-hidden="true"
+        data-travel-sidebar-toggle-icon
+      ></ion-icon>
+    </button>
   </section>
+
+  {/*
+    Full place cards for map-panel cloning. Feed cards can be [hidden] /
+    filtered-out; cloning those inherits display:none and the panel looks empty.
+    Templates stay off-screen and never get filtered.
+  */}
+  <div
+    class="travel-card-templates"
+    data-travel-card-templates
+    hidden
+    aria-hidden="true"
+  >
+    {
+      places.map((place) => (
+        <TravelPlaceCard place={place} city={city} />
+      ))
+    }
+  </div>
 </BaseLayout>
 
 <script>
   import { bootTravelI18n } from '../../scripts/travel-i18n';
-  import { bootTravelMap } from '../../scripts/travel-map';
+  import { bootTravelMap, getTravelMapHandle } from '../../scripts/travel-map';
   import { bootTravelFilter } from '../../scripts/travel-filter';
   import { bootTravelPanel } from '../../scripts/travel-panel';
   import { bootTravelLive } from '../../scripts/travel-live';
   import { bootTravelPhotoSliders } from '../../scripts/travel-photo-slider';
   import { bootTravelRoute } from '../../scripts/travel-route-ui';
+  import { bootTravelItinerary } from '../../scripts/travel-itinerary';
+  import { bootTravelTheme } from '../../scripts/travel-theme';
   import '../../styles/travel-map.css';
+  import '../../styles/travel-itinerary.css';
+
+  const SIDEBAR_MQ = '(min-width: 901px)';
+  const SIDEBAR_KEY = 'travel-city-sidebar-collapsed';
+
+  /** Collapse / expand left list so the map can grow (desktop only). */
+  const bootTravelSidebar = () => {
+    const city = document.querySelector<HTMLElement>('.travel-city');
+    const toggle = document.querySelector<HTMLButtonElement>(
+      '[data-travel-sidebar-toggle]',
+    );
+    if (!city || !toggle) return;
+    if (toggle.dataset.bound === '1') return;
+    toggle.dataset.bound = '1';
+
+    const icon = toggle.querySelector<HTMLElement>(
+      '[data-travel-sidebar-toggle-icon]',
+    );
+
+    const isDesktop = () =>
+      typeof window !== 'undefined' && window.matchMedia(SIDEBAR_MQ).matches;
+
+    const labels = () => {
+      const lang =
+        document.documentElement.lang?.toLowerCase().startsWith('pt')
+          ? 'pt'
+          : 'en';
+      const collapse =
+        (lang === 'pt' ? toggle.dataset.collapsePt : toggle.dataset.collapseEn) ||
+        'Collapse sidebar';
+      const expand =
+        (lang === 'pt' ? toggle.dataset.expandPt : toggle.dataset.expandEn) ||
+        'Expand sidebar';
+      return { collapse, expand };
+    };
+
+    const apply = (collapsed: boolean, persist = true) => {
+      city.classList.toggle('is-sidebar-collapsed', collapsed);
+      toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      const { collapse, expand } = labels();
+      const label = collapsed ? expand : collapse;
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      toggle.setAttribute('data-i18n-en', collapsed
+        ? (toggle.dataset.expandEn || 'Expand sidebar')
+        : (toggle.dataset.collapseEn || 'Collapse sidebar'));
+      toggle.setAttribute('data-i18n-pt', collapsed
+        ? (toggle.dataset.expandPt || 'Expandir painel')
+        : (toggle.dataset.collapsePt || 'Recolher painel'));
+      if (icon) {
+        // Icon rotates via CSS; keep name stable for a11y tree simplicity
+        icon.setAttribute('name', 'chevron-back-outline');
+      }
+      if (persist && isDesktop()) {
+        try {
+          sessionStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+        } catch {
+          /* ignore */
+        }
+      }
+      // Sidebar overlays the map — re-center free region after open/close
+      requestAnimationFrame(() => {
+        getTravelMapHandle()?.syncUiChrome({
+          refit: true,
+          animate: persist && isDesktop(),
+        });
+      });
+    };
+
+    // Restore last preference on desktop
+    let startCollapsed = false;
+    if (isDesktop()) {
+      try {
+        startCollapsed = sessionStorage.getItem(SIDEBAR_KEY) === '1';
+      } catch {
+        startCollapsed = false;
+      }
+    }
+    apply(startCollapsed, false);
+
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!isDesktop()) return;
+      apply(!city.classList.contains('is-sidebar-collapsed'));
+    });
+
+    // Leaving desktop: force expanded layout so mobile stack is intact
+    const mq = window.matchMedia(SIDEBAR_MQ);
+    const onMq = () => {
+      if (!mq.matches) {
+        city.classList.remove('is-sidebar-collapsed');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        try {
+          apply(sessionStorage.getItem(SIDEBAR_KEY) === '1', false);
+        } catch {
+          apply(false, false);
+        }
+      }
+    };
+    mq.addEventListener?.('change', onMq);
+  };
 
   const boot = () => {
+    bootTravelTheme();
     bootTravelI18n();
     bootTravelMap();
     bootTravelFilter();
     bootTravelPanel();
     bootTravelRoute();
+    bootTravelItinerary();
     bootTravelLive();
     bootTravelPhotoSliders();
+    bootTravelSidebar();
+    // Desktop sidebar layout: map container size may settle after paint
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
   };
 
   boot();
@@ -487,20 +803,32 @@ const placesByCategory = categories.map((key) => ({
 </script>
 
 <style>
+  /*
+   * Desktop: left sidebar + map fills remaining viewport height.
+   * Mobile: stacked map → list.
+   *
+   * Height chain must be unbroken:
+   *   page-shell (100dvh) → page-main (flex 1) → .travel-city (100%)
+   *   → .travel__map-shell (100%) → .travel__map-hero (100%) → leaflet (100%)
+   */
   .travel-city {
+    /* Shared pad for sidebar content + day cards */
+    --travel-card-pad: 16px;
     width: 100%;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
-  /* Positions desktop side panel relative to map; no overflow clip on shell */
   .travel__map-shell {
     position: relative;
     width: 100%;
+    min-width: 0;
   }
 
   .travel__map-hero {
     position: relative;
     width: 100%;
+    /* Mobile default — desktop overrides to 100% below */
     height: clamp(300px, 48vh, 560px);
     overflow: hidden;
     background: #0a0a0e;
@@ -514,7 +842,6 @@ const placesByCategory = categories.map((key) => ({
     border-bottom: none;
   }
 
-  /* Fullscreen targets shell so panel/scrim stay with the map */
   .travel__map-shell:fullscreen {
     width: 100%;
     height: 100%;
@@ -546,6 +873,198 @@ const placesByCategory = categories.map((key) => ({
     );
   }
 
+  /* —— Desktop split view (must come AFTER base map-hero height) —— */
+  @media (min-width: 901px) {
+    :global(body:has(.travel-city)) {
+      overflow: hidden;
+    }
+
+    /*
+     * Full-viewport map under the site header so backdrop-filter on the
+     * topbar blurs the map. Header is out of flow; main fills the shell.
+     */
+    :global(body:has(.travel-city) .page-shell) {
+      height: 100dvh;
+      max-height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    :global(body:has(.travel-city) .site-header) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10050;
+    }
+
+    :global(body:has(.travel-city) .page-main) {
+      flex: 1 1 auto;
+      min-height: 0;
+      /* Full shell height (header overlays, does not consume layout space) */
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .travel-city {
+      /*
+       * Tokens shared with the right place panel:
+       *   --travel-inset  = outer gap from map edges (panel top/right/bottom)
+       *   --travel-card-pad = inner content pad (panel --card-pad)
+       *   --travel-top    = clear the fixed site header + inset
+       */
+      --travel-inset: 12px;
+      --travel-card-pad: 16px;
+      --travel-top: calc(var(--nav-height, 64px) + var(--travel-inset));
+      --travel-sidebar-w: min(400px, calc(100% - (var(--travel-inset) * 2)));
+      --travel-sidebar-ease: cubic-bezier(0.44, 0, 0.56, 1);
+      --travel-sidebar-ms: 0.32s;
+      position: relative;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /*
+     * Map fills the whole city view. Sidebar overlays it (same model as the
+     * right place card) so open/close is a smooth transform, not a grid reflow.
+     */
+    .travel__map-shell {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /*
+     * Floating left panel — mirrors .travel-map-panel geometry:
+     * inset 12px, radius, border, surface; content pad 16px.
+     */
+    .travel-city__body {
+      position: absolute;
+      top: var(--travel-top);
+      left: var(--travel-inset);
+      bottom: var(--travel-inset);
+      width: var(--travel-sidebar-w);
+      max-width: none;
+      margin: 0;
+      z-index: 640;
+      padding: var(--travel-card-pad);
+      box-sizing: border-box;
+      overflow-x: clip;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 18, 24, 0.92);
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+      transition:
+        transform var(--travel-sidebar-ms) var(--travel-sidebar-ease),
+        opacity 0.28s var(--travel-sidebar-ease);
+      will-change: transform, opacity;
+    }
+
+    .travel-city.is-sidebar-collapsed .travel-city__body {
+      /* Slide fully off-screen past the left inset */
+      transform: translateX(calc(-100% - var(--travel-inset) - 8px));
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /*
+     * Toggle — top of the map. Open: just right of the floating sidebar.
+     * Collapsed: same top-left inset as the place card / sidebar.
+     */
+    .travel-city__sidebar-toggle {
+      display: inline-flex;
+      position: absolute;
+      top: var(--travel-top);
+      left: calc(
+        var(--travel-inset) + var(--travel-sidebar-w) + 8px
+      );
+      z-index: 700;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm, 8px);
+      background: rgba(19, 18, 25, 0.92);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      transition:
+        left var(--travel-sidebar-ms) var(--travel-sidebar-ease),
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .travel-city.is-sidebar-collapsed .travel-city__sidebar-toggle {
+      left: var(--travel-inset);
+    }
+
+    .travel-city__sidebar-toggle:hover,
+    .travel-city__sidebar-toggle:focus-visible {
+      background: rgba(0, 143, 255, 0.2);
+      color: var(--color-accent, #008fff);
+      outline: none;
+    }
+
+    .travel-city__sidebar-toggle-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      transition: transform 0.28s var(--travel-sidebar-ease);
+    }
+
+    .travel-city.is-sidebar-collapsed .travel-city__sidebar-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .travel__map-hero {
+      flex: 1 1 auto;
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      /* Override base clamp(300px, 48vh, 560px) */
+      height: 100% !important;
+      border-bottom: none;
+    }
+
+    .travel__map-hero :global(.travel-map),
+    .travel__map-hero :global(.leaflet-container) {
+      position: absolute !important;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+    }
+
+    .travel__map-hero::after {
+      display: none;
+    }
+  }
+
   /* Scrim only used on mobile form-sheet */
   .travel-map-panel-scrim {
     display: none;
@@ -555,12 +1074,17 @@ const placesByCategory = categories.map((key) => ({
   .travel-map-panel {
     /* ~80% opacity surface; border = half of --color-border-strong (0.2 → 0.1) */
     --card-surface: rgba(18, 18, 24, 0.8);
+    /* Keep in sync with .travel-city --travel-inset / --travel-card-pad */
+    --travel-inset: 12px;
+    --travel-card-pad: 16px;
+    /* Default: map edge inset. Desktop full-bleed sets --travel-top after this block. */
+    --travel-top: var(--travel-inset);
     position: absolute;
-    top: 12px;
-    right: 12px;
-    bottom: 12px;
+    top: var(--travel-top);
+    right: var(--travel-inset);
+    bottom: var(--travel-inset);
     z-index: 650;
-    width: min(340px, calc(100% - 24px));
+    width: min(340px, calc(100% - (var(--travel-inset) * 2)));
     display: flex;
     flex-direction: column;
     border-radius: var(--radius-card);
@@ -576,6 +1100,25 @@ const placesByCategory = categories.map((key) => ({
     transition:
       opacity 0.28s cubic-bezier(0.44, 0, 0.56, 1),
       transform 0.32s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  /*
+   * MUST come after base .travel-map-panel (same specificity) or the base
+   * `--travel-top: var(--travel-inset)` wins and the card sits under the topbar.
+   */
+  @media (min-width: 901px) {
+    .travel-map-panel {
+      --travel-top: calc(var(--nav-height, 64px) + var(--travel-inset));
+      top: var(--travel-top);
+    }
+  }
+
+  /* Fullscreen map: always flush to map edge (no site header inside FS) */
+  .travel__map-shell:fullscreen .travel-map-panel,
+  .travel__map-hero:fullscreen .travel-map-panel,
+  :fullscreen .travel-map-panel {
+    --travel-top: var(--travel-inset);
+    top: var(--travel-inset);
   }
 
   .travel-map-panel.is-open {
@@ -594,9 +1137,73 @@ const placesByCategory = categories.map((key) => ({
 
   /* Grab styles live in travel-place-card.css (global; JS-injected) */
 
-  /* Sticky grab + close — only active on mobile form-sheet */
+  /*
+   * Sticky chrome: close stays fixed while body scrolls (desktop + mobile).
+   * Grab is shown only in the mobile form-sheet media query.
+   */
   .travel-map-panel__chrome {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    height: 44px;
+    pointer-events: none;
+    /* Soft read on photo headers */
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.12) 55%,
+      transparent 100%
+    );
+  }
+
+  /* Desktop: no grab handle */
+  .travel-map-panel__grab {
     display: none;
+  }
+
+  .travel-map-panel__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    color: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .travel-map-panel__close:hover,
+  .travel-map-panel__close:focus-visible {
+    background: rgba(0, 0, 0, 0.18);
+    color: #fff;
+    outline: none;
+  }
+
+  .travel-map-panel__close ion-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #fff;
+  }
+
+  /* In-card close unused — chrome close is sticky on all breakpoints */
+  .travel-map-panel__body
+    :global(.travel-place-card--panel .travel-place-card__close) {
+    display: none !important;
   }
 
   .travel-map-panel__body {
@@ -608,11 +1215,11 @@ const placesByCategory = categories.map((key) => ({
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Panel place card: pad + section gap share the same token */
+  /* Panel place card: pad + section gap share the same token as left sidebar */
   .travel-map-panel__body :global(.travel-place-card--panel) {
     --card-surface: rgba(18, 18, 24, 0.8);
-    --card-pad: 16px;
-    --card-pad-x: 16px;
+    --card-pad: var(--travel-card-pad, 16px);
+    --card-pad-x: var(--travel-card-pad, 16px);
     /* Label → value: half of the previous ½ pad (was card-pad/2 → now /4) */
     --label-value-gap: calc(var(--card-pad) / 4);
     border: none !important;
@@ -642,7 +1249,8 @@ const placesByCategory = categories.map((key) => ({
       .travel-place-card--panel.travel-place-card--has-photos
         > .travel-place-card__title-row
     ) {
-    margin-top: 0;
+    /* Match horizontal card pad (set on panel card as --card-pad-x) */
+    margin-top: var(--card-pad-x, var(--card-pad));
     margin-bottom: var(--card-pad);
   }
 
@@ -852,17 +1460,18 @@ const placesByCategory = categories.map((key) => ({
       padding: 0;
       border: none;
       border-radius: 50%;
-      background: transparent;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(12px) saturate(1.1);
+      -webkit-backdrop-filter: blur(12px) saturate(1.1);
       color: #fff;
       cursor: pointer;
       pointer-events: auto;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
     }
 
     .travel-map-panel__close:hover,
     .travel-map-panel__close:focus-visible {
-      background: rgba(0, 143, 255, 0.35);
-      filter: none;
+      background: rgba(0, 0, 0, 0.18);
+      color: #fff;
       outline: none;
     }
 
@@ -870,6 +1479,7 @@ const placesByCategory = categories.map((key) => ({
       font-size: 22px;
       width: 22px;
       height: 22px;
+      color: #fff;
     }
 
     /* In-card close / injected grab unused on mobile sheet */
@@ -911,53 +1521,73 @@ const placesByCategory = categories.map((key) => ({
   }
 
   .travel-city__body {
-    width: 100%;
-    max-width: var(--shell-max);
-    margin-inline: auto;
-    padding: 40px var(--page-pad-x-sm) 96px;
     box-sizing: border-box;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  /* Mobile / tablet: map above list (DOM has body first) */
+  @media (max-width: 900px) {
+    .travel-city {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .travel__map-shell {
+      order: -1;
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    .travel-city__body {
+      order: 1;
+      flex: 1 1 auto;
+      position: relative;
+      width: 100%;
+      max-width: var(--shell-max);
+      margin-inline: auto;
+      padding: 40px var(--page-pad-x-sm) 96px;
+      /* Reset desktop floating-panel chrome */
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+      top: auto;
+      left: auto;
+      bottom: auto;
+      z-index: auto;
+    }
   }
 
   .travel-city__back {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
     margin-bottom: var(--space-6);
-    padding: 8px 14px 8px 10px;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(12, 12, 16, 0.35);
-    backdrop-filter: blur(14px) saturate(160%);
+    padding: 0;
+    border: none;
+    background: transparent;
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.62);
     text-decoration: none;
-    transition:
-      color var(--duration-fast) var(--ease-smooth),
-      border-color var(--duration-fast) var(--ease-smooth),
-      background-color var(--duration-fast) var(--ease-smooth);
-  }
-
-  .travel-city__back-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-  }
-
-  .travel-city__back-label {
-    line-height: 1;
+    transition: color var(--duration-fast) var(--ease-smooth);
   }
 
   .travel-city__back:hover {
-    color: #fff;
-    border-color: rgba(0, 143, 255, 0.45);
-    background: rgba(0, 143, 255, 0.14);
+    color: var(--color-accent, #008fff);
   }
 
   .travel-city__back:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .travel__intro {
@@ -1050,97 +1680,7 @@ const placesByCategory = categories.map((key) => ({
     color: var(--color-accent);
   }
 
-  .travel__filters-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-5);
-    margin-bottom: var(--space-8);
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  /*
-   * Category filter chips: single horizontal row.
-   * When wider than the page, scroll — do not wrap to multiple lines.
-   */
-  .travel__filters {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 8px;
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    touch-action: pan-x;
-    padding-bottom: 2px;
-  }
-
-  .travel__filters::-webkit-scrollbar {
-    display: none;
-  }
-
-  .travel__chip {
-    appearance: none;
-    flex: 0 0 auto;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 50px;
-    line-height: 0;
-    transition: opacity 0.2s cubic-bezier(0.44, 0, 0.56, 1);
-  }
-
-  .travel__chip:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
-  }
-
-  /*
-   * Hover preview on category chips:
-   * dim chips that are neither selected nor the one under the pointer.
-   */
-  .travel__filters.is-chip-preview .travel__chip {
-    opacity: 0.32;
-  }
-
-  .travel__filters.is-chip-preview .travel__chip.is-active,
-  .travel__filters.is-chip-preview .travel__chip.is-preview-hover {
-    opacity: 1;
-  }
-
-  .travel__chip:hover :global(.tag--chip:not(.is-pressed)) {
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.28);
-  }
-
-  .travel__chip:hover :global(.tag--chip:not(.is-pressed) .tag__glass) {
-    background-color: rgba(18, 18, 24, 0.55);
-  }
-
-  .travel__chip:hover :global(.tag--chip.is-pressed .tag__glass) {
-    background-color: rgba(0, 143, 255, 0.36);
-  }
-
-  /* Category tint when chip is selected */
-  .travel__chip[data-category].is-active :global(.tag--chip),
-  .travel__chip[data-category] :global(.tag--chip.is-pressed) {
-    border-color: color-mix(in srgb, var(--cat-color) 55%, transparent);
-    color: #fff;
-  }
-
-  .travel__chip[data-category].is-active :global(.tag--chip .tag__glass),
-  .travel__chip[data-category] :global(.tag--chip.is-pressed .tag__glass) {
-    background-color: color-mix(in srgb, var(--cat-color) 32%, transparent);
-  }
-
-  /* Expand (list only) + view toggle — same height as search input */
+  /* Filter button + view toggle — same height as search input */
   .travel__view-controls {
     flex: 0 0 auto;
     display: flex;
@@ -1149,7 +1689,13 @@ const placesByCategory = categories.map((key) => ({
     height: var(--travel-control-h);
   }
 
-  .travel__expand-toggle {
+  .travel__filter-wrap {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  .travel__filter-btn {
+    position: relative;
     flex: 0 0 auto;
     appearance: none;
     display: inline-flex;
@@ -1158,6 +1704,7 @@ const placesByCategory = categories.map((key) => ({
     box-sizing: border-box;
     width: var(--travel-control-h);
     height: var(--travel-control-h);
+    margin: 0;
     padding: 0;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1171,29 +1718,183 @@ const placesByCategory = categories.map((key) => ({
       background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1);
   }
 
-  .travel__expand-toggle[hidden] {
-    display: none !important;
+  .travel__filter-btn .material-symbols-rounded {
+    font-size: 20px;
+    line-height: 1;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
   }
 
-  .travel__expand-toggle:hover {
+  .travel__filter-btn:hover,
+  .travel__filter-btn[aria-expanded='true'],
+  .travel__filter-btn.is-active {
     color: #fff;
     border-color: rgba(0, 143, 255, 0.45);
     background: rgba(0, 143, 255, 0.16);
   }
 
-  .travel__expand-toggle:focus-visible {
+  .travel__filter-btn:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
 
-  .travel__expand-toggle-icon {
-    width: 16px;
-    height: 16px;
-    transition: transform 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+  .travel__filter-btn-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--color-accent, #008fff);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 14px;
+    text-align: center;
+    pointer-events: none;
   }
 
-  .travel__expand-toggle[data-expanded='false'] .travel__expand-toggle-icon {
-    transform: rotate(180deg);
+  .travel__filter-btn-badge[hidden] {
+    display: none !important;
+  }
+
+  .travel__filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 80;
+    width: min(260px, calc(100vw - 32px));
+    max-height: min(60vh, 360px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(18, 18, 24, 0.96);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .travel__filter-popover[hidden] {
+    display: none !important;
+  }
+
+  .travel__filter-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .travel__filter-item {
+    margin: 0;
+    padding: 0;
+  }
+
+  .travel__filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.82);
+    transition: background-color 0.18s ease;
+  }
+
+  .travel__filter-option:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .travel__filter-option:has(.travel__filter-check:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  .travel__filter-check {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: var(--cat-color, var(--color-accent, #008fff));
+    cursor: pointer;
+  }
+
+  .travel__filter-option-icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: var(--cat-color, #fff);
+    pointer-events: none;
+  }
+
+  .travel__filter-option-icon :global(.material-symbols-rounded),
+  .travel__filter-option-icon :global(ion-icon),
+  .travel__filter-option-icon :global(svg) {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  .travel__filter-option-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  /* Expand/collapse all — blue text label above category groups (list only) */
+  .travel-city__list-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  .travel__expand-label {
+    appearance: none;
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    color: var(--color-accent, #008fff);
+    cursor: pointer;
+    text-align: left;
+    transition: opacity 0.18s ease;
+  }
+
+  .travel__expand-label:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .travel__expand-label:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .travel__view-toggle {
@@ -1270,11 +1971,18 @@ const placesByCategory = categories.map((key) => ({
     display: none !important;
   }
 
-  /* Grid: flat mixed places */
+  /* Grid: flat mixed places — compact columns, not ultra-narrow */
   .travel-city__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-5);
+    align-items: stretch;
+  }
+
+  .travel-city__grid :global(.travel-place-card) {
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
   }
 
   .travel-city__grid :global(.travel-place-card.is-filtered-out),
@@ -1362,8 +2070,8 @@ const placesByCategory = categories.map((key) => ({
 
   .travel-city__list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-5);
     padding: 0 18px 18px;
     align-items: stretch;
   }
@@ -1380,21 +2088,67 @@ const placesByCategory = categories.map((key) => ({
     display: none !important;
   }
 
-  /* Itinerary scaffold */
+  /* Itinerary layout shell — card styles in travel-itinerary.css */
   .travel-city__itinerary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  .travel-city__itinerary[hidden] {
+    display: none !important;
+  }
+
+  .travel-city__itinerary-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--travel-card-pad, 16px);
+  }
+
+  .travel-city__itinerary-title {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  .travel-city__itinerary-budgets {
+    width: 100%;
+  }
+
+  .travel-city__itinerary-days {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .travel-city__itinerary-empty {
+    margin: 0;
     padding: var(--space-9) var(--space-6);
     border: 1px dashed rgba(255, 255, 255, 0.12);
     border-radius: var(--radius-card);
     background: rgba(19, 18, 25, 0.3);
     text-align: center;
-  }
-
-  .travel-city__itinerary-empty {
-    margin: 0;
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
+  }
+
+  /* Off-DOM vault for map panel clones — never filtered, never interactive */
+  .travel-card-templates {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    pointer-events: none !important;
   }
 
   .travel__empty {
@@ -1444,6 +2198,36 @@ const placesByCategory = categories.map((key) => ({
 
     .travel-city__body {
       padding: 28px 16px 72px;
+    }
+  }
+
+  /* Desktop sidebar: tighten title scale a bit for narrow column */
+  @media (min-width: 901px) {
+    .travel-city__body .travel__title {
+      font-size: clamp(1.5rem, 2.4vw, 2rem);
+    }
+
+    .travel-city__body .travel__intro {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-5);
+    }
+
+    .travel-city__body .travel__search-row {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .travel-city__body .travel__search {
+      max-width: none;
+      width: 100%;
+    }
+  }
+
+  /* Mobile / tablet: sidebar toggle is desktop-only */
+  @media (max-width: 900px) {
+    .travel-city__sidebar-toggle {
+      display: none !important;
     }
   }
 </style>

@@ -8,22 +8,35 @@
 
 export type PlaceCategory =
   | 'airport'
+  /** Stations, metro stops, pure transit waypoints (not scenic rides) */
+  | 'transport'
   | 'parks'
   | 'cafes'
   | 'restaurants'
   | 'photo'
   | 'tourist'
-  | 'lodging';
+  | 'lodging'
+  /** Global chains (McDonald’s, Burger King, Starbucks, …) */
+  | 'commons'
+  /** Covered / street markets */
+  | 'markets'
+  /** Department stores, malls, famous shops */
+  | 'shopping';
 
 export type PlaceCategoryIcon =
   | 'dot'
   | 'plane'
+  | 'train'
   | 'walk'
+  | 'nature'
   | 'coffee'
   | 'utensils'
   | 'camera'
   | 'star'
-  | 'bed';
+  | 'bed'
+  | 'fastfood'
+  | 'market'
+  | 'bag';
 
 export type PlaceCategoryMeta = {
   color: string;
@@ -32,19 +45,38 @@ export type PlaceCategoryMeta = {
 
 export const placeCategoryMeta: Record<PlaceCategory, PlaceCategoryMeta> = {
   airport: { color: '#94a3b8', icon: 'plane' },
-  parks: { color: '#34d399', icon: 'walk' },
-  cafes: { color: '#a67c52', icon: 'coffee' },
+  /** Steel blue — transit only (vs scenic metro under photo) */
+  transport: { color: '#64748b', icon: 'train' },
+  parks: { color: '#34d399', icon: 'nature' },
+  /** Deep cocoa — distinct from tourist gold and market teal */
+  cafes: { color: '#8b5e3c', icon: 'coffee' },
   restaurants: { color: '#f97316', icon: 'utensils' },
+  /** Same orange as restaurants (chains are still restaurants) */
+  commons: { color: '#f97316', icon: 'fastfood' },
+  /** Teal — reads clear vs cafés brown and tourist gold */
+  markets: { color: '#14b8a6', icon: 'market' },
+  shopping: { color: '#e879f9', icon: 'bag' },
   photo: { color: '#7dd3fc', icon: 'camera' },
-  tourist: { color: '#f5c518', icon: 'star' },
+  /** Bright gold, reserved for landmarks */
+  tourist: { color: '#facc15', icon: 'star' },
   lodging: { color: '#a78bfa', icon: 'bed' },
 };
 
+/** Categories off by default on city filters (user opts in). */
+export const placeCategoriesOffByDefault: ReadonlySet<PlaceCategory> = new Set([
+  'commons',
+  'markets',
+]);
+
 export const placeCategoryOrder: PlaceCategory[] = [
   'airport',
+  'transport',
   'parks',
   'cafes',
   'restaurants',
+  'commons',
+  'markets',
+  'shopping',
   'photo',
   'tourist',
   'lodging',
@@ -56,12 +88,17 @@ export const placeCategoryOrder: PlaceCategory[] = [
  */
 export const categoryMaterialIcon: Record<PlaceCategoryIcon, string> = {
   plane: 'flight',
+  train: 'train',
   walk: 'directions_walk',
+  nature: 'nature',
   coffee: 'local_cafe',
   utensils: 'restaurant',
   camera: 'photo_camera',
   star: 'star',
   bed: 'bed',
+  fastfood: 'lunch_dining',
+  market: 'storefront',
+  bag: 'shopping_bag',
   dot: '',
 };
 

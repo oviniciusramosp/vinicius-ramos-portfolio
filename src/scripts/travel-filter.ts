@@ -1,16 +1,22 @@
 /**
  * Search + multi-select filters for /travel.
- * - Index: filter cities by country (cards)
+ * - Index: filter cities by country (cards) — empty selection = all countries
+ *   (chip toolbar with horizontal scroll fades).
  * - City page: filter places by category (cards + map pins)
- *
- * Chip UX mirrors homepage bento (Tag chip + is-pressed).
- * Match rule: empty set = all; otherwise OR across selected keys.
- *
- * Chip hover previews only map pin opacity (list cards stay untouched).
- * Click applies the real filter to both map and list cards.
+ *   via a filter button + checkbox popover (multi-select).
+ *   Default: every category on except commons + markets.
+ *   Empty selection = show nothing (explicit multi-select).
+ *   Preference persists in localStorage across sessions.
  */
 
+import {
+  placeCategoriesOffByDefault,
+  type PlaceCategory,
+} from '../data/travel-categories';
 import { getTravelMapHandle } from './travel-map';
+
+/** Global place-category filter preference (same user, all city pages). */
+const PLACE_CATEGORY_FILTER_KEY = 'travel-place-categories';
 
 function normalize(s: string): string {
   return s
@@ -18,6 +24,37 @@ function normalize(s: string): string {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim();
+}
+
+/**
+ * Restore saved category ids that still exist on this city page.
+ * Returns null when nothing stored / invalid → caller uses defaults.
+ * Empty array is valid (user explicitly unchecked everything).
+ */
+function readStoredPlaceCategories(
+  available: ReadonlySet<string>,
+): string[] | null {
+  try {
+    const raw = localStorage.getItem(PLACE_CATEGORY_FILTER_KEY);
+    if (raw == null) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return null;
+    return parsed
+      .filter((v): v is string => typeof v === 'string' && available.has(v));
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredPlaceCategories(selected: ReadonlySet<string>): void {
+  try {
+    localStorage.setItem(
+      PLACE_CATEGORY_FILTER_KEY,
+      JSON.stringify([...selected]),
+    );
+  } catch {
+    /* private mode / quota — ignore */
+  }
 }
 
 function syncToolbar(
@@ -64,6 +101,42 @@ function bindChipClicks(
     syncToolbar(chips, selected);
     onChange();
   });
+}
+
+/**
+ * Edge fades on a horizontal chip scroller.
+ * Classes land on the non-scrolling host (filters-row or the scroller itself)
+ * so absolute overlays stay pinned to the viewport of the list.
+ * Left fade past start; right fade while more content remains; each fades out at end.
+ */
+function bindHorizontalScrollFades(scroller: HTMLElement): void {
+  if (scroller.dataset.scrollFadesBound === '1') return;
+  scroller.dataset.scrollFadesBound = '1';
+
+  const edgeHost =
+    scroller.closest<HTMLElement>('.travel__filters-row') ?? scroller;
+  edgeHost.classList.add('is-scroll-fade-host');
+
+  const EDGE_PX = 2;
+
+  const update = () => {
+    const max = scroller.scrollWidth - scroller.clientWidth;
+    const canScroll = max > EDGE_PX;
+    const left = scroller.scrollLeft;
+    edgeHost.classList.toggle('is-fade-left', canScroll && left > EDGE_PX);
+    edgeHost.classList.toggle(
+      'is-fade-right',
+      canScroll && left < max - EDGE_PX,
+    );
+  };
+
+  scroller.addEventListener('scroll', update, { passive: true });
+  const ro = new ResizeObserver(update);
+  ro.observe(scroller);
+  window.addEventListener('resize', update, { passive: true });
+  void document.fonts?.ready?.then(update);
+  requestAnimationFrame(update);
+  update();
 }
 
 function bindCardHover(
@@ -149,6 +222,8 @@ function bootCityFeed(root: HTMLElement): void {
   });
 
   bindChipClicks(root, chips, selected, apply);
+  const cityToolbar = root.querySelector<HTMLElement>('.travel__filters');
+  if (cityToolbar) bindHorizontalScrollFades(cityToolbar);
   syncToolbar(chips, selected);
   apply();
 }
@@ -161,9 +236,20 @@ function bootPlacesFeed(root: HTMLElement): void {
   root.dataset.filterBound = '1';
 
   const search = root.querySelector<HTMLInputElement>('[data-travel-search]');
-  const toolbar = root.querySelector<HTMLElement>('.travel__filters');
-  const chips = Array.from(
-    root.querySelectorAll<HTMLButtonElement>('[data-travel-filter]'),
+  const filterWrap = root.querySelector<HTMLElement>('.travel__filter-wrap');
+  const filterToggle = root.querySelector<HTMLButtonElement>(
+    '[data-travel-filter-toggle]',
+  );
+  const filterPopover = root.querySelector<HTMLElement>(
+    '[data-travel-filter-popover]',
+  );
+  const filterCount = root.querySelector<HTMLElement>(
+    '[data-travel-filter-count]',
+  );
+  const checkboxes = Array.from(
+    root.querySelectorAll<HTMLInputElement>(
+      'input[type="checkbox"][data-travel-filter]',
+    ),
   );
   const empty = root.querySelector<HTMLElement>('[data-travel-empty]');
   const expandToggle = root.querySelector<HTMLButtonElement>(
@@ -173,10 +259,39 @@ function bootPlacesFeed(root: HTMLElement): void {
   const viewButtons = Array.from(
     root.querySelectorAll<HTMLButtonElement>('[data-travel-view]'),
   );
+
+  /** Category keys present on this city (checkboxes in the popover). */
+  const availableCategories = new Set(
+    checkboxes
+      .map((box) => box.dataset.travelFilter ?? '')
+      .filter((v) => v && v !== 'all'),
+  );
+
+  /**
+   * Multi-select selection set.
+   * Prefer last session preference; else defaults (all on except chains + markets).
+   */
   const selected = new Set<string>();
+  const stored = readStoredPlaceCategories(availableCategories);
+  if (stored != null) {
+    for (const v of stored) selected.add(v);
+  } else {
+    for (const v of availableCategories) {
+      if (!placeCategoriesOffByDefault.has(v as PlaceCategory)) {
+        selected.add(v);
+      }
+    }
+  }
+  for (const box of checkboxes) {
+    const v = box.dataset.travelFilter ?? '';
+    if (!v || v === 'all') continue;
+    box.checked = selected.has(v);
+  }
+
   let query = '';
   let view: PlacesView =
     (viewsRoot?.dataset.placesView as PlacesView | undefined) || 'list';
+  let popoverOpen = false;
 
   /** All feed cards (grid + list duplicates). Map uses unique place ids. */
   const cards = () =>
@@ -190,69 +305,6 @@ function bootPlacesFeed(root: HTMLElement): void {
     Array.from(
       root.querySelectorAll<HTMLDetailsElement>('[data-travel-group]'),
     );
-
-  const idsForCategory = (cat: string): Set<string> => {
-    const out = new Set<string>();
-    for (const card of cards()) {
-      if (card.dataset.category === cat && card.dataset.placeId) {
-        out.add(card.dataset.placeId);
-      }
-    }
-    return out;
-  };
-
-  const idsForSelected = (): Set<string> => {
-    const out = new Set<string>();
-    for (const card of cards()) {
-      const cat = card.dataset.category || '';
-      const id = card.dataset.placeId;
-      if (!id) continue;
-      if (selected.size === 0 || selected.has(cat)) out.add(id);
-    }
-    return out;
-  };
-
-  /** Chip hover → map pin opacity only (list cards unchanged until click) */
-  const applyChipPreview = (hoverValue: string | null) => {
-    const map = getTravelMapHandle();
-    const isAll = !hoverValue || hoverValue === 'all' || hoverValue === '';
-
-    toolbar?.classList.toggle('is-chip-preview', Boolean(hoverValue) && !isAll);
-    chips.forEach((btn) => {
-      const v = btn.dataset.travelFilter ?? '';
-      const isHover = v === hoverValue;
-      btn.classList.toggle('is-preview-hover', isHover && !isAll);
-    });
-
-    if (!hoverValue || isAll) {
-      map?.setFilterPreview(null);
-      return;
-    }
-
-    // Already selected: click would deselect — no preview
-    if (selected.has(hoverValue)) {
-      map?.setFilterPreview(null);
-      toolbar?.classList.remove('is-chip-preview');
-      chips.forEach((btn) => btn.classList.remove('is-preview-hover'));
-      return;
-    }
-
-    const hoverIds = idsForCategory(hoverValue);
-    const solid = new Set<string>();
-    const dim = new Set<string>();
-    const fadeOthers = selected.size === 0;
-
-    if (fadeOthers) {
-      hoverIds.forEach((id) => solid.add(id));
-    } else {
-      idsForSelected().forEach((id) => solid.add(id));
-      hoverIds.forEach((id) => {
-        if (!solid.has(id)) dim.add(id);
-      });
-    }
-
-    map?.setFilterPreview({ solid, dim, fadeOthers });
-  };
 
   const setListActive = (id: string | null) => {
     cards().forEach((card) => {
@@ -315,32 +367,63 @@ function bootPlacesFeed(root: HTMLElement): void {
     );
   };
 
+  /** Blue text label above category groups (Expand all / Collapse all). */
   const syncExpandToggle = (allOpen: boolean) => {
     if (!expandToggle) return;
     expandToggle.dataset.expanded = allOpen ? 'true' : 'false';
     expandToggle.setAttribute('aria-expanded', allOpen ? 'true' : 'false');
     const loc =
       document.documentElement.dataset.travelLocale === 'pt-BR' ? 'pt' : 'en';
-    const label = allOpen
-      ? loc === 'pt'
-        ? collapsePt
-        : collapseEn
-      : loc === 'pt'
-        ? expandPt
-        : expandEn;
-    expandToggle.setAttribute('aria-label', label);
-    expandToggle.setAttribute('title', label);
-    expandToggle.setAttribute('data-i18n-en', allOpen ? collapseEn : expandEn);
-    expandToggle.setAttribute('data-i18n-pt', allOpen ? collapsePt : expandPt);
-    const icon = expandToggle.querySelector<HTMLElement>(
-      '[data-travel-expand-icon]',
-    );
-    if (icon) {
-      icon.setAttribute(
-        'name',
-        allOpen ? 'chevron-up-outline' : 'chevron-down-outline',
-      );
+    const en = allOpen ? collapseEn : expandEn;
+    const pt = allOpen ? collapsePt : expandPt;
+    const label = loc === 'pt' ? pt : en;
+    expandToggle.textContent = label;
+    expandToggle.setAttribute('data-i18n-en', en);
+    expandToggle.setAttribute('data-i18n-pt', pt);
+  };
+
+  const defaultSelected = new Set(
+    checkboxes
+      .map((box) => box.dataset.travelFilter ?? '')
+      .filter(
+        (v) => v && !placeCategoriesOffByDefault.has(v as PlaceCategory),
+      ),
+  );
+
+  const isDefaultSelection = () => {
+    if (selected.size !== defaultSelected.size) return false;
+    for (const v of defaultSelected) {
+      if (!selected.has(v)) return false;
     }
+    return true;
+  };
+
+  const syncFilterUi = () => {
+    checkboxes.forEach((box) => {
+      const v = box.dataset.travelFilter ?? '';
+      box.checked = Boolean(v && selected.has(v));
+    });
+
+    const count = selected.size;
+    const custom = !isDefaultSelection();
+    if (filterCount) {
+      if (custom) {
+        filterCount.hidden = false;
+        filterCount.textContent = String(count);
+      } else {
+        filterCount.hidden = true;
+        filterCount.textContent = '';
+      }
+    }
+    filterToggle?.classList.toggle('is-active', custom);
+  };
+
+  const setPopoverOpen = (open: boolean) => {
+    popoverOpen = open;
+    if (filterPopover) {
+      filterPopover.hidden = !open;
+    }
+    filterToggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
   };
 
   const setView = (next: PlacesView) => {
@@ -358,15 +441,12 @@ function bootPlacesFeed(root: HTMLElement): void {
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 
-    // Expand/collapse only applies to list groups
-    if (expandToggle) {
-      expandToggle.hidden = next !== 'list';
-    }
-
-    apply();
+    // View mode only — keep map camera still (filter changes still refit)
+    apply({ fitMap: false });
   };
 
-  const apply = () => {
+  const apply = (opts?: { fitMap?: boolean }) => {
+    const fitMap = opts?.fitMap !== false;
     const q = normalize(query);
     const uniqueVisible = new Set<string>();
     const visibleIds = new Set<string>();
@@ -375,8 +455,8 @@ function bootPlacesFeed(root: HTMLElement): void {
       const hay = normalize(card.dataset.search || '');
       const key = card.dataset.category || '';
       const matchQ = !q || hay.includes(q);
-      const matchC =
-        selected.size === 0 || (key !== '' && selected.has(key));
+      // Explicit multi-select: empty selection shows nothing
+      const matchC = key !== '' && selected.has(key);
       const show = matchQ && matchC;
       card.hidden = !show;
       card.classList.toggle('is-filtered-out', !show);
@@ -407,7 +487,7 @@ function bootPlacesFeed(root: HTMLElement): void {
       if (countEl) countEl.textContent = String(groupVisible);
     }
 
-    // Empty state only for grid/list (itinerary has its own placeholder)
+    // Empty state only for grid/list (itinerary has its own empty / cards)
     if (empty) {
       if (view === 'itinerary') {
         empty.hidden = true;
@@ -416,23 +496,33 @@ function bootPlacesFeed(root: HTMLElement): void {
       }
     }
 
-    const map = getTravelMapHandle();
-    if (map) {
-      if (selected.size === 0 && !q) {
-        map.setVisibleIds(null);
-      } else {
-        map.setVisibleIds(visibleIds);
-      }
+    // Itinerary: show all pins (focus fade is handled by setItineraryRoute)
+    if (view === 'itinerary') {
+      getTravelMapHandle()?.setVisibleIds(null, { fit: fitMap });
+    } else {
+      // Leaving itinerary (or list/grid apply): drop multi-modal overlay
+      getTravelMapHandle()?.setItineraryRoute(null);
+      getTravelMapHandle()?.setVisibleIds(visibleIds, { fit: fitMap });
     }
+
+    // Expand label only meaningful when visible groups remain
+    syncExpandToggle(allVisibleGroupsOpen());
   };
 
   bindCardHover(cards(), 'placeId');
+
+  // Map remounts after filter bind (ClientRouter / debounce) — re-push visibility.
+  // Ignore events after this feed was navigated away (stale listeners).
+  document.addEventListener('travel:map-ready', () => {
+    if (!root.isConnected) return;
+    apply();
+  });
 
   // Feed card click → select pin + open side panel (grid + list)
   root.addEventListener('click', (e) => {
     const target = e.target as HTMLElement | null;
     if (!target) return;
-    if (target.closest('a, button')) return;
+    if (target.closest('a, button, label, input')) return;
     const card = target.closest<HTMLElement>(
       '.travel-place-card[data-place-id]',
     );
@@ -472,29 +562,43 @@ function bootPlacesFeed(root: HTMLElement): void {
     apply();
   });
 
-  bindChipClicks(root, chips, selected, () => {
-    applyChipPreview(null);
-    apply();
+  // Checkbox multi-select (persist across sessions)
+  checkboxes.forEach((box) => {
+    box.addEventListener('change', () => {
+      const v = box.dataset.travelFilter ?? '';
+      if (!v || v === 'all') return;
+      if (box.checked) selected.add(v);
+      else selected.delete(v);
+      writeStoredPlaceCategories(selected);
+      syncFilterUi();
+      apply();
+    });
   });
 
-  // Hover preview: map pins only (fine pointer)
-  if (window.matchMedia('(pointer: fine)').matches) {
-    chips.forEach((chip) => {
-      chip.addEventListener('pointerenter', () => {
-        if (chip.dataset.travelFilter === 'all' || !chip.dataset.travelFilter) {
-          applyChipPreview('all');
-          return;
-        }
-        applyChipPreview(chip.dataset.travelFilter ?? null);
-      });
-      chip.addEventListener('pointerleave', () => {
-        applyChipPreview(null);
-      });
-    });
-    toolbar?.addEventListener('pointerleave', () => {
-      applyChipPreview(null);
-    });
-  }
+  filterToggle?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPopoverOpen(!popoverOpen);
+  });
+
+  // Close popover on outside click / Escape
+  document.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (!popoverOpen || !filterWrap) return;
+      const t = e.target as Node | null;
+      if (t && filterWrap.contains(t)) return;
+      setPopoverOpen(false);
+    },
+    true,
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && popoverOpen) {
+      e.preventDefault();
+      setPopoverOpen(false);
+      filterToggle?.focus();
+    }
+  });
 
   // View mode: grid | list | itinerary
   viewButtons.forEach((btn) => {
@@ -528,7 +632,7 @@ function bootPlacesFeed(root: HTMLElement): void {
     writeGroupState();
   }, true);
 
-  syncToolbar(chips, selected);
+  syncFilterUi();
   // Default: all collapsed. Restore prior open groups when user returns.
   restoreGroupState();
   syncExpandToggle(allVisibleGroupsOpen());

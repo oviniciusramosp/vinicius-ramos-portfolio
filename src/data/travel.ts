@@ -29,6 +29,7 @@ import {
   resolvePlaceSubcategories,
   type PlaceSubcategory,
 } from './travel-subcategories';
+import { mergeNotionPlaces } from './travel-notion';
 
 export type { TravelPhoto } from './travel-photos';
 export type {
@@ -45,10 +46,27 @@ export {
 export type { VisitInfo, MoneyInfo, CrowdProfile } from './travel-visit';
 export {
   formatMoney,
+  formatMoneyTypical,
   formatDuration,
   visitFieldsForDisplay,
   resolveVisit,
 } from './travel-visit';
+export type {
+  TravelItinerary,
+  ItineraryDay,
+  ItineraryStop,
+  ItinerarySlot,
+} from './travel-itineraries';
+export {
+  itineraryForCity,
+  dayRoutePlaceIds,
+  dayPrimaryRoutePlaceIds,
+  computeDayBudget,
+  computeTripBudget,
+  moneyTypicalEur,
+  parisItinerary,
+} from './travel-itineraries';
+export type { DayBudget } from './travel-itineraries';
 
 export type Locale = 'en' | 'pt-BR';
 
@@ -103,7 +121,11 @@ export type TravelLandmark =
   | 'montparnasse'
   | 'monument';
 
-/** Axis-aligned box around a center (quick area scaffold). */
+/**
+ * Axis-aligned box around a center.
+ * @deprecated Temporary scaffold only — tests fail if this ships without an
+ * OSM override in travel-areas-osm.ts. Prefer `npm run travel:areas`.
+ */
 export function areaBox(
   lat: number,
   lng: number,
@@ -140,6 +162,11 @@ export interface TravelPlace {
    * Google Maps rating 1–5 (halves ok). Omit → empty outlined gray stars.
    */
   googleRating?: number;
+  /**
+   * Personal pick — heart next to the name on the detail card.
+   * Prefer these when an LLM / planner builds itineraries.
+   */
+  favorite?: boolean;
   /** Anchor point (pin). Prefer place centroid when `area` is set. */
   lat: number;
   lng: number;
@@ -197,7 +224,7 @@ export interface TravelCity {
   region?: string;
   country: LString;
   /** Stable filter key (country), used by chips */
-  countryKey: 'brasil' | 'usa' | 'franca' | 'portugal';
+  countryKey: 'brasil' | 'usa' | 'franca' | 'portugal' | 'italia';
   lat: number;
   lng: number;
   /** Default map zoom for city page */
@@ -236,6 +263,7 @@ export const travelUi = {
   ratingLabel: { en: 'Rating', 'pt-BR': 'Nota' } satisfies LString,
   ratingGoogle: { en: 'Google', 'pt-BR': 'Google' } satisfies LString,
   ratingMine: { en: 'Mine', 'pt-BR': 'Minha' } satisfies LString,
+  favorite: { en: 'Favorite', 'pt-BR': 'Favorito' } satisfies LString,
   openInMaps: {
     en: 'Open in Google Maps',
     'pt-BR': 'Abrir no Google Maps',
@@ -288,6 +316,35 @@ export const travelUi = {
     en: 'Walking preview',
     'pt-BR': 'Prévia a pé',
   } satisfies LString,
+  myLocation: {
+    en: 'My location',
+    'pt-BR': 'Minha localização',
+  } satisfies LString,
+  locateMe: {
+    en: 'Show my location',
+    'pt-BR': 'Mostrar minha localização',
+  } satisfies LString,
+  startFromMyLocation: {
+    en: 'Start from my location',
+    'pt-BR': 'Começar da minha localização',
+  } satisfies LString,
+  locating: {
+    en: 'Finding your location…',
+    'pt-BR': 'Localizando…',
+  } satisfies LString,
+  locateDenied: {
+    en: 'Location permission denied',
+    'pt-BR': 'Permissão de localização negada',
+  } satisfies LString,
+  locateUnavailable: {
+    en: 'Could not get your location',
+    'pt-BR': 'Não foi possível obter sua localização',
+  } satisfies LString,
+  locateFar: {
+    en: 'You seem far from this city. Walking routes may not make sense here.',
+    'pt-BR':
+      'Você parece estar longe desta cidade. Rotas a pé podem não fazer sentido aqui.',
+  } satisfies LString,
   address: {
     en: 'Address',
     'pt-BR': 'Endereço',
@@ -299,6 +356,10 @@ export const travelUi = {
   expandAll: {
     en: 'Expand all',
     'pt-BR': 'Expandir tudo',
+  } satisfies LString,
+  filterCategories: {
+    en: 'Filter categories',
+    'pt-BR': 'Filtrar categorias',
   } satisfies LString,
   viewModeGroup: {
     en: 'Place list layout',
@@ -320,6 +381,79 @@ export const travelUi = {
     en: 'Day-by-day itinerary for this city is coming soon.',
     'pt-BR': 'Roteiro dia a dia desta cidade em breve.',
   } satisfies LString,
+  itineraryShowRoute: {
+    en: 'Show day on map',
+    'pt-BR': 'Ver dia no mapa',
+  } satisfies LString,
+  itineraryOnMap: {
+    en: 'On map',
+    'pt-BR': 'No mapa',
+  } satisfies LString,
+  itineraryOpenGoogleMaps: {
+    en: 'Open full day in Google Maps',
+    'pt-BR': 'Abrir o dia inteiro no Google Maps',
+  } satisfies LString,
+  itineraryOpenGoogleMapsPeriod: {
+    en: 'Open this period in Google Maps',
+    'pt-BR': 'Abrir este período no Google Maps',
+  } satisfies LString,
+  itinerarySlotOnMap: {
+    en: 'Show this period on the map',
+    'pt-BR': 'Mostrar este período no mapa',
+  } satisfies LString,
+  itinerarySlotOffMap: {
+    en: 'Hide this period from the map',
+    'pt-BR': 'Ocultar este período do mapa',
+  } satisfies LString,
+  itineraryStops: {
+    en: 'stops',
+    'pt-BR': 'paradas',
+  } satisfies LString,
+  itineraryDay: {
+    en: 'Day',
+    'pt-BR': 'Dia',
+  } satisfies LString,
+  itineraryMorning: {
+    en: 'Morning',
+    'pt-BR': 'Manhã',
+  } satisfies LString,
+  itineraryAfternoon: {
+    en: 'Afternoon',
+    'pt-BR': 'Tarde',
+  } satisfies LString,
+  itineraryEvening: {
+    en: 'Evening',
+    'pt-BR': 'Noite',
+  } satisfies LString,
+  itineraryOptional: {
+    en: 'Optional',
+    'pt-BR': 'Opcional',
+  } satisfies LString,
+  itineraryFood: {
+    en: 'Food / person',
+    'pt-BR': 'Comida / pessoa',
+  } satisfies LString,
+  itineraryParks: {
+    en: 'Tickets / person',
+    'pt-BR': 'Ingressos / pessoa',
+  } satisfies LString,
+  /** Suffix after budget amount on day cards (e.g. "€42 / person") */
+  itineraryPerPerson: {
+    en: '/ person',
+    'pt-BR': '/ pessoa',
+  } satisfies LString,
+  itineraryBudgetGroup: {
+    en: 'Estimated budget per person',
+    'pt-BR': 'Orçamento estimado por pessoa',
+  } satisfies LString,
+  itineraryTripBudgetGroup: {
+    en: 'Total estimated budget for the trip (per person)',
+    'pt-BR': 'Orçamento total estimado da viagem (por pessoa)',
+  } satisfies LString,
+  itineraryArrivalAirport: {
+    en: 'Arrival airport',
+    'pt-BR': 'Aeroporto de chegada',
+  } satisfies LString,
   mapAria: {
     en: 'Interactive map of visited cities',
     'pt-BR': 'Mapa interativo das cidades visitadas',
@@ -328,9 +462,37 @@ export const travelUi = {
     en: 'Map of places in this city',
     'pt-BR': 'Mapa de lugares nesta cidade',
   } satisfies LString,
+  themeLight: {
+    en: 'Switch to light mode',
+    'pt-BR': 'Mudar para modo claro',
+  } satisfies LString,
+  themeDark: {
+    en: 'Switch to dark mode',
+    'pt-BR': 'Mudar para modo escuro',
+  } satisfies LString,
+  langGroup: {
+    en: 'Language',
+    'pt-BR': 'Idioma',
+  } satisfies LString,
+  langEn: {
+    en: 'English',
+    'pt-BR': 'Inglês',
+  } satisfies LString,
+  langPt: {
+    en: 'Portuguese',
+    'pt-BR': 'Português',
+  } satisfies LString,
   closePanel: {
     en: 'Close place details',
     'pt-BR': 'Fechar detalhes do lugar',
+  } satisfies LString,
+  collapseSidebar: {
+    en: 'Collapse sidebar',
+    'pt-BR': 'Recolher painel',
+  } satisfies LString,
+  expandSidebar: {
+    en: 'Expand sidebar',
+    'pt-BR': 'Expandir painel',
   } satisfies LString,
   fullscreenEnter: {
     en: 'View map fullscreen',
@@ -345,12 +507,17 @@ export const travelUi = {
     usa: { en: 'USA', 'pt-BR': 'EUA' },
     franca: { en: 'France', 'pt-BR': 'França' },
     portugal: { en: 'Portugal', 'pt-BR': 'Portugal' },
+    italia: { en: 'Italy', 'pt-BR': 'Itália' },
   } satisfies Record<TravelCity['countryKey'], LString>,
   categories: {
     airport: { en: 'Airport', 'pt-BR': 'Aeroporto' },
+    transport: { en: 'Transport', 'pt-BR': 'Transporte' },
     parks: { en: 'Parks & walks', 'pt-BR': 'Parques e Passeios' },
     cafes: { en: 'Cafés', 'pt-BR': 'Cafés' },
     restaurants: { en: 'Restaurants', 'pt-BR': 'Restaurantes' },
+    commons: { en: 'Chains', 'pt-BR': 'Comuns' },
+    markets: { en: 'Markets', 'pt-BR': 'Mercados' },
+    shopping: { en: 'Shopping', 'pt-BR': 'Compras' },
     photo: { en: 'Photo spot', 'pt-BR': 'Ponto para Foto' },
     tourist: { en: 'Tourist spots', 'pt-BR': 'Pontos Turísticos' },
     lodging: { en: 'Stay', 'pt-BR': 'Hospedagem' },
@@ -359,6 +526,10 @@ export const travelUi = {
     avgPrice: {
       en: 'Price / person',
       'pt-BR': 'Preço / pessoa',
+    },
+    pricePerNight: {
+      en: 'Price / night',
+      'pt-BR': 'Preço / noite',
     },
     ticket: {
       en: 'Ticket',
@@ -404,6 +575,7 @@ export const travelCountryKeys: TravelCity['countryKey'][] = [
   'brasil',
   'usa',
   'franca',
+  'italia',
   'portugal',
 ];
 
@@ -413,7 +585,11 @@ export function cityCategoryKeys(city: TravelCity): PlaceCategory[] {
   return placeCategoryOrder.filter((k) => present.has(k));
 }
 
-export const travelCities: TravelCity[] = [
+/**
+ * Local city shells + places authored in-repo.
+ * Editorial place content prefers Notion (see mergeNotionPlaces / travel-notion.generated.ts).
+ */
+const localTravelCities: TravelCity[] = [
   {
     slug: 'sao-paulo',
     name: { en: 'São Paulo', 'pt-BR': 'São Paulo' },
@@ -799,6 +975,109 @@ export const travelCities: TravelCity[] = [
         mapsQuery: 'Aéroport de Paris-Orly ORY',
       },
       {
+        id: 'par-cdg',
+        name: {
+          en: 'Charles de Gaulle Airport (CDG)',
+          'pt-BR': 'Aeroporto Charles de Gaulle (CDG)',
+        },
+        category: 'airport',
+        featured: true,
+        description: {
+          en: 'Main long-haul hub north of Paris. RER B into the city (~45–60 min to the center).',
+          'pt-BR':
+            'Principal hub de longos voos ao norte de Paris. RER B até a cidade (~45–60 min ao centro).',
+        },
+        googleRating: 3.6,
+        lat: 49.0097,
+        lng: 2.5479,
+        address: '95700 Roissy-en-France, France',
+        mapsQuery: 'Aéroport de Paris-Charles de Gaulle CDG',
+      },
+      {
+        id: 'par-cdg-paul',
+        name: { en: 'PAUL CDG', 'pt-BR': 'PAUL CDG' },
+        category: 'cafes',
+        description: {
+          en: 'Bakery-café in Terminal 2 — croissants and coffee on the way to the RER.',
+          'pt-BR':
+            'Padaria-café no Terminal 2 — croissants e café a caminho do RER.',
+        },
+        googleRating: 3.8,
+        lat: 49.0046,
+        lng: 2.5718,
+        address: 'Aéroport Paris-Charles de Gaulle, Terminal 2, 95700 Roissy-en-France',
+        mapsQuery: 'PAUL Aéroport Charles de Gaulle Terminal 2',
+      },
+      {
+        id: 'par-cdg-rer',
+        name: {
+          en: 'CDG 2 TGV · Navigo',
+          'pt-BR': 'CDG 2 TGV · Navigo',
+        },
+        category: 'transport',
+        description: {
+          en: 'RER B under Terminal 2 — buy Navigo Easy here, then ride into Paris (Magenta / Gare du Nord).',
+          'pt-BR':
+            'RER B sob o Terminal 2 — compre Navigo Easy aqui e siga para Paris (Magenta / Gare du Nord).',
+        },
+        googleRating: 3.6,
+        lat: 49.0039,
+        lng: 2.5708,
+        address: 'Gare Aéroport Charles de Gaulle 2 TGV, 95700 Roissy-en-France',
+        mapsQuery: 'Gare Aéroport Charles de Gaulle 2 TGV Navigo',
+      },
+      {
+        id: 'par-orly-m14',
+        name: {
+          en: 'Orly Metro 14 · Navigo',
+          'pt-BR': 'Metrô 14 Orly · Navigo',
+        },
+        category: 'transport',
+        description: {
+          en: 'Closest RATP point after landing — buy Navigo Easy cards for everyone, then ride M14 into Paris.',
+          'pt-BR':
+            'Ponto RATP mais perto após o desembarque — compre Navigo Easy para todos e pegue a M14 para Paris.',
+        },
+        googleRating: 4.0,
+        lat: 48.7292,
+        lng: 2.3698,
+        address: 'Gare Orly 1-2-3 / Orly 4, Métro ligne 14',
+        mapsQuery: 'Métro Orly ligne 14 Navigo',
+      },
+      {
+        id: 'par-orly-paul',
+        name: { en: 'PAUL Orly', 'pt-BR': 'PAUL Orly' },
+        category: 'cafes',
+        description: {
+          en: 'Bakery-café at Orly — croissants and coffee right after Navigo setup.',
+          'pt-BR':
+            'Padaria-café em Orly — croissants e café logo após comprar o Navigo.',
+        },
+        googleRating: 3.9,
+        lat: 48.7285,
+        lng: 2.3685,
+        address: 'Aéroport d’Orly, 94390 Orly',
+        mapsQuery: 'PAUL Aéroport Orly',
+      },
+      {
+        id: 'par-noisy-le-sec-rer',
+        name: {
+          en: 'Noisy-le-Sec station',
+          'pt-BR': 'Gare de Noisy-le-Sec',
+        },
+        category: 'transport',
+        description: {
+          en: 'RER E stop for Casa do Gui — short walk to Rue des Bergeries.',
+          'pt-BR':
+            'Estação RER E da Casa do Gui — caminhada curta até a Rue des Bergeries.',
+        },
+        googleRating: 3.5,
+        lat: 48.8907,
+        lng: 2.4608,
+        address: 'Place Jean-Jaurès, 93130 Noisy-le-Sec',
+        mapsQuery: 'Gare de Noisy-le-Sec RER E',
+      },
+      {
         id: 'par-felicita',
         name: { en: 'La Felicità', 'pt-BR': 'La Felicità' },
         category: 'restaurants',
@@ -815,7 +1094,10 @@ export const travelCities: TravelCity[] = [
       },
       {
         id: 'par-bake-blend',
-        name: { en: 'Bake & Blend', 'pt-BR': 'Bake & Blend' },
+        name: {
+          en: 'Le café by Maison Bergeron',
+          'pt-BR': 'Le café by Maison Bergeron',
+        },
         category: 'cafes',
         description: {
           en: 'Coffee and bakery stop near the Champ de Mars.',
@@ -825,7 +1107,7 @@ export const travelCities: TravelCity[] = [
         lat: 48.8584,
         lng: 2.3008,
         address: '1 Rue Amélie, 75007 Paris',
-        mapsQuery: 'Bake & Blend Paris',
+        mapsQuery: 'Le café by Maison Bergeron Paris',
         mapsUrl: 'https://maps.app.goo.gl/ezkYGpjLCM1ZrFuC8',
       },
       {
@@ -836,7 +1118,9 @@ export const travelCities: TravelCity[] = [
           en: 'The lawn under the Tower. Sunset picnic territory.',
           'pt-BR': 'O gramado sob a Torre. Território de piquenique no pôr do sol.',
         },
+        rating: 5,
         googleRating: 4.6,
+        favorite: true,
         lat: 48.8556,
         lng: 2.2986,
         // OSM park outline via travel-areas-osm.ts (par-champ-mars)
@@ -852,7 +1136,9 @@ export const travelCities: TravelCity[] = [
           en: 'Still worth it. Go early or late for better light.',
           'pt-BR': 'Ainda vale. Vá cedo ou tarde pela luz.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8584,
         lng: 2.2945,
         address: 'Champ de Mars, 5 Av. Anatole France, 75007 Paris',
@@ -867,7 +1153,9 @@ export const travelCities: TravelCity[] = [
           en: 'The classic postcard angle of the Tower.',
           'pt-BR': 'O ângulo clássico de cartão-postal da Torre.',
         },
+        rating: 5,
         googleRating: 4.6,
+        favorite: true,
         lat: 48.862,
         lng: 2.2877,
         // Place + esplanade facing the Tower
@@ -915,6 +1203,78 @@ export const travelCities: TravelCity[] = [
         mapsQuery: 'La Défense Paris',
       },
       {
+        id: 'par-paul-defense',
+        name: { en: 'PAUL La Défense', 'pt-BR': 'PAUL La Défense' },
+        category: 'cafes',
+        description: {
+          en: 'Reliable bakery-café at La Défense — croissants, coffee, and a quick start before the Arche.',
+          'pt-BR':
+            'Padaria-café confiável em La Défense — croissants, café e largada rápida antes da Arche.',
+        },
+        googleRating: 4.2,
+        lat: 48.8904,
+        lng: 2.2378,
+        address: 'Parvis de la Défense / Les Quatre Temps, 92800 Puteaux',
+        mapsQuery: 'PAUL La Défense Parvis',
+      },
+      {
+        id: 'par-grande-arche',
+        name: {
+          en: 'Grande Arche de la Défense',
+          'pt-BR': 'Grande Arche de la Défense',
+        },
+        category: 'photo',
+        landmark: 'monument',
+        description: {
+          en: 'The “Great Arch” — cube frame on the historic axis. Best photos from the parvis and steps.',
+          'pt-BR':
+            'O “Grande Arco” — cubo no eixo histórico. Melhores fotos no parvis e na escadaria.',
+        },
+        googleRating: 4.4,
+        lat: 48.8927,
+        lng: 2.2359,
+        address: '1 Parvis de la Défense, 92040 Paris La Défense',
+        mapsQuery: 'Grande Arche de la Défense',
+      },
+      {
+        id: 'par-esplanade-de-gaulle',
+        name: {
+          en: 'Esplanade du Général de Gaulle',
+          'pt-BR': 'Esplanade du Général de Gaulle',
+        },
+        category: 'photo',
+        description: {
+          en: 'Long open esplanade under the towers — skyline, fountains, and the axis toward Paris.',
+          'pt-BR':
+            'Esplanada longa sob as torres — skyline, fontes e o eixo em direção a Paris.',
+        },
+        googleRating: 4.3,
+        lat: 48.8889,
+        lng: 2.2468,
+        address: 'Esplanade du Général de Gaulle, 92800 Puteaux',
+        mapsQuery: 'Esplanade du Général de Gaulle La Défense',
+      },
+      {
+        id: 'par-monoprix-rivoli',
+        name: {
+          en: 'Monoprix Opéra (picnic)',
+          'pt-BR': 'Monoprix Opéra (piquenique)',
+        },
+        category: 'markets',
+        description: {
+          en: 'Monoprix on Av. de l’Opéra — sandwiches, fruit, drinks for a Tuileries picnic.',
+          'pt-BR':
+            'Monoprix na Av. de l’Opéra — sanduíches, fruta e bebidas pro piquenique nas Tuileries.',
+        },
+        googleRating: 4.0,
+        lat: 48.8664526,
+        lng: 2.333868,
+        address: "23 Av. de l'Opéra, 75001 Paris",
+        mapsQuery: "Monoprix 23 Avenue de l'Opéra Paris",
+        mapsUrl:
+          'https://www.google.com/maps/search/?api=1&query=Monoprix+23+Avenue+de+l%27Op%C3%A9ra+Paris',
+      },
+      {
         id: 'par-louvre',
         name: { en: 'Louvre', 'pt-BR': 'Louvre' },
         category: 'tourist',
@@ -923,7 +1283,9 @@ export const travelCities: TravelCity[] = [
           en: 'Plan a route. The building is half the experience.',
           'pt-BR': 'Planeje um roteiro. O prédio é metade da experiência.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8606,
         lng: 2.3376,
         // Cour carrée + Denon/Sully footprint (simplified)
@@ -975,7 +1337,9 @@ export const travelCities: TravelCity[] = [
           en: 'The avenue. Walk from Concorde up to the Arc.',
           'pt-BR': 'A avenida. Suba da Concorde até o Arco.',
         },
+        rating: 4.5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8698,
         lng: 2.3078,
         // Fallback; precise full-avenue polyline is in travel-areas-osm.ts
@@ -1015,6 +1379,7 @@ export const travelCities: TravelCity[] = [
           en: 'Macaron pilgrimage. Pick a signature box.',
           'pt-BR': 'Peregrinação de macaron. Pegue uma caixa assinatura.',
         },
+        rating: 4,
         googleRating: 4.4,
         lat: 48.871363,
         lng: 2.3037531,
@@ -1064,7 +1429,7 @@ export const travelCities: TravelCity[] = [
         googleRating: 4.8,
         lat: 48.8638,
         lng: 2.3135,
-        // Accurate OSM bridge footprint via travel-areas-osm.ts (par-alexandre-iii)
+        // Bridge span centerline via travel-areas-osm.ts (par-alexandre-iii)
         address: 'Pont Alexandre III, 75008 Paris',
         mapsQuery: 'Pont Alexandre III Paris',
       },
@@ -1106,7 +1471,9 @@ export const travelCities: TravelCity[] = [
           en: 'Pastry spectacle. Expect a line; worth the wait if you care.',
           'pt-BR': 'Espetáculo de confeitaria. Espere fila; vale se você curte.',
         },
+        rating: 5,
         googleRating: 4.6,
+        favorite: true,
         lat: 48.8678522,
         lng: 2.3332982,
         address: "35 Avenue de l'Opéra, 75002 Paris",
@@ -1131,7 +1498,7 @@ export const travelCities: TravelCity[] = [
       {
         id: 'par-galeries-lafayette',
         name: { en: 'Galeries Lafayette', 'pt-BR': 'Galeries Lafayette' },
-        category: 'photo',
+        category: 'shopping',
         description: {
           en: 'Dome, rooftop view, and department-store theater.',
           'pt-BR': 'Cúpula, terraço e teatro de loja de departamento.',
@@ -1145,7 +1512,7 @@ export const travelCities: TravelCity[] = [
       {
         id: 'par-printemps',
         name: { en: 'Printemps', 'pt-BR': 'Printemps' },
-        category: 'photo',
+        category: 'shopping',
         description: {
           en: 'Haussmann landmark with a strong rooftop stop.',
           'pt-BR': 'Marco de Haussmann com terraço forte.',
@@ -1191,10 +1558,12 @@ export const travelCities: TravelCity[] = [
         name: { en: 'La Maison d\'Isabelle', 'pt-BR': 'La Maison d\'Isabelle' },
         category: 'cafes',
         description: {
-          en: 'Croissant stop near the Latin Quarter.',
-          'pt-BR': 'Parada de croissant perto do Quartier Latin.',
+          en: 'One of the most awarded croissants in Paris.',
+          'pt-BR': 'Um dos croissants mais premiados de Paris.',
         },
+        rating: 5,
         googleRating: 4.5,
+        favorite: true,
         lat: 48.8498436,
         lng: 2.3482751,
         address: '47 Boulevard Saint-Germain, 75005 Paris',
@@ -1253,10 +1622,7 @@ export const travelCities: TravelCity[] = [
         googleRating: 4.4,
         lat: 48.8493577,
         lng: 2.3432944,
-        area: {
-          kind: 'polyline',
-          path: [[48.8485, 2.343], [48.8493577, 2.3432944], [48.8502, 2.3435]],
-        },
+        // Geometry: OSM LineString in travel-areas-osm.ts (par-sorbonne)
         address: 'Rue de la Sorbonne, 75005 Paris',
         mapsQuery: 'Rue de la Sorbonne Paris',
         mapsUrl: 'https://www.google.fr/maps/place/Rue+de+la+Sorbonne,+75005+Paris/@48.8492618,2.3395419,17z',
@@ -1300,12 +1666,9 @@ export const travelCities: TravelCity[] = [
           'pt-BR': 'Passagem coberta com história e boa para vaguear.',
         },
         googleRating: 5.0,
-        lat: 48.853069,
-        lng: 2.3390941,
-        area: {
-          kind: 'polyline',
-          path: [[48.8527, 2.3385], [48.853069, 2.3390941], [48.8534, 2.3396]],
-        },
+        // Mid-passage — full path from OSM (travel-areas-osm.ts / par-cour-commerce)
+        lat: 48.8530736,
+        lng: 2.3390876,
         address: 'Cr du Commerce Saint-André, 75006 Paris',
         mapsQuery: 'Cour du Commerce Saint-André Paris',
         mapsUrl: 'https://www.google.fr/maps/place/Cr+du+Commerce+Saint-Andr%C3%A9,+75006+Paris/@48.853095,2.3383737,18.5z',
@@ -1363,7 +1726,9 @@ export const travelCities: TravelCity[] = [
           en: 'Île de la Cité centerpiece. Walk the square and the bridges.',
           'pt-BR': 'Centro da Île de la Cité. Caminhe a praça e as pontes.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.853,
         lng: 2.3499,
         address: '6 Parvis Notre-Dame, 75004 Paris',
@@ -1435,7 +1800,9 @@ export const travelCities: TravelCity[] = [
           en: 'Hill village vibe. Wander before the Sacré-Cœur crowds peak.',
           'pt-BR': 'Clima de vilarejo na colina. Vagueie antes do pico no Sacré-Cœur.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8867,
         lng: 2.3431,
         address: 'Montmartre, 75018 Paris',
@@ -1450,7 +1817,9 @@ export const travelCities: TravelCity[] = [
           en: 'White dome over the city. Steps are half the point.',
           'pt-BR': 'Cúpula branca sobre a cidade. As escadas são metade da graça.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8867,
         lng: 2.3431,
         address: '35 Rue du Chevalier de la Barre, 75018 Paris',
@@ -1464,6 +1833,7 @@ export const travelCities: TravelCity[] = [
           en: 'Pigalle icon. Worth the photo even if you skip the show.',
           'pt-BR': 'Ícone de Pigalle. Vale a foto mesmo sem o show.',
         },
+        rating: 3.5,
         googleRating: 4.4,
         lat: 48.8841,
         lng: 2.3322,
@@ -1548,10 +1918,12 @@ export const travelCities: TravelCity[] = [
         name: { en: 'Bohemia Café', 'pt-BR': 'Bohemia Café' },
         category: 'cafes',
         description: {
-          en: 'Brunch stop. Go early on weekends.',
-          'pt-BR': 'Parada de brunch. Vá cedo no fim de semana.',
+          en: 'Club sandwich and Club Loco de Blueberries.',
+          'pt-BR': 'Club sandwich e Club Loco de Blueberries.',
         },
+        rating: 5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8655,
         lng: 2.335,
         address: '30 Rue de Richelieu, 75001 Paris',
@@ -1573,16 +1945,19 @@ export const travelCities: TravelCity[] = [
       },
       {
         id: 'par-chatelet',
-        name: { en: 'Châtelet', 'pt-BR': 'Châtelet' },
-        category: 'tourist',
+        name: { en: 'Place du Châtelet', 'pt-BR': 'Place du Châtelet' },
+        category: 'photo',
         description: {
           en: 'Central square and metro maze. Fountains, theaters, pure Paris chaos.',
           'pt-BR': 'Praça central e labirinto de metrô. Fontes, teatros, caos parisiense puro.',
         },
+        rating: 4,
+        googleRating: 4.2,
         lat: 48.8575,
         lng: 2.3472,
-        address: 'Pl. du Châtelet, 75001 Paris',
+        address: 'Place du Châtelet, 75001 Paris',
         mapsQuery: 'Place du Châtelet Paris',
+        mapsUrl: 'https://maps.app.goo.gl/5tQAPLnfS4xLxkYV6',
       },
       {
         id: 'par-saint-eustache',
@@ -1607,10 +1982,45 @@ export const travelCities: TravelCity[] = [
           'pt-BR': 'Rua peatonizada de comida — padarias, ostras, wine bars.',
         },
         googleRating: 4.5,
-        lat: 48.8646,
-        lng: 2.347,
+        // Midpoint of full Rue Montorgueil polyline (OSM multi-way merge)
+        lat: 48.864494,
+        lng: 2.346697,
         address: 'Rue Montorgueil, 75001 Paris',
         mapsQuery: 'Rue Montorgueil Paris',
+      },
+      {
+        id: 'par-michalak-etienne',
+        name: {
+          en: 'Pâtisserie Michalak | Etienne Marcel',
+          'pt-BR': 'Pâtisserie Michalak | Etienne Marcel',
+        },
+        category: 'cafes',
+        description: {
+          en: 'Christophe Michalak counter on Rue Étienne Marcel — pastries near Les Halles / Montorgueil.',
+          'pt-BR':
+            'Balcão do Christophe Michalak na Rue Étienne Marcel — doces perto de Les Halles / Montorgueil.',
+        },
+        googleRating: 4.5,
+        lat: 48.8644817,
+        lng: 2.3460786,
+        address: '37 Rue Étienne Marcel, 75002 Paris',
+        mapsQuery: 'Pâtisserie Michalak Etienne Marcel Paris',
+        mapsUrl: 'https://maps.app.goo.gl/hsYjfSBmJESa8o8S9',
+      },
+      {
+        id: 'par-artizans',
+        name: { en: 'Bistro les Artizans', 'pt-BR': 'Bistro les Artizans' },
+        category: 'restaurants',
+        description: {
+          en: 'Bistro on Rue Montorgueil — solid French plates on the food street.',
+          'pt-BR': 'Bistrô na Rue Montorgueil — pratos franceses sólidos na rua gastronômica.',
+        },
+        googleRating: 4.5,
+        lat: 48.8637686,
+        lng: 2.3465503,
+        address: '30 Rue Montorgueil, 75001 Paris',
+        mapsQuery: 'Bistro les Artizans Paris',
+        mapsUrl: 'https://maps.app.goo.gl/dc8VjE69wviBaiJv6',
       },
       {
         id: 'par-pompidou',
@@ -1635,6 +2045,7 @@ export const travelCities: TravelCity[] = [
           en: 'Flower-shaped gelato. Easy win near the river islands.',
           'pt-BR': 'Gelato em forma de flor. Vitória fácil perto das ilhas.',
         },
+        rating: 3.5,
         googleRating: 4.6,
         lat: 48.8607322,
         lng: 2.3510395,
@@ -1785,10 +2196,12 @@ export const travelCities: TravelCity[] = [
         name: { en: 'Le Relais de l\'Entrecôte', 'pt-BR': 'Le Relais de l\'Entrecôte' },
         category: 'restaurants',
         description: {
-          en: 'Steak-frites and the secret sauce. No menu stress.',
-          'pt-BR': 'Steak-frites e o molho secreto. Zero estresse de cardápio.',
+          en: 'Steak-frites only — generous portions, great value. No menu stress.',
+          'pt-BR': 'Opção de fritas com steak de carne — come-se bastante, ótimo custo/benefício.',
         },
+        rating: 4.5,
         googleRating: 4.2,
+        favorite: true,
         lat: 48.868142,
         lng: 2.3027971,
         address: '15 Rue Marbeuf, 75008 Paris',
@@ -1854,10 +2267,10 @@ export const travelCities: TravelCity[] = [
       {
         id: 'par-fondation-lv',
         name: { en: 'Fondation Louis Vuitton', 'pt-BR': 'Fondation Louis Vuitton' },
-        category: 'tourist',
+        category: 'photo',
         description: {
-          en: 'Museum inside the Bois de Boulogne. Striking modern architecture — worth the trip for the building alone.',
-          'pt-BR': 'Museu no Bois de Boulogne. Arquitetura moderna e bonita — vale só pelo prédio.',
+          en: 'Frank Gehry sails in the Bois de Boulogne — go for the building photos more than the blockbuster museum queue.',
+          'pt-BR': 'Velas do Gehry no Bois de Boulogne — vale mais pela foto do prédio do que pela fila de museu.',
         },
         googleRating: 4.5,
         lat: 48.87665,
@@ -1938,20 +2351,6 @@ export const travelCities: TravelCity[] = [
         lng: 2.355,
         address: '61 Rue de Bretagne, 75003 Paris',
         mapsQuery: 'Chez Elo Paris',
-      },
-      {
-        id: 'par-maison-doucet',
-        name: { en: 'Maison Doucet', 'pt-BR': 'Maison Doucet' },
-        category: 'cafes',
-        description: {
-          en: 'Croissant stop. Butter-first priorities.',
-          'pt-BR': 'Parada de croissant. Prioridade manteiga.',
-        },
-        googleRating: 4.7,
-        lat: 48.86,
-        lng: 2.34,
-        address: "15 Rue de l'Amiral de Coligny, 75001 Paris",
-        mapsQuery: 'Maison Doucet croissant Paris',
       },
       {
         id: 'par-vincennes-town',
@@ -2097,8 +2496,8 @@ export const travelCities: TravelCity[] = [
           en: 'Elevated stretches with panoramic city views — great return after the canals / La Villette. Ride it on purpose.',
           'pt-BR': 'Trechos elevados com vista panorâmica da cidade — ótimo na volta dos canais / La Villette. Pegue de propósito.',
         },
-        // Anchor at elevated Barbès / Anvers stretch
-        lat: 48.8838,
+        // Anchor at elevated Pigalle (on the authored station spine)
+        lat: 48.8828,
         lng: 2.3499,
         area: {
           kind: 'polyline',
@@ -2207,10 +2606,11 @@ export const travelCities: TravelCity[] = [
           'pt-BR': 'Alugar bike (Vélib’ ou similar) e dar uma volta por Paris — parques, margens do rio e avenidas. Uma das melhores formas de sentir a cidade na rua.',
         },
         googleRating: 4.9,
-        lat: 48.8566,
-        lng: 2.3522,
-        address: "Place de l'Hôtel-de-Ville, 75004 Paris",
-        mapsQuery: 'Vélib Paris',
+        // Station Vélib' Métropole 4017 — Place de l'Hôtel de Ville (open data)
+        lat: 48.85733,
+        lng: 2.35146,
+        address: "Station Vélib' Place de l'Hôtel de Ville, 75004 Paris",
+        mapsQuery: "Station Vélib Place de l'Hôtel de Ville Paris",
       },
       {
         id: 'par-orsay',
@@ -2296,18 +2696,698 @@ export const travelCities: TravelCity[] = [
         mapsQuery: '30 Rue des Bergeries, 93130 Noisy-le-Sec',
       },
       {
+        id: 'par-auchan-noisy',
+        name: {
+          en: 'Auchan Supermarché (Noisy-le-Sec)',
+          'pt-BR': 'Auchan Supermarché (Noisy-le-Sec)',
+        },
+        category: 'markets',
+        description: {
+          en: 'Full supermarket ~5 min walk from Casa do Gui — basics, produce, drinks, and household stock for the stay.',
+          'pt-BR':
+            'Supermercado completo a ~5 min a pé da Casa do Gui — básicos, hortifruti, bebidas e estoque da casa.',
+        },
+        googleRating: 3.8,
+        lat: 48.8942003,
+        lng: 2.4582537,
+        address: '90 Rue Jean Jaurès, 93130 Noisy-le-Sec',
+        mapsQuery: 'Auchan Supermarché 90 Rue Jean Jaurès Noisy-le-Sec',
+        mapsUrl:
+          'https://www.google.com/maps/search/?api=1&query=Auchan+Supermarch%C3%A9+90+Rue+Jean+Jaur%C3%A8s+Noisy-le-Sec',
+      },
+      {
         id: 'par-disneyland',
         name: { en: 'Disneyland Paris', 'pt-BR': 'Disneyland Paris' },
         category: 'parks',
         description: {
-          en: 'Theme parks in Marne-la-Vallée — full day of rides, parades, and Disney energy outside the city.',
-          'pt-BR': 'Parques temáticos em Marne-la-Vallée — dia inteiro de brinquedos, paradas e clima Disney fora da cidade.',
+          en: 'Two theme parks in Marne-la-Vallée (Disneyland Park + Adventure World). RER A to Chessy (~40 min) + short walk; full day of rides and parades.',
+          'pt-BR': 'Dois parques temáticos em Marne-la-Vallée (Disneyland Park + Adventure World). RER A até Chessy (~40 min) + caminhada curta; dia inteiro de brinquedos e paradas.',
         },
         googleRating: 4.5,
-        lat: 48.8701,
-        lng: 2.774,
+        // Pin inside Parc Disneyland ring (multipolygon with Adventure World)
+        lat: 48.871,
+        lng: 2.7765,
         address: 'Boulevard de Parc, 77700 Chessy',
         mapsQuery: 'Disneyland Paris',
+      },
+
+      // ── Chains (commons) ──
+      {
+        id: 'par-mcdonalds-champs',
+        name: {
+          en: "McDonald's Champs-Élysées",
+          'pt-BR': "McDonald's Champs-Élysées",
+        },
+        category: 'commons',
+        description: {
+          en: 'The famous Champs-Élysées McDonald’s — touristy, open late, known quantity when you need something easy.',
+          'pt-BR': 'O McDonald’s famoso da Champs-Élysées — turístico, abre tarde, opção fácil quando você quer algo previsível.',
+        },
+        googleRating: 3.7,
+        lat: 48.87185,
+        lng: 2.30155,
+        address: '140 Av. des Champs-Élysées, 75008 Paris',
+        mapsQuery: "McDonald's Champs-Élysées Paris",
+      },
+      {
+        id: 'par-burger-king-opera',
+        name: { en: 'Burger King Opéra', 'pt-BR': 'Burger King Opéra' },
+        category: 'commons',
+        description: {
+          en: 'Central BK near Opéra — reliable chain stop between department stores and métro.',
+          'pt-BR': 'BK no centro perto da Opéra — parada de rede entre grands magasins e metrô.',
+        },
+        googleRating: 3.5,
+        lat: 48.8714,
+        lng: 2.3312,
+        address: '4 Bd des Capucines, 75009 Paris',
+        mapsQuery: 'Burger King Opéra Paris',
+      },
+      {
+        id: 'par-starbucks-opera',
+        name: { en: 'Starbucks Opéra', 'pt-BR': 'Starbucks Opéra' },
+        category: 'commons',
+        description: {
+          en: 'Starbucks on the Opéra corner — Wi‑Fi, AC, and a familiar order between museums.',
+          'pt-BR': 'Starbucks na esquina da Opéra — Wi‑Fi, ar-condicionado e pedido familiar entre museus.',
+        },
+        googleRating: 3.8,
+        lat: 48.8709,
+        lng: 2.3321,
+        address: '3 Bd des Capucines, 75002 Paris',
+        mapsQuery: 'Starbucks Opéra Capucines Paris',
+      },
+      {
+        id: 'par-five-guys-rivoli',
+        name: { en: 'Five Guys Rivoli', 'pt-BR': 'Five Guys Rivoli' },
+        category: 'commons',
+        description: {
+          en: 'US chain burgers near the Louvre corridor — messy, filling, no reservation drama.',
+          'pt-BR': 'Burgers da rede americana perto do eixo do Louvre — bagunçado, enche, sem drama de reserva.',
+        },
+        googleRating: 4.2,
+        lat: 48.8608,
+        lng: 2.3365,
+        address: '105 Rue de Rivoli, 75001 Paris',
+        mapsQuery: 'Five Guys Rue de Rivoli Paris',
+      },
+      {
+        id: 'par-kfc-les-halles',
+        name: { en: 'KFC Les Halles', 'pt-BR': 'KFC Les Halles' },
+        category: 'commons',
+        description: {
+          en: 'KFC in the Forum des Halles cluster — quick fried chicken when the city is loud.',
+          'pt-BR': 'KFC no cluster do Forum des Halles — frango rápido quando a cidade está barulhenta.',
+        },
+        googleRating: 3.4,
+        lat: 48.8615,
+        lng: 2.3472,
+        address: 'Forum des Halles, 75001 Paris',
+        mapsQuery: 'KFC Forum des Halles Paris',
+      },
+
+      // ── Markets ──
+      {
+        id: 'par-marche-enfants-rouges',
+        name: {
+          en: 'Marché des Enfants Rouges',
+          'pt-BR': 'Marché des Enfants Rouges',
+        },
+        category: 'markets',
+        description: {
+          en: 'Paris’s oldest covered market — multicultural lunch stalls in the Marais.',
+          'pt-BR': 'Mercado coberto mais antigo de Paris — barracas de almoço multiculturais no Marais.',
+        },
+        googleRating: 4.4,
+        lat: 48.86305,
+        lng: 2.36185,
+        address: '39 Rue de Bretagne, 75003 Paris',
+        mapsQuery: 'Marché des Enfants Rouges Paris',
+      },
+      {
+        id: 'par-marche-aligre',
+        name: { en: "Marché d'Aligre", 'pt-BR': "Marché d'Aligre" },
+        category: 'markets',
+        description: {
+          en: 'Lively outdoor + covered market — cheap produce and a very local 12e energy.',
+          'pt-BR': 'Mercado de rua + coberto bem vivo — hortifruti barato e clima bem local do 12e.',
+        },
+        googleRating: 4.5,
+        lat: 48.8492,
+        lng: 2.3779,
+        address: "Place d'Aligre, 75012 Paris",
+        mapsQuery: "Marché d'Aligre Paris",
+      },
+      {
+        id: 'par-marche-bastille',
+        name: { en: 'Marché Bastille', 'pt-BR': 'Marché Bastille' },
+        category: 'markets',
+        description: {
+          en: 'Big open-air market on Bd Richard-Lenoir — Thursday & Sunday mornings.',
+          'pt-BR': 'Grande feira ao ar livre no Bd Richard-Lenoir — manhãs de quinta e domingo.',
+        },
+        googleRating: 4.5,
+        lat: 48.8555,
+        lng: 2.3705,
+        address: 'Bd Richard-Lenoir, 75011 Paris',
+        mapsQuery: 'Marché Bastille Paris',
+      },
+      {
+        id: 'par-rue-cler',
+        name: { en: 'Rue Cler market street', 'pt-BR': 'Rua Cler (mercado)' },
+        category: 'markets',
+        description: {
+          en: 'Pedestrian food street near the Eiffel Tower — fromageries, bakers, and produce.',
+          'pt-BR': 'Rua pedonal de comida perto da Torre — queijarias, padarias e hortifruti.',
+        },
+        googleRating: 4.5,
+        lat: 48.8566,
+        lng: 2.3067,
+        address: 'Rue Cler, 75007 Paris',
+        mapsQuery: 'Rue Cler Paris',
+      },
+
+      // ── Shopping ──
+      {
+        id: 'par-bon-marche',
+        name: { en: 'Le Bon Marché', 'pt-BR': 'Le Bon Marché' },
+        category: 'shopping',
+        description: {
+          en: 'Left-bank grand magasin — elegant floors and the legendary Grande Épicerie.',
+          'pt-BR': 'Grand magasin da margem esquerda — andares elegantes e a lendária Grande Épicerie.',
+        },
+        googleRating: 4.5,
+        lat: 48.8511,
+        lng: 2.3244,
+        address: '24 Rue de Sèvres, 75007 Paris',
+        mapsQuery: 'Le Bon Marché Paris',
+      },
+      {
+        id: 'par-forum-halles',
+        name: { en: 'Forum des Halles', 'pt-BR': 'Forum des Halles' },
+        category: 'shopping',
+        description: {
+          en: 'Central mall under the Canopée — chains, cinemas, and métro hub.',
+          'pt-BR': 'Shopping central sob a Canopée — redes, cinema e hub de metrô.',
+        },
+        googleRating: 3.9,
+        lat: 48.862,
+        lng: 2.3465,
+        address: 'Forum des Halles, 75001 Paris',
+        mapsQuery: 'Forum des Halles Paris',
+      },
+      {
+        id: 'par-bhv-marais',
+        name: { en: 'BHV Marais', 'pt-BR': 'BHV Marais' },
+        category: 'shopping',
+        description: {
+          en: 'Department store by Hôtel de Ville — DIY floors, fashion, and a solid rooftop café.',
+          'pt-BR': 'Grand magasin ao lado do Hôtel de Ville — DIY, moda e terraço com café.',
+        },
+        googleRating: 4.2,
+        lat: 48.8573,
+        lng: 2.3535,
+        address: '52 Rue de Rivoli, 75004 Paris',
+        mapsQuery: 'BHV Marais Paris',
+      },
+      {
+        id: 'par-shakespeare',
+        name: {
+          en: 'Shakespeare and Company',
+          'pt-BR': 'Shakespeare and Company',
+        },
+        category: 'cafes',
+        description: {
+          en: 'Café by the Seine with the iconic English bookshop next door — coffee, queues, history, and first-edition energy.',
+          'pt-BR':
+            'Café à beira do Sena com a icônica livraria em inglês ao lado — café, fila, história e clima de primeira edição.',
+        },
+        googleRating: 4.5,
+        lat: 48.8526,
+        lng: 2.3471,
+        address: '37 Rue de la Bûcherie, 75005 Paris',
+        mapsQuery: 'Shakespeare and Company Paris',
+      },
+
+      // ── From roteiro (≤ €40 / person) not already in the list ──
+      {
+        id: 'par-place-dauphine',
+        name: { en: 'Place Dauphine', 'pt-BR': 'Place Dauphine' },
+        category: 'parks',
+        description: {
+          en: 'Quiet triangular square on Île de la Cité — charming, less obvious, good for a drink.',
+          'pt-BR': 'Praça triangular calma na Île de la Cité — charmosa, menos óbvia, boa para um drink.',
+        },
+        googleRating: 4.5,
+        lat: 48.8565,
+        lng: 2.3423,
+        address: 'Place Dauphine, 75001 Paris',
+        mapsQuery: 'Place Dauphine Paris',
+      },
+      {
+        id: 'par-cafe-flore',
+        name: { en: 'Café de Flore', 'pt-BR': 'Café de Flore' },
+        category: 'cafes',
+        description: {
+          en: 'Saint-Germain classic still loved by locals and writers — pricey but iconic.',
+          'pt-BR': 'Clássico de Saint-Germain ainda frequentado por locais e escritores — caro, mas icônico.',
+        },
+        googleRating: 4.1,
+        lat: 48.8541,
+        lng: 2.3326,
+        address: '172 Boulevard Saint-Germain, 75006 Paris',
+        mapsQuery: 'Café de Flore Paris',
+      },
+      {
+        id: 'par-rosa-bonheur',
+        name: {
+          en: 'Rosa Bonheur (Buttes-Chaumont)',
+          'pt-BR': 'Rosa Bonheur (Buttes-Chaumont)',
+        },
+        category: 'restaurants',
+        description: {
+          en: 'Guinguette inside Buttes-Chaumont — very Parisian, relaxed drinks and food.',
+          'pt-BR': 'Guinguette dentro do Buttes-Chaumont — bem parisiense, drinks e comida descontraídos.',
+        },
+        googleRating: 4.3,
+        lat: 48.8797,
+        lng: 2.3825,
+        address: '2 Allée de la Cascade, 75019 Paris',
+        mapsQuery: 'Rosa Bonheur Buttes Chaumont Paris',
+      },
+      {
+        id: 'par-belleville',
+        name: { en: 'Parc de Belleville', 'pt-BR': 'Parc de Belleville' },
+        category: 'parks',
+        description: {
+          en: 'Panoramic city view + street art — still feels like a real neighborhood park.',
+          'pt-BR': 'Vista panorâmica da cidade + street art — ainda parece parque de bairro de verdade.',
+        },
+        googleRating: 4.5,
+        lat: 48.8715,
+        lng: 2.3848,
+        address: '47 Rue des Couronnes, 75020 Paris',
+        mapsQuery: 'Parc de Belleville Paris',
+      },
+      {
+        id: 'par-versailles',
+        name: {
+          en: 'Château de Versailles',
+          'pt-BR': 'Château de Versailles',
+        },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Louis XIV’s palace + gardens + Trianon — full day via RER C (Rive Gauche) + ~10 min walk. Passport ~€32–35; closed Mondays.',
+          'pt-BR': 'Palácio de Luís XIV + jardins + Trianon — dia inteiro via RER C (Rive Gauche) + ~10 min a pé. Passport ~€32–35; fecha às segundas.',
+        },
+        googleRating: 4.6,
+        lat: 48.8049,
+        lng: 2.1204,
+        address: "Place d'Armes, 78000 Versailles",
+        mapsQuery: 'Château de Versailles',
+      },
+      {
+        id: 'par-baron-rouge',
+        name: { en: 'Le Baron Rouge', 'pt-BR': 'Le Baron Rouge' },
+        category: 'restaurants',
+        description: {
+          en: 'Legendary wine bar by Marché d’Aligre — barrel wine + weekend oysters.',
+          'pt-BR': 'Bar a vin lendário ao lado do Marché d’Aligre — vinho do barril + ostras no fim de semana.',
+        },
+        googleRating: 4.4,
+        lat: 48.8494,
+        lng: 2.3775,
+        address: '1 Rue Théophile Roussel, 75012 Paris',
+        mapsQuery: 'Le Baron Rouge Paris',
+      },
+      {
+        id: 'par-promenade-plantee',
+        name: {
+          en: 'Promenade Plantée (Coulée Verte)',
+          'pt-BR': 'Promenade Plantée (Coulée Verte)',
+        },
+        category: 'parks',
+        description: {
+          en: 'Elevated green walk from Bastille — local alternative to the central gardens.',
+          'pt-BR': 'Caminhada elevada e verde a partir da Bastille — alternativa local aos jardins do centro.',
+        },
+        googleRating: 4.5,
+        lat: 48.847,
+        lng: 2.375,
+        address: '1 Coulée verte René-Dumont, 75012 Paris',
+        mapsQuery: 'Promenade Plantée Paris',
+      },
+    ],
+  },
+  {
+    slug: 'roma',
+    name: { en: 'Rome', 'pt-BR': 'Roma' },
+    country: { en: 'Italy', 'pt-BR': 'Itália' },
+    countryKey: 'italia',
+    lat: 41.9028,
+    lng: 12.4964,
+    zoom: 13,
+    places: [
+      // —— Air / rail ——
+      {
+        id: 'rom-fco',
+        name: {
+          en: 'Fiumicino Airport (FCO)',
+          'pt-BR': 'Aeroporto de Fiumicino (FCO)',
+        },
+        category: 'airport',
+        featured: true,
+        description: {
+          en: 'Leonardo da Vinci — Rome’s main international hub. Leonardo Express train to Termini ~32 min.',
+          'pt-BR':
+            'Leonardo da Vinci — principal aeroporto internacional de Roma. Leonardo Express até a Termini ~32 min.',
+        },
+        googleRating: 3.9,
+        lat: 41.8153911,
+        lng: 12.2264848,
+        address: 'Via Leonardo da Vinci, 00054 Fiumicino RM, Italy',
+        mapsQuery: 'Aeroporto di Roma-Fiumicino FCO',
+      },
+      {
+        id: 'rom-termini',
+        name: {
+          en: 'Roma Termini station',
+          'pt-BR': 'Estação Roma Termini',
+        },
+        category: 'transport',
+        featured: true,
+        description: {
+          en: 'Main train hub — high-speed, regional, and metro A/B/B1. Also the city end of the Leonardo Express from FCO.',
+          'pt-BR':
+            'Hub principal de trens — alta velocidade, regionais e metrô A/B/B1. Também o fim do Leonardo Express vindo de FCO.',
+        },
+        googleRating: 3.8,
+        lat: 41.901195,
+        lng: 12.5016713,
+        address: 'Piazza dei Cinquecento, 00185 Roma',
+        mapsQuery: 'Roma Termini stazione',
+      },
+      // —— Where to eat ——
+      {
+        id: 'rom-gallina-bianca',
+        name: { en: 'La Gallina Bianca', 'pt-BR': 'La Gallina Bianca' },
+        category: 'restaurants',
+        description: {
+          en: 'Best carbonara tip (Canal dos Caçadores). Typical plate ~€14; truffle carbonara was €18.',
+          'pt-BR':
+            'Melhor carbonara (Canal dos Caçadores). Média ~€14 o prato; pegaram a carbonara trufada a €18.',
+        },
+        googleRating: 4.3,
+        lat: 41.8995729,
+        lng: 12.4976136,
+        address: 'Via Antonio Rosmini 8, 00185 Roma',
+        mapsQuery: 'La Gallina Bianca Via Antonio Rosmini Roma',
+      },
+      {
+        id: 'rom-alfredo-ada',
+        name: { en: 'Alfredo e Ada', 'pt-BR': 'Alfredo e Ada' },
+        category: 'restaurants',
+        description: {
+          en: 'Pastas, lasagna, classic Roman plates (Pedro & Juju). ~€10–13 per dish.',
+          'pt-BR':
+            'Massas, lasanha e pratos clássicos (Pedro e Juju). Média €10–13 o prato.',
+        },
+        googleRating: 4.5,
+        lat: 41.8995579,
+        lng: 12.4672366,
+        address: 'Via dei Banchi Nuovi 14, 00186 Roma',
+        mapsQuery: 'Alfredo e Ada Via dei Banchi Nuovi Roma',
+      },
+      {
+        id: 'rom-antico-vinaio',
+        name: {
+          en: "All'Antico Vinaio",
+          'pt-BR': "All'Antico Vinaio",
+        },
+        category: 'restaurants',
+        description: {
+          en: 'Famous stuffed schiacciata sandwiches — delivery too (Pedro & Juju). ~€12.',
+          'pt-BR':
+            'Sanduíche famoso e muito bom (tem até delivery) — indicação Pedro e Juju. Média ~€12.',
+        },
+        googleRating: 4.4,
+        lat: 41.8999413,
+        lng: 12.4763914,
+        address: 'Piazza della Maddalena 3, 00186 Roma',
+        mapsQuery: "All'Antico Vinaio Piazza della Maddalena Roma",
+      },
+      {
+        id: 'rom-baffetto',
+        name: {
+          en: 'Pizzeria da Baffetto',
+          'pt-BR': 'Pizzeria da Baffetto',
+        },
+        category: 'restaurants',
+        description: {
+          en: 'Classic individual Roman pizza (Pedro & Juju). ~€8–15.',
+          'pt-BR':
+            'Pizza individual clássica (Pedro e Juju). €8–15.',
+        },
+        googleRating: 4.2,
+        lat: 41.8983047,
+        lng: 12.4703507,
+        address: 'Via del Governo Vecchio 114, 00186 Roma',
+        mapsQuery: 'Pizzeria da Baffetto Via del Governo Vecchio Roma',
+      },
+      {
+        id: 'rom-suppli',
+        name: { en: 'I Supplì', 'pt-BR': 'I Supplì / Supplì Roma' },
+        category: 'restaurants',
+        description: {
+          en: 'Rice balls ~€2 each — cacio e pepe, carbonara, cheese (Canal dos Caçadores).',
+          'pt-BR':
+            'Bolinhos ~€2 cada — cacio e pepe (pimenta e queijo), carbonara e queijo (Canal dos Caçadores).',
+        },
+        googleRating: 4.5,
+        lat: 41.8882294,
+        lng: 12.4709933,
+        address: 'Via di San Francesco a Ripa 137, 00153 Roma',
+        mapsQuery: 'I Supplì Via di San Francesco a Ripa Roma',
+      },
+      {
+        id: 'rom-norcineria',
+        name: {
+          en: 'La Norcineria (Iacozzilli)',
+          'pt-BR': 'La Norcineria (Iacozzilli)',
+        },
+        category: 'restaurants',
+        description: {
+          en: 'Porchetta sandwich stop in Trastevere (Canal dos Caçadores).',
+          'pt-BR':
+            'Sanduíche de porchetta em Trastevere (Canal dos Caçadores).',
+        },
+        googleRating: 4.6,
+        lat: 41.8873725,
+        lng: 12.4706429,
+        address: 'Via Natale del Grande 15/16, 00153 Roma',
+        mapsQuery: 'La Norcineria Iacozzilli Via Natale del Grande Roma',
+      },
+      {
+        id: 'rom-said',
+        name: { en: 'Said dal 1923', 'pt-BR': 'Said dal 1923' },
+        category: 'cafes',
+        description: {
+          en: 'Historic chocolate shop & gelato (Canal dos Caçadores). Scoops ~€2.40–3.40.',
+          'pt-BR':
+            'Sorvete e chocolate histórico (Canal dos Caçadores). Média €2,40–3,40 a unidade.',
+        },
+        googleRating: 4.5,
+        lat: 41.9046814,
+        lng: 12.4778803,
+        address: 'Via Tomacelli 13–14, 00186 Roma',
+        mapsQuery: 'Said dal 1923 Via Tomacelli Roma',
+      },
+      {
+        id: 'rom-forno-trevi',
+        name: {
+          en: "L'Antico Forno (Trevi)",
+          'pt-BR': "L'Antico Forno (Trevi)",
+        },
+        category: 'cafes',
+        description: {
+          en: 'Croissants at the counter facing Trevi: plain €1.50, chocolate €2.30, pistachio €3. American coffee €1.60.',
+          'pt-BR':
+            'Croissant bem na frente da Fontana di Trevi, comer na bancada em pé: €1,50 sem recheio, €2,30 chocolate, €3,00 pistache. Café americano €1,60.',
+        },
+        googleRating: 4.1,
+        lat: 41.9007946,
+        lng: 12.4830539,
+        address: 'Piazza di Trevi 100 / Via delle Muratte 11, 00187 Roma',
+        mapsQuery: "L'Antico Forno Fontana di Trevi Roma",
+      },
+      // —— What to visit ——
+      {
+        id: 'rom-colosseum',
+        name: { en: 'Colosseum', 'pt-BR': 'Coliseu' },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Icon of Rome. Combo with Forum & Palatine ~€16–18; arena floor access ~€22–24.',
+          'pt-BR':
+            'Ícone de Roma. €16–18 com ingresso para Fórum e Palatino juntos; €22–24 para acessar a arena do Coliseu também.',
+        },
+        googleRating: 4.7,
+        lat: 41.8909421,
+        lng: 12.491903,
+        address: 'Piazza del Colosseo, 1, 00184 Roma',
+        mapsQuery: 'Colosseo Roma',
+      },
+      {
+        id: 'rom-forum',
+        name: { en: 'Roman Forum', 'pt-BR': 'Fórum Romano' },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Heart of ancient Rome — usually on the same ticket as the Colosseum & Palatine.',
+          'pt-BR':
+            'Coração da Roma antiga — em geral no mesmo ingresso do Coliseu e do Palatino.',
+        },
+        googleRating: 4.7,
+        lat: 41.8916414,
+        lng: 12.4867296,
+        address: 'Via della Salara Vecchia, 5/6, 00186 Roma',
+        mapsQuery: 'Foro Romano Roma',
+      },
+      {
+        id: 'rom-pantheon',
+        name: { en: 'Pantheon', 'pt-BR': 'Panteão' },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Perfect dome and oculus. Adult entry ~€5.',
+          'pt-BR': 'Cúpula perfeita e óculo. Entrada ~€5.',
+        },
+        googleRating: 4.8,
+        lat: 41.898616,
+        lng: 12.4768334,
+        address: 'Piazza della Rotonda, 00186 Roma',
+        mapsQuery: 'Pantheon Roma',
+      },
+      {
+        id: 'rom-piazza-venezia',
+        name: { en: 'Piazza Venezia', 'pt-BR': 'Piazza Venezia' },
+        category: 'photo',
+        description: {
+          en: 'Traffic hub at the foot of the Vittoriano — orientation point for the historic center.',
+          'pt-BR':
+            'Nó de trânsito aos pés do Vittoriano — ponto de orientação do centro histórico.',
+        },
+        googleRating: 4.5,
+        lat: 41.8962446,
+        lng: 12.4823704,
+        address: 'Piazza Venezia, 00186 Roma',
+        mapsQuery: 'Piazza Venezia Roma',
+      },
+      {
+        id: 'rom-trevi',
+        name: { en: 'Trevi Fountain', 'pt-BR': 'Fontana di Trevi' },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Coin-toss classic. Viewing is free; ~€2 if you pay for a closer controlled access. Go early.',
+          'pt-BR':
+            'Clássico da moeda. Dá para ver sem pagar; ~€2 para chegar mais perto (acesso controlado). Chegue cedo.',
+        },
+        googleRating: 4.7,
+        lat: 41.9009778,
+        lng: 12.4832848,
+        address: 'Piazza di Trevi, 00187 Roma',
+        mapsQuery: 'Fontana di Trevi Roma',
+      },
+      {
+        id: 'rom-vatican',
+        name: {
+          en: 'Vatican Museums',
+          'pt-BR': 'Museus do Vaticano',
+        },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Paid museums (Sistine path). St. Peter’s Square / city exterior is free. Arrive early.',
+          'pt-BR':
+            'Museus pagos (caminho da Capela Sistina). A praça / exterior do Vaticano é gratuito. Chegue cedo.',
+        },
+        googleRating: 4.6,
+        lat: 41.904961,
+        lng: 12.4546617,
+        address: 'Viale Vaticano, 00165 Roma / Città del Vaticano',
+        mapsQuery: 'Musei Vaticani',
+      },
+      {
+        id: 'rom-sistine',
+        name: { en: 'Sistine Chapel', 'pt-BR': 'Capela Sistina' },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Michelangelo’s ceiling — access is via the Vatican Museums ticket, not St. Peter’s alone.',
+          'pt-BR':
+            'Teto de Michelangelo — entrada pelo ingresso dos Museus do Vaticano, não só pela Basílica.',
+        },
+        googleRating: 4.8,
+        lat: 41.9029338,
+        lng: 12.4544043,
+        address: 'Cappella Sistina, Città del Vaticano',
+        mapsQuery: 'Cappella Sistina Vaticano',
+      },
+      {
+        id: 'rom-st-peter',
+        name: {
+          en: "St. Peter's Basilica",
+          'pt-BR': 'Basílica de São Pedro',
+        },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Entry free; dome climb is paid. Security lines — go early.',
+          'pt-BR':
+            'Entrar é gratuito; subir na cúpula precisa pagar. Fila de segurança — chegue cedo.',
+        },
+        googleRating: 4.8,
+        lat: 41.9021569,
+        lng: 12.4537105,
+        address: 'Piazza San Pietro, 00120 Città del Vaticano',
+        mapsQuery: 'Basilica di San Pietro Vaticano',
+      },
+      {
+        id: 'rom-vittoriano',
+        name: {
+          en: 'Victor Emmanuel II Monument',
+          'pt-BR': 'Monumento a Vítor Emanuel II',
+        },
+        category: 'tourist',
+        landmark: 'monument',
+        description: {
+          en: 'Altare della Patria / Vittoriano — free exterior and terraces (check lift fees if any).',
+          'pt-BR':
+            'Altare della Patria / Vittoriano — gratuito. Terraços e vistas do centro.',
+        },
+        googleRating: 4.7,
+        lat: 41.8946867,
+        lng: 12.4830664,
+        address: 'Piazza Venezia, 00186 Roma',
+        mapsQuery: 'Altare della Patria Vittoriano Roma',
+      },
+      // —— Stay ——
+      {
+        id: 'rom-window-on-rome',
+        name: { en: 'Window on Rome', 'pt-BR': 'Window on Rome' },
+        category: 'lodging',
+        description: {
+          en: 'Hotel tip from Canal dos Caçadores. In Trastevere — a good base for going out at night.',
+          'pt-BR':
+            'Hotel do Canal dos Caçadores. Fica em Trastevere, um local bom pra sair a noitinha.',
+        },
+        googleRating: 4.6,
+        lat: 41.8888833,
+        lng: 12.4742889,
+        address: 'Piazza Sidney Sonnino 25, 00153 Roma',
+        mapsQuery: 'Window on Rome Piazza Sidney Sonnino 25 Roma',
       },
     ],
   },
@@ -2468,13 +3548,27 @@ export const travelCities: TravelCity[] = [
   },
 ];
 
+/** Cities with Notion editorial places merged in (Notion wins on same `id`). */
+export const travelCities: TravelCity[] = mergeNotionPlaces(localTravelCities);
+
 export function getTravelCity(slug: string): TravelCity | undefined {
   return travelCities.find((c) => c.slug === slug);
 }
 
 /**
- * Prefer precise OSM polygon when available; otherwise keep authored `area`.
- * Google Maps does not provide free park/building outlines for this use case.
+ * Resolve map geometry for a place.
+ *
+ * Priority:
+ * 1. OpenStreetMap outlines in `travel-areas-osm.ts` (always win)
+ * 2. Authored `place.area` in this file (fallback / metro waypoint spines)
+ *
+ * Policy (enforced by `travel-areas.test.ts` + `npm run travel:areas`):
+ * - Do NOT invent 2–3 point street polylines — fetch OSM LineStrings instead.
+ * - Do NOT ship `areaBox()` scaffolds without an OSM override.
+ * - Metro / multi-stop walks may keep dense authored polylines
+ *   (see ROUTE_WAYPOINT_AREA_IDS in travel-areas-policy.ts).
+ *
+ * Regenerate OSM registry: `npm run travel:areas`
  */
 export function resolvePlaceArea(place: TravelPlace): TravelArea | undefined {
   const osm = areaForPlace(place.id);
@@ -2508,6 +3602,19 @@ export function withResolvedArea(place: TravelPlace): TravelPlace {
     ...(photos ? { photos } : {}),
     ...(subcategories.length > 0 ? { subcategories } : {}),
   };
+}
+
+/**
+ * Personal favorites in a city — prefer these when building itineraries
+ * (LLM prompts, curated routes, etc.).
+ */
+export function favoritePlaces(city: TravelCity): TravelPlace[] {
+  return city.places.filter((p) => p.favorite);
+}
+
+/** Place ids marked favorite in a city (stable order as in `city.places`). */
+export function favoritePlaceIds(city: TravelCity): string[] {
+  return favoritePlaces(city).map((p) => p.id);
 }
 
 /** Display line: "São Paulo, SP · Brasil" */

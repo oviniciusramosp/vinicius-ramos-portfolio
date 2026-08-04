@@ -38,6 +38,13 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Match theme immediately (avoids black frame before body styles) */
+  background-color: var(--color-bg);
+  color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
 }
 
 body {

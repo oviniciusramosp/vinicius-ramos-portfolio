@@ -1,0 +1,478 @@
+{
+  "par-felicita": [
+    "self-service",
+    "italian"
+  ],
+  "par-franklin-passy": [
+    "french",
+    "brasserie"
+  ],
+  "par-francette": [
+    "french",
+    "bistro"
+  ],
+  "par-creperie-arts": [
+    "creperie",
+    "french"
+  ],
+  "par-auptitgrec": [
+    "french",
+    "bistro"
+  ],
+  "par-procope": [
+    "french",
+    "brasserie"
+  ],
+  "par-brasserie-pres": [
+    "brasserie",
+    "french"
+  ],
+  "par-fric-frac": [
+    "french",
+    "bistro"
+  ],
+  "par-arnaud-nicolas": [
+    "charcuterie",
+    "meat",
+    "french"
+  ],
+  "par-bien-eleve": [
+    "meat",
+    "french"
+  ],
+  "par-entrecote": [
+    "meat",
+    "french"
+  ],
+  "par-chez-janou": [
+    "french",
+    "bistro"
+  ],
+  "par-chez-elo": [
+    "french",
+    "bistro"
+  ],
+  "par-canals": [
+    "french",
+    "bistro"
+  ],
+  "par-royal-cambronne": [
+    "brasserie",
+    "french"
+  ],
+  "par-bike": [
+    "bouillon",
+    "french",
+    "self-service"
+  ],
+  "par-train-bleu": [
+    "french",
+    "brasserie"
+  ],
+  "par-bake-blend": [
+    "bakery",
+    "coffee-shop"
+  ],
+  "par-pierre-herme": [
+    "pastry"
+  ],
+  "par-cedric-grolet": [
+    "pastry"
+  ],
+  "par-eclair-genie": [
+    "pastry"
+  ],
+  "par-maison-isabelle": [
+    "pastry",
+    "bakery"
+  ],
+  "par-michalak": [
+    "pastry"
+  ],
+  "par-michalak-etienne": [
+    "pastry"
+  ],
+  "par-bohemia": [
+    "coffee-shop"
+  ],
+  "par-amorino": [
+    "ice-cream"
+  ],
+  "par-jeffrey-cagnes": [
+    "pastry"
+  ],
+  "par-bakery-gaite": [
+    "bakery"
+  ],
+  "par-artizans": [
+    "french",
+    "bistro"
+  ],
+  "par-champ-mars": [
+    "park",
+    "garden"
+  ],
+  "par-la-defense": [
+    "architecture",
+    "neighborhood"
+  ],
+  "par-paul-defense": [
+    "bakery",
+    "coffee-shop"
+  ],
+  "par-orly-m14": [
+    "metro"
+  ],
+  "par-orly-paul": [
+    "bakery",
+    "coffee-shop"
+  ],
+  "par-cdg-paul": [
+    "bakery",
+    "coffee-shop"
+  ],
+  "par-cdg-rer": [
+    "metro"
+  ],
+  "par-noisy-le-sec-rer": [
+    "metro"
+  ],
+  "par-grande-arche": [
+    "architecture",
+    "viewpoint"
+  ],
+  "par-esplanade-de-gaulle": [
+    "architecture",
+    "viewpoint"
+  ],
+  "par-monoprix-rivoli": [
+    "market"
+  ],
+  "par-tuileries": [
+    "garden",
+    "park"
+  ],
+  "par-champs-elysees": [
+    "avenue"
+  ],
+  "par-maison-balzac": [
+    "museum"
+  ],
+  "par-luxembourg": [
+    "garden",
+    "park"
+  ],
+  "par-sorbonne": [
+    "neighborhood",
+    "architecture"
+  ],
+  "par-cour-commerce": [
+    "market-street",
+    "architecture"
+  ],
+  "par-montmartre": [
+    "neighborhood",
+    "viewpoint"
+  ],
+  "par-palais-royal": [
+    "garden",
+    "architecture"
+  ],
+  "par-bnf": [
+    "library",
+    "architecture"
+  ],
+  "par-chatelet": [
+    "square",
+    "neighborhood"
+  ],
+  "par-saint-eustache": [
+    "church",
+    "monument"
+  ],
+  "par-montorgueil": [
+    "market-street",
+    "neighborhood"
+  ],
+  "par-monceau": [
+    "park",
+    "garden"
+  ],
+  "par-andre-citroen": [
+    "park"
+  ],
+  "par-buttes-chaumont": [
+    "park"
+  ],
+  "par-boulogne": [
+    "park"
+  ],
+  "par-serres-auteuil": [
+    "square",
+    "garden"
+  ],
+  "par-vosges": [
+    "square",
+    "architecture"
+  ],
+  "par-vincennes-town": [
+    "neighborhood"
+  ],
+  "par-vincennes": [
+    "park"
+  ],
+  "par-la-villette": [
+    "park"
+  ],
+  "par-marais": [
+    "neighborhood",
+    "architecture",
+    "market-street"
+  ],
+  "par-eiffel": [
+    "monument",
+    "tower",
+    "viewpoint"
+  ],
+  "par-louvre": [
+    "museum",
+    "palace"
+  ],
+  "par-arc-triomphe": [
+    "monument",
+    "viewpoint"
+  ],
+  "par-invalides": [
+    "monument",
+    "museum",
+    "palace"
+  ],
+  "par-palais": [
+    "museum",
+    "palace",
+    "architecture"
+  ],
+  "par-opera": [
+    "monument",
+    "architecture",
+    "show"
+  ],
+  "par-pantheon": [
+    "monument",
+    "architecture"
+  ],
+  "par-notre-dame": [
+    "church",
+    "monument"
+  ],
+  "par-sainte-chapelle": [
+    "church",
+    "monument"
+  ],
+  "par-sacre-coeur": [
+    "church",
+    "monument",
+    "viewpoint"
+  ],
+  "par-moulin-rouge": [
+    "show"
+  ],
+  "par-bateaux-mouches": [
+    "boat"
+  ],
+  "par-pompidou": [
+    "museum",
+    "architecture"
+  ],
+  "par-madeleine": [
+    "church",
+    "monument"
+  ],
+  "par-montparnasse": [
+    "tower",
+    "viewpoint"
+  ],
+  "par-fondation-lv": [
+    "architecture",
+    "viewpoint"
+  ],
+  "par-chateau-vincennes": [
+    "castle",
+    "monument"
+  ],
+  "par-trocadero": [
+    "viewpoint",
+    "architecture"
+  ],
+  "par-alexandre-iii": [
+    "bridge",
+    "architecture"
+  ],
+  "par-vendome": [
+    "square",
+    "architecture"
+  ],
+  "par-galeries-lafayette": [
+    "department",
+    "architecture",
+    "viewpoint"
+  ],
+  "par-printemps": [
+    "department",
+    "architecture",
+    "viewpoint"
+  ],
+  "par-bon-marche": [
+    "department",
+    "architecture"
+  ],
+  "par-forum-halles": [
+    "mall"
+  ],
+  "par-bhv-marais": [
+    "department"
+  ],
+  "par-shakespeare": [
+    "coffee-shop",
+    "shopping"
+  ],
+  "par-mcdonalds-champs": [
+    "burgers"
+  ],
+  "par-burger-king-opera": [
+    "burgers"
+  ],
+  "par-starbucks-opera": [
+    "coffee-shop"
+  ],
+  "par-five-guys-rivoli": [
+    "burgers"
+  ],
+  "par-kfc-les-halles": [
+    "chicken"
+  ],
+  "par-marche-enfants-rouges": [
+    "market"
+  ],
+  "par-marche-aligre": [
+    "market"
+  ],
+  "par-marche-bastille": [
+    "market"
+  ],
+  "par-rue-cler": [
+    "market",
+    "market-street"
+  ],
+  "par-place-dauphine": [
+    "square"
+  ],
+  "par-belleville": [
+    "park",
+    "viewpoint"
+  ],
+  "par-promenade-plantee": [
+    "park",
+    "avenue"
+  ],
+  "par-disneyland": [
+    "park",
+    "show"
+  ],
+  "par-versailles": [
+    "palace",
+    "monument",
+    "garden"
+  ],
+  "par-saint-michel": [
+    "square",
+    "architecture"
+  ],
+  "par-hotel-ville": [
+    "square",
+    "architecture"
+  ],
+  "par-horloge": [
+    "architecture",
+    "monument"
+  ],
+  "par-metro-6": [
+    "metro",
+    "viewpoint"
+  ],
+  "par-metro-2": [
+    "metro",
+    "viewpoint"
+  ],
+  "rom-termini": [
+    "metro"
+  ],
+  "rom-gallina-bianca": [
+    "italian"
+  ],
+  "rom-alfredo-ada": [
+    "italian"
+  ],
+  "rom-antico-vinaio": [
+    "italian",
+    "charcuterie"
+  ],
+  "rom-baffetto": [
+    "italian"
+  ],
+  "rom-suppli": [
+    "italian"
+  ],
+  "rom-norcineria": [
+    "italian",
+    "charcuterie",
+    "meat"
+  ],
+  "rom-said": [
+    "ice-cream"
+  ],
+  "rom-forno-trevi": [
+    "bakery",
+    "pastry",
+    "coffee-shop"
+  ],
+  "rom-colosseum": [
+    "monument"
+  ],
+  "rom-forum": [
+    "monument",
+    "architecture"
+  ],
+  "rom-pantheon": [
+    "monument",
+    "church",
+    "architecture"
+  ],
+  "rom-piazza-venezia": [
+    "square"
+  ],
+  "rom-trevi": [
+    "monument",
+    "viewpoint"
+  ],
+  "rom-vatican": [
+    "museum",
+    "palace"
+  ],
+  "rom-sistine": [
+    "church",
+    "museum"
+  ],
+  "rom-st-peter": [
+    "church",
+    "monument"
+  ],
+  "rom-vittoriano": [
+    "monument",
+    "viewpoint",
+    "architecture"
+  ],
+  "rom-window-on-rome": [
+    "hotel"
+  ]
+}

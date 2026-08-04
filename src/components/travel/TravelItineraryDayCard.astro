@@ -1,0 +1,864 @@
+---
+/**
+ * One day in a city itinerary:
+ * - day badge + “N stops” title + icon-only “show on map”
+ * - optional arrival segment (ORY / CDG) when day.arrivals is set
+ * - food / tickets budget cards
+ * - full-width expandable Morning / Afternoon / Evening (no nested stops shell)
+ * - timeline: time above name; pin aligned with name; costs on the right
+ */
+import type { TravelCity, TravelPlace } from '../../data/travel';
+import {
+  moneyTypicalEur,
+  travelUi,
+  type LString,
+} from '../../data/travel';
+import type {
+  ItineraryArrivalOption,
+  ItineraryDay,
+  ItinerarySlot,
+  ItineraryStop,
+} from '../../data/travel-itineraries';
+import {
+  computeDayBudget,
+  dayPrimaryRoutePlaceIds,
+  dayRoutePlaceIds,
+  type DayBudget,
+} from '../../data/travel-itineraries';
+import {
+  legsForDay,
+  legRailKind,
+  expandTimelineTransferParts,
+  formatLegDuration,
+  type ItineraryLegDef,
+  type TimelineRailKind,
+} from '../../data/travel-itinerary-legs';
+import {
+  categoryColor,
+  categoryIconHtml,
+} from '../../data/travel-categories';
+import { resolveVisit } from '../../data/travel-visit';
+
+interface Props {
+  day: ItineraryDay;
+  city: TravelCity;
+  placesById: Map<string, TravelPlace>;
+}
+
+const { day, city, placesById } = Astro.props;
+
+const slotOrder: ItinerarySlot[] = ['morning', 'afternoon', 'evening'];
+const slotLabel: Record<ItinerarySlot, LString> = {
+  morning: travelUi.itineraryMorning,
+  afternoon: travelUi.itineraryAfternoon,
+  evening: travelUi.itineraryEvening,
+};
+
+type ResolvedStop = ItineraryStop & {
+  place: TravelPlace | undefined;
+  index: number;
+};
+
+type SlotSection = {
+  key: ItinerarySlot | 'other';
+  stops: ResolvedStop[];
+};
+
+/** Primary route meta (order + slot + coords) for map filtering / Google Maps. */
+export type RouteStopMeta = {
+  placeId: string;
+  slot: ItinerarySlot | 'other';
+  optional?: boolean;
+  /** Embedded so Google Maps links work before map pins are ready */
+  lat?: number;
+  lng?: number;
+};
+
+type ArrivalView = {
+  id: string;
+  label: LString;
+  title: LString;
+  summary?: LString;
+  stops: ItineraryStop[];
+  legs: ItineraryLegDef[];
+  routeIds: string[];
+  routeStops: RouteStopMeta[];
+  allIds: string[];
+  budget: DayBudget;
+  sections: SlotSection[];
+  isDefault: boolean;
+};
+
+function buildSections(stops: ItineraryStop[]): SlotSection[] {
+  const resolved: ResolvedStop[] = stops.map((stop, index) => ({
+    ...stop,
+    place: placesById.get(stop.placeId),
+    index,
+  }));
+  const bySlot = new Map<ItinerarySlot | 'other', ResolvedStop[]>();
+  for (const stop of resolved) {
+    const key = stop.slot ?? 'other';
+    const list = bySlot.get(key) ?? [];
+    list.push(stop);
+    bySlot.set(key, list);
+  }
+  const sections: SlotSection[] = [];
+  for (const slot of slotOrder) {
+    const list = bySlot.get(slot);
+    if (list?.length) sections.push({ key: slot, stops: list });
+  }
+  const other = bySlot.get('other');
+  if (other?.length) sections.push({ key: 'other', stops: other });
+  return sections;
+}
+
+function routeStopsMeta(stops: ItineraryStop[]): RouteStopMeta[] {
+  const out: RouteStopMeta[] = [];
+  for (const stop of stops) {
+    if (stop.optional) continue;
+    const place = placesById.get(stop.placeId);
+    out.push({
+      placeId: stop.placeId,
+      slot: stop.slot ?? 'other',
+      lat: place?.lat,
+      lng: place?.lng,
+    });
+  }
+  return out;
+}
+
+function buildArrivalView(
+  opt: ItineraryArrivalOption,
+  isDefault: boolean,
+): ArrivalView {
+  const asDay: ItineraryDay = { ...day, stops: opt.stops };
+  const legs = legsForDay(day.id, isDefault ? null : opt.id);
+  return {
+    id: opt.id,
+    label: opt.label,
+    title: opt.title,
+    summary: opt.summary,
+    stops: opt.stops,
+    legs,
+    routeIds: dayPrimaryRoutePlaceIds(asDay),
+    routeStops: routeStopsMeta(opt.stops),
+    allIds: dayRoutePlaceIds(asDay),
+    budget: computeDayBudget(asDay, placesById),
+    sections: buildSections(opt.stops),
+    isDefault,
+  };
+}
+
+const arrivalViews: ArrivalView[] = (() => {
+  if (day.arrivals?.length) {
+    const defaultId =
+      day.arrivals.find((a) => a.default)?.id ?? day.arrivals[0]!.id;
+    return day.arrivals.map((opt) =>
+      buildArrivalView(opt, opt.id === defaultId),
+    );
+  }
+  return [
+    buildArrivalView(
+      {
+        id: 'default',
+        label: { en: 'Route', 'pt-BR': 'Rota' },
+        title: day.title,
+        summary: day.summary,
+        stops: day.stops,
+        default: true,
+      },
+      true,
+    ),
+  ];
+})();
+
+const hasArrivals = Boolean(day.arrivals && day.arrivals.length > 1);
+const activeArrival = arrivalViews.find((a) => a.isDefault) ?? arrivalViews[0]!;
+
+/**
+ * Index of this stop within the primary (non-optional) sequence.
+ * Uses stop.index so intentional revisits (e.g. home morning + night) resolve correctly.
+ */
+function primarySeqIndex(
+  stop: ResolvedStop,
+  allStops: ItineraryStop[],
+  routeIds: string[],
+): number {
+  if (stop.optional) return -1;
+  let primaryOrdinal = 0;
+  for (let i = 0; i < allStops.length; i++) {
+    const s = allStops[i]!;
+    if (s.optional) continue;
+    if (i === stop.index) {
+      // Prefer exact ordinal match; fall back if routeIds drifted
+      if (routeIds[primaryOrdinal] === stop.placeId) return primaryOrdinal;
+      const found = routeIds.indexOf(stop.placeId, Math.max(0, primaryOrdinal));
+      return found >= 0 ? found : primaryOrdinal;
+    }
+    primaryOrdinal++;
+  }
+  return -1;
+}
+
+function stopSlot(
+  stop: ItineraryStop | ResolvedStop | undefined,
+): ItinerarySlot | 'other' {
+  return stop?.slot ?? 'other';
+}
+
+/** Next primary stop after this one (optional skipped). */
+function nextPrimaryStop(
+  stop: ResolvedStop,
+  allStops: ItineraryStop[],
+): ItineraryStop | null {
+  for (let i = stop.index + 1; i < allStops.length; i++) {
+    const s = allStops[i]!;
+    if (!s.optional) return s;
+  }
+  return null;
+}
+
+/** Previous primary stop before this one. */
+function prevPrimaryStop(
+  stop: ResolvedStop,
+  allStops: ItineraryStop[],
+): ItineraryStop | null {
+  for (let i = stop.index - 1; i >= 0; i--) {
+    const s = allStops[i]!;
+    if (!s.optional) return s;
+  }
+  return null;
+}
+
+function resolveLeg(
+  fromId: string,
+  toId: string,
+  legs: ItineraryLegDef[],
+): ItineraryLegDef {
+  return (
+    legs.find((l) => l.from === fromId && l.to === toId) ?? {
+      from: fromId,
+      to: toId,
+      mode: 'walk' as const,
+    }
+  );
+}
+
+/**
+ * Transfer after a stop — suppressed when the next primary stop is in another
+ * period so cross-period rides (e.g. home → Trocadéro) sit under the destination slot.
+ */
+function transferAfter(
+  stop: ResolvedStop,
+  allStops: ItineraryStop[],
+  routeIds: string[],
+  legs: ItineraryLegDef[],
+): ItineraryLegDef | null {
+  if (stop.optional) return null;
+  const i = primarySeqIndex(stop, allStops, routeIds);
+  if (i < 0 || i >= routeIds.length - 1) return null;
+  const next = nextPrimaryStop(stop, allStops);
+  if (!next) return null;
+  // Cross-period: show on the destination period instead
+  if (stopSlot(next) !== stopSlot(stop)) return null;
+  const nextId = routeIds[i + 1]!;
+  return resolveLeg(stop.placeId, nextId, legs);
+}
+
+/**
+ * Transfer arriving at this stop from the previous primary.
+ * When previous stop is another period, this is where the cross-period leg is shown.
+ */
+function transferBefore(
+  stop: ResolvedStop,
+  allStops: ItineraryStop[],
+  routeIds: string[],
+  legs: ItineraryLegDef[],
+  opts?: { crossSlotOnly?: boolean },
+): ItineraryLegDef | null {
+  if (stop.optional) return null;
+  const i = primarySeqIndex(stop, allStops, routeIds);
+  if (i <= 0) return null;
+  const prev = prevPrimaryStop(stop, allStops);
+  if (!prev) return null;
+  if (opts?.crossSlotOnly && stopSlot(prev) === stopSlot(stop)) return null;
+  const prevId = routeIds[i - 1]!;
+  return resolveLeg(prevId, stop.placeId, legs);
+}
+
+function transferPartsFor(
+  leg: ItineraryLegDef | null,
+  fromPlace: TravelPlace | undefined,
+  toPlace: TravelPlace | undefined,
+) {
+  if (!leg) return [];
+  return expandTimelineTransferParts(
+    leg,
+    fromPlace ? { lat: fromPlace.lat, lng: fromPlace.lng } : undefined,
+    toPlace ? { lat: toPlace.lat, lng: toPlace.lng } : undefined,
+  );
+}
+
+function stopCosts(stop: ItineraryStop): { food: number; ticket: number } {
+  const place = placesById.get(stop.placeId);
+  const visit = place?.visit ?? resolveVisit(stop.placeId, place?.visit);
+  if (!visit) return { food: 0, ticket: 0 };
+  const food =
+    stop.countFood === false
+      ? 0
+      : moneyTypicalEur(visit.avgPricePerPerson);
+  const ticket =
+    stop.countTicket === false ? 0 : moneyTypicalEur(visit.ticket);
+  return { food, ticket };
+}
+
+function formatEur(n: number): string {
+  const rounded = Math.round(n * 100) / 100;
+  if (Number.isInteger(rounded)) return `€${rounded}`;
+  return `€${rounded.toFixed(2).replace('.', ',')}`;
+}
+---
+
+<article
+  class="travel-day-card"
+  data-travel-day={day.id}
+  data-day-number={String(day.day)}
+  data-route-ids={JSON.stringify(activeArrival.routeIds)}
+  data-route-stops={JSON.stringify(activeArrival.routeStops)}
+  data-legs={JSON.stringify(activeArrival.legs)}
+  data-all-ids={JSON.stringify(activeArrival.allIds)}
+  data-city-slug={city.slug}
+  data-arrival={activeArrival.id}
+  data-has-arrivals={hasArrivals ? '1' : undefined}
+>
+  <header class="travel-day-card__head">
+    <div class="travel-day-card__head-main">
+      <span class="travel-day-card__day-badge">
+        <span
+          data-i18n-en={travelUi.itineraryDay.en}
+          data-i18n-pt={travelUi.itineraryDay['pt-BR']}
+        >
+          {travelUi.itineraryDay.en}
+        </span>
+        {' '}
+        {day.day}
+      </span>
+      <h3 class="travel-day-card__title" data-day-stop-count>
+        <span data-day-stop-n>{activeArrival.routeIds.length}</span>
+        {' '}
+        <span
+          data-i18n-en={travelUi.itineraryStops.en}
+          data-i18n-pt={travelUi.itineraryStops['pt-BR']}
+        >
+          {travelUi.itineraryStops.en}
+        </span>
+      </h3>
+    </div>
+
+    <div class="travel-day-card__head-actions">
+      <a
+        class="travel-day-card__gmaps-btn"
+        data-day-gmaps
+        data-magnetic
+        data-magnetic-range="4"
+        data-cursor="block"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-i18n-en={travelUi.itineraryOpenGoogleMaps.en}
+        data-i18n-pt={travelUi.itineraryOpenGoogleMaps['pt-BR']}
+        data-i18n-as="aria-label"
+        aria-label={travelUi.itineraryOpenGoogleMaps.en}
+        title={travelUi.itineraryOpenGoogleMaps.en}
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">map</span>
+      </a>
+      <button
+        type="button"
+        class="travel-day-card__route-btn"
+        data-day-route
+        data-magnetic
+        data-magnetic-range="4"
+        data-cursor="block"
+        data-i18n-en={travelUi.itineraryShowRoute.en}
+        data-i18n-pt={travelUi.itineraryShowRoute['pt-BR']}
+        data-i18n-as="aria-label"
+        aria-label={travelUi.itineraryShowRoute.en}
+        title={travelUi.itineraryShowRoute.en}
+        aria-pressed="false"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">route</span>
+      </button>
+    </div>
+  </header>
+
+  {
+    hasArrivals && (
+      <div
+        class="travel-day-card__arrival"
+        role="group"
+        data-day-arrival
+        aria-label={travelUi.itineraryArrivalAirport.en}
+        data-i18n-en={travelUi.itineraryArrivalAirport.en}
+        data-i18n-pt={travelUi.itineraryArrivalAirport['pt-BR']}
+        data-i18n-as="aria-label"
+      >
+        <span
+          class="travel-day-card__arrival-label"
+          data-i18n-en={travelUi.itineraryArrivalAirport.en}
+          data-i18n-pt={travelUi.itineraryArrivalAirport['pt-BR']}
+        >
+          {travelUi.itineraryArrivalAirport.en}
+        </span>
+        <div
+          class="travel-day-card__seg"
+          role="tablist"
+          aria-label={travelUi.itineraryArrivalAirport.en}
+        >
+          {arrivalViews.map((arrival) => (
+            <button
+              type="button"
+              role="tab"
+              class="travel-day-card__seg-btn"
+              data-arrival-opt={arrival.id}
+              data-cursor="block"
+              aria-selected={arrival.isDefault ? 'true' : 'false'}
+              tabindex={arrival.isDefault ? 0 : -1}
+              data-i18n-en={arrival.label.en}
+              data-i18n-pt={arrival.label['pt-BR']}
+            >
+              {arrival.label.en}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    arrivalViews.map((arrival) => {
+      const stopsPanelId = `day-stops-${day.id}-${arrival.id}`;
+      const isActive = arrival.id === activeArrival.id;
+
+      return (
+        <div
+          class="travel-day-card__arrival-body"
+          data-arrival-panel={arrival.id}
+          data-route-ids={JSON.stringify(arrival.routeIds)}
+          data-route-stops={JSON.stringify(arrival.routeStops)}
+          data-legs={JSON.stringify(arrival.legs)}
+          data-all-ids={JSON.stringify(arrival.allIds)}
+          data-title-en={arrival.title.en}
+          data-title-pt={arrival.title['pt-BR']}
+          data-summary-en={arrival.summary?.en ?? ''}
+          data-summary-pt={arrival.summary?.['pt-BR'] ?? ''}
+          hidden={!isActive}
+        >
+          <div
+            class="travel-day-card__budgets"
+            role="group"
+            data-i18n-en={travelUi.itineraryBudgetGroup.en}
+            data-i18n-pt={travelUi.itineraryBudgetGroup['pt-BR']}
+            data-i18n-as="aria-label"
+            aria-label={travelUi.itineraryBudgetGroup.en}
+          >
+            <div
+              class="travel-day-card__budget-card travel-day-card__budget-card--food"
+              title={travelUi.itineraryFood.en}
+              data-i18n-en={travelUi.itineraryFood.en}
+              data-i18n-pt={travelUi.itineraryFood['pt-BR']}
+              data-i18n-as="title"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">
+                restaurant
+              </span>
+              <span class="travel-day-card__budget-card-value">
+                <strong>{formatEur(arrival.budget.foodEur)}</strong>
+                <span
+                  class="travel-day-card__budget-card-unit"
+                  data-i18n-en={travelUi.itineraryPerPerson.en}
+                  data-i18n-pt={travelUi.itineraryPerPerson['pt-BR']}
+                >
+                  {travelUi.itineraryPerPerson.en}
+                </span>
+              </span>
+            </div>
+
+            <div
+              class="travel-day-card__budget-card travel-day-card__budget-card--ticket"
+              title={travelUi.itineraryParks.en}
+              data-i18n-en={travelUi.itineraryParks.en}
+              data-i18n-pt={travelUi.itineraryParks['pt-BR']}
+              data-i18n-as="title"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">
+                confirmation_number
+              </span>
+              <span class="travel-day-card__budget-card-value">
+                <strong>{formatEur(arrival.budget.ticketsEur)}</strong>
+                <span
+                  class="travel-day-card__budget-card-unit"
+                  data-i18n-en={travelUi.itineraryPerPerson.en}
+                  data-i18n-pt={travelUi.itineraryPerPerson['pt-BR']}
+                >
+                  {travelUi.itineraryPerPerson.en}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="travel-day-card__timeline" id={stopsPanelId} data-day-stops-panel>
+              {arrival.sections.map((section) => {
+                const isNamed = section.key !== 'other';
+                const label = isNamed ? slotLabel[section.key] : null;
+                return (
+                  <details
+                    class="travel-day-card__slot"
+                    data-day-slot={section.key}
+                    data-slot-on-map="1"
+                    open
+                  >
+                    {
+                      /* [map] LABEL [#] ——— [toggle][chevron]
+                       * Clicks on map/toggle are handled in JS (capture) so
+                       * they don't open/close <details>. */
+                      isNamed && label && (
+                        <summary
+                          class="travel-day-card__slot-summary"
+                          data-cursor="block"
+                        >
+                          <button
+                            type="button"
+                            class="travel-day-card__slot-gmaps"
+                            data-slot-gmaps={section.key}
+                            data-i18n-en={
+                              travelUi.itineraryOpenGoogleMapsPeriod.en
+                            }
+                            data-i18n-pt={
+                              travelUi.itineraryOpenGoogleMapsPeriod['pt-BR']
+                            }
+                            data-i18n-as="aria-label"
+                            aria-label={
+                              travelUi.itineraryOpenGoogleMapsPeriod.en
+                            }
+                            title={travelUi.itineraryOpenGoogleMapsPeriod.en}
+                          >
+                            <span
+                              class="material-symbols-rounded"
+                              aria-hidden="true"
+                            >
+                              map
+                            </span>
+                          </button>
+                          <span
+                            class="travel-day-card__slot-label"
+                            data-i18n-en={label.en}
+                            data-i18n-pt={label['pt-BR']}
+                          >
+                            {label.en}
+                          </span>
+                          <span class="travel-day-card__slot-count">
+                            {section.stops.length}
+                          </span>
+                          <span
+                            class="travel-day-card__slot-spacer"
+                            aria-hidden="true"
+                          />
+                          <span
+                            class="travel-day-card__slot-map-switch"
+                            data-slot-map-switch
+                            role="switch"
+                            tabindex="0"
+                            aria-checked="true"
+                            title={travelUi.itinerarySlotOnMap.en}
+                            data-i18n-en={travelUi.itinerarySlotOnMap.en}
+                            data-i18n-pt={travelUi.itinerarySlotOnMap['pt-BR']}
+                            data-i18n-as="title"
+                            data-slot-map-toggle={section.key}
+                          >
+                            <span
+                              class="travel-day-card__slot-map-switch-track"
+                              aria-hidden="true"
+                            >
+                              <span class="travel-day-card__slot-map-switch-thumb" />
+                            </span>
+                          </span>
+                          <span
+                            class="material-symbols-rounded travel-day-card__slot-chevron"
+                            aria-hidden="true"
+                          >
+                            expand_more
+                          </span>
+                        </summary>
+                      )
+                    }
+                    <ol class="travel-day-card__stops">
+                      {section.stops.map((stop, stopIdx) => {
+                        const place = stop.place;
+                        const nameEn = place?.name.en ?? stop.placeId;
+                        const namePt = place?.name['pt-BR'] ?? nameEn;
+                        const cat = place?.category;
+                        const catColor = categoryColor(cat);
+                        const transfer = transferAfter(
+                          stop,
+                          arrival.stops,
+                          arrival.routeIds,
+                          arrival.legs,
+                        );
+                        const prevTransfer = transferBefore(
+                          stop,
+                          arrival.stops,
+                          arrival.routeIds,
+                          arrival.legs,
+                        );
+                        // Cross-period arrival (e.g. morning home → afternoon Trocadéro)
+                        const inboundCross =
+                          stopIdx === 0
+                            ? transferBefore(
+                                stop,
+                                arrival.stops,
+                                arrival.routeIds,
+                                arrival.legs,
+                                { crossSlotOnly: true },
+                              )
+                            : null;
+                        const isFirst = stopIdx === 0;
+                        const isLast = stopIdx === section.stops.length - 1;
+                        // First stop in period: line above only if inbound cross-period transfer
+                        const railAbove: TimelineRailKind =
+                          isFirst && !inboundCross
+                            ? 'none'
+                            : legRailKind(
+                                isFirst ? inboundCross : prevTransfer,
+                              );
+                        // Last stop with no following transfer: no line below
+                        const railBelow: TimelineRailKind =
+                          isLast && !transfer
+                            ? 'none'
+                            : legRailKind(transfer);
+                        const nextPlace = transfer
+                          ? placesById.get(transfer.to)
+                          : undefined;
+                        const transferParts = transferPartsFor(
+                          transfer,
+                          place,
+                          nextPlace,
+                        );
+                        const inboundFromPlace = inboundCross
+                          ? placesById.get(inboundCross.from)
+                          : undefined;
+                        const inboundParts = transferPartsFor(
+                          inboundCross,
+                          inboundFromPlace,
+                          place,
+                        );
+                        const costs = stopCosts(stop);
+
+                        const renderTransferPart = (
+                          part: (typeof transferParts)[number],
+                        ) => {
+                          const isWalk = part.mode === 'walk';
+                          const partDuration = formatLegDuration(
+                            part.durationMin,
+                          );
+                          const aria = `${part.label.en}, ${partDuration.en}`;
+                          const ariaPt = `${part.label['pt-BR']}, ${partDuration['pt-BR']}`;
+                          return (
+                            <li
+                              class:list={[
+                                'travel-day-card__transfer',
+                                isWalk
+                                  ? 'travel-day-card__transfer--walk'
+                                  : 'travel-day-card__transfer--transit',
+                              ]}
+                              style={
+                                part.color
+                                  ? `--line-color: ${part.color}`
+                                  : undefined
+                              }
+                              data-leg-from={part.leg.from}
+                              data-leg-to={part.leg.to}
+                              data-leg-mode={part.mode}
+                              data-leg-hop={
+                                part.hopIndex != null
+                                  ? String(part.hopIndex)
+                                  : undefined
+                              }
+                              tabindex="0"
+                              role="button"
+                              data-i18n-en={aria}
+                              data-i18n-pt={ariaPt}
+                              data-i18n-as="aria-label"
+                              aria-label={aria}
+                            >
+                              <span class="travel-day-card__transfer-mid">
+                                <span
+                                  class="travel-day-card__transfer-rail"
+                                  aria-hidden="true"
+                                />
+                                <span
+                                  class="travel-day-card__transfer-icon"
+                                  aria-hidden="true"
+                                >
+                                  <span
+                                    class="material-symbols-rounded"
+                                    aria-hidden="true"
+                                  >
+                                    {isWalk ? 'directions_walk' : 'subway'}
+                                  </span>
+                                </span>
+                              </span>
+                              <span class="travel-day-card__transfer-meta">
+                                <span
+                                  class="travel-day-card__transfer-label"
+                                  data-i18n-en={part.label.en}
+                                  data-i18n-pt={part.label['pt-BR']}
+                                >
+                                  {part.label.en}
+                                </span>
+                                <span
+                                  class="travel-day-card__transfer-duration"
+                                  data-i18n-en={partDuration.en}
+                                  data-i18n-pt={partDuration['pt-BR']}
+                                >
+                                  {partDuration.en}
+                                </span>
+                              </span>
+                            </li>
+                          );
+                        };
+
+                        return (
+                          <>
+                            {inboundParts.map((part) =>
+                              renderTransferPart(part),
+                            )}
+                            <li
+                              class:list={[
+                                'travel-day-card__stop',
+                                stop.optional &&
+                                  'travel-day-card__stop--optional',
+                                !place && 'travel-day-card__stop--missing',
+                              ]}
+                              data-place-id={stop.placeId}
+                              data-stop-slot={stop.slot ?? 'other'}
+                              data-optional={
+                                stop.optional ? 'true' : undefined
+                              }
+                              style={`--cat-color: ${catColor}; --pin-color: ${catColor}`}
+                            >
+                              <button
+                                type="button"
+                                class="travel-day-card__stop-btn"
+                                data-day-stop
+                                data-place-id={stop.placeId}
+                                data-rail-above={railAbove}
+                                data-rail-below={railBelow}
+                                disabled={!place}
+                                data-cursor="block"
+                              >
+                                <span class="travel-day-card__stop-time">
+                                  {stop.time ?? '—'}
+                                </span>
+
+                                <span
+                                  class:list={[
+                                    'travel-day-card__pin',
+                                    'travel-pin',
+                                    cat && `travel-pin--cat-${cat}`,
+                                  ]}
+                                  style={`--pin-color: ${catColor}`}
+                                  aria-hidden="true"
+                                >
+                                  <span class="travel-pin__core">
+                                    {cat && (
+                                      <span
+                                        class="travel-pin__glyph"
+                                        set:html={categoryIconHtml(cat)}
+                                      />
+                                    )}
+                                  </span>
+                                </span>
+
+                                <span class="travel-day-card__stop-name-row">
+                                  <span
+                                    class="travel-day-card__stop-name"
+                                    data-i18n-en={nameEn}
+                                    data-i18n-pt={namePt}
+                                  >
+                                    {nameEn}
+                                  </span>
+                                  {stop.optional && (
+                                    <span
+                                      class="travel-day-card__optional-tag"
+                                      data-i18n-en={
+                                        travelUi.itineraryOptional.en
+                                      }
+                                      data-i18n-pt={
+                                        travelUi.itineraryOptional['pt-BR']
+                                      }
+                                    >
+                                      {travelUi.itineraryOptional.en}
+                                    </span>
+                                  )}
+                                </span>
+
+                                <span class="travel-day-card__stop-costs">
+                                  {costs.food > 0 && (
+                                    <span
+                                      class="travel-day-card__cost travel-day-card__cost--food"
+                                      title={`${travelUi.itineraryFood.en}: ${formatEur(costs.food)}`}
+                                    >
+                                      <span
+                                        class="material-symbols-rounded"
+                                        aria-hidden="true"
+                                      >
+                                        restaurant
+                                      </span>
+                                      <span>{formatEur(costs.food)}</span>
+                                    </span>
+                                  )}
+                                  {costs.ticket > 0 && (
+                                    <span
+                                      class="travel-day-card__cost travel-day-card__cost--ticket"
+                                      title={`${travelUi.itineraryParks.en}: ${formatEur(costs.ticket)}`}
+                                    >
+                                      <span
+                                        class="material-symbols-rounded"
+                                        aria-hidden="true"
+                                      >
+                                        confirmation_number
+                                      </span>
+                                      <span>{formatEur(costs.ticket)}</span>
+                                    </span>
+                                  )}
+                                </span>
+
+                                {stop.note && (
+                                  <span
+                                    class="travel-day-card__stop-note"
+                                    data-i18n-en={stop.note.en}
+                                    data-i18n-pt={stop.note['pt-BR']}
+                                  >
+                                    {stop.note.en}
+                                  </span>
+                                )}
+                              </button>
+                            </li>
+
+                            {transferParts.map((part) =>
+                              renderTransferPart(part),
+                            )}
+                          </>
+                        );
+                      })}
+                    </ol>
+                  </details>
+                );
+              })}
+          </div>
+        </div>
+      );
+    })
+  }
+</article>

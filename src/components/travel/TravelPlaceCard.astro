@@ -5,6 +5,7 @@ import {
   placeCategoryMeta,
   travelUi,
   formatMoney,
+  formatMoneyTypical,
   formatDuration,
 } from '../../data/travel';
 import {
@@ -45,10 +46,16 @@ const visit = place.visit;
 
 const v = travelUi.visit;
 const avgPriceEn = visit?.avgPricePerPerson
-  ? formatMoney(visit.avgPricePerPerson, 'en')
+  ? formatMoneyTypical(visit.avgPricePerPerson, 'en')
   : null;
 const avgPricePt = visit?.avgPricePerPerson
-  ? formatMoney(visit.avgPricePerPerson, 'pt-BR')
+  ? formatMoneyTypical(visit.avgPricePerPerson, 'pt-BR')
+  : null;
+const pricePerNightEn = visit?.pricePerNight
+  ? formatMoney(visit.pricePerNight, 'en')
+  : null;
+const pricePerNightPt = visit?.pricePerNight
+  ? formatMoney(visit.pricePerNight, 'pt-BR')
   : null;
 const ticketEn = visit?.ticket ? formatMoney(visit.ticket, 'en') : null;
 const ticketPt = visit?.ticket ? formatMoney(visit.ticket, 'pt-BR') : null;
@@ -64,9 +71,12 @@ const ticketNoteEn = visit?.ticket?.note?.en;
 const ticketNotePt = visit?.ticket?.note?.['pt-BR'];
 const avgNoteEn = visit?.avgPricePerPerson?.note?.en;
 const avgNotePt = visit?.avgPricePerPerson?.note?.['pt-BR'];
+const nightNoteEn = visit?.pricePerNight?.note?.en;
+const nightNotePt = visit?.pricePerNight?.note?.['pt-BR'];
 
 const hasVisitMeta =
   avgPriceEn ||
+  pricePerNightEn ||
   ticketEn ||
   durationEn ||
   bestTimeEn ||
@@ -94,17 +104,26 @@ const searchBlob = [
   place.category,
   ...subLabels.map((s) => `${s.en} ${s.pt}`),
   avgPriceEn ?? '',
+  pricePerNightEn ?? '',
   tipsEn ?? '',
   bestTimeEn ?? '',
   bestDayEn ?? '',
+  place.favorite ? 'favorite favorito' : '',
+  place.rating != null ? `rating ${place.rating}` : '',
 ].join(' ');
+
+const favLabelEn = travelUi.favorite.en;
+const favLabelPt = travelUi.favorite['pt-BR'];
 ---
 
 <article
   class:list={[
     'travel-place-card',
     place.featured && 'is-featured',
-    hasPhotos && 'travel-place-card--has-photos',
+    place.favorite && 'is-favorite',
+    /* Always reserve a media header (photo or category placeholder) */
+    'travel-place-card--has-photos',
+    !hasPhotos && 'travel-place-card--placeholder-media',
     variant === 'list' && 'travel-place-card--list',
     variant === 'grid' && 'travel-place-card--grid',
   ]}
@@ -115,17 +134,19 @@ const searchBlob = [
   data-search={searchBlob}
   data-has-area={place.area ? 'true' : 'false'}
   data-osm-ref={visit?.osmRef ?? undefined}
+  data-favorite={place.favorite ? 'true' : undefined}
+  data-rating={place.rating != null ? String(place.rating) : undefined}
   data-feed-variant={variant}
   style={`--cat-color: ${catColor}`}
   tabindex="0"
 >
-  {
-    hasPhotos && (
-      <div
-        class="travel-place-card__media"
-        data-photo-slider
-        data-photo-count={String(photos.length)}
-      >
+  <div
+    class="travel-place-card__media"
+    {...(hasPhotos ? { 'data-photo-slider': true } : {})}
+    data-photo-count={String(photos.length)}
+  >
+    {
+      hasPhotos ? (
         <div class="travel-place-card__slides" data-photo-track>
           {photos.map((photo, i) => (
             <figure
@@ -143,6 +164,7 @@ const searchBlob = [
                 data-i18n-en={photo.alt?.en ?? place.name.en}
                 data-i18n-pt={photo.alt?.['pt-BR'] ?? place.name['pt-BR']}
                 data-i18n-as="alt"
+                data-photo-src={photo.url}
                 loading="eager"
                 decoding="async"
                 fetchpriority={i === 0 ? 'high' : 'low'}
@@ -151,90 +173,100 @@ const searchBlob = [
             </figure>
           ))}
         </div>
-
-        {/* Close over image (panel only — shown via .travel-place-card--panel) */}
-        <button
-          type="button"
-          class="travel-place-card__close travel-place-card__close--on-media"
-          data-place-close
-          aria-label={travelUi.closePanel.en}
-          data-i18n-en={travelUi.closePanel.en}
-          data-i18n-pt={travelUi.closePanel['pt-BR']}
-          data-i18n-as="aria-label"
-          title={travelUi.closePanel.en}
-          tabindex="-1"
-        >
-          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
-        </button>
-
-        {photos.length > 1 && (
-          <>
-            <div class="travel-place-card__dots" data-photo-dots>
-              {photos.map((_, i) => (
-                <button
-                  type="button"
-                  class:list={[
-                    'travel-place-card__dot',
-                    i === 0 && 'is-active',
-                  ]}
-                  data-photo-dot
-                  data-index={String(i)}
-                  aria-label={`Photo ${i + 1}`}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              class="travel-place-card__nav travel-place-card__nav--prev"
-              data-photo-prev
-              aria-label="Previous photo"
-            >
-              <span class="material-symbols-rounded" aria-hidden="true">
-                chevron_left
-              </span>
-            </button>
-            <button
-              type="button"
-              class="travel-place-card__nav travel-place-card__nav--next"
-              data-photo-next
-              aria-label="Next photo"
-            >
-              <span class="material-symbols-rounded" aria-hidden="true">
-                chevron_right
-              </span>
-            </button>
-          </>
-        )}
-      </div>
-    )
-  }
-
-  <!-- Title (same styles with/without photos); close only when no photo header -->
-  <div class="travel-place-card__title-row" data-place-title-row>
-    <h3
-      class="travel-place-card__name"
-      data-i18n-en={place.name.en}
-      data-i18n-pt={place.name['pt-BR']}
-    >
-      {place.name.en}
-    </h3>
-    {
-      !hasPhotos && (
-        <button
-          type="button"
-          class="travel-place-card__close"
-          data-place-close
-          aria-label={travelUi.closePanel.en}
-          data-i18n-en={travelUi.closePanel.en}
-          data-i18n-pt={travelUi.closePanel['pt-BR']}
-          data-i18n-as="aria-label"
-          title={travelUi.closePanel.en}
-          tabindex="-1"
-        >
-          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
-        </button>
+      ) : (
+        <div class="travel-place-card__placeholder" aria-hidden="true">
+          <span
+            class="travel-place-card__placeholder-icon"
+            set:html={catIcon}
+          />
+        </div>
       )
     }
+
+    {/* Close over media (panel only — shown via .travel-place-card--panel) */}
+    <button
+      type="button"
+      class="travel-place-card__close travel-place-card__close--on-media"
+      data-place-close
+      aria-label={travelUi.closePanel.en}
+      data-i18n-en={travelUi.closePanel.en}
+      data-i18n-pt={travelUi.closePanel['pt-BR']}
+      data-i18n-as="aria-label"
+      title={travelUi.closePanel.en}
+      tabindex="-1"
+    >
+      <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+    </button>
+
+    {
+      photos.length > 1 && (
+        <>
+          <div class="travel-place-card__dots" data-photo-dots>
+            {photos.map((_, i) => (
+              <button
+                type="button"
+                class:list={[
+                  'travel-place-card__dot',
+                  i === 0 && 'is-active',
+                ]}
+                data-photo-dot
+                data-index={String(i)}
+                aria-label={`Photo ${i + 1}`}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            class="travel-place-card__nav travel-place-card__nav--prev"
+            data-photo-prev
+            aria-label="Previous photo"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">
+              chevron_left
+            </span>
+          </button>
+          <button
+            type="button"
+            class="travel-place-card__nav travel-place-card__nav--next"
+            data-photo-next
+            aria-label="Next photo"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">
+              chevron_right
+            </span>
+          </button>
+        </>
+      )
+    }
+  </div>
+
+  <!-- Title (same styles with/without photos) + optional favorite heart -->
+  <div class="travel-place-card__title-row" data-place-title-row>
+    <div class="travel-place-card__title-main">
+      <h3
+        class="travel-place-card__name"
+        data-i18n-en={place.name.en}
+        data-i18n-pt={place.name['pt-BR']}
+      >
+        {place.name.en}
+      </h3>
+      {
+        place.favorite && (
+          <span
+            class="travel-place-card__favorite"
+            aria-label={favLabelEn}
+            data-i18n-en={favLabelEn}
+            data-i18n-pt={favLabelPt}
+            data-i18n-as="aria-label"
+            title={favLabelEn}
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">
+              favorite
+            </span>
+          </span>
+        )
+      }
+    </div>
   </div>
 
   <!-- [main tag] then [subtags] horizontal scroll -->
@@ -281,8 +313,7 @@ const searchBlob = [
   </p>
 
   <!--
-    [icon][score][stars] | [icon][score][stars]
-    Google · Mine — missing rating → outlined gray stars
+    Two soft cards: Google · Mine (missing → outlined gray stars)
   -->
   <div class="travel-place-card__ratings">
     <StarRating
@@ -291,7 +322,6 @@ const searchBlob = [
       labelPt={ratingGooglePt}
       icon="map"
     />
-    <span class="travel-place-card__ratings-sep" aria-hidden="true"></span>
     <StarRating
       rating={place.rating}
       label={ratingMineEn}
@@ -339,6 +369,33 @@ const searchBlob = [
                   data-i18n-pt={avgNotePt ?? avgNoteEn}
                 >
                   {avgNoteEn}
+                </span>
+              )}
+            </dd>
+          </div>
+        )}
+        {pricePerNightEn && (
+          <div class="travel-place-card__meta-row">
+            <dt
+              data-i18n-en={v.pricePerNight.en}
+              data-i18n-pt={v.pricePerNight['pt-BR']}
+            >
+              {v.pricePerNight.en}
+            </dt>
+            <dd>
+              <span
+                data-i18n-en={pricePerNightEn}
+                data-i18n-pt={pricePerNightPt ?? pricePerNightEn}
+              >
+                {pricePerNightEn}
+              </span>
+              {nightNoteEn && (
+                <span
+                  class="travel-place-card__meta-note"
+                  data-i18n-en={nightNoteEn}
+                  data-i18n-pt={nightNotePt ?? nightNoteEn}
+                >
+                  {nightNoteEn}
                 </span>
               )}
             </dd>

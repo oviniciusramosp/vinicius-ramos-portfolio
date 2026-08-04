@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+/** Light/dark travel chrome — in the critical CSS bundle (not deferred with page JS). */
+import '../styles/travel-theme.css';
 import { ClientRouter } from 'astro:transitions';
 import { site } from '../data/site';
 import Header from '../components/Header.astro';
@@ -73,6 +75,54 @@ const jsonLdPayload =
     <meta name="generator" content={Astro.generator} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content={site.themeColor} />
+    {/*
+      Blocking FOUC — before CSS paint of body.
+      pathname override used on ClientRouter before-swap (destination URL).
+    */}
+    <script is:inline>
+      (function () {
+        function applyTravelPrefs(doc, pathname) {
+          doc = doc || document;
+          var root = doc.documentElement;
+          try {
+            var raw =
+              pathname ||
+              (doc.defaultView && doc.defaultView.location
+                ? doc.defaultView.location.pathname
+                : window.location.pathname);
+            var p = String(raw).replace(/\/$/, '') || '/';
+            var onTravel = p === '/travel' || p.indexOf('/travel/') === 0;
+            var theme = onTravel ? localStorage.getItem('travel-theme') : null;
+            if (theme === 'light') {
+              root.setAttribute('data-theme', 'light');
+              root.style.colorScheme = 'light';
+              root.style.backgroundColor = '#f4f5f7';
+              var cs = doc.querySelector('meta[name="color-scheme"]');
+              if (cs) cs.setAttribute('content', 'light');
+              var tc = doc.querySelector('meta[name="theme-color"]');
+              if (tc) tc.setAttribute('content', '#f4f5f7');
+            } else {
+              root.removeAttribute('data-theme');
+              root.style.colorScheme = 'dark';
+              root.style.backgroundColor = '#000000';
+              var cs2 = doc.querySelector('meta[name="color-scheme"]');
+              if (cs2) cs2.setAttribute('content', 'dark');
+              var tc2 = doc.querySelector('meta[name="theme-color"]');
+              if (tc2) tc2.setAttribute('content', '#000000');
+            }
+            if (onTravel) {
+              var loc = localStorage.getItem('travel-locale');
+              if (loc === 'pt-BR' || loc === 'en') {
+                root.lang = loc === 'pt-BR' ? 'pt-BR' : 'en';
+                root.dataset.travelLocale = loc;
+              }
+            }
+          } catch (e) {}
+        }
+        applyTravelPrefs(document);
+        window.__applyTravelPrefs = applyTravelPrefs;
+      })();
+    </script>
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -179,16 +229,32 @@ const jsonLdPayload =
       {showFooter && <Footer />}
     </div>
 
+    <script is:inline>
+      // Incoming document + destination path before ClientRouter paints the swap.
+      document.addEventListener('astro:before-swap', function (ev) {
+        try {
+          if (typeof window.__applyTravelPrefs === 'function') {
+            var path = ev.to && ev.to.pathname ? ev.to.pathname : undefined;
+            window.__applyTravelPrefs(ev.newDocument, path);
+          }
+        } catch (e) {}
+      });
+    </script>
     <script>
       import { initMagneticButtons } from '../scripts/magnetic';
       import { initCursor, disposeCursor } from '../scripts/cursor';
       import { initCardParallax } from '../scripts/card-parallax';
       import { initPageMask, syncNavActive } from '../scripts/page-mask';
       import { bootCoverLines } from '../scripts/cover-lines';
+      import { bootTravelTheme } from '../scripts/travel-theme';
+      import { bootTravelI18n } from '../scripts/travel-i18n';
 
       initPageMask();
 
       const boot = () => {
+        // Travel theme + locale only on /travel; clears when navigating away
+        bootTravelTheme();
+        bootTravelI18n();
         syncNavActive();
         initMagneticButtons();
         initCardParallax();

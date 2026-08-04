@@ -81,6 +81,45 @@
   --blur-nav: 20px;
   --card-image-scale: 1.02;
   --card-image-scale-hover: 1.08;
+
+  /* Map shell (travel) */
+  --color-map-bg: #0a0a0e;
+  --color-map-control-bg: rgba(19, 18, 25, 0.92);
+  --color-map-control-fg: #ffffff;
+  --color-map-attr-bg: rgba(0, 0, 0, 0.55);
+  --color-map-attr-fg: rgba(255, 255, 255, 0.45);
+  --color-map-attr-link: rgba(255, 255, 255, 0.55);
+}
+
+/*
+ * Light theme — currently scoped to /travel (html[data-theme="light"]).
+ * Mirrors the dark token set so UI chrome inherits without per-component rewrites.
+ */
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-text: #12131a;
+  --color-text-muted: #6b6a78;
+  --color-text-soft: rgba(18, 19, 26, 0.72);
+  --color-accent: #008fff;
+  --color-accent-alt: #0077dd;
+  --color-border: rgba(18, 19, 26, 0.08);
+  --color-border-strong: rgba(18, 19, 26, 0.16);
+  --color-overlay: rgba(255, 255, 255, 0.88);
+  --color-white-05: rgba(18, 19, 26, 0.04);
+  --color-white-10: rgba(18, 19, 26, 0.08);
+  --color-tag-bg: rgba(255, 255, 255, 0.55);
+  --color-input-bg: rgba(18, 19, 26, 0.04);
+  --color-input-border: rgba(18, 19, 26, 0.12);
+
+  --color-map-bg: #e8eaed;
+  --color-map-control-bg: rgba(255, 255, 255, 0.94);
+  --color-map-control-fg: #12131a;
+  --color-map-attr-bg: rgba(255, 255, 255, 0.82);
+  --color-map-attr-fg: rgba(18, 19, 26, 0.45);
+  --color-map-attr-link: rgba(18, 19, 26, 0.6);
 }
 
 @font-face {

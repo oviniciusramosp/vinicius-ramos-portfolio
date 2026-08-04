@@ -1,0 +1,1045 @@
+/**
+ * Itinerary day cards + expandable stop timeline.
+ * Timeline pins reuse .travel-pin / .travel-pin__core from travel-map.css.
+ */
+
+.travel-day-card {
+  /* Match floating sidebar content pad (--travel-card-pad on city layout) */
+  --day-card-pad: var(--travel-card-pad, 16px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--day-card-pad);
+  /* Equal pad top/sides; no bottom — last period expandable is flush to the edge */
+  padding: var(--day-card-pad) var(--day-card-pad) 0;
+  border-radius: var(--radius-card, 16px);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  background: var(--color-surface, #131219);
+  transition:
+    border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
+    box-shadow 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.travel-day-card.is-route-active {
+  border-color: rgba(0, 143, 255, 0.45);
+  box-shadow: 0 0 0 1px rgba(0, 143, 255, 0.2);
+}
+
+/* —— Header —— */
+.travel-day-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--day-card-pad);
+}
+
+.travel-day-card__head-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.travel-day-card__day-badge {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  white-space: nowrap;
+}
+
+/* “N stops” stacked under Day N */
+.travel-day-card__title {
+  margin: 0;
+  font-size: var(--text-md, 1rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-text, #fff);
+  line-height: 1.3;
+}
+
+/* Header icon actions: Google Maps (left) + day route (right) */
+.travel-day-card__head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* Icon-only map buttons — no border */
+.travel-day-card__route-btn,
+.travel-day-card__gmaps-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.55));
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.travel-day-card__route-btn:hover,
+.travel-day-card__gmaps-btn:hover {
+  color: var(--color-accent, #008fff);
+  background: color-mix(in srgb, var(--color-accent, #008fff) 12%, transparent);
+}
+
+.travel-day-card__gmaps-btn.is-disabled {
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+.travel-day-card__route-btn.is-on-map {
+  color: #008fff;
+  background: rgba(0, 143, 255, 0.14);
+}
+
+.travel-day-card__route-btn.is-loading {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.travel-day-card.is-route-loading {
+  border-color: rgba(0, 143, 255, 0.28);
+}
+
+.travel-day-card__route-btn .material-symbols-rounded,
+.travel-day-card__gmaps-btn .material-symbols-rounded {
+  font-size: 22px;
+}
+
+/*
+ * Arrival airport segment — same pill language as nav language + city view toggle:
+ * pill track, solid accent pill for the active option.
+ */
+.travel-day-card__arrival {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 8px) var(--day-card-pad);
+}
+
+.travel-day-card__arrival-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+}
+
+.travel-day-card__seg {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(12, 12, 16, 0.35);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  gap: 2px;
+}
+
+.travel-day-card__seg-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  min-width: 3.25rem;
+  height: calc(36px - 6px);
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.22s cubic-bezier(0.44, 0, 0.56, 1),
+    background-color 0.22s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.travel-day-card__seg-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.travel-day-card__seg-btn[aria-selected='true'] {
+  color: #fff;
+  background: rgba(0, 143, 255, 0.88);
+  box-shadow: none;
+}
+
+.travel-day-card__seg-btn:focus-visible {
+  outline: 2px solid var(--color-accent, #008fff);
+  outline-offset: 2px;
+}
+
+.travel-day-card__arrival-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--day-card-pad);
+}
+
+.travel-day-card__arrival-body[hidden] {
+  display: none !important;
+}
+
+/*
+ * Budget cards — same soft pill language as place-card ratings:
+ * two soft fills, 4px gap, no border, icon left · value right.
+ */
+.travel-day-card__budgets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Match place-panel rating chips (panel .star-rating: 10px 12px pad) */
+.travel-day-card__budget-card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 6px;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 36px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-btn, 30px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.travel-day-card__budget-card .material-symbols-rounded {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Larger glyph; card keeps 10×12 pad + 36px min-height */
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+.travel-day-card__budget-card--food .material-symbols-rounded {
+  color: #f97316;
+}
+
+.travel-day-card__budget-card--ticket .material-symbols-rounded {
+  color: #7dd3fc;
+}
+
+.travel-day-card__budget-card-value {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--color-text-soft, rgba(255, 255, 255, 0.82));
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.travel-day-card__budget-card-value strong {
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--color-text-soft, rgba(255, 255, 255, 0.82));
+}
+
+.travel-day-card__budget-card-unit {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  white-space: nowrap;
+}
+
+/* —— Timeline: full-width period expandables (no nested card chrome) —— */
+.travel-day-card__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  /* bleed to card edges so slot rows are full-width (incl. bottom flush) */
+  margin-inline: calc(var(--day-card-pad) * -1);
+  width: calc(100% + var(--day-card-pad) * 2);
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.travel-day-card__slot-summary::-webkit-details-marker {
+  display: none;
+}
+
+.travel-day-card__slot-summary::marker {
+  content: '';
+}
+
+.travel-day-card__slot-chevron {
+  font-size: 20px;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+  transition: transform 0.22s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.travel-day-card__slot[open] > .travel-day-card__slot-summary .travel-day-card__slot-chevron {
+  transform: rotate(180deg);
+}
+
+/* Slot expandable — [map] LABEL [#] ——— [toggle][chevron] */
+.travel-day-card__slot {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+  border-radius: 0;
+  background: transparent;
+}
+
+.travel-day-card__slot:last-child {
+  border-bottom: none;
+}
+
+.travel-day-card__slot-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--day-card-pad);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background 0.18s ease;
+}
+
+.travel-day-card__slot-summary:hover {
+  background: var(--color-white-05, rgba(255, 255, 255, 0.03));
+}
+
+/* [map] Google Maps for this period */
+.travel-day-card__slot-gmaps {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.55));
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.travel-day-card__slot-gmaps:hover {
+  color: var(--color-accent, #008fff);
+  background: color-mix(in srgb, var(--color-accent, #008fff) 12%, transparent);
+}
+
+.travel-day-card__slot-gmaps.is-disabled {
+  opacity: 0.4;
+  /* Keep pointer — click still builds the Maps URL when possible */
+  cursor: pointer;
+}
+
+.travel-day-card__slot-gmaps .material-symbols-rounded {
+  font-size: 20px;
+  line-height: 1;
+  color: inherit;
+}
+
+.travel-day-card__slot-label {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+}
+
+.travel-day-card__slot-count {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  color: color-mix(
+    in srgb,
+    var(--color-text, #fff) 32%,
+    transparent
+  );
+}
+
+/* Pushes toggle + chevron to the right */
+.travel-day-card__slot-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+/* [toggle] custom switch (no <input> — works inside <summary>) */
+.travel-day-card__slot-map-switch {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.travel-day-card__slot-map-switch:focus-visible {
+  outline: 2px solid var(--color-accent, #008fff);
+  outline-offset: 2px;
+}
+
+.travel-day-card__slot-map-switch-track {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  /* Dark: faint white track; light token --color-white-10 is dark-tinted */
+  background: var(--color-white-10, rgba(255, 255, 255, 0.14));
+  transition: background 0.2s ease;
+  pointer-events: none;
+}
+
+.travel-day-card__slot-map-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: color-mix(
+    in srgb,
+    var(--color-text, #fff) 72%,
+    transparent
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+    background 0.2s ease;
+}
+
+/* Default (route not on map): always gray — accent only when day is active */
+.travel-day-card__slot-map-switch[aria-checked='true']
+  .travel-day-card__slot-map-switch-thumb {
+  transform: translateX(14px);
+  background: color-mix(
+    in srgb,
+    var(--color-text, #fff) 55%,
+    transparent
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.travel-day-card__slot-map-switch[aria-checked='true']
+  .travel-day-card__slot-map-switch-track {
+  background: var(--color-white-10, rgba(255, 255, 255, 0.14));
+}
+
+.travel-day-card__slot-map-switch[aria-checked='false']
+  .travel-day-card__slot-map-switch-thumb {
+  transform: translateX(0);
+  background: color-mix(
+    in srgb,
+    var(--color-text, #fff) 40%,
+    transparent
+  );
+}
+
+/* Route drawn on map → checked switches use accent blue */
+.travel-day-card.is-route-active
+  .travel-day-card__slot-map-switch[aria-checked='true']
+  .travel-day-card__slot-map-switch-thumb {
+  background: var(--color-accent, #008fff);
+  box-shadow: 0 1px 3px
+    color-mix(in srgb, var(--color-accent, #008fff) 35%, transparent);
+}
+
+.travel-day-card.is-route-active
+  .travel-day-card__slot-map-switch[aria-checked='true']
+  .travel-day-card__slot-map-switch-track {
+  background: color-mix(in srgb, var(--color-accent, #008fff) 32%, transparent);
+}
+
+.travel-day-card.is-route-active
+  .travel-day-card__slot-map-switch[aria-checked='false']
+  .travel-day-card__slot-map-switch-track {
+  background: var(--color-white-10, rgba(255, 255, 255, 0.14));
+}
+
+.travel-day-card.is-route-active
+  .travel-day-card__slot-map-switch[aria-checked='false']
+  .travel-day-card__slot-map-switch-thumb {
+  background: color-mix(
+    in srgb,
+    var(--color-text, #fff) 48%,
+    transparent
+  );
+}
+
+.travel-day-card__slot-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+}
+
+/* Dim period when hidden from map route */
+.travel-day-card__slot.is-slot-off-map > .travel-day-card__stops {
+  opacity: 0.45;
+}
+
+.travel-day-card__slot.is-slot-off-map > .travel-day-card__slot-summary
+  .travel-day-card__slot-label {
+  color: color-mix(
+    in srgb,
+    var(--color-text-muted, rgba(255, 255, 255, 0.45)) 55%,
+    transparent
+  );
+}
+
+.travel-day-card__slot.is-slot-off-map > .travel-day-card__slot-summary
+  .travel-day-card__slot-gmaps {
+  opacity: 0.45;
+}
+
+.travel-day-card__stops {
+  /* pin-col center = continuous vertical rail axis */
+  --pin-col: 28px;
+  --col-gap: 8px;
+  --item-pad: 4px;
+  --stop-line-h: 28px;
+  --rail-color: rgba(255, 255, 255, 0.16);
+  list-style: none;
+  margin: 0;
+  /* Outer pad of the timeline block */
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  /* No gap — rails must meet edge-to-edge between items */
+  gap: 0;
+  box-sizing: border-box;
+}
+
+.travel-day-card__slot:last-child .travel-day-card__stops {
+  padding-bottom: 4px;
+}
+
+.travel-day-card__stop,
+.travel-day-card__transfer {
+  --cat-color: #008fff;
+  --pin-color: #008fff;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Collapse any residual line-box gaps between list items */
+  display: block;
+}
+
+/*
+ * Stop grid:
+ *   row1:          time
+ *   row2: pin  |   name   | costs
+ *   row3:          note
+ * Pin + name share a row so the place name always lines up with the icon.
+ */
+.travel-day-card__stop-btn {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--pin-col) minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  column-gap: var(--col-gap);
+  row-gap: 2px;
+  width: 100%;
+  padding: var(--item-pad);
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+/*
+ * Vertical rail behind place pins — split at pin center:
+ * ::before = segment ABOVE the pin (matches incoming leg)
+ * ::after  = segment BELOW the pin (matches outgoing leg)
+ * Walk legs → dotted; transit → solid; none → hidden (first/last).
+ */
+.travel-day-card__stop-btn::before,
+.travel-day-card__stop-btn::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--item-pad) + var(--pin-col) / 2);
+  width: 2px;
+  margin-left: -1px;
+  z-index: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Above pin (top → mid); +1px overlap into previous item for seamless join */
+.travel-day-card__stop-btn::before {
+  top: -1px;
+  bottom: 50%;
+  background: var(--rail-color);
+  border-radius: 1px 1px 0 0;
+}
+
+/* Below pin (mid → bottom); +1px into next item */
+.travel-day-card__stop-btn::after {
+  top: 50%;
+  bottom: -1px;
+  background: var(--rail-color);
+  border-radius: 0 0 1px 1px;
+}
+
+.travel-day-card__stop-btn[data-rail-above='none']::before,
+.travel-day-card__stop-btn[data-rail-below='none']::after {
+  content: none;
+  display: none;
+}
+
+.travel-day-card__stop-btn[data-rail-above='walk']::before,
+.travel-day-card__stop-btn[data-rail-below='walk']::after {
+  width: 0;
+  margin-left: 0;
+  background: transparent;
+  border-left: 2px dotted color-mix(in srgb, #7ec8ff 70%, rgba(255, 255, 255, 0.35));
+  border-radius: 0;
+  transform: translateX(-50%);
+  left: calc(var(--item-pad) + var(--pin-col) / 2);
+}
+
+.travel-day-card__stop-btn[data-rail-above='transit']::before,
+.travel-day-card__stop-btn[data-rail-below='transit']::after {
+  background: var(--rail-color);
+}
+
+.travel-day-card__stop-btn:hover:not(:disabled),
+.travel-day-card__stop.is-hover .travel-day-card__stop-btn,
+.travel-day-card__stop.is-map-active .travel-day-card__stop-btn {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.travel-day-card__stop-btn:focus-visible {
+  outline: 2px solid rgba(0, 143, 255, 0.55);
+  outline-offset: 1px;
+}
+
+.travel-day-card__stop-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.travel-day-card__stop-time {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Mini map pin — category color fill always behind glyph (above the rail) */
+.travel-day-card__pin {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pin-col);
+  height: var(--stop-line-h);
+  justify-self: center;
+  align-self: center;
+  pointer-events: none;
+  cursor: default !important;
+  z-index: 2;
+  position: relative;
+}
+
+.travel-day-card__pin .travel-pin__core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50% !important;
+  /* Category color from inline --pin-color on .travel-pin (same as map) */
+  background: var(--pin-color) !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4) !important;
+  color: #0a0a0e;
+}
+
+.travel-day-card__pin .travel-pin__glyph {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.travel-day-card__pin .travel-pin__glyph .material-symbols-rounded,
+.travel-day-card__pin .travel-pin__glyph ion-icon,
+.travel-day-card__pin .travel-pin__glyph svg {
+  font-size: 13px;
+  width: 13px;
+  height: 13px;
+  color: #0a0a0e;
+}
+
+/* Hover / selected: stronger map-like emphasis */
+.travel-day-card__stop-btn:hover .travel-day-card__pin .travel-pin__core,
+.travel-day-card__stop.is-hover .travel-day-card__pin .travel-pin__core,
+.travel-day-card__stop.is-map-active .travel-day-card__pin .travel-pin__core {
+  width: 26px;
+  height: 26px;
+  background: var(--pin-color) !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--pin-color) 40%, transparent),
+    0 4px 14px color-mix(in srgb, var(--pin-color) 45%, transparent) !important;
+}
+
+.travel-day-card__stop-name-row {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-width: 0;
+  min-height: var(--stop-line-h);
+}
+
+.travel-day-card__stop-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-text, #fff);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.travel-day-card__stop--optional .travel-day-card__stop-name {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 400;
+}
+
+.travel-day-card__optional-tag {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+}
+
+.travel-day-card__stop-note {
+  grid-column: 2 / -1;
+  grid-row: 3;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+}
+
+/* Costs far right — food + tickets / person; same row as pin + name */
+.travel-day-card__stop-costs {
+  grid-column: 3;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: var(--stop-line-h);
+  padding-left: 6px;
+  align-self: center;
+}
+
+.travel-day-card__cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+.travel-day-card__cost .material-symbols-rounded {
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.travel-day-card__cost--food .material-symbols-rounded {
+  color: #f0a060;
+}
+
+.travel-day-card__cost--ticket .material-symbols-rounded {
+  color: #7ec8ff;
+}
+
+/* —— Transfer: rail + icon under pin col; label + duration always visible —— */
+.travel-day-card__transfer {
+  --line-color: #008fff;
+  --pin-col: 28px;
+  --col-gap: 8px;
+  --item-pad: 4px;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--pin-col) minmax(0, 1fr);
+  column-gap: var(--col-gap);
+  align-items: center;
+  /* Tall enough that mid-point sits between pin centers */
+  min-height: 40px;
+  padding: var(--item-pad);
+  border-radius: 8px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 1;
+  transition: background 0.15s ease;
+}
+
+.travel-day-card__transfer:hover,
+.travel-day-card__transfer.is-hover,
+.travel-day-card__transfer:focus-within {
+  z-index: 6;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.travel-day-card__transfer:focus-visible {
+  outline: 2px solid rgba(0, 143, 255, 0.55);
+  outline-offset: 1px;
+}
+
+.travel-day-card__transfer-mid {
+  position: relative;
+  width: var(--pin-col);
+  height: 100%;
+  min-height: 36px;
+  justify-self: center;
+  align-self: stretch;
+}
+
+/* Line fills the entire gap between the two pins (+1px overlap for seamless join) */
+.travel-day-card__transfer-rail {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--rail-color, rgba(255, 255, 255, 0.16));
+  border-radius: 1px;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.travel-day-card__transfer:hover .travel-day-card__transfer-rail,
+.travel-day-card__transfer.is-hover .travel-day-card__transfer-rail {
+  background: color-mix(in srgb, var(--line-color) 55%, rgba(255, 255, 255, 0.2));
+}
+
+/* Walk: dotted vertical segment (not solid) */
+.travel-day-card__transfer--walk .travel-day-card__transfer-rail {
+  width: 0;
+  margin-left: 0;
+  background: transparent;
+  border-left: 2px dotted color-mix(in srgb, #7ec8ff 70%, rgba(255, 255, 255, 0.35));
+  border-radius: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.travel-day-card__transfer--walk:hover .travel-day-card__transfer-rail,
+.travel-day-card__transfer--walk.is-hover .travel-day-card__transfer-rail {
+  background: transparent;
+  border-left-color: #7ec8ff;
+}
+
+/* Transit keeps solid rail tinted by line color on hover (above) */
+
+/* Icon exactly at 50% of the inter-pin segment */
+.travel-day-card__transfer-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--color-surface, #131219);
+  color: rgba(255, 255, 255, 0.55);
+  transform: translate(-50%, -50%);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.travel-day-card__transfer-icon .material-symbols-rounded {
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.travel-day-card__transfer--walk .travel-day-card__transfer-icon {
+  border-style: dotted;
+  border-color: rgba(0, 143, 255, 0.55);
+  color: #7ec8ff;
+}
+
+.travel-day-card__transfer--transit .travel-day-card__transfer-icon {
+  border-color: color-mix(in srgb, var(--line-color) 60%, transparent);
+  color: var(--line-color);
+  background: color-mix(in srgb, var(--line-color) 14%, #131219 86%);
+}
+
+.travel-day-card__transfer:hover .travel-day-card__transfer-icon,
+.travel-day-card__transfer.is-hover .travel-day-card__transfer-icon {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line-color) 28%, transparent);
+}
+
+/* Always-visible mode label + expected duration */
+.travel-day-card__transfer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  min-width: 0;
+  padding: 2px 0;
+}
+
+.travel-day-card__transfer-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+}
+
+.travel-day-card__transfer--transit .travel-day-card__transfer-label {
+  color: var(--line-color);
+}
+
+.travel-day-card__transfer--transit .travel-day-card__transfer-label::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--line-color);
+  vertical-align: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.travel-day-card__transfer-duration {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+  white-space: nowrap;
+}
+
+.travel-day-card__transfer:hover .travel-day-card__transfer-label,
+.travel-day-card__transfer.is-hover .travel-day-card__transfer-label {
+  color: #fff;
+}
+
+.travel-day-card__transfer--transit:hover .travel-day-card__transfer-label,
+.travel-day-card__transfer--transit.is-hover .travel-day-card__transfer-label {
+  color: var(--line-color);
+  filter: brightness(1.15);
+}
+
+.travel-day-card__transfer:hover .travel-day-card__transfer-duration,
+.travel-day-card__transfer.is-hover .travel-day-card__transfer-duration {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 560px) {
+  .travel-day-card__budgets {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-day-card__stops {
+    --pin-col: 26px;
+    --stop-line-h: 26px;
+    --col-gap: 8px;
+  }
+
+  .travel-day-card__stop-note {
+    display: none;
+  }
+}

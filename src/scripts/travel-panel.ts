@@ -124,21 +124,53 @@ export function bootTravelPanel(): void {
     return Math.min(Math.round(overlap), Math.round(mapRect.height));
   };
 
+  /**
+   * Desktop right place card overlays the map — pixels covered from the right
+   * edge so pin focus centers in the free strip (sidebar left + card right).
+   */
+  const mapOverlapRight = (): number => {
+    if (isMobileSheet() || panel.hidden) return 0;
+    const mapRect = mapEl.getBoundingClientRect();
+    if (mapRect.width < 8) return 0;
+    const panelRect = panel.getBoundingClientRect();
+    // Panel may still be mid-slide (translateX); use laid-out width + inset.
+    const gap = 8;
+    let covered = 0;
+    if (panelRect.width > 8) {
+      covered = Math.round(mapRect.right - panelRect.left);
+    } else {
+      // Fallback before layout: CSS width min(340px, 100% - 24px) + 12px inset
+      covered = Math.round(Math.min(340, mapRect.width - 24) + 12);
+    }
+    return Math.max(
+      0,
+      Math.min(covered + gap, Math.round(mapRect.width * 0.72)),
+    );
+  };
+
   const syncMapChrome = (animatePin: boolean) => {
     const map = getTravelMapHandle();
     if (!map) return;
-    if (!isMobileSheet() || !openId) {
+    if (!openId) {
       map.setChromePadding(null);
       return;
     }
-    const bottom = mapOverlapBottom();
-    map.setChromePadding({ bottom });
-    if (
-      animatePin &&
-      openId &&
-      snap === 'mid' &&
-      bottom < mapEl.clientHeight * 0.92
-    ) {
+    if (isMobileSheet()) {
+      const bottom = mapOverlapBottom();
+      map.setChromePadding({ bottom });
+      if (
+        animatePin &&
+        snap === 'mid' &&
+        bottom < mapEl.clientHeight * 0.92
+      ) {
+        map.ensureVisible(openId, true);
+      }
+      return;
+    }
+    // Desktop: right card + left sidebar (sidebar re-measured in map base chrome)
+    const right = mapOverlapRight();
+    map.setChromePadding({ right });
+    if (animatePin) {
       map.ensureVisible(openId, true);
     }
   };
@@ -321,10 +353,24 @@ export function bootTravelPanel(): void {
       typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
         ? CSS.escape(id)
         : id.replace(/"/g, '\\"');
-    const source = document.querySelector<HTMLElement>(
-      `.travel-place-card--list[data-place-id="${safeId}"], .travel-city__list .travel-place-card[data-place-id="${safeId}"], .travel-place-card[data-place-id="${safeId}"]`,
-    );
-    if (!source) return;
+    /**
+     * Prefer the template vault (never filtered / never [hidden]).
+     * Fall back to feed cards, but never keep their hidden/filtered state.
+     */
+    const source =
+      document.querySelector<HTMLElement>(
+        `[data-travel-card-templates] .travel-place-card[data-place-id="${safeId}"]`,
+      ) ??
+      document.querySelector<HTMLElement>(
+        `.travel-place-card--list[data-place-id="${safeId}"]:not([hidden])`,
+      ) ??
+      document.querySelector<HTMLElement>(
+        `.travel-place-card[data-place-id="${safeId}"]`,
+      );
+    if (!source) {
+      console.warn('[travel-panel] no card source for place', id);
+      return;
+    }
 
     const wasOpen =
       Boolean(openId) &&
@@ -345,6 +391,10 @@ export function bootTravelPanel(): void {
 
     const clone = source.cloneNode(true) as HTMLElement;
     clone.removeAttribute('tabindex');
+    // Feed cards may be [hidden] / .is-filtered-out when category chips are off
+    // (e.g. Chains / Markets). Clones must not inherit display:none.
+    clone.hidden = false;
+    clone.removeAttribute('hidden');
     clone.classList.remove(
       'is-filtered-out',
       'travel-place-card--list',
@@ -352,31 +402,17 @@ export function bootTravelPanel(): void {
     );
     clone.classList.add('travel-place-card--panel');
     clone.removeAttribute('data-feed-variant');
+    clone.style.removeProperty('display');
 
-    // Mobile: grab + close live in sticky panel chrome (not in the scrolling card).
-    // Desktop: enable in-card close as before.
-    if (isMobileSheet()) {
-      clone
-        .querySelectorAll<HTMLButtonElement>('[data-place-close]')
-        .forEach((closeBtn) => {
-          closeBtn.hidden = true;
-          closeBtn.classList.remove('is-visible');
-          closeBtn.tabIndex = -1;
-        });
-    } else {
-      clone
-        .querySelectorAll<HTMLButtonElement>('[data-place-close]')
-        .forEach((closeBtn) => {
-          closeBtn.classList.add('is-visible');
-          closeBtn.hidden = false;
-          closeBtn.tabIndex = 0;
-          closeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            close();
-          });
-        });
-    }
+    // Close lives in sticky panel chrome (desktop + mobile) — never on the
+    // scrolling card, so it stays put while content scrolls.
+    clone
+      .querySelectorAll<HTMLButtonElement>('[data-place-close]')
+      .forEach((closeBtn) => {
+        closeBtn.hidden = true;
+        closeBtn.classList.remove('is-visible');
+        closeBtn.tabIndex = -1;
+      });
 
     body.appendChild(clone);
     clone.querySelectorAll<HTMLElement>('[data-photo-slider]').forEach((el) => {
@@ -404,6 +440,7 @@ export function bootTravelPanel(): void {
     setHasPanel(true);
     setScrimOpen(true);
 
+    // Set chrome padding *before* map select's ensureVisible (sync after this open())
     if (isMobileSheet() && snap === 'mid') {
       const m = midH();
       const mapRect = mapEl.getBoundingClientRect();
@@ -416,6 +453,9 @@ export function bootTravelPanel(): void {
       getTravelMapHandle()?.setChromePadding({
         bottom: Math.round(mapEl.getBoundingClientRect().height),
       });
+    } else {
+      // Desktop: free map region = between left sidebar and this right card
+      getTravelMapHandle()?.setChromePadding({ right: mapOverlapRight() });
     }
 
     if (wasOpen) {
@@ -428,7 +468,8 @@ export function bootTravelPanel(): void {
         openingRaf = requestAnimationFrame(() => {
           openingRaf = 0;
           panel.classList.add('is-open');
-          scheduleMapChrome(true, SHEET_MS);
+          // Desktop: re-center after card slide-in; mobile: after sheet rise
+          scheduleMapChrome(true, isMobileSheet() ? SHEET_MS : 280);
         });
       });
     }
@@ -468,7 +509,7 @@ export function bootTravelPanel(): void {
     close();
   });
 
-  // Sticky chrome close (mobile form-sheet)
+  // Sticky chrome close (desktop panel + mobile form-sheet)
   panelClose?.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -618,19 +659,18 @@ export function bootTravelPanel(): void {
       if (!isMobileSheet()) {
         applySnapClass('mid');
         clearInlineSheet();
-        getTravelMapHandle()?.setChromePadding(null);
-      } else {
-        scheduleMapChrome(true, 50);
       }
+      scheduleMapChrome(true, 50);
     } else {
       setScrimOpen(false);
+      getTravelMapHandle()?.setChromePadding(null);
     }
   });
 
   window.addEventListener(
     'resize',
     () => {
-      if (openId && isMobileSheet()) scheduleMapChrome(false, 100);
+      if (openId) scheduleMapChrome(false, 100);
     },
     { passive: true },
   );

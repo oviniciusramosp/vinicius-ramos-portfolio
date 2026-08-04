@@ -92,6 +92,14 @@ const iconHtml = materialIconHtml(icon);
     line-height: 1;
     color: var(--color-accent);
     min-width: 0;
+    /* Empty / outline stars — theme-aware (hardcoded white vanishes on light) */
+    --star-empty: color-mix(in srgb, var(--color-text, #fff) 28%, transparent);
+    --star-empty-strong: color-mix(
+      in srgb,
+      var(--color-text, #fff) 36%,
+      transparent
+    );
+    --star-empty-soft: color-mix(in srgb, var(--color-text, #fff) 18%, transparent);
   }
 
   .star-rating__icon {
@@ -129,6 +137,7 @@ const iconHtml = materialIconHtml(icon);
     min-width: 2.4ch;
     color: var(--color-text-soft, rgba(255, 255, 255, 0.82));
     font-variant-numeric: tabular-nums;
+    text-align: center;
   }
 
   .star-rating__value--empty {
@@ -138,6 +147,7 @@ const iconHtml = materialIconHtml(icon);
   .star-rating__stars {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 1px;
   }
 
@@ -151,15 +161,15 @@ const iconHtml = materialIconHtml(icon);
 
   .star-rating__star.is-empty,
   .star-rating__star.is-outline {
-    color: rgba(255, 255, 255, 0.28);
+    color: var(--star-empty);
   }
 
   .star-rating--empty .star-rating__star.is-outline {
-    color: rgba(255, 255, 255, 0.32);
+    color: var(--star-empty-strong);
   }
 
   .star-rating__star.is-half {
-    color: rgba(255, 255, 255, 0.18);
+    color: var(--star-empty-soft);
   }
 
   .star-rating__half-fill {
@@ -171,6 +181,6 @@ const iconHtml = materialIconHtml(icon);
   }
 
   .star-rating__half-empty {
-    color: rgba(255, 255, 255, 0.28);
+    color: var(--star-empty);
   }
 </style>
