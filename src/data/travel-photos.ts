@@ -293,12 +293,6 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
       'Place du Châtelet',
       'Google',
     ),
-    photo(
-      'https://api.theatredelaville-paris.com/assets/w1500-h1500-q80/ded894c8/header_scene_fontaine.jpg',
-      'Fontaine du Palmier at Place du Châtelet',
-      'Fontaine du Palmier na Place du Châtelet',
-      'Théâtre de la Ville',
-    ),
   ],
   'par-chez-elo': [
     photo(
