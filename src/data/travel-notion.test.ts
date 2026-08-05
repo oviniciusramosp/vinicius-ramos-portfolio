@@ -36,8 +36,11 @@ describe('mergeNotionPlaces', () => {
       const place = paris!.places.find((p) => p.id === rec.id);
       expect(place, `missing ${rec.id}`).toBeDefined();
       expect(place!.name.en).toBe(rec.name.en);
-      expect(place!.lat).toBe(rec.lat);
-      expect(place!.lng).toBe(rec.lng);
+      // Places with local map `area` keep local lat/lng (geometry anchor).
+      if (!place!.area) {
+        expect(place!.lat).toBe(rec.lat);
+        expect(place!.lng).toBe(rec.lng);
+      }
     }
     // Editorial from Notion (e.g. Eiffel rating / cover / featured)
     const eiffel = paris!.places.find((p) => p.id === 'par-eiffel');
@@ -129,18 +132,23 @@ describe('mergeNotionPlaces', () => {
     });
 
     const local = cities[0].places[0];
-    // Simulate override rule used in mergeNotionPlaces
+    // Simulate override rule used in mergeNotionPlaces (area keeps local pin)
     const merged = {
       ...local,
       ...notionPlace,
       area: local.area,
       landmark: local.landmark,
+      ...(local.area
+        ? { lat: local.lat, lng: local.lng }
+        : {}),
     };
     expect(merged.name.en).toBe('Notion name');
     expect(merged.category).toBe('restaurants');
     expect(merged.landmark).toBe('monument');
     expect(merged.area?.kind).toBe('polygon');
-    expect(merged.lat).toBe(-23.5);
+    // Local area → local pin stays put (geometry anchor)
+    expect(merged.lat).toBe(0);
+    expect(merged.lng).toBe(0);
   });
 
   it('does not drop other cities', () => {
