@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T14:03:33.800Z",
+  "generatedAt": "2026-08-05T19:26:38.576Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
   "count": 147,
   "byCity": {
@@ -1922,8 +1922,29 @@
         "french",
         "bistro"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Canal_Saint-Martin_P1060441.JPG/3840px-Canal_Saint-Martin_P1060441.JPG",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmkqKIki4X_Tupd_EdtFlhAhtb7kY02aRD9vm7Nz9H8osxzdiT_dWvVx4Gr_cs8Yz2EnSIJGqVKn4JJxy3ocyEkbOZBWWxcnd5GAigMl0LGYDWiUwxvmnTXcDq4Y2ENEdBg6B15WJ68U79G=s680-k-no",
       "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmkqKIki4X_Tupd_EdtFlhAhtb7kY02aRD9vm7Nz9H8osxzdiT_dWvVx4Gr_cs8Yz2EnSIJGqVKn4JJxy3ocyEkbOZBWWxcnd5GAigMl0LGYDWiUwxvmnTXcDq4Y2ENEdBg6B15WJ68U79G=s680-k-no",
+          "alt": {
+            "en": "Fric-Frac",
+            "pt-BR": "Fric-Frac"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlD4ghyPj5w5SLgYvVsM5lqO9eNyehTnyop-yiROxQqZugcU_T2ReuhcR1bCmDkhIFQqaRSecrOy9b67_e4Qrdz-RBqO52s7Bb-j1UzM9742e9VWbknRevRJe2aaHt8zL7QFTWbDQ=w203-h253-k-no",
+          "alt": {
+            "en": "Fric-Frac",
+            "pt-BR": "Fric-Frac"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkk3eyHim9CynAO6lG7bgPJw5CThG1BHEiHj51pFtqTgqq0uAw-E3MRQORFe1I-8F5OQdUbPQ6hmQ8jXA_VYRX06Oy78RGzHQ5-NOJ-opNrKkEKW-nfcyF563i33Rf6LWd8z2wT7ej_RDFk=s736-k-no",
+          "alt": {
+            "en": "Fric-Frac",
+            "pt-BR": "Fric-Frac"
+          }
+        },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Canal_Saint-Martin_P1060441.JPG/3840px-Canal_Saint-Martin_P1060441.JPG",
           "alt": {
@@ -1937,7 +1958,7 @@
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T13:33:00.000Z"
+      "lastEdited": "2026-08-05T16:09:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8180-a458-dbba843a6a0b",
