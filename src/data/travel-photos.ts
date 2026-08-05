@@ -142,10 +142,16 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-cafe-flore': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_chocolate_p1150797.jpg/1280px-Hot_chocolate_p1150797.jpg',
-      'Hot chocolate at a Paris café',
-      'Chocolate quente em café parisiense',
-      'Wikimedia Commons',
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlfGFQJNkrIfykELlKzkUwUxZ-mepdxjRa1sd_Uou20bQHozTUgfCRWhsJWIDIC8ItvmefamDbqINS9_lBy-YF9wdUQgMaKuq_GZ_woM2sM87GZn_jM7aQOekyeRoq3vZHUvxr6KCtYATg=s348-k-no',
+      'Café de Flore',
+      'Café de Flore',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmi4YtD6ALn5sDzxAIkBJSI9sJUoc6pbv1JVfz2nvH_BOZkyQjCnNqkcS0mvj3WeZEmDy6yl67-tg2q5Ii6PlYSI4bAeJG4K9LUu2B9bDZf6X--DsOt5r0JXXtnSZzCZVFmRfOK_73ZXMOy=s425-k-no',
+      'Café de Flore',
+      'Café de Flore',
+      'Google',
     ),
   ],
   'par-bateaux-mouches': [
@@ -194,18 +200,42 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-bnf': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg/3840px-Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg',
-      'Bibliothèque nationale',
-      'Bibliothèque nationale',
-      'Wikimedia Commons',
+      'https://images.adsttc.com/media/images/6166/a1ef/f91c/81b2/4700/01ba/newsletter/2017-06-01_15_19_21-bnf.jpg?1634116065',
+      'Bibliothèque nationale de France — reading room',
+      'Biblioteca Nacional da França — sala de leitura',
+      'ArchDaily',
+    ),
+    photo(
+      'https://arquitecturaviva.com/assets/uploads/obras/41197/av_medium__av_112727.webp?h=af96c42b',
+      'Bibliothèque nationale de France — architecture',
+      'Biblioteca Nacional da França — arquitetura',
+      'Arquitectura Viva',
+    ),
+    photo(
+      'https://fernandoeichenberg.files.wordpress.com/2017/02/labrouste3.jpg',
+      'BnF Richelieu — Labrouste reading room',
+      'BnF Richelieu — sala de leitura Labrouste',
+      'Fernando Eichenberg',
     ),
   ],
   'par-bohemia': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG',
-      'Café gourmand plate',
-      'Prato de café gourmand',
-      'Wikimedia Commons',
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no',
+      "Baguett's Café Molière",
+      "Baguett's Café Molière",
+      'Google Maps',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnTwGN1CH81ziHiPdcK-UxvVd-ZWiUn86C4inc2ccG4wXglUwpEgpuBeIseJCk33NXFpC4MFBbdZecym65zx2t-YsBtlw8IT9tFZPJrHhQFz_5XQDWrn3V5eGgX0XnC7bwosP2BmPNRJZlD=s927-k-no',
+      "Baguett's Café Molière — interior",
+      "Baguett's Café Molière — interior",
+      'Google Maps',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkM8UGnc0zCL78U-xyIPGBhkSkccxzOteDVjBwD7emxAfP11Qskpt0AOgn1yfrGau8pnmOVh6aqotjgdEn6ewYN_soQmvhCi9XT85s_m9Kx9DCbW6iUxjI9lG4dHgzLBrHrL7eTIOl2c8iD=s914-k-no',
+      "Baguett's Café Molière — dishes",
+      "Baguett's Café Molière — pratos",
+      'Google Maps',
     ),
   ],
   'par-bon-marche': [
@@ -256,9 +286,21 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-canals': [
     photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlBugDTNivZP8Wem_yRewzLbdSRUGGLeEqkS0TGCUQD0omvkA26ZJMl95tJQR0rjZE3_xcqZsM0vb9Xp5FdZNO_xWG9BgXYwJZKAnUlS3oy5oyTkx5z7rhDm3gR7TC_JHlDmGeh=s348-k-no',
+      'Canals of Paris',
+      'Canais de Paris',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkk4R_BfIDVevAV-jdAf2j2hlJiVHA7llQcQJUfkRguGTE5GgBsmJvVhegPfpNFtfZF_5mdidpGn4ngdCGBMY9Eq255dgAgw0Hj9ytM9deTf5JMwbU7-yYXoSiFxCRY2q5K7wpD=s522-k-no',
+      'Canals of Paris',
+      'Canais de Paris',
+      'Google',
+    ),
+    photo(
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg',
-      'Paris canals walk',
-      'Paris canals walk',
+      'Canal Saint-Martin',
+      'Canal Saint-Martin',
       'Wikimedia Commons',
     ),
   ],
@@ -296,10 +338,22 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-chez-elo': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg',
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkIe7QSXGZAGi6gUhru8fh8NlNDUPU7Lb3h-rQSgup96I81raRIUFUhxCmGFUPSbj0M957oZR3YlbOGZ-3lS64hI6j86rDhVNJBy4qj5LSTNpiL6NGl8jZqNxcdYn4YRQlZ_TOdD3n2N3cf=s783-k-no',
       'Chez Elo',
       'Chez Elo',
-      'Wikimedia Commons',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkKqoXNB6sLasst3S7FOsgHI4idBeBWUBiyWcvUDafrnf0lHbjmKR2C8Y6gOtoo7HD4_kqFBHdRWjIFGLmW0PZ1vnYmAKABW7M00uz6RTxLqCEZdUDOZRt0_Z2WL9vwTS6l957gI6ggM6VH=s696-k-no',
+      'Chez Elo',
+      'Chez Elo',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWktsoY9DctS3p-b0UJQ2tXkQPE9E-76_25Y8lLr_xAT94aKRrfBwz73U4b1T9yCKghOUL7_N1cInhzGJuXq3pwpbVAnZsFePrGkS5ZkegHbSnFISvme0QdUuSohjVTC33GHfssrBoCSPmBv=s914-k-no',
+      'Chez Elo',
+      'Chez Elo',
+      'Google',
     ),
   ],
   'par-chez-janou': [
@@ -312,10 +366,22 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-cour-commerce': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/8/83/Plaque_Sainte-Beuve%2C_2_cour_du_Commerce-Saint-Andr%C3%A9%2C_Paris_6e.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJfzCM8dK9-9DFYUJkH5aqh7oRnrpz1U4kQ61kjKb78oG1MrKrHVodKXFs&s=10',
       'Cour du Commerce Saint-André',
       'Cour du Commerce Saint-André',
-      'Wikimedia Commons',
+      'Google',
+    ),
+    photo(
+      'https://worldinparis.com/wp-content/uploads/2020/12/Cour-du-Commerce-Saint-Andre-Paris.jpg',
+      'Cour du Commerce Saint-André passage',
+      'Passagem Cour du Commerce Saint-André',
+      'World in Paris',
+    ),
+    photo(
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsrMuMijTCb1mS7bTN39gh_WRDGNfngQa76GaR4pNUmF3BdRElZG0cjk4&s=10',
+      'Cour du Commerce Saint-André',
+      'Cour du Commerce Saint-André',
+      'Google',
     ),
   ],
   'par-creperie-arts': [
@@ -402,6 +468,20 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
       'Google Maps',
     ),
   ],
+  'par-five-guys-rivoli': [
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlZHut6hJ7Om0V81zIPFT3TZ7Xb_5QXRfbIyVphCKmC2U4O7TadlESSFsyvq_VIapZQRb21UcM2sEZvB9JP7bc4n_sDjV2q6buyBxHHLpxPZxW9C2BhkrbqyVCcTpM16EBt_Wg5KirBmAzO=s811-k-no',
+      'Five Guys Rivoli',
+      'Five Guys Rivoli',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlgE1IykNGZpQnc9Rp8mcUVzU5VuMd-FataC9FYCX1-nqdNh3Mk7vKrW9f7b5kxfKJ1VAeaVv0zS7QPc3vjfWe9AwIaxSux0pLnIN9WyI-qdKpITDxoIicaivZqQ97ifHjZTeqKsM9PAMpN=s696-k-no',
+      'Five Guys Rivoli',
+      'Five Guys Rivoli',
+      'Google',
+    ),
+  ],
   'par-felicita': [
     photo(
       'https://upload.wikimedia.org/wikipedia/commons/1/17/Bar_et_restaurant_dans_La_Felicit%C3%A0%2C_Paris._02.jpg',
@@ -452,9 +532,27 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-galeries-lafayette': [
     photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk2dTfnFwYmaCMI15pWCi6kWGlluB6psWrBDDRlD1aZEdYm74Y9uTQGYtn5VQc0A0LXB_arnw6kqZzojAw2Wwg5HiIm5HJQmIgabfmUmmtwSX-0G6HxFjaXr_Ky2qbobXWFRMTfQOnAbybS=s457-k-no',
+      'Galeries Lafayette',
+      'Galeries Lafayette',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmFA0m_Tq9gL2HBn69LmCAycdFhiOtIHOaCDXvHKucCySEHOMv3IVZUP37dgPQjJngZzUjKKF8MNQ0kCNdH6H9QbquzUE3444w79wl9HZk8ZLJeD4zgWWnosybHg_L5Ns0NWHiglJ4-e_Pd=s368-k-no',
+      'Galeries Lafayette',
+      'Galeries Lafayette',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnpDnIfK5asZ6qWUlPU3m3c58amXonxkkcAcmuZbeeOH4uL5wJuZiVpsYRFFShqeUfx1Zgp2KAN0O2ZR_wgDX6g-ch7xd1UO18lkx0ojFmtIIx35rJxWfkgU7KIhBqcrVbOmcv32y8HLOyL=s365-k-no',
+      'Galeries Lafayette',
+      'Galeries Lafayette',
+      'Google',
+    ),
+    photo(
       'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg',
-      'Galeries Lafayette',
-      'Galeries Lafayette',
+      'Galeries Lafayette at night',
+      'Galeries Lafayette à noite',
       'Wikimedia Commons',
     ),
   ],
@@ -546,6 +644,20 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
       'Luxembourg Garden',
       'Luxembourg Garden',
       'Wikimedia Commons',
+    ),
+  ],
+  'par-luxor-obelisk': [
+    photo(
+      'https://img.magnific.com/premium-photo/luxor-obelisk-place-de-la-concorde-paris-capital-france_261932-8224.jpg',
+      'Luxor Obelisk at Place de la Concorde, Paris',
+      'Obelisco de Luxor na Place de la Concorde, Paris',
+      'Magnific',
+    ),
+    photo(
+      'https://fotografias.lasexta.com/clipping/cmsimages01/2023/04/12/05082BFF-B01C-4A6B-B55D-B6511430A940/obelisco-luxor-que-fue-trasladado-tebas-paris_104.jpg?crop=853,853,x215,y0&width=1200&height=1200&optimize=low&format=webply',
+      'Luxor Obelisk — close-up of hieroglyphs',
+      'Obelisco de Luxor — detalhe dos hieróglifos',
+      'laSexta',
     ),
   ],
   'par-madeleine': [
@@ -818,6 +930,24 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-paname-brewing': [
     photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlN6yqsU_F4tbdnk1G9FMc8f5N3_ravL1qDpTjW5bdA-DL9NQTfDKm4_hDQR_-oHRFRrUYFv4plzsfzUj6eGN8t6iX85kP4uTz2pmuXjeZV2HIUdZQAXkiYOwXPUBPMGOoXWJSQ=s464-k-no',
+      'Paname Brewing Company',
+      'Paname Brewing Company',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkgf4SFQ8fwUAo2jFiVuDAOWxuN1uLrga4u123qL3-i2Bxx6MTN91Vabdg_LLuoNsVmX6WO35cPrfTvO1lqdZtYps_IMJHfAGnRWpiSKPUdGz5I0_bv-Q5ecuM9lhyzXoIOPGJNV3G0gyE=s464-k-no',
+      'Paname Brewing Company',
+      'Paname Brewing Company',
+      'Google',
+    ),
+    photo(
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk11UOT3_HEY3qKAwPeGynK9POJefynHk1NPKV9ydpZz0sihrBHRBrcnj6qOrZKqXCWKNKGwjDGfS_LlP2VATv5yvjDQWpsCfHYtAL3EyT-Mq9bDzyEllm3OCuUA_tq0uM23DeDTGedoTC6=s406-k-no',
+      'Paname Brewing Company',
+      'Paname Brewing Company',
+      'Google',
+    ),
+    photo(
       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg/1280px-Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg',
       'Paname Brewing Company',
       'Paname Brewing Company',
@@ -964,10 +1094,22 @@ export const photosByPlaceId: Record<string, TravelPhoto[]> = {
   ],
   'par-sainte-chapelle': [
     photo(
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/Sainte_Chapelle_-_Upper_level_1.jpg',
+      'https://i0.wp.com/www.citiestotravel.com/wp-content/uploads/2025/03/Sainte-Chapelle-in-Parijs-scaled.webp?fit=2560%2C1431&ssl=1',
+      'Sainte-Chapelle — upper chapel stained glass',
+      'Sainte-Chapelle — vitrais da capela superior',
+      'Cities to Travel',
+    ),
+    photo(
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVqla-c2qJv_UwrXhkCLgabdR5YQMTcFQ5attcxFLZ_bArKTKo-zMBm-w&s=10',
       'Sainte-Chapelle',
       'Sainte-Chapelle',
-      'Wikimedia Commons',
+      'Google',
+    ),
+    photo(
+      'https://aws-tiqets-cdn.imgix.net/images/content/048dbd2ab26143b59a1648e8c0883c4b.jpg?auto=format%2Ccompress&fit=crop&q=70',
+      'Sainte-Chapelle interior',
+      'Interior da Sainte-Chapelle',
+      'Tiqets',
     ),
   ],
   'par-serres-auteuil': [

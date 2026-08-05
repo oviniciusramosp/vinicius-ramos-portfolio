@@ -5,18 +5,20 @@ import {
   placeCategoryMeta,
   travelUi,
   formatMoney,
-  formatMoneyTypical,
   formatDuration,
+  formatTicketPromo,
+  priceLevelFromMoney,
 } from '../../data/travel';
 import {
-  categoryIconHtml,
   mapsIconHtml,
+  placePinIconHtml,
 } from '../../data/travel-categories';
 import {
   placeSubcategoryMeta,
   type PlaceSubcategory,
 } from '../../data/travel-subcategories';
 import StarRating from './StarRating.astro';
+import PriceLevel from './PriceLevel.astro';
 import '../../styles/travel-place-card.css';
 
 interface Props {
@@ -25,10 +27,9 @@ interface Props {
   /**
    * Feed presentation:
    * - `list` — under category groups (subs only)
-   * - `grid` — flat mixed feed (category only)
    * Omit for map-panel clones (full details).
    */
-  variant?: 'list' | 'grid';
+  variant?: 'list';
 }
 
 const { place, city, variant } = Astro.props;
@@ -40,16 +41,21 @@ const ratingMineEn = travelUi.ratingMine.en;
 const ratingMinePt = travelUi.ratingMine['pt-BR'];
 const mapsHref = googleMapsUrl(place, city);
 const catColor = placeCategoryMeta[place.category].color;
-const catIcon = categoryIconHtml(place.category);
+const catIcon = placePinIconHtml(place.category, place.subcategories);
 const mapsIcon = mapsIconHtml();
 const visit = place.visit;
 
 const v = travelUi.visit;
+// Card (right panel + feed): full min–max range when authored.
+// Day budget in the itinerary sidebar uses moneyTypicalEur (min/typical only).
 const avgPriceEn = visit?.avgPricePerPerson
-  ? formatMoneyTypical(visit.avgPricePerPerson, 'en')
+  ? formatMoney(visit.avgPricePerPerson, 'en')
   : null;
 const avgPricePt = visit?.avgPricePerPerson
-  ? formatMoneyTypical(visit.avgPricePerPerson, 'pt-BR')
+  ? formatMoney(visit.avgPricePerPerson, 'pt-BR')
+  : null;
+const avgPriceLevel = visit?.avgPricePerPerson
+  ? priceLevelFromMoney(visit.avgPricePerPerson)
   : null;
 const pricePerNightEn = visit?.pricePerNight
   ? formatMoney(visit.pricePerNight, 'en')
@@ -69,6 +75,7 @@ const tipsEn = visit?.tips?.en ?? null;
 const tipsPt = visit?.tips?.['pt-BR'] ?? null;
 const ticketNoteEn = visit?.ticket?.note?.en;
 const ticketNotePt = visit?.ticket?.note?.['pt-BR'];
+const ticketPromos = visit?.ticketPromos ?? [];
 const avgNoteEn = visit?.avgPricePerPerson?.note?.en;
 const avgNotePt = visit?.avgPricePerPerson?.note?.['pt-BR'];
 const nightNoteEn = visit?.pricePerNight?.note?.en;
@@ -78,6 +85,7 @@ const hasVisitMeta =
   avgPriceEn ||
   pricePerNightEn ||
   ticketEn ||
+  ticketPromos.length > 0 ||
   durationEn ||
   bestTimeEn ||
   bestDayEn ||
@@ -125,7 +133,6 @@ const favLabelPt = travelUi.favorite['pt-BR'];
     'travel-place-card--has-photos',
     !hasPhotos && 'travel-place-card--placeholder-media',
     variant === 'list' && 'travel-place-card--list',
-    variant === 'grid' && 'travel-place-card--grid',
   ]}
   data-place-id={place.id}
   data-category={place.category}
@@ -240,7 +247,7 @@ const favLabelPt = travelUi.favorite['pt-BR'];
     }
   </div>
 
-  <!-- Title (same styles with/without photos) + optional favorite heart -->
+  <!-- Title (same styles with/without photos) -->
   <div class="travel-place-card__title-row" data-place-title-row>
     <div class="travel-place-card__title-main">
       <h3
@@ -250,6 +257,26 @@ const favLabelPt = travelUi.favorite['pt-BR'];
       >
         {place.name.en}
       </h3>
+    </div>
+  </div>
+
+  <!-- [category badge + favorite] then [subtags] horizontal scroll -->
+  <div class="travel-place-card__tags">
+    <div class="travel-place-card__tags-main">
+      <span class="travel-place-card__cat" style={`--cat-color: ${catColor}`}>
+        <span
+          class="travel-place-card__cat-icon"
+          aria-hidden="true"
+          set:html={catIcon}
+        />
+        <span
+          class="travel-place-card__cat-label"
+          data-i18n-en={catEn}
+          data-i18n-pt={catPt}
+        >
+          {catEn}
+        </span>
+      </span>
       {
         place.favorite && (
           <span
@@ -267,24 +294,6 @@ const favLabelPt = travelUi.favorite['pt-BR'];
         )
       }
     </div>
-  </div>
-
-  <!-- [main tag] then [subtags] horizontal scroll -->
-  <div class="travel-place-card__tags">
-    <span class="travel-place-card__cat" style={`--cat-color: ${catColor}`}>
-      <span
-        class="travel-place-card__cat-icon"
-        aria-hidden="true"
-        set:html={catIcon}
-      />
-      <span
-        class="travel-place-card__cat-label"
-        data-i18n-en={catEn}
-        data-i18n-pt={catPt}
-      >
-        {catEn}
-      </span>
-    </span>
     {
       subLabels.length > 0 && (
         <div class="travel-place-card__subs" data-subtags-scroll>
@@ -359,8 +368,22 @@ const favLabelPt = travelUi.favorite['pt-BR'];
               {v.avgPrice.en}
             </dt>
             <dd>
-              <span data-i18n-en={avgPriceEn} data-i18n-pt={avgPricePt ?? avgPriceEn}>
-                {avgPriceEn}
+              <span class="travel-place-card__meta-value">
+                {
+                  avgPriceLevel != null && (
+                    <PriceLevel
+                      level={avgPriceLevel}
+                      label={v.avgPrice.en}
+                      labelPt={v.avgPrice['pt-BR']}
+                    />
+                  )
+                }
+                <span
+                  data-i18n-en={avgPriceEn}
+                  data-i18n-pt={avgPricePt ?? avgPriceEn}
+                >
+                  {avgPriceEn}
+                </span>
               </span>
               {avgNoteEn && (
                 <span
@@ -438,6 +461,33 @@ const favLabelPt = travelUi.favorite['pt-BR'];
                   {ticketNoteEn}
                 </span>
               )}
+              {ticketPromos.length > 0 && (
+                <ul class="travel-place-card__ticket-promos">
+                  {ticketPromos.map((promo) => {
+                    const en = formatTicketPromo(promo, 'en');
+                    const pt = formatTicketPromo(promo, 'pt-BR');
+                    return (
+                      <li
+                        class:list={[
+                          'travel-place-card__ticket-promo',
+                          `travel-place-card__ticket-promo--${promo.kind}`,
+                        ]}
+                        data-promo-kind={promo.kind}
+                      >
+                        <span
+                          class="material-symbols-rounded travel-place-card__ticket-promo-icon"
+                          aria-hidden="true"
+                        >
+                          sell
+                        </span>
+                        <span data-i18n-en={en} data-i18n-pt={pt}>
+                          {en}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </dd>
           </div>
         )}
@@ -489,7 +539,17 @@ const favLabelPt = travelUi.favorite['pt-BR'];
               {v.tips.en}
             </dt>
             <dd>
-              <span data-i18n-en={tipsEn} data-i18n-pt={tipsPt ?? tipsEn}>
+              {/*
+                Newlines in tips render via white-space: pre-line.
+                Attributes encode \n as the two-char sequence "\\n" so HTML
+                attr normalization does not collapse breaks; travel-i18n
+                decodes on locale switch.
+              */}
+              <span
+                class="travel-place-card__tips-text"
+                data-i18n-en={tipsEn.replace(/\n/g, '\\n')}
+                data-i18n-pt={(tipsPt ?? tipsEn).replace(/\n/g, '\\n')}
+              >
                 {tipsEn}
               </span>
             </dd>

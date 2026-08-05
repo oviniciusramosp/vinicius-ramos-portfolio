@@ -14,6 +14,9 @@ export {
   placeCategoryOrder,
   categoryColor,
   categoryIcon,
+  categoryIconHtml,
+  placePinIconHtml,
+  placePinMaterialName,
 } from './travel-categories';
 
 import { areaForPlace } from './travel-areas-osm';
@@ -43,11 +46,21 @@ export {
   normalizeSubcategories,
   resolvePlaceSubcategories,
 } from './travel-subcategories';
-export type { VisitInfo, MoneyInfo, CrowdProfile } from './travel-visit';
+export type {
+  VisitInfo,
+  MoneyInfo,
+  CrowdProfile,
+  PriceLevel,
+  TicketPromo,
+  TicketPromoKind,
+  MonthIndex,
+} from './travel-visit';
 export {
   formatMoney,
   formatMoneyTypical,
   formatDuration,
+  formatTicketPromo,
+  priceLevelFromMoney,
   visitFieldsForDisplay,
   resolveVisit,
 } from './travel-visit';
@@ -242,10 +255,6 @@ export const travelUi = {
     en: 'Search cities…',
     'pt-BR': 'Buscar cidades…',
   } satisfies LString,
-  searchPlacesPlaceholder: {
-    en: 'Search places…',
-    'pt-BR': 'Buscar lugares…',
-  } satisfies LString,
   filterAll: { en: 'All', 'pt-BR': 'Todas' } satisfies LString,
   empty: {
     en: 'No cities match your search.',
@@ -364,10 +373,6 @@ export const travelUi = {
   viewModeGroup: {
     en: 'Place list layout',
     'pt-BR': 'Layout da lista de lugares',
-  } satisfies LString,
-  viewGrid: {
-    en: 'Grid',
-    'pt-BR': 'Grid',
   } satisfies LString,
   viewList: {
     en: 'List',
@@ -562,6 +567,10 @@ export const travelUi = {
     ticketLink: {
       en: 'Check tickets',
       'pt-BR': 'Ver ingressos',
+    },
+    ticketPromos: {
+      en: 'Free / deals',
+      'pt-BR': 'Grátis / promoções',
     },
     priceNote: {
       en: 'Approx. adult price — confirm on official site',
@@ -957,7 +966,7 @@ const localTravelCities: TravelCity[] = [
     countryKey: 'franca',
     lat: 48.8566,
     lng: 2.3522,
-    zoom: 12,
+    zoom: 14,
     places: [
       {
         id: 'par-ory',
@@ -1196,6 +1205,7 @@ const localTravelCities: TravelCity[] = [
           en: 'Business skyline and the Grande Arche axis.',
           'pt-BR': 'Skyline corporativo e o eixo da Grande Arche.',
         },
+        rating: 4.5,
         googleRating: 4.4,
         lat: 48.891,
         lng: 2.241,
@@ -1230,6 +1240,8 @@ const localTravelCities: TravelCity[] = [
           'pt-BR':
             'O “Grande Arco” — cubo no eixo histórico. Melhores fotos no parvis e na escadaria.',
         },
+        rating: 4.5,
+        favorite: true,
         googleRating: 4.4,
         lat: 48.8927,
         lng: 2.2359,
@@ -1248,6 +1260,7 @@ const localTravelCities: TravelCity[] = [
           'pt-BR':
             'Esplanada longa sob as torres — skyline, fontes e o eixo em direção a Paris.',
         },
+        rating: 4.5,
         googleRating: 4.3,
         lat: 48.8889,
         lng: 2.2468,
@@ -1311,7 +1324,9 @@ const localTravelCities: TravelCity[] = [
           en: 'Between Louvre and Concorde. Perfect walking spine.',
           'pt-BR': 'Entre o Louvre e a Concorde. Eixo perfeito para caminhar.',
         },
+        rating: 5,
         googleRating: 4.6,
+        favorite: true,
         lat: 48.8634,
         lng: 2.3275,
         // Long east–west garden between Louvre and Concorde
@@ -1365,6 +1380,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Climb for the axis view over the city.',
           'pt-BR': 'Suba pela vista do eixo sobre a cidade.',
         },
+        rating: 5,
+        favorite: true,
         googleRating: 4.7,
         lat: 48.8738,
         lng: 2.295,
@@ -1441,6 +1458,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Exhibition palaces on the Seine. Check what is open.',
           'pt-BR': 'Palácios de exposição no Sena. Veja o que está aberto.',
         },
+        rating: 4.5,
+        favorite: true,
         googleRating: 4.7,
         lat: 48.8661,
         lng: 2.3126,
@@ -1489,9 +1508,12 @@ const localTravelCities: TravelCity[] = [
           en: 'Beaux-Arts overload. Interior if you can.',
           'pt-BR': 'Excesso Beaux-Arts. Interior se puder.',
         },
+        rating: 4.5,
         googleRating: 4.7,
+        favorite: true,
         lat: 48.8719,
         lng: 2.3317,
+        // OSM building outline via travel-areas-osm.ts (par-opera)
         address: 'Pl. de l\'Opéra, 75009 Paris',
         mapsQuery: 'Opéra Garnier Paris',
       },
@@ -1503,9 +1525,12 @@ const localTravelCities: TravelCity[] = [
           en: 'Dome, rooftop view, and department-store theater.',
           'pt-BR': 'Cúpula, terraço e teatro de loja de departamento.',
         },
+        rating: 4.5,
         googleRating: 4.5,
+        favorite: true,
         lat: 48.8738,
         lng: 2.332,
+        // OSM multipolygon: both Haussmann buildings via travel-areas-osm.ts
         address: '40 Bd Haussmann, 75009 Paris',
         mapsQuery: 'Galeries Lafayette Haussmann',
       },
@@ -1665,7 +1690,9 @@ const localTravelCities: TravelCity[] = [
           en: 'Covered passage with history and good wandering.',
           'pt-BR': 'Passagem coberta com história e boa para vaguear.',
         },
+        rating: 5,
         googleRating: 5.0,
+        favorite: true,
         // Mid-passage — full path from OSM (travel-areas-osm.ts / par-cour-commerce)
         lat: 48.8530736,
         lng: 2.3390876,
@@ -1757,8 +1784,9 @@ const localTravelCities: TravelCity[] = [
           'pt-BR': 'Um dos relógios públicos mais antigos de Paris. Olhe a torre.',
         },
         googleRating: 4.6,
-        lat: 48.8559,
-        lng: 2.3456,
+        // Tour Carrée de l'Horloge (OSM amenity=clock N2183872370)
+        lat: 48.856193,
+        lng: 2.346233,
         address: '2 Bd du Palais, 75001 Paris',
         mapsQuery: 'Horloge Conciergerie Paris',
       },
@@ -1863,6 +1891,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Seine cruise classic from the Alma side.',
           'pt-BR': 'Clássico de cruzeiro no Sena do lado de Alma.',
         },
+        rating: 5,
+        favorite: true,
         googleRating: 4.3,
         lat: 48.8640106,
         lng: 2.3059374,
@@ -1907,6 +1937,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Colonades, garden, and the striped columns courtyard.',
           'pt-BR': 'Colunatas, jardim e o pátio das colunas listradas.',
         },
+        rating: 5,
+        favorite: true,
         googleRating: 4.6,
         lat: 48.8638,
         lng: 2.3371,
@@ -1915,7 +1947,10 @@ const localTravelCities: TravelCity[] = [
       },
       {
         id: 'par-bohemia',
-        name: { en: 'Bohemia Café', 'pt-BR': 'Bohemia Café' },
+        name: {
+          en: "Baguett's Café Molière",
+          'pt-BR': "Baguett's Café Molière",
+        },
         category: 'cafes',
         description: {
           en: 'Club sandwich and Club Loco de Blueberries.',
@@ -1927,7 +1962,7 @@ const localTravelCities: TravelCity[] = [
         lat: 48.8655,
         lng: 2.335,
         address: '30 Rue de Richelieu, 75001 Paris',
-        mapsQuery: 'Bohemia Café brunch Paris',
+        mapsQuery: "Baguett's Café Molière Paris",
       },
       {
         id: 'par-bnf',
@@ -2031,6 +2066,7 @@ const localTravelCities: TravelCity[] = [
           en: 'Inside-out museum. Plaza energy even from outside.',
           'pt-BR': 'Museu do avesso. Energia da praça mesmo por fora.',
         },
+        rating: 4,
         googleRating: 4.4,
         lat: 48.8606,
         lng: 2.3522,
@@ -2407,22 +2443,33 @@ const localTravelCities: TravelCity[] = [
           'pt-BR': 'Andar da Place de la République pelos canais até o Bassin de la Villette — atividade bem gostosa e parisiense. Pare na beira para comer (em frente ao Jardin Villemin é um bom spot). No Bassin: vários bares e restaurantes; Paname Brewing Company tem cerveja própria. Um pouco mais: La Villette. Na volta, a linha 2 do metrô tem vista panorâmica — anda sobre a cidade.',
         },
         googleRating: 4.4,
-        lat: 48.87515,
-        lng: 2.36185,
+        // Pin on canal waterline by Jardin Villemin (not garden centroid)
+        lat: 48.87489,
+        lng: 2.36335,
         area: {
           kind: 'polyline',
+          /**
+           * Walk spine: République → Canal Saint-Martin (OSM waterway) →
+           * Bassin de la Villette → Parc de la Villette.
+           * Canal segment decimated from Nominatim/OSM MultiLineString
+           * (not a freehand chord through the garden).
+           */
           path: [
             [48.86754, 2.36396], // Place de la République
-            [48.8698, 2.3658],
-            [48.8722, 2.3662],
-            [48.874, 2.3645],
-            [48.87515, 2.36185], // Jardin Villemin
-            [48.8772, 2.3638],
-            [48.8798, 2.3668],
-            [48.8828, 2.3705], // Jaurès
-            [48.88566, 2.37458], // Bassin de la Villette
-            [48.88783, 2.37876], // Paname area
-            [48.891, 2.3835],
+            [48.868956, 2.367169], // Join Canal Saint-Martin (Quai de Valmy)
+            [48.873018, 2.363995], // Locks / mid canal
+            [48.873902, 2.363316],
+            [48.874893, 2.363353], // Canal opposite Jardin Villemin
+            [48.877483, 2.365585],
+            [48.87834, 2.366324],
+            [48.879692, 2.367485],
+            [48.882273, 2.369705], // Toward Stalingrad / Jaurès
+            [48.883074, 2.370404],
+            [48.884489, 2.371615], // Bassin de la Villette (SW entry)
+            [48.88644, 2.37553], // Bassin centerline
+            [48.888392, 2.379452], // Bassin NE / Paname side
+            [48.891441, 2.385573], // Toward Ourcq / Villette
+            [48.89194, 2.386225],
             [48.89489, 2.38844], // Parc de la Villette
           ],
         },
@@ -2436,17 +2483,18 @@ const localTravelCities: TravelCity[] = [
             lng: 2.36396,
           },
           {
+            // Marker on the canal edge by the park (path passes here)
             name: { en: 'Jardin Villemin', 'pt-BR': 'Jardin Villemin' },
-            lat: 48.87515,
-            lng: 2.36185,
+            lat: 48.87489,
+            lng: 2.36335,
           },
           {
             name: {
               en: 'Bassin de la Villette',
               'pt-BR': 'Bassin de la Villette',
             },
-            lat: 48.88566,
-            lng: 2.37458,
+            lat: 48.88644,
+            lng: 2.37553,
           },
           {
             name: {
@@ -2620,6 +2668,7 @@ const localTravelCities: TravelCity[] = [
           en: 'Major museum in a grand old station building — beautiful modern space inside. Across the river from the Louvre. Famous clock with views from the Louvre toward Sacré-Cœur; great photos. Paintings, sculpture, models — Monet, Van Gogh, and more. Restaurant inside.',
           'pt-BR': 'Museu grande num prédio antigo (como o Louvre), com espaço interno moderno e bonito. Do outro lado do rio, em frente ao Louvre. Famoso pelo relógio — dá para ver do Louvre até o Sacré-Cœur; ótimo para fotos. Quadros, esculturas e maquetes; Monet, Van Gogh e outros. Tem restaurante dentro.',
         },
+        rating: 5,
         googleRating: 4.8,
         lat: 48.85992,
         lng: 2.32658,
@@ -2629,7 +2678,7 @@ const localTravelCities: TravelCity[] = [
       {
         id: 'par-orangerie',
         name: { en: "Musée de l'Orangerie", 'pt-BR': "Musée de l'Orangerie" },
-        category: 'tourist',
+        category: 'photo',
         description: {
           en: 'Smaller museum inside the Tuileries. Famous for Monet’s Water Lilies — intimate and beautiful.',
           'pt-BR': 'Museu menor, dentro do Jardin des Tuileries. Famoso pelas obras do Monet (Nenúfares) — íntimo e bonito.',
@@ -2639,6 +2688,25 @@ const localTravelCities: TravelCity[] = [
         lng: 2.32266,
         address: 'Jardin des Tuileries, 75001 Paris',
         mapsQuery: "Musée de l'Orangerie Paris",
+      },
+      {
+        id: 'par-luxor-obelisk',
+        name: {
+          en: 'Luxor Obelisk',
+          'pt-BR': 'Obelisco de Luxor',
+        },
+        category: 'tourist',
+        description: {
+          en: 'Ancient Egyptian obelisk at Place de la Concorde — centerpiece of the historic axis.',
+          'pt-BR': 'Obelisco egípcio antigo na Place de la Concorde — marco do eixo histórico.',
+        },
+        rating: 4,
+        googleRating: 4.7,
+        lat: 48.86548,
+        lng: 2.32113,
+        // OSM base outline via travel-areas-osm.ts (par-luxor-obelisk)
+        address: 'Place de la Concorde, 75008 Paris',
+        mapsQuery: 'Obélisque de Louxor Place de la Concorde Paris',
       },
       {
         id: 'par-bouillon',
@@ -2729,6 +2797,44 @@ const localTravelCities: TravelCity[] = [
         lng: 2.7765,
         address: 'Boulevard de Parc, 77700 Chessy',
         mapsQuery: 'Disneyland Paris',
+      },
+      {
+        id: 'par-bella-notte',
+        name: {
+          en: 'Pizzeria Bella Notte',
+          'pt-BR': 'Pizzeria Bella Notte',
+        },
+        category: 'restaurants',
+        description: {
+          en: 'Counter-service pizzeria in Disneyland Park Fantasyland — known for the Mickey-shaped individual pizza (~€11).',
+          'pt-BR':
+            'Pizzaria self-service no Fantasyland do Disneyland Park — famosa pela pizza individual em formato do Mickey (~€11).',
+        },
+        googleRating: 3.9,
+        // Fantasyland, Disneyland Park (Chessy)
+        lat: 48.8738,
+        lng: 2.7755,
+        address: 'Disneyland Park, Fantasyland, 77700 Chessy',
+        mapsQuery: 'Pizzeria Bella Notte Disneyland Paris',
+      },
+      {
+        id: 'par-mcdonalds-disney',
+        name: {
+          en: "McDonald's Disney Village",
+          'pt-BR': "McDonald's Disney Village",
+        },
+        category: 'commons',
+        description: {
+          en: 'McDonald’s in Disney Village (outside the park gates) — easy cheap bite after rope drop or when the parks close. Five Guys and Starbucks are nearby on the Village strip.',
+          'pt-BR':
+            'McDonald’s na Disney Village (fora dos portões) — refeição barata e fácil depois do rope drop ou quando os parques fecham. Five Guys e Starbucks ficam na mesma faixa do Village.',
+        },
+        googleRating: 3.6,
+        // OSM way/1466595233 — Disney Village, Chessy
+        lat: 48.86813,
+        lng: 2.78564,
+        address: 'Disney Village, 77700 Chessy',
+        mapsQuery: "McDonald's Disney Village Chessy",
       },
 
       // ── Chains (commons) ──
@@ -2890,6 +2996,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Central mall under the Canopée — chains, cinemas, and métro hub.',
           'pt-BR': 'Shopping central sob a Canopée — redes, cinema e hub de metrô.',
         },
+        rating: 4.5,
+        favorite: true,
         googleRating: 3.9,
         lat: 48.862,
         lng: 2.3465,
@@ -3001,6 +3109,8 @@ const localTravelCities: TravelCity[] = [
           en: 'Louis XIV’s palace + gardens + Trianon — full day via RER C (Rive Gauche) + ~10 min walk. Passport ~€32–35; closed Mondays.',
           'pt-BR': 'Palácio de Luís XIV + jardins + Trianon — dia inteiro via RER C (Rive Gauche) + ~10 min a pé. Passport ~€32–35; fecha às segundas.',
         },
+        rating: 5,
+        favorite: true,
         googleRating: 4.6,
         lat: 48.8049,
         lng: 2.1204,
@@ -3583,14 +3693,36 @@ export function resolvePlaceArea(place: TravelPlace): TravelArea | undefined {
   };
 }
 
+/**
+ * Gallery for a place card / slider.
+ *
+ * Prefer the curated registry in `travel-photos.ts` when it has at least as
+ * many images as Notion/authored photos — Notion often stores only the cover,
+ * which used to clobber multi-photo sliders (e.g. Galeries Lafayette).
+ * Notion still wins when its gallery is longer.
+ */
+export function resolvePlacePhotos(
+  placeId: string,
+  authored?: TravelPhoto[] | null,
+): TravelPhoto[] | undefined {
+  const registry = photosForPlaceId(placeId);
+  const fromAuthored =
+    authored && authored.length > 0 ? authored : undefined;
+  const fromRegistry =
+    registry && registry.length > 0 ? registry : undefined;
+  if (fromRegistry && fromAuthored) {
+    return fromRegistry.length >= fromAuthored.length
+      ? fromRegistry
+      : fromAuthored;
+  }
+  return fromRegistry ?? fromAuthored;
+}
+
 /** Place with OSM area + visit meta + gallery photos + subcategories merged in. */
 export function withResolvedArea(place: TravelPlace): TravelPlace {
   const area = resolvePlaceArea(place);
   const visit = resolveVisit(place.id, place.visit);
-  const photos =
-    place.photos && place.photos.length > 0
-      ? place.photos
-      : photosForPlaceId(place.id);
+  const photos = resolvePlacePhotos(place.id, place.photos);
   const subcategories = resolvePlaceSubcategories(
     place.id,
     place.subcategories,
@@ -3623,6 +3755,14 @@ export function formatCityMeta(city: TravelCity, locale: Locale = 'en'): string 
     ? `${city.name[locale]}, ${city.region}`
     : city.name[locale];
   return `${title} · ${city.country[locale]}`;
+}
+
+/** Search input placeholder with place total for the city page. */
+export function searchPlacesPlaceholder(count: number): LString {
+  return {
+    en: `Search among ${count} places…`,
+    'pt-BR': `Buscar entre ${count} lugares…`,
+  };
 }
 
 /** Clamp to 0–5 with one decimal (Google Maps style). Halves still work for personal notes. */

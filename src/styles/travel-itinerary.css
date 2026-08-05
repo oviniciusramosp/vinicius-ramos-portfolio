@@ -6,31 +6,45 @@
 .travel-day-card {
   /* Match floating sidebar content pad (--travel-card-pad on city layout) */
   --day-card-pad: var(--travel-card-pad, 16px);
+  /*
+   * No shell padding — each block (head / budgets / expandables) pads itself
+   * so period rows stay edge-to-edge on the card.
+   */
+  --day-surface: var(--color-surface, #131219);
+  --day-border: var(--color-border, rgba(255, 255, 255, 0.1));
+  --day-radius: var(--radius-card, 16px);
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Space between head and body only — timeline is full-bleed below budgets */
   gap: var(--day-card-pad);
-  /* Equal pad top/sides; no bottom — last period expandable is flush to the edge */
-  padding: var(--day-card-pad) var(--day-card-pad) 0;
-  border-radius: var(--radius-card, 16px);
-  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
-  background: var(--color-surface, #131219);
+  padding: 0;
+  border-radius: var(--day-radius);
+  border: 1px solid var(--day-border);
+  background: var(--day-surface);
+  overflow: clip;
   transition:
     border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
     box-shadow 0.28s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
 .travel-day-card.is-route-active {
-  border-color: rgba(0, 143, 255, 0.45);
+  --day-border: rgba(0, 143, 255, 0.45);
+  border-color: var(--day-border);
   box-shadow: 0 0 0 1px rgba(0, 143, 255, 0.2);
 }
 
-/* —— Header —— */
+/* —— Header —— pads itself (not the card shell) */
 .travel-day-card__head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--day-card-pad);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--day-card-pad);
+  background: var(--day-surface);
+  border-radius: var(--day-radius) var(--day-radius) 0 0;
 }
 
 .travel-day-card__head-main {
@@ -123,29 +137,26 @@
 }
 
 /*
- * Arrival airport segment — same pill language as nav language + city view toggle:
- * pill track, solid accent pill for the active option.
+ * Arrival airport segment — full-width pill track; plane icon + code per option.
+ * Same pill language as nav language + city view toggle.
  */
 .travel-day-card__arrival {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3, 8px) var(--day-card-pad);
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.travel-day-card__arrival-label {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+/* Nested under Morning expandable, above the first timeline stop */
+.travel-day-card__arrival--in-slot {
+  padding: 10px var(--day-card-pad) 6px;
 }
 
 .travel-day-card__seg {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   box-sizing: border-box;
+  width: 100%;
   height: 36px;
   padding: 3px;
   border-radius: 999px;
@@ -161,9 +172,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
   margin: 0;
-  min-width: 3.25rem;
   height: calc(36px - 6px);
   padding: 0 12px;
   border: none;
@@ -181,6 +194,26 @@
     background-color 0.22s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
+.travel-day-card__seg-btn-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+.travel-day-card__seg-btn-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .travel-day-card__seg-btn:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.06);
@@ -192,6 +225,14 @@
   box-shadow: none;
 }
 
+.travel-day-card__seg-btn[aria-selected='true'] .travel-day-card__seg-btn-icon {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
 .travel-day-card__seg-btn:focus-visible {
   outline: 2px solid var(--color-accent, #008fff);
   outline-offset: 2px;
@@ -201,6 +242,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--day-card-pad);
+  /* No overflow scroll — only the sidebar list scrolls */
+  border-radius: 0 0 var(--day-radius) var(--day-radius);
 }
 
 .travel-day-card__arrival-body[hidden] {
@@ -216,6 +259,17 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   min-width: 0;
+}
+
+/* Day card only: inset budgets (not trip-level budgets in itinerary head) */
+.travel-day-card .travel-day-card__budgets {
+  margin-inline: var(--day-card-pad);
+}
+
+/* Fallback airport picker (when not nested in Morning) — same inset as budgets */
+.travel-day-card__arrival:not(.travel-day-card__arrival--in-slot) {
+  padding-inline: var(--day-card-pad);
+  box-sizing: border-box;
 }
 
 /* Match place-panel rating chips (panel .star-rating: 10px 12px pad) */
@@ -294,16 +348,14 @@
   white-space: nowrap;
 }
 
-/* —— Timeline: full-width period expandables (no nested card chrome) —— */
+/* —— Timeline: full-width period expandables (edge-to-edge on the card) —— */
 .travel-day-card__timeline {
   display: flex;
   flex-direction: column;
   gap: 0;
   margin: 0;
   padding: 0;
-  /* bleed to card edges so slot rows are full-width (incl. bottom flush) */
-  margin-inline: calc(var(--day-card-pad) * -1);
-  width: calc(100% + var(--day-card-pad) * 2);
+  width: 100%;
   border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
 }
 
@@ -337,6 +389,8 @@
 
 .travel-day-card__slot:last-child {
   border-bottom: none;
+  /* Last period sits on the card’s rounded bottom edge */
+  border-radius: 0 0 var(--day-radius) var(--day-radius);
 }
 
 .travel-day-card__slot-summary {
@@ -349,11 +403,22 @@
   cursor: pointer;
   list-style: none;
   user-select: none;
+  background: var(--day-surface, var(--color-surface, #131219));
+  box-shadow: 0 1px 0 0 var(--color-border, rgba(255, 255, 255, 0.06));
   transition: background 0.18s ease;
 }
 
 .travel-day-card__slot-summary:hover {
-  background: var(--color-white-05, rgba(255, 255, 255, 0.03));
+  background: color-mix(
+    in srgb,
+    var(--day-surface, var(--color-surface, #131219)) 92%,
+    var(--color-text, #fff) 8%
+  );
+}
+
+/* Last period (NOITE): match card bottom radius when collapsed at the edge */
+.travel-day-card__slot:last-child:not([open]) > .travel-day-card__slot-summary {
+  border-radius: 0 0 var(--day-radius) var(--day-radius);
 }
 
 /* [map] Google Maps for this period */
@@ -571,7 +636,9 @@
 }
 
 .travel-day-card__slot:last-child .travel-day-card__stops {
-  padding-bottom: 4px;
+  /* Keep last stops inside the rounded bottom; clip does the rest */
+  padding-bottom: max(4px, calc(var(--day-radius) * 0.35));
+  border-radius: 0 0 var(--day-radius) var(--day-radius);
 }
 
 .travel-day-card__stop,
@@ -1028,9 +1095,26 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* —— Mobile: day cards as horizontal snap slider —— */
+@media (max-width: 900px) {
+  .travel-day-card {
+    flex: 0 0 calc(100% - 28px);
+    width: calc(100% - 28px);
+    max-width: none;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
 @media (max-width: 560px) {
-  .travel-day-card__budgets {
-    grid-template-columns: 1fr;
+  /* Keep food + tickets budget cards on one row (same as desktop grid) */
+  .travel-day-card__budget-card {
+    flex-wrap: nowrap;
+    padding: 8px 10px;
+  }
+
+  .travel-day-card__budget-card-value {
+    flex-wrap: nowrap;
   }
 
   .travel-day-card__stops {

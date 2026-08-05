@@ -24,6 +24,7 @@
     "travel:notion:migrate": "node scripts/sync-travel-notion.mjs migrate",
     "travel:notion:placeids": "node scripts/sync-travel-notion.mjs placeids",
     "travel:notion:seed-subcategories": "node scripts/sync-travel-notion.mjs seed-subcategories",
+    "travel:notion:seed-photos": "node scripts/sync-travel-notion.mjs seed-photos",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

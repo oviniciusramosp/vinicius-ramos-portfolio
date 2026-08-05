@@ -295,7 +295,7 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-entrecote': ['meat', 'french'],
   'par-chez-janou': ['french', 'bistro'],
   'par-chez-elo': ['french', 'bistro'],
-  'par-canals': ['french', 'bistro'],
+  'par-canals': ['avenue', 'park'],
   'par-royal-cambronne': ['brasserie', 'french'],
   'par-bike': ['bouillon', 'french', 'self-service'],
   'par-train-bleu': ['french', 'brasserie'],
@@ -327,13 +327,16 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-esplanade-de-gaulle': ['architecture', 'viewpoint'],
   'par-monoprix-rivoli': ['market'],
   'par-tuileries': ['garden', 'park'],
+  'par-orangerie': ['museum', 'architecture'],
+  'par-luxor-obelisk': ['monument'],
   'par-champs-elysees': ['avenue'],
   'par-maison-balzac': ['museum'],
   'par-luxembourg': ['garden', 'park'],
   'par-sorbonne': ['neighborhood', 'architecture'],
   'par-cour-commerce': ['market-street', 'architecture'],
   'par-montmartre': ['neighborhood', 'viewpoint'],
-  'par-palais-royal': ['garden', 'architecture'],
+  // Garden first (nature icon); palace buildings are the frame, not the pin
+  'par-palais-royal': ['park', 'garden'],
   'par-bnf': ['library', 'architecture'],
   'par-chatelet': ['square', 'neighborhood'],
   'par-saint-eustache': ['church', 'monument'],
@@ -379,6 +382,7 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-bhv-marais': ['department'],
   'par-shakespeare': ['coffee-shop', 'shopping'],
   'par-mcdonalds-champs': ['burgers'],
+  'par-mcdonalds-disney': ['burgers'],
   'par-burger-king-opera': ['burgers'],
   'par-starbucks-opera': ['coffee-shop'],
   'par-five-guys-rivoli': ['burgers'],
@@ -391,6 +395,7 @@ export const parisSubcategoriesByPlaceId: Record<string, PlaceSubcategory[]> = {
   'par-belleville': ['park', 'viewpoint'],
   'par-promenade-plantee': ['park', 'avenue'],
   'par-disneyland': ['park', 'show'],
+  'par-bella-notte': ['italian'],
   'par-versailles': ['palace', 'monument', 'garden'],
   'par-saint-michel': ['square', 'architecture'],
   'par-hotel-ville': ['square', 'architecture'],
@@ -456,4 +461,105 @@ export function resolvePlaceSubcategories(
     parisSubcategoriesByPlaceId[placeId] ??
       romeSubcategoriesByPlaceId[placeId],
   );
+}
+
+/**
+ * Material Symbols Rounded ligatures for map pin glyphs.
+ * Used when the pin should reflect subcategory (parks / cafés), not just category.
+ * @see https://fonts.google.com/icons?icon.style=Rounded
+ */
+export const subcategoryMaterialIcon: Partial<
+  Record<PlaceSubcategory, string>
+> = {
+  // Cafés
+  'coffee-shop': 'local_cafe',
+  pastry: 'cookie',
+  bakery: 'bakery_dining',
+  'ice-cream': 'icecream',
+  // Chains / commons food types (KFC uses burger glyph too — no chicken MS icon)
+  burgers: 'lunch_dining',
+  chicken: 'lunch_dining',
+  // Parks & walks
+  park: 'nature',
+  garden: 'yard',
+  neighborhood: 'holiday_village',
+  avenue: 'directions_walk',
+  square: 'nature',
+  church: 'church',
+  castle: 'castle',
+  museum: 'museum',
+  library: 'import_contacts',
+  'market-street': 'nature',
+  architecture: 'nature',
+  bridge: 'bridge',
+  viewpoint: 'visibility',
+  show: 'theater_comedy',
+  monument: 'account_balance',
+  tower: 'apartment',
+  palace: 'fort',
+  boat: 'sailing',
+  metro: 'subway',
+  shopping: 'shopping_bag',
+  market: 'storefront',
+};
+
+/**
+ * When a place has several subcategories, pick the most distinctive pin glyph.
+ * First match in this list wins (more specific → more generic).
+ */
+export const pinSubcategoryPriority: readonly PlaceSubcategory[] = [
+  // Cafés / commons — shop types before generic coffee; bakery before pastry
+  // so dual-tagged places (e.g. La Maison d'Isabelle) read as bakery
+  'ice-cream',
+  'burgers',
+  'chicken',
+  'bakery',
+  'pastry',
+  'coffee-shop',
+  // Parks & walks — landmark-ish before generic park
+  'library',
+  'museum',
+  'church',
+  'castle',
+  'palace',
+  'monument',
+  'tower',
+  'boat',
+  'show',
+  'bridge',
+  'viewpoint',
+  'architecture',
+  'market-street',
+  'market',
+  'metro',
+  'shopping',
+  'neighborhood',
+  'avenue',
+  'square',
+  // park before garden so dual-tagged places (Monceau, Tuileries, …)
+  // use nature, not yard
+  'park',
+  'garden',
+] as const;
+
+/**
+ * Material ligature for the best pin subcategory among `subs`, or undefined.
+ */
+export function pinMaterialFromSubcategories(
+  subs: readonly string[] | undefined | null,
+): string | undefined {
+  if (!subs?.length) return undefined;
+  const set = new Set(subs.filter(isPlaceSubcategory));
+  if (!set.size) return undefined;
+  for (const id of pinSubcategoryPriority) {
+    if (set.has(id)) {
+      const name = subcategoryMaterialIcon[id];
+      if (name) return name;
+    }
+  }
+  for (const id of set) {
+    const name = subcategoryMaterialIcon[id];
+    if (name) return name;
+  }
+  return undefined;
 }

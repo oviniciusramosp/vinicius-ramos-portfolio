@@ -476,7 +476,9 @@
 
 .travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__favorite .material-symbols-rounded,
 .travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__favorite .material-symbols-rounded {
-  font-size: 1rem;
+  font-size: 11px;
+  width: 11px;
+  height: 11px;
 }
 
 .travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__tags,
@@ -499,6 +501,17 @@
   font-size: 9px;
   letter-spacing: 0.06em;
   gap: 4px;
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__tags-main,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__tags-main {
+  --cat-badge-h: calc(9px * 0.95 + 6px + 2px);
+}
+
+.travel-place-card--list:not(.travel-place-card--panel) .travel-place-card__cat,
+.travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__cat {
+  height: var(--cat-badge-h);
+  padding: 0 7px;
 }
 
 .travel-place-card--list:not(.travel-place-card--panel)
@@ -749,6 +762,10 @@
   max-width: 100%;
 }
 
+.travel-place-card:not(.travel-place-card--panel) .travel-place-card__tags-main {
+  flex: 0 0 auto;
+}
+
 /* Grid may keep auto width; list overrides with 100% + overflow-x above */
 .travel-place-card--grid:not(.travel-place-card--panel) .travel-place-card__subs {
   width: auto;
@@ -764,7 +781,7 @@
   outline: none;
 }
 
-/* —— Title row: [name ♥][x] —— */
+/* —— Title row: [name][x] —— */
 .travel-place-card__title-row {
   display: flex;
   flex-direction: row;
@@ -812,18 +829,41 @@
   word-break: break-word;
 }
 
-/* Personal favorite — filled heart beside the place name */
+/* Category row: [cat badge][♥ round badge] — same height */
+.travel-place-card__tags-main {
+  /* Shared badge height for cat chip + round favorite */
+  --cat-badge-h: calc(12px * 0.95 + 12px + 2px);
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--tag-chip-gap, 6px);
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Personal favorite — round badge matching category chip height */
 .travel-place-card__favorite {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  width: var(--cat-badge-h);
+  height: var(--cat-badge-h);
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, #e11d48 35%, transparent);
+  background: color-mix(in srgb, #e11d48 16%, transparent);
   color: #e11d48;
   line-height: 1;
 }
 
 .travel-place-card__favorite .material-symbols-rounded {
-  font-size: 1.125rem;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
   font-variation-settings:
     'FILL' 1,
     'wght' 500,
@@ -902,7 +942,8 @@
   box-sizing: border-box;
   gap: 6px;
   margin: 0;
-  padding: 6px 12px 6px 10px;
+  height: var(--cat-badge-h, calc(12px * 0.95 + 12px + 2px));
+  padding: 0 12px 0 10px;
   border: 1px solid color-mix(in srgb, var(--cat-color) 40%, transparent);
   border-radius: 999px;
   background: color-mix(in srgb, var(--cat-color) 20%, transparent);
@@ -974,13 +1015,24 @@
   margin-top: var(--card-pad-x, var(--card-pad));
 }
 
+.travel-place-card--panel .travel-place-card__tags-main {
+  /* font 11 + pad 5*2 (was), no border */
+  --cat-badge-h: 21px;
+}
+
 .travel-place-card--panel .travel-place-card__cat {
   border: none;
-  padding: 5px 10px 5px 8px;
+  height: var(--cat-badge-h);
+  padding: 0 10px 0 8px;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.06em;
   line-height: 1;
+}
+
+.travel-place-card--panel .travel-place-card__favorite {
+  border: none;
+  background: color-mix(in srgb, #e11d48 18%, transparent);
 }
 
 .travel-place-card__cat-icon {
@@ -1169,6 +1221,49 @@ html[data-theme='light'] .travel-place-card__ratings .star-rating {
   font-size: 11px;
   line-height: 1.35;
   color: var(--color-text-muted, rgba(255, 255, 255, 0.48));
+}
+
+/* Free / reduced ticket deals under Ticket */
+.travel-place-card__ticket-promos {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.travel-place-card__ticket-promo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: color-mix(in srgb, #34d399 78%, var(--color-text, #fff));
+}
+
+.travel-place-card__ticket-promo-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-size: 13px;
+  line-height: 1;
+  width: 13px;
+  height: 13px;
+  color: #34d399;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+html[data-theme='light'] .travel-place-card__ticket-promo {
+  color: color-mix(in srgb, #059669 72%, var(--color-text, #111));
+}
+
+html[data-theme='light'] .travel-place-card__ticket-promo-icon {
+  color: #059669;
 }
 
 /* Info icon next to ticket price (replaces “Check tickets” text) */

@@ -8,6 +8,7 @@ import {
   travelCities,
   travelUi,
   formatCityMeta,
+  searchPlacesPlaceholder,
   cityCategoryKeys,
   googleMapsUrl,
   placeCategoryMeta,
@@ -46,6 +47,7 @@ const pins = places.map((place) => ({
   label: place.name.en,
   labelPt: place.name['pt-BR'],
   category: place.category,
+  subcategories: place.subcategories ?? null,
   featured: place.featured === true,
   landmark: place.landmark ?? null,
   mapsUrl: googleMapsUrl(place, city),
@@ -62,8 +64,9 @@ const pins = places.map((place) => ({
 
 /** Escape `<` so `</script>` inside string values cannot break the JSON script tag */
 const pinsJson = JSON.stringify(pins).replace(/</g, '\\u003c');
-const metaEn = formatCityMeta(city, 'en');
-const metaPt = formatCityMeta(city, 'pt-BR');
+const searchPlaceholder = searchPlacesPlaceholder(places.length);
+const countryCrumbEn = `${city.country.en}/`;
+const countryCrumbPt = `${city.country['pt-BR']}/`;
 const categories = cityCategoryKeys(city);
 
 const placesByCategory = categories.map((key) => ({
@@ -102,20 +105,29 @@ function formatTripEur(n: number): string {
       data-travel-places
       id="travel-city-sidebar"
     >
-      <a
-        class="travel-city__back"
-        href="/travel"
-        data-cursor="block"
-        data-magnetic
-        data-magnetic-range="3"
-        data-i18n-en={travelUi.back.en}
-        data-i18n-pt={travelUi.back['pt-BR']}
-      >
-        {travelUi.back.en}
-      </a>
-
       <header class="travel__intro">
-        <div class="travel-city__heading">
+        <div class="travel-city__hero">
+          <p class="travel-city__breadcrumb">
+            <a
+              class="travel-city__back"
+              href="/travel"
+              data-cursor="block"
+              data-magnetic
+              data-magnetic-range="3"
+              data-i18n-en={travelUi.back.en}
+              data-i18n-pt={travelUi.back['pt-BR']}
+            >
+              {travelUi.back.en}
+            </a>
+            <span
+              class="travel-city__country"
+              data-i18n-en={countryCrumbEn}
+              data-i18n-pt={countryCrumbPt}
+            >
+              {countryCrumbEn}
+            </span>
+          </p>
+
           <h1
             class="travel__title display-title"
             data-i18n-en={city.name.en}
@@ -123,43 +135,36 @@ function formatTripEur(n: number): string {
           >
             {city.name.en}
           </h1>
-          <p
-            class="travel-city__meta"
-            data-i18n-en={metaEn}
-            data-i18n-pt={metaPt}
-          >
-            {metaEn}
-          </p>
         </div>
 
         <div class="travel__search-row">
-          <label class="travel__search">
-            <span
+          <div class="travel__search">
+            <label
               class="visually-hidden"
+              for="travel-search-input"
               data-i18n-en="Search places"
               data-i18n-pt="Buscar lugares"
             >
               Search places
-            </span>
+            </label>
             <ion-icon
               class="travel__search-icon"
               name="search-outline"
               aria-hidden="true"
             ></ion-icon>
             <input
+              id="travel-search-input"
               type="search"
               class="travel__search-input"
               data-travel-search
-              data-i18n-en={travelUi.searchPlacesPlaceholder.en}
-              data-i18n-pt={travelUi.searchPlacesPlaceholder['pt-BR']}
+              data-i18n-en={searchPlaceholder.en}
+              data-i18n-pt={searchPlaceholder['pt-BR']}
               data-i18n-as="placeholder"
-              placeholder={travelUi.searchPlacesPlaceholder.en}
+              placeholder={searchPlaceholder.en}
               autocomplete="off"
             />
-          </label>
 
-          <div class="travel__view-controls">
-            {/* Category filter: button + multi-select checkbox popover */}
+            {/* Category filter: icon inside search field (right) */}
             <div
               class="travel__filter-wrap"
               data-travel-filter-mode="categories"
@@ -172,7 +177,7 @@ function formatTripEur(n: number): string {
                 aria-expanded="false"
                 aria-controls="travel-filter-popover"
                 data-magnetic
-                data-magnetic-range="4"
+                data-magnetic-range="3"
                 data-cursor="block"
                 data-i18n-en={travelUi.filterCategories.en}
                 data-i18n-pt={travelUi.filterCategories['pt-BR']}
@@ -241,89 +246,58 @@ function formatTripEur(n: number): string {
                 </ul>
               </div>
             </div>
+          </div>
 
-            <div
-              class="travel__view-toggle"
-              role="group"
-              data-travel-view-toggle
-              data-i18n-en={travelUi.viewModeGroup.en}
-              data-i18n-pt={travelUi.viewModeGroup['pt-BR']}
+          <div
+            class="travel__view-toggle"
+            role="group"
+            data-travel-view-toggle
+            data-i18n-en={travelUi.viewModeGroup.en}
+            data-i18n-pt={travelUi.viewModeGroup['pt-BR']}
+            data-i18n-as="aria-label"
+            aria-label={travelUi.viewModeGroup.en}
+          >
+            <button
+              type="button"
+              class="travel__view-btn is-active"
+              data-travel-view="list"
+              aria-pressed="true"
+              data-magnetic
+              data-magnetic-range="3"
+              data-cursor="block"
+              data-i18n-en={travelUi.viewList.en}
+              data-i18n-pt={travelUi.viewList['pt-BR']}
               data-i18n-as="aria-label"
-              aria-label={travelUi.viewModeGroup.en}
+              aria-label={travelUi.viewList.en}
+              title={travelUi.viewList.en}
             >
-              <button
-                type="button"
-                class="travel__view-btn"
-                data-travel-view="grid"
-                aria-pressed="false"
-                data-magnetic
-                data-magnetic-range="3"
-                data-cursor="block"
-                data-i18n-en={travelUi.viewGrid.en}
-                data-i18n-pt={travelUi.viewGrid['pt-BR']}
-                data-i18n-as="aria-label"
-                aria-label={travelUi.viewGrid.en}
-                title={travelUi.viewGrid.en}
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">
-                  grid_view
-                </span>
-              </button>
-              <button
-                type="button"
-                class="travel__view-btn is-active"
-                data-travel-view="list"
-                aria-pressed="true"
-                data-magnetic
-                data-magnetic-range="3"
-                data-cursor="block"
-                data-i18n-en={travelUi.viewList.en}
-                data-i18n-pt={travelUi.viewList['pt-BR']}
-                data-i18n-as="aria-label"
-                aria-label={travelUi.viewList.en}
-                title={travelUi.viewList.en}
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">
-                  view_list
-                </span>
-              </button>
-              <button
-                type="button"
-                class="travel__view-btn"
-                data-travel-view="itinerary"
-                aria-pressed="false"
-                data-magnetic
-                data-magnetic-range="3"
-                data-cursor="block"
-                data-i18n-en={travelUi.viewItinerary.en}
-                data-i18n-pt={travelUi.viewItinerary['pt-BR']}
-                data-i18n-as="aria-label"
-                aria-label={travelUi.viewItinerary.en}
-                title={travelUi.viewItinerary.en}
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">
-                  route
-                </span>
-              </button>
-            </div>
+              <span class="material-symbols-rounded" aria-hidden="true">
+                view_list
+              </span>
+            </button>
+            <button
+              type="button"
+              class="travel__view-btn"
+              data-travel-view="itinerary"
+              aria-pressed="false"
+              data-magnetic
+              data-magnetic-range="3"
+              data-cursor="block"
+              data-i18n-en={travelUi.viewItinerary.en}
+              data-i18n-pt={travelUi.viewItinerary['pt-BR']}
+              data-i18n-as="aria-label"
+              aria-label={travelUi.viewItinerary.en}
+              title={travelUi.viewItinerary.en}
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">
+                route
+              </span>
+            </button>
           </div>
         </div>
       </header>
 
       <div class="travel-city__views" data-places-view="list">
-        {/* Grid: flat, all categories mixed — category tag only */}
-        <div
-          class="travel-city__grid"
-          data-view-panel="grid"
-          hidden
-        >
-          {
-            places.map((place) => (
-              <TravelPlaceCard place={place} city={city} variant="grid" />
-            ))
-          }
-        </div>
-
         {/* List: grouped by category — expand label above groups */}
         <div class="travel-city__groups" data-view-panel="list">
           <div class="travel-city__list-actions">
@@ -1339,6 +1313,7 @@ function formatTripEur(n: number): string {
        * (bottom: 0 + height ≤ 100dvh keeps the top edge + radius + grab on-screen).
        */
       --sheet-full-h: 100dvh;
+      --sheet-chrome-inset: 10px;
       position: fixed;
       top: auto;
       left: 0;
@@ -1350,8 +1325,13 @@ function formatTripEur(n: number): string {
       max-height: var(--sheet-mid-h);
       height: var(--sheet-mid-h);
       border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+      /* No outer white rim — soft lift via upward drop-shadow only */
+      border: none;
       border-bottom: none;
-      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.55);
+      box-shadow:
+        0 -1px 0 rgba(0, 0, 0, 0.12),
+        0 -8px 28px rgba(0, 0, 0, 0.28),
+        0 -20px 56px rgba(0, 0, 0, 0.22);
       /* Closed: fully off-screen; open slides up */
       transform: translateY(110%);
       opacity: 1;
@@ -1400,8 +1380,8 @@ function formatTripEur(n: number): string {
     }
 
     /*
-     * Sticky chrome: fixed to the sheet top (not the scrolling body).
-     * Grab + close stay put while place content scrolls underneath.
+     * Sticky chrome: grab + close over the media (no full-width wash).
+     * A gradient/frosted strip looked like a gap between sheet top and photo.
      */
     .travel-map-panel__chrome {
       display: block;
@@ -1412,13 +1392,7 @@ function formatTripEur(n: number): string {
       z-index: 30;
       height: 44px;
       pointer-events: none;
-      /* Soft read on photo headers */
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(0, 0, 0, 0.12) 55%,
-        transparent 100%
-      );
+      background: transparent;
     }
 
     .travel-map-panel__grab {
@@ -1436,20 +1410,29 @@ function formatTripEur(n: number): string {
       cursor: grab;
       touch-action: none;
       background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-radius: 0;
     }
 
+    /* Glass blur lives on the pill only — not a full-width bar */
     .travel-map-panel__grab-pill {
-      width: 36px;
-      height: 4px;
+      width: 40px;
+      height: 5px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.4);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(16px) saturate(1.25);
+      -webkit-backdrop-filter: blur(16px) saturate(1.25);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.14),
+        0 2px 10px rgba(0, 0, 0, 0.18);
     }
 
     .travel-map-panel__close {
       position: absolute;
-      top: 6px;
-      right: 10px;
+      /* Equal inset from top edge and right edge of the sheet */
+      top: var(--sheet-chrome-inset, 10px);
+      right: var(--sheet-chrome-inset, 10px);
       z-index: 2;
       display: inline-flex;
       align-items: center;
@@ -1564,18 +1547,29 @@ function formatTripEur(n: number): string {
     }
   }
 
-  .travel-city__back {
-    display: inline-flex;
+  .travel-city__breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    margin-bottom: var(--space-6);
+    margin: 0;
     padding: 0;
-    border: none;
-    background: transparent;
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.06em;
     line-height: 1.2;
     color: rgba(255, 255, 255, 0.62);
+  }
+
+  .travel-city__back {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    color: inherit;
     text-decoration: none;
     transition: color var(--duration-fast) var(--ease-smooth);
   }
@@ -1590,52 +1584,49 @@ function formatTripEur(n: number): string {
     border-radius: 2px;
   }
 
+  .travel-city__country {
+    color: inherit;
+  }
+
   .travel__intro {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-6);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-5);
     width: 100%;
     margin-bottom: var(--space-8);
   }
 
-  .travel-city__heading {
-    flex: 1 1 auto;
-    min-width: 0;
+  .travel-city__hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    width: 100%;
   }
 
   .travel__title {
-    margin: 0 0 var(--space-3);
+    margin: 0;
     font-size: clamp(36px, 5vw, 52px);
     line-height: var(--lh-tight);
   }
 
-  .travel-city__meta {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.04em;
-    color: var(--color-text-soft);
-  }
-
-  /* Search + view modes on the same row (right of title) */
+  /* Search (with inline filter) + list/itinerary segment */
   .travel__search-row {
     --travel-control-h: 42px;
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 0 1 auto;
-    margin-left: auto;
-    margin-top: 6px;
+    width: 100%;
     min-width: 0;
   }
 
   .travel__search {
     position: relative;
-    flex: 1 1 240px;
+    flex: 1 1 auto;
     width: 100%;
     min-width: 0;
-    max-width: 320px;
+    max-width: none;
   }
 
   .travel__search-icon {
@@ -1654,7 +1645,8 @@ function formatTripEur(n: number): string {
     width: 100%;
     box-sizing: border-box;
     height: var(--travel-control-h);
-    padding: 0 16px 0 42px;
+    /* left: search icon · right: filter icon */
+    padding: 0 44px 0 42px;
     border-radius: var(--radius-pill);
     border: 1px solid var(--color-input-border);
     background: var(--color-input-bg);
@@ -1671,6 +1663,15 @@ function formatTripEur(n: number): string {
     color: var(--color-text-muted);
   }
 
+  /* Avoid native clear X overlapping the filter icon */
+  .travel__search-input::-webkit-search-decoration,
+  .travel__search-input::-webkit-search-cancel-button,
+  .travel__search-input::-webkit-search-results-button,
+  .travel__search-input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
   .travel__search-input:focus {
     border-color: rgba(0, 143, 255, 0.55);
     background: rgba(0, 143, 255, 0.06);
@@ -1680,42 +1681,34 @@ function formatTripEur(n: number): string {
     color: var(--color-accent);
   }
 
-  /* Filter button + view toggle — same height as search input */
-  .travel__view-controls {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: var(--travel-control-h);
-  }
-
+  /* Filter icon sits inside the search field, right edge */
   .travel__filter-wrap {
-    position: relative;
-    flex: 0 0 auto;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    z-index: 2;
+    transform: translateY(-50%);
   }
 
   .travel__filter-btn {
     position: relative;
-    flex: 0 0 auto;
     appearance: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: var(--travel-control-h);
-    height: var(--travel-control-h);
+    width: 32px;
+    height: 32px;
     margin: 0;
     padding: 0;
+    border: none;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(12, 12, 16, 0.35);
-    color: rgba(255, 255, 255, 0.72);
+    background: transparent;
+    color: var(--color-text-muted);
     cursor: pointer;
-    backdrop-filter: blur(14px) saturate(160%);
     transition:
-      color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
-      border-color 0.28s cubic-bezier(0.44, 0, 0.56, 1),
-      background-color 0.28s cubic-bezier(0.44, 0, 0.56, 1);
+      color 0.22s cubic-bezier(0.44, 0, 0.56, 1),
+      background-color 0.22s cubic-bezier(0.44, 0, 0.56, 1);
   }
 
   .travel__filter-btn .material-symbols-rounded {
@@ -1728,23 +1721,34 @@ function formatTripEur(n: number): string {
       'opsz' 24;
   }
 
-  .travel__filter-btn:hover,
+  .travel__filter-btn:hover {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
   .travel__filter-btn[aria-expanded='true'],
   .travel__filter-btn.is-active {
-    color: #fff;
-    border-color: rgba(0, 143, 255, 0.45);
-    background: rgba(0, 143, 255, 0.16);
+    color: var(--color-accent, #008fff);
+    background: rgba(0, 143, 255, 0.14);
+  }
+
+  .travel__filter-btn.is-active .material-symbols-rounded {
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 500,
+      'GRAD' 0,
+      'opsz' 24;
   }
 
   .travel__filter-btn:focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
+    outline-offset: 1px;
   }
 
   .travel__filter-btn-badge {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: 1px;
+    right: 1px;
     min-width: 14px;
     height: 14px;
     padding: 0 3px;
@@ -1900,8 +1904,11 @@ function formatTripEur(n: number): string {
   .travel__view-toggle {
     display: inline-flex;
     align-items: center;
+    flex: 0 0 auto;
+    align-self: center;
     box-sizing: border-box;
     height: var(--travel-control-h);
+    margin: 0;
     padding: 3px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1968,25 +1975,6 @@ function formatTripEur(n: number): string {
   }
 
   .travel-city__views [data-view-panel][hidden] {
-    display: none !important;
-  }
-
-  /* Grid: flat mixed places — compact columns, not ultra-narrow */
-  .travel-city__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--space-5);
-    align-items: stretch;
-  }
-
-  .travel-city__grid :global(.travel-place-card) {
-    height: 100%;
-    min-height: 0;
-    min-width: 0;
-  }
-
-  .travel-city__grid :global(.travel-place-card.is-filtered-out),
-  .travel-city__grid :global(.travel-place-card[hidden]) {
     display: none !important;
   }
 
@@ -2124,6 +2112,29 @@ function formatTripEur(n: number): string {
     gap: var(--space-6);
   }
 
+  /* Mobile: horizontal day slider (snap) — card styles in travel-itinerary.css */
+  @media (max-width: 900px) {
+    .travel-city__itinerary-days {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--page-pad-x-sm, 16px);
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      /* Bleed into page pad so first/last cards edge-align with content */
+      margin-inline: calc(-1 * var(--page-pad-x-sm, 16px));
+      padding-inline: var(--page-pad-x-sm, 16px);
+    }
+
+    .travel-city__itinerary-days::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
   .travel-city__itinerary-empty {
     margin: 0;
     padding: var(--space-9) var(--space-6);
@@ -2172,25 +2183,6 @@ function formatTripEur(n: number): string {
     border: 0;
   }
 
-  @media (max-width: 720px) {
-    .travel__intro {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--space-5);
-    }
-
-    .travel__search-row {
-      margin-left: 0;
-      margin-top: 0;
-      width: 100%;
-    }
-
-    .travel__search {
-      flex: 1 1 auto;
-      max-width: none;
-    }
-  }
-
   @media (max-width: 640px) {
     .travel__map-hero {
       height: min(42vh, 320px);
@@ -2198,29 +2190,6 @@ function formatTripEur(n: number): string {
 
     .travel-city__body {
       padding: 28px 16px 72px;
-    }
-  }
-
-  /* Desktop sidebar: tighten title scale a bit for narrow column */
-  @media (min-width: 901px) {
-    .travel-city__body .travel__title {
-      font-size: clamp(1.5rem, 2.4vw, 2rem);
-    }
-
-    .travel-city__body .travel__intro {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--space-5);
-    }
-
-    .travel-city__body .travel__search-row {
-      margin-left: 0;
-      width: 100%;
-    }
-
-    .travel-city__body .travel__search {
-      max-width: none;
-      width: 100%;
     }
   }
 

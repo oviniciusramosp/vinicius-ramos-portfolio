@@ -148,6 +148,11 @@ export function bootTravelPanel(): void {
     );
   };
 
+  /**
+   * Sync map free-region padding with the sheet/card.
+   * `animatePin` re-centers the open place — use sparingly. Multiple flyTo
+   * calls (open + settle) stack and look like flicker/shake on mobile.
+   */
   const syncMapChrome = (animatePin: boolean) => {
     const map = getTravelMapHandle();
     if (!map) return;
@@ -175,6 +180,7 @@ export function bootTravelPanel(): void {
     }
   };
 
+  /** Update padding after layout settles. Pin camera is owned by map `select`. */
   const scheduleMapChrome = (animatePin: boolean, delay = SHEET_MS) => {
     if (mapPadTimer) window.clearTimeout(mapPadTimer);
     syncMapChrome(false);
@@ -460,7 +466,9 @@ export function bootTravelPanel(): void {
 
     if (wasOpen) {
       panel.classList.add('is-open');
-      scheduleMapChrome(true, 40);
+      // Padding only — map `select` already ran ensureVisible once with the
+      // chrome we set above. A second flyTo 40ms later caused mobile shake.
+      scheduleMapChrome(false, 40);
     } else {
       panel.classList.remove('is-open');
       void panel.offsetHeight;
@@ -468,8 +476,9 @@ export function bootTravelPanel(): void {
         openingRaf = requestAnimationFrame(() => {
           openingRaf = 0;
           panel.classList.add('is-open');
-          // Desktop: re-center after card slide-in; mobile: after sheet rise
-          scheduleMapChrome(true, isMobileSheet() ? SHEET_MS : 280);
+          // Re-measure free region after sheet/card transition — no re-fly.
+          // (select already centered with the pre-open chrome estimate.)
+          scheduleMapChrome(false, isMobileSheet() ? SHEET_MS : 280);
         });
       });
     }

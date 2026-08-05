@@ -6,7 +6,12 @@
  */
 import { describe, expect, it } from 'vitest';
 import { photosByPlaceId, photosForPlaceId } from './travel-photos';
-import { travelCities } from './travel';
+import {
+  getTravelCity,
+  resolvePlacePhotos,
+  travelCities,
+  withResolvedArea,
+} from './travel';
 
 const WIKI_HOST = 'upload.wikimedia.org';
 const ALLOWED_HOSTS = new Set([
@@ -31,6 +36,22 @@ const ALLOWED_HOSTS = new Set([
   'dynamic-media-cdn.tripadvisor.com',
   // Sortir à Paris CDN
   'cdn.sortiraparis.com',
+  // Magnific stock (Luxor Obelisk cover)
+  'img.magnific.com',
+  // laSexta photo CDN (Luxor Obelisk gallery)
+  'fotografias.lasexta.com',
+  // ArchDaily CDN (BnF cover)
+  'images.adsttc.com',
+  // Arquitectura Viva (BnF gallery)
+  'arquitecturaviva.com',
+  // WordPress.com media CDN (BnF Labrouste room)
+  'fernandoeichenberg.files.wordpress.com',
+  // WordPress Jetpack image CDN (Sainte-Chapelle cover)
+  'i0.wp.com',
+  // Tiqets Imgix CDN (Sainte-Chapelle gallery)
+  'aws-tiqets-cdn.imgix.net',
+  // World in Paris (Cour du Commerce cover)
+  'worldinparis.com',
 ]);
 
 function parseUrl(url: string): URL | null {
@@ -101,6 +122,29 @@ describe('travel-photos registry', () => {
 
   it('photosForPlaceId returns undefined for empty / unknown', () => {
     expect(photosForPlaceId('__no-such-place__')).toBeUndefined();
+  });
+
+  it('resolvePlacePhotos prefers curated multi-photo registry over Notion cover-only', () => {
+    const registry = photosForPlaceId('par-galeries-lafayette');
+    expect(registry?.length).toBeGreaterThan(1);
+
+    // Simulate Notion shipping a single cover URL
+    const notionOnly = [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg',
+        alt: { en: 'Galeries Lafayette', 'pt-BR': 'Galeries Lafayette' },
+      },
+    ];
+    const resolved = resolvePlacePhotos('par-galeries-lafayette', notionOnly);
+    expect(resolved?.length).toBe(registry!.length);
+    expect(resolved?.[0]?.url).toBe(registry![0]!.url);
+
+    // Live city merge + withResolvedArea must expose the full slider
+    const paris = getTravelCity('paris');
+    const place = paris?.places.find((p) => p.id === 'par-galeries-lafayette');
+    expect(place).toBeDefined();
+    const full = withResolvedArea(place!);
+    expect(full.photos?.length).toBe(registry!.length);
   });
 
   it('every place id with photos exists in travel data (no orphan keys)', () => {

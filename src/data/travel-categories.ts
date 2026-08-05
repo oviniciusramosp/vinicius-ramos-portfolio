@@ -6,6 +6,8 @@
  * (loaded site-wide in BaseLayout).
  */
 
+import { pinMaterialFromSubcategories } from './travel-subcategories';
+
 export type PlaceCategory =
   | 'airport'
   /** Stations, metro stops, pure transit waypoints (not scenic rides) */
@@ -139,6 +141,43 @@ export function categoryIconHtml(
   category: PlaceCategory | string | undefined,
 ): string {
   const name = categoryMaterialName(category);
+  if (!name) return '';
+  return materialIconHtml(name);
+}
+
+/**
+ * Categories whose map dots use subcategory glyphs (not the parent category icon).
+ * Parks & walks, Cafés, and Chains/Commons (burgers / chicken / coffee).
+ */
+export const CATEGORIES_WITH_SUBCATEGORY_PIN_ICONS: ReadonlySet<string> =
+  new Set(['parks', 'cafes', 'commons']);
+
+/**
+ * Material ligature for a place pin: subcategory when enabled, else category.
+ */
+export function placePinMaterialName(
+  category: PlaceCategory | string | undefined,
+  subcategories?: readonly string[] | null,
+): string {
+  if (
+    category &&
+    CATEGORIES_WITH_SUBCATEGORY_PIN_ICONS.has(category) &&
+    subcategories?.length
+  ) {
+    const fromSub = pinMaterialFromSubcategories(subcategories);
+    if (fromSub) return fromSub;
+  }
+  return categoryMaterialName(category);
+}
+
+/**
+ * Markup for place map/itinerary dots (subcategory-aware for parks, cafés, commons).
+ */
+export function placePinIconHtml(
+  category: PlaceCategory | string | undefined,
+  subcategories?: readonly string[] | null,
+): string {
+  const name = placePinMaterialName(category, subcategories);
   if (!name) return '';
   return materialIconHtml(name);
 }

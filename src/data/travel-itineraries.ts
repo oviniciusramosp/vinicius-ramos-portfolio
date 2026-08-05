@@ -273,20 +273,22 @@ const parisD1CdgStops: ItineraryStop[] = [
 ];
 
 /**
- * Paris — 6-day suggestion (arrival Friday + 5 full days; calendar dates ignored).
+ * Paris — 7-day suggestion.
+ * Calendar anchor: Day 1 = Fri 18 Sep 2026 → Day 7 Disney = Thu 24 Sep 2026
+ * (weekday, post-rentrée shoulder season; weekends left for city loops).
  * Food target ~€50/person/day; Day 1 tickets = transport (Navigo) only.
  * Day 1 supports ORY vs CDG arrival via segment control.
  */
 export const parisItinerary: TravelItinerary = {
-  id: 'paris-6-days',
+  id: 'paris-7-days',
   title: {
-    en: '6-day Paris route',
-    'pt-BR': 'Roteiro de 6 dias em Paris',
+    en: '7-day Paris route',
+    'pt-BR': 'Roteiro de 7 dias em Paris',
   },
   subtitle: {
-    en: 'Friday arrival (Orly or CDG → home → market → home → Eiffel area → home) then classic loops — west axis, left bank, Versailles, right bank, east parks.',
+    en: 'Friday arrival (Orly or CDG → home → market → home → Eiffel area → home) then classic loops — west axis, left bank, Versailles, right bank, east parks — and a full Disneyland Paris day.',
     'pt-BR':
-      'Chegada sexta (Orly ou CDG → casa → mercado → casa → Torre → casa) e depois loops clássicos — eixo oeste, margem esquerda, Versalhes, margem direita, parques a leste.',
+      'Chegada sexta (Orly ou CDG → casa → mercado → casa → Torre → casa) e depois loops clássicos — eixo oeste, margem esquerda, Versalhes, margem direita, parques a leste — e um dia inteiro na Disneyland Paris.',
   },
   days: [
     {
@@ -946,6 +948,73 @@ export const parisItinerary: TravelItinerary = {
           note: {
             en: 'Dinner at Gare de Lyon — book ahead.',
             'pt-BR': 'Jantar na Gare de Lyon — reserve antes.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'paris-d7',
+      day: 7,
+      title: {
+        en: 'Disneyland Paris · full day',
+        'pt-BR': 'Disneyland Paris · dia inteiro',
+      },
+      summary: {
+        en: 'Thu 24 Sep 2026 — RER A to Chessy, Adventure World first, Mickey pizza, Disneyland Park, Disney Village dinner, fireworks, late train home.',
+        'pt-BR':
+          'Qui 24 set 2026 — RER A até Chessy, Adventure World primeiro, pizza do Mickey, Disneyland Park, jantar no Disney Village, fogos e trem de volta tarde.',
+      },
+      stops: [
+        {
+          placeId: 'par-disneyland',
+          time: '09:00',
+          slot: 'morning',
+          note: {
+            en: 'RER A → Marne-la-Vallée–Chessy (~40 min from central Paris; ~€5/person round trip). Train stops at the park entrance. Arrive ~30 min before open (gates 09:30). Buy a 1-day 2-park ticket on the official Disney site or GetYourGuide. Start at Disney Adventure World (ex–Walt Disney Studios): Nemo coaster (very popular) + Ratatouille first.',
+            'pt-BR':
+              'RER A → Marne-la-Vallée–Chessy (~40 min saindo do centro; ~€5/pessoa ida e volta). O trem para na entrada do parque. Chegue ~30 min antes da abertura (09h30). Compre ingresso de 1 dia / 2 parques no site oficial ou GetYourGuide. Comece no Disney Adventure World (ex–Walt Disney Studios): montanha-russa do Nemo (super disputada) + Ratatouille primeiro.',
+          },
+        },
+        {
+          placeId: 'par-bella-notte',
+          time: '12:30',
+          slot: 'afternoon',
+          note: {
+            en: 'Famous Mickey-shaped individual pizza (~€11). Inside Disneyland Park (Fantasyland).',
+            'pt-BR':
+              'Famosa pizza individual em formato do Mickey (~€11). Dentro do Disneyland Park (Fantasyland).',
+          },
+        },
+        {
+          placeId: 'par-disneyland',
+          time: '14:00',
+          slot: 'afternoon',
+          countTicket: false,
+          note: {
+            en: 'Afternoon in Disneyland Park (castle, lands, rides). Keep energy for the evening fireworks.',
+            'pt-BR':
+              'Tarde no Disneyland Park (castelo, lands, brinquedos). Guarde energia para os fogos à noite.',
+          },
+        },
+        {
+          placeId: 'par-mcdonalds-disney',
+          time: '18:30',
+          slot: 'evening',
+          note: {
+            en: 'Disney Village (outside the paid gates — exit/re-entry OK). Dinner options: McDonald’s, Five Guys, Starbucks.',
+            'pt-BR':
+              'Disney Village (fora dos portões pagos — dá pra sair e voltar). Opções de jantar: McDonald’s, Five Guys, Starbucks.',
+          },
+        },
+        {
+          placeId: 'par-disneyland',
+          time: '22:20',
+          slot: 'evening',
+          countTicket: false,
+          note: {
+            en: 'Fireworks ~22:30 (usually end ~23:30). Leave ~10 min before the end to avoid the RER queue. Last train toward Paris ~00:00.',
+            'pt-BR':
+              'Show de fogos ~22h30 (geralmente termina ~23h30). Saia ~10 min antes do fim para não pegar fila no RER. Último trem para Paris ~00h.',
           },
         },
       ],

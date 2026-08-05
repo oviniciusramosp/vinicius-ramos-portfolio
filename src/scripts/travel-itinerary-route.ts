@@ -185,6 +185,23 @@ async function expandMultiHop(
 
   if (walkIn) segs.push({ mode: 'walk', latlngs: walkIn, ...ends });
 
+  // Precompute inter-hop walks (different stations) in parallel
+  const interWalkTasks: Array<Promise<LatLng[] | null>> = [];
+  for (let i = 0; i < valid.length - 1; i++) {
+    const hop = valid[i]!;
+    const next = valid[i + 1]!;
+    const end = hop.path[hop.path.length - 1]!;
+    const startNext = next.path[0]!;
+    const a = { lat: end[0], lng: end[1] };
+    const b = { lat: startNext[0], lng: startNext[1] };
+    interWalkTasks.push(
+      haversineM(a, b) < WALK_MIN_M
+        ? Promise.resolve(null)
+        : walkPath(a, b, opts),
+    );
+  }
+  const interWalks = await Promise.all(interWalkTasks);
+
   for (let i = 0; i < valid.length; i++) {
     const hop = valid[i]!;
     const color = hopColor(hop);
@@ -200,7 +217,7 @@ async function expandMultiHop(
 
     const next = valid[i + 1];
     if (!next) continue;
-    // Transfer at end of this hop (shared station with next hop start)
+    // Transfer at end of this hop
     const junction = hop.path[hop.path.length - 1]!;
     transfers.push({
       lat: junction[0],
@@ -212,6 +229,9 @@ async function expandMultiHop(
       hopIndex: i,
       ...ends,
     });
+    // Walk between stations when hops don't share a platform (e.g. St-Lazare → St-Augustin)
+    const inter = interWalks[i];
+    if (inter) segs.push({ mode: 'walk', latlngs: inter, ...ends });
   }
 
   if (walkOut) segs.push({ mode: 'walk', latlngs: walkOut, ...ends });
@@ -274,6 +294,14 @@ function expandMultiHopSync(
       hopIndex: i,
       ...ends,
     });
+    // Inter-station transfer walk (preview uses straight line)
+    const startNext = next.path[0]!;
+    pushWalkSync(
+      segs,
+      { lat: junction[0], lng: junction[1] },
+      { lat: startNext[0], lng: startNext[1] },
+      ends,
+    );
   }
 
   pushWalkSync(segs, { lat: end[0], lng: end[1] }, to, ends);
@@ -401,24 +429,6 @@ async function expandLeg(
   return { segments: segs, transfers: [] };
 }
 
-function resolveLeg(
-  fromId: string,
-  toId: string,
-  from: PlaceCoord,
-  to: PlaceCoord,
-  legByPair: Map<string, ItineraryLegDef>,
-): ItineraryLegDef {
-  return (
-    legByPair.get(`${fromId}→${toId}`) ??
-    ({
-      from: fromId,
-      to: toId,
-      mode:
-        haversineM(from, to) < 1300 ? ('walk' as const) : ('transit' as const),
-    } satisfies ItineraryLegDef)
-  );
-}
-
 /**
  * Instant geometry: transit spines + straight-line walks. No network.
  * Used for the first paint so “show on map” feels immediate.
@@ -441,20 +451,16 @@ function buildItineraryRouteSync(
 ): BuiltItineraryRoute {
   const segments: ItinerarySegment[] = [];
   const transfers: ItineraryTransferPoint[] = [];
-  const legByPair = new Map<string, ItineraryLegDef>();
-  for (const leg of legs) {
-    legByPair.set(`${leg.from}→${leg.to}`, leg);
-  }
 
-  for (let i = 0; i < stopIds.length - 1; i++) {
-    const fromId = stopIds[i]!;
-    const toId = stopIds[i + 1]!;
-    const from = places.get(fromId);
-    const to = places.get(toId);
+  // Expand only the provided legs — do not auto-pair consecutive stopIds.
+  // Callers omit legs across disabled periods so the route stays discontinuous
+  // instead of inventing a bridge (e.g. morning → evening when afternoon is off).
+  for (const authored of legs) {
+    const from = places.get(authored.from);
+    const to = places.get(authored.to);
     if (!from || !to) continue;
 
-    const leg = resolveLeg(fromId, toId, from, to, legByPair);
-    const expanded = expandLegSync(leg, from, to);
+    const expanded = expandLegSync(authored, from, to);
     segments.push(...expanded.segments);
     transfers.push(...expanded.transfers);
   }
@@ -560,7 +566,9 @@ function expandLegSync(
 }
 
 /**
- * Build full day route geometry. Legs should match consecutive stopIds pairs.
+ * Build full day route geometry from an explicit legs list.
+ * Legs may be discontinuous (gaps when a period switch is off) — only the
+ * given legs are drawn; consecutive stopIds are never auto-paired.
  * Walk OSRM requests run in parallel across all legs (session-cached).
  */
 export async function buildItineraryRoute(
@@ -578,23 +586,14 @@ export async function buildItineraryRoute(
     return buildItineraryRouteSync(stopIds, legs, places);
   }
 
-  const legByPair = new Map<string, ItineraryLegDef>();
-  for (const leg of legs) {
-    legByPair.set(`${leg.from}→${leg.to}`, leg);
-  }
-
   const tasks: Array<Promise<ExpandResult>> = [];
 
-  for (let i = 0; i < stopIds.length - 1; i++) {
+  for (const authored of legs) {
     if (opts.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
-    const fromId = stopIds[i]!;
-    const toId = stopIds[i + 1]!;
-    const from = places.get(fromId);
-    const to = places.get(toId);
+    const from = places.get(authored.from);
+    const to = places.get(authored.to);
     if (!from || !to) continue;
-
-    const leg = resolveLeg(fromId, toId, from, to, legByPair);
-    tasks.push(expandLeg(leg, from, to, opts));
+    tasks.push(expandLeg(authored, from, to, opts));
   }
 
   const parts = await Promise.all(tasks);

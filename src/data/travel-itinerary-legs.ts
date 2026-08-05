@@ -91,6 +91,25 @@ const WALK_M_PER_MIN = 80;
 const TRANSIT_M_PER_MIN = 350;
 /** Boarding / wait buffer for transit legs */
 const TRANSIT_BUFFER_MIN = 2;
+/**
+ * Min distance between consecutive hop ends/starts to show an inter-station walk
+ * (same-station transfers use nearly identical coords and stay silent).
+ */
+const INTER_HOP_WALK_MIN_M = 40;
+
+/** Walk distance between end of hop A and start of hop B (0 if same station). */
+export function interHopWalkM(
+  fromHop: ItineraryTransitHop,
+  toHop: ItineraryTransitHop,
+): number {
+  const a = fromHop.path[fromHop.path.length - 1];
+  const b = toHop.path[0];
+  if (!a || !b) return 0;
+  return haversineM(
+    { lat: a[0], lng: a[1] },
+    { lat: b[0], lng: b[1] },
+  );
+}
 
 function pathLengthM(path: LatLng[]): number {
   let d = 0;
@@ -131,11 +150,19 @@ export function estimateLegDurationMin(
     const end = spinePath[spinePath.length - 1]!;
     const walkIn = haversineM(from, { lat: start[0], lng: start[1] });
     const walkOut = haversineM({ lat: end[0], lng: end[1] }, to);
+    let interHopWalk = 0;
+    if (leg.hops && leg.hops.length > 1) {
+      for (let i = 0; i < leg.hops.length - 1; i++) {
+        const d = interHopWalkM(leg.hops[i]!, leg.hops[i + 1]!);
+        if (d >= INTER_HOP_WALK_MIN_M) interHopWalk += d;
+      }
+    }
     const spine = pathLengthM(spinePath);
     const hopBuffer = (leg.hops?.length ?? 1) * TRANSIT_BUFFER_MIN;
     const mins =
       walkIn / WALK_M_PER_MIN +
       spine / TRANSIT_M_PER_MIN +
+      interHopWalk / WALK_M_PER_MIN +
       walkOut / WALK_M_PER_MIN +
       hopBuffer;
     return Math.max(3, Math.round(mins));
@@ -251,21 +278,45 @@ export function expandTimelineTransferParts(
   }
 
   if (leg.hops && leg.hops.length > 0) {
-    return leg.hops.map((hop, i) => {
+    const parts: TimelineTransferPart[] = [];
+    for (let i = 0; i < leg.hops.length; i++) {
+      const hop = leg.hops[i]!;
       const name =
         hop.label ??
         getTransitLine(hop.line)?.name ??
         String(hop.line).toUpperCase();
-      return {
-        mode: 'transit' as const,
+      parts.push({
+        mode: 'transit',
         leg,
         label: { en: name, 'pt-BR': name },
         color: lineBrandColor(hop.line) ?? '#008fff',
         durationMin: transitPathDurationMin(hop.path),
         hopIndex: i,
         stationCount: stationCountFromPath(hop.path),
-      };
-    });
+      });
+
+      // Different stations (e.g. RER E St-Lazare → M9 St-Augustin): show walk
+      const next = leg.hops[i + 1];
+      if (!next) continue;
+      const walkM = interHopWalkM(hop, next);
+      if (walkM < INTER_HOP_WALK_MIN_M) continue;
+      const nextName =
+        next.label ??
+        getTransitLine(next.line)?.name ??
+        String(next.line).toUpperCase();
+      parts.push({
+        mode: 'walk',
+        leg,
+        label: {
+          en: `Walk to ${nextName}`,
+          'pt-BR': `A pé até ${nextName}`,
+        },
+        color: null,
+        durationMin: Math.max(1, Math.round(walkM / WALK_M_PER_MIN)),
+        stationCount: 0,
+      });
+    }
+    return parts;
   }
 
   // Single-line transit: path stations, or resolve corridor from line registry
@@ -313,7 +364,8 @@ const day1AfterBase: ItineraryLegDef[] = [
     to: 'par-trocadero',
     mode: 'transit',
     // Walk house → Noisy RER (auto), RER E west → Saint-Lazare,
-    // short walk to M9 Saint-Augustin, M9 to Trocadéro.
+    // walk corridor to M9 Saint-Augustin (~3–5 min), M9 to Trocadéro.
+    // Inter-hop walk is auto-inserted in timeline + map (coords differ).
     hops: [
       {
         line: 'rer-e',
@@ -322,14 +374,14 @@ const day1AfterBase: ItineraryLegDef[] = [
           [48.8907, 2.4608], // Noisy-le-Sec (board)
           [48.8855, 2.385], // Pantin
           [48.8785, 2.358], // Magenta
-          [48.8755, 2.3255], // Saint-Lazare (transfer → M9)
+          [48.8755, 2.3255], // Saint-Lazare (alight → walk to M9)
         ],
       },
       {
         line: 'm9',
         label: 'M9',
         path: [
-          [48.8745, 2.322], // Saint-Augustin (near Saint-Lazare)
+          [48.8745, 2.322], // Saint-Augustin (board after walk from St-Lazare)
           [48.8735, 2.3145], // Miromesnil
           [48.869, 2.31], // Franklin D. Roosevelt
           [48.865, 2.3005], // Alma–Marceau
@@ -718,6 +770,17 @@ const day6: ItineraryLegDef[] = [
   },
 ];
 
+/**
+ * Day 7 — Disneyland Paris full day (all stops in Chessy cluster).
+ * RER A from central Paris is described on the first stop note; on-site hops are walks.
+ */
+const day7: ItineraryLegDef[] = [
+  { from: 'par-disneyland', to: 'par-bella-notte', mode: 'walk' },
+  { from: 'par-bella-notte', to: 'par-disneyland', mode: 'walk' },
+  { from: 'par-disneyland', to: 'par-mcdonalds-disney', mode: 'walk' },
+  { from: 'par-mcdonalds-disney', to: 'par-disneyland', mode: 'walk' },
+];
+
 /** day.id → ordered legs between primary stops (default arrival when day has variants) */
 export const parisDayLegsById: Record<string, ItineraryLegDef[]> = {
   'paris-d1': day1,
@@ -727,6 +790,7 @@ export const parisDayLegsById: Record<string, ItineraryLegDef[]> = {
   'paris-d4': day4,
   'paris-d5': day5,
   'paris-d6': day6,
+  'paris-d7': day7,
 };
 
 /**

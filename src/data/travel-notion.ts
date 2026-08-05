@@ -278,7 +278,9 @@ export function mergeNotionPlaces<
         subcategories: fromNotion.subcategories?.length
           ? fromNotion.subcategories
           : local.subcategories,
-        // Prefer Notion photos (cover URL); fall back to local gallery
+        // Keep Notion photos on the place when present (often just the cover).
+        // Full multi-photo galleries live in travel-photos.ts and are preferred
+        // by resolvePlacePhotos / withResolvedArea when the registry is longer.
         photos: fromNotion.photos?.length ? fromNotion.photos : local.photos,
         visit: local.visit,
       } as P;

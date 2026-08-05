@@ -6,7 +6,11 @@
  *   npm run travel:notion:schema
  *   npm run travel:notion:migrate   # emoji City/Category + Place unify + place IDs
  *   npm run travel:notion:seed [dump.json]
+ *   npm run travel:notion:seed-photos  # push travel-photos.ts → Photo URLs
  *   npm run travel:notion:placeids  # resolve + write Google Place IDs
+ *
+ * Photos: Notion property "Photo URLs" (rich_text, one https URL per line).
+ * Cover URL = first gallery image (UI convenience). Pull builds place.photos[].
  *
  * Env (.env):
  *   NOTION_TOKEN
@@ -210,10 +214,15 @@ async function notion(method, path, body) {
   return json;
 }
 
+/** Notion rich_text segments are max 2000 chars each. */
 function rt(content) {
   if (content == null || content === '') return [];
   const text = String(content);
-  return [{ type: 'text', text: { content: text.slice(0, 2000) } }];
+  const chunks = [];
+  for (let i = 0; i < text.length; i += 2000) {
+    chunks.push({ type: 'text', text: { content: text.slice(i, i + 2000) } });
+  }
+  return chunks;
 }
 function title(content) {
   return { title: rt(content) };
@@ -224,6 +233,88 @@ function rich(content) {
 function richText(prop) {
   if (!prop?.rich_text?.length) return '';
   return prop.rich_text.map((t) => t.plain_text ?? '').join('').trim();
+}
+
+/**
+ * Parse gallery URLs from Notion "Photo URLs" (one per line, commas ok).
+ * Keeps order; de-dupes.
+ */
+function parsePhotoUrls(raw) {
+  if (!raw || typeof raw !== 'string') return [];
+  const seen = new Set();
+  const out = [];
+  for (const line of raw.split(/[\n,]+/)) {
+    const u = line.trim().replace(/^<|>$/g, '');
+    if (!/^https?:\/\//i.test(u)) continue;
+    if (seen.has(u)) continue;
+    seen.add(u);
+    out.push(u);
+  }
+  return out;
+}
+
+/** Build photos[] + coverUrl from Cover URL + Photo URLs text. */
+function photosFromNotionFields(coverUrl, photoUrlsText, nameEn, namePt) {
+  const fromList = parsePhotoUrls(photoUrlsText);
+  const urls = [];
+  const push = (u) => {
+    if (!u || urls.includes(u)) return;
+    urls.push(u);
+  };
+  // List is source of truth when present; otherwise single cover.
+  if (fromList.length) {
+    for (const u of fromList) push(u);
+  } else {
+    push(coverUrl);
+  }
+  // If list omitted the cover, keep cover as first (Notion cover still useful)
+  if (coverUrl && fromList.length && !fromList.includes(coverUrl)) {
+    urls.unshift(coverUrl);
+  }
+  if (!urls.length) return {};
+  const alt = { en: nameEn, 'pt-BR': namePt };
+  return {
+    coverUrl: coverUrl || urls[0],
+    photos: urls.map((url) => ({ url, alt })),
+  };
+}
+
+/**
+ * Read curated galleries from src/data/travel-photos.ts (no TS compile).
+ * Returns { [placeId]: string[] } of https URLs in order.
+ */
+function loadLocalPhotoUrlsByPlaceId() {
+  const path = resolve(root, 'src/data/travel-photos.ts');
+  const text = readFileSync(path, 'utf8');
+  const start = text.indexOf('export const photosByPlaceId');
+  if (start < 0) return {};
+  const body = text.slice(start);
+  const byId = {};
+  const entryRe = /'([a-z0-9-]+)':\s*\[/g;
+  let m;
+  while ((m = entryRe.exec(body))) {
+    const id = m[1];
+    let i = m.index + m[0].length;
+    let depth = 1;
+    const from = i;
+    while (i < body.length && depth > 0) {
+      const ch = body[i];
+      if (ch === '[') depth++;
+      else if (ch === ']') depth--;
+      i++;
+    }
+    const block = body.slice(from, i - 1);
+    const urls = [];
+    const urlRe = /https:\/\/[^'"\s)]+/g;
+    let um;
+    while ((um = urlRe.exec(block))) {
+      // photo( first arg only: skip credit-ish non-image noise if any
+      const u = um[0].replace(/[,]+$/, '');
+      if (!urls.includes(u)) urls.push(u);
+    }
+    if (urls.length) byId[id] = urls;
+  }
+  return byId;
 }
 function titleText(prop) {
   if (!prop?.title?.length) return '';
@@ -299,12 +390,14 @@ async function ensureSchema() {
 
   // Fetch current options so we preserve colors on already-existing names
   const current = await notion('GET', `/databases/${DATABASE_ID}`);
-  const curCity = current.properties?.City?.select?.options ?? [];
-  const curCat = current.properties?.Category?.select?.options ?? [];
-  const curLandmark = current.properties?.Landmark?.select?.options ?? [];
+  const existing = current.properties || {};
+  const curCity = existing.City?.select?.options ?? [];
+  const curCat = existing.Category?.select?.options ?? [];
+  const curLandmark = existing.Landmark?.select?.options ?? [];
+  const curSub = existing.Subcategories?.multi_select?.options ?? [];
 
-  const mergeOptions = (existing, wanted) => {
-    const byName = new Map(existing.map((o) => [o.name, o]));
+  const mergeOptions = (existingOpts, wanted) => {
+    const byName = new Map(existingOpts.map((o) => [o.name, o]));
     for (const w of wanted) {
       if (!byName.has(w.name)) byName.set(w.name, w);
     }
@@ -315,41 +408,83 @@ async function ensureSchema() {
     }));
   };
 
+  /**
+   * Only create missing properties. Re-sending multi_select: { options: [] }
+   * wipes all options AND clears every page value — never do that.
+   */
+  const properties = {};
+
+  const ensureRich = (name) => {
+    if (!existing[name]) properties[name] = { rich_text: {} };
+  };
+  const ensureUrl = (name) => {
+    if (!existing[name]) properties[name] = { url: {} };
+  };
+  const ensureNumber = (name) => {
+    if (!existing[name]) properties[name] = { number: { format: 'number' } };
+  };
+  const ensureCheckbox = (name) => {
+    if (!existing[name]) properties[name] = { checkbox: {} };
+  };
+
+  ensureRich('Slug');
+  ensureRich('Name EN');
+  ensureRich('Description');
+  ensureRich('Description EN');
+  ensureRich('Maps Query');
+  ensureRich('Address');
+  ensureRich('Google Place ID');
+  // Gallery: one https URL per line. Cover URL = first image.
+  ensureRich('Photo URLs');
+  ensureUrl('Cover URL');
+  ensureUrl('Maps URL');
+  ensureNumber('Rating');
+  ensureNumber('Google Rating');
+  ensureNumber('Lat');
+  ensureNumber('Lng');
+  ensureCheckbox('Favorite');
+  ensureCheckbox('Featured');
+  ensureCheckbox('Published');
+
+  // Select fields: always merge options (append-only)
+  properties.City = {
+    select: { options: mergeOptions(curCity, cityOpts) },
+  };
+  properties.Category = {
+    select: { options: mergeOptions(curCat, catOpts) },
+  };
+  properties.Landmark = {
+    select: { options: mergeOptions(curLandmark, landmarkOpts) },
+  };
+
+  // multi_select: create only if missing; if present, re-send existing options
+  // so a future merge of known tags can append without wiping values.
+  if (!existing.Subcategories) {
+    properties.Subcategories = { multi_select: { options: [] } };
+  } else if (curSub.length) {
+    // No-op preserve (omit) — do not PATCH multi_select unless adding options
+  }
+
   const updated = await notion('PATCH', `/databases/${DATABASE_ID}`, {
-    properties: {
-      Slug: { rich_text: {} },
-      City: { select: { options: mergeOptions(curCity, cityOpts) } },
-      Category: { select: { options: mergeOptions(curCat, catOpts) } },
-      'Name EN': { rich_text: {} },
-      Description: { rich_text: {} },
-      'Description EN': { rich_text: {} },
-      Rating: { number: { format: 'number' } },
-      'Google Rating': { number: { format: 'number' } },
-      Favorite: { checkbox: {} },
-      Featured: { checkbox: {} },
-      'Cover URL': { url: {} },
-      'Maps URL': { url: {} },
-      'Maps Query': { rich_text: {} },
-      // Address = searchable mirror of Place.address (auto-filled on migrate)
-      Address: { rich_text: {} },
-      'Google Place ID': { rich_text: {} },
-      Lat: { number: { format: 'number' } },
-      Lng: { number: { format: 'number' } },
-      Landmark: {
-        select: { options: mergeOptions(curLandmark, landmarkOpts) },
-      },
-      Subcategories: { multi_select: {} },
-      Published: { checkbox: {} },
-    },
+    properties,
   });
   console.log(
     'Schema OK. Properties:',
     Object.keys(updated.properties).sort().join(', '),
   );
+  if (Object.keys(properties).length) {
+    console.log(
+      '  Patched:',
+      Object.keys(properties).sort().join(', ') || '(none new)',
+    );
+  }
   const cities = updated.properties.City?.select?.options?.map((o) => o.name);
   const cats = updated.properties.Category?.select?.options?.map((o) => o.name);
+  const subs =
+    updated.properties.Subcategories?.multi_select?.options?.length ?? 0;
   console.log('  City options:', cities?.join(', '));
   console.log('  Category options:', cats?.join(', '));
+  console.log(`  Subcategories options: ${subs}`);
 }
 
 // —— pull ——
@@ -429,7 +564,14 @@ function mapPage(page) {
 
   const descriptionPt = richText(p.Description);
   const descriptionEn = richText(p['Description EN']) || descriptionPt;
-  const coverUrl = p['Cover URL']?.url || null;
+  const coverUrlRaw = p['Cover URL']?.url || null;
+  const photoUrlsText = richText(p['Photo URLs']);
+  const photoFields = photosFromNotionFields(
+    coverUrlRaw,
+    photoUrlsText,
+    nameEn,
+    namePt,
+  );
   const mapsUrl = p['Maps URL']?.url || null;
   const mapsQuery = richText(p['Maps Query']) || null;
   const rating = p.Rating?.number;
@@ -475,17 +617,7 @@ function mapPage(page) {
     featured,
     ...(landmark ? { landmark } : {}),
     ...(subcategories.length ? { subcategories } : {}),
-    ...(coverUrl
-      ? {
-          coverUrl,
-          photos: [
-            {
-              url: coverUrl,
-              alt: { en: nameEn, 'pt-BR': namePt },
-            },
-          ],
-        }
-      : {}),
+    ...photoFields,
     tags,
     conhecido,
     date,
@@ -538,7 +670,23 @@ function placeToNotionProps(place, citySlug) {
   if (place.mapsQuery) props['Maps Query'] = rich(place.mapsQuery);
   if (mapsUrl) props['Maps URL'] = { url: mapsUrl };
   if (placeId) props['Google Place ID'] = rich(placeId);
-  if (place.coverUrl) props['Cover URL'] = { url: place.coverUrl };
+
+  // Gallery: Photo URLs (one per line) + Cover URL = first image
+  const photoUrls = [];
+  for (const ph of place.photos || []) {
+    const u = typeof ph === 'string' ? ph : ph?.url;
+    if (u && /^https?:\/\//i.test(u) && !photoUrls.includes(u)) photoUrls.push(u);
+  }
+  if (place.coverUrl && !photoUrls.includes(place.coverUrl)) {
+    photoUrls.unshift(place.coverUrl);
+  }
+  if (photoUrls.length) {
+    props['Photo URLs'] = rich(photoUrls.join('\n'));
+    props['Cover URL'] = { url: photoUrls[0] };
+  } else if (place.coverUrl) {
+    props['Cover URL'] = { url: place.coverUrl };
+  }
+
   if (typeof place.rating === 'number') props.Rating = { number: place.rating };
   if (typeof place.googleRating === 'number') {
     props['Google Rating'] = { number: place.googleRating };
@@ -940,6 +1088,58 @@ async function seedSubcategories(dumpPath) {
   );
 }
 
+/**
+ * Push curated galleries from travel-photos.ts into Notion Photo URLs.
+ * Only updates Photo URLs + Cover URL (first image). Safe to re-run.
+ */
+async function seedPhotos() {
+  await ensureSchema();
+  const byId = loadLocalPhotoUrlsByPlaceId();
+  const pages = await queryAllPages();
+  console.log(
+    `Seeding Photo URLs for ${Object.keys(byId).length} local galleries across ${pages.length} pages…`,
+  );
+
+  let updated = 0;
+  let skipped = 0;
+  let failed = 0;
+  let multi = 0;
+
+  for (let i = 0; i < pages.length; i++) {
+    const page = pages[i];
+    if (page.archived || page.in_trash) continue;
+    const slug = richText(page.properties?.Slug);
+    const urls = byId[slug];
+    if (!urls?.length) {
+      skipped++;
+      continue;
+    }
+    if (urls.length > 1) multi++;
+    try {
+      await notion('PATCH', `/pages/${page.id}`, {
+        properties: {
+          'Photo URLs': rich(urls.join('\n')),
+          'Cover URL': { url: urls[0] },
+        },
+      });
+      updated++;
+    } catch (err) {
+      failed++;
+      console.error(`  ✗ ${slug}: ${err.message}`);
+    }
+    if ((i + 1) % 20 === 0 || i === pages.length - 1) {
+      console.log(
+        `  … ${i + 1}/${pages.length} updated=${updated} multi=${multi} skipped=${skipped} failed=${failed}`,
+      );
+    }
+    await sleep(350);
+  }
+
+  console.log(
+    `Photo URLs seed done: updated=${updated} multi=${multi} skipped=${skipped} failed=${failed}`,
+  );
+}
+
 async function pull() {
   console.log('Pulling places from Notion…');
   const pages = await queryAllPages();
@@ -1014,10 +1214,12 @@ try {
     await resolvePlaceIds({ force: arg === '--force' });
   } else if (cmd === 'seed-subcategories') {
     await seedSubcategories(arg);
+  } else if (cmd === 'seed-photos') {
+    await seedPhotos();
   } else {
     console.error(`Unknown command: ${cmd}`);
     console.error(
-      'Usage: sync-travel-notion.mjs [pull|schema|sync|seed|migrate|placeids|seed-subcategories]',
+      'Usage: sync-travel-notion.mjs [pull|schema|sync|seed|migrate|placeids|seed-subcategories|seed-photos]',
     );
     process.exit(1);
   }

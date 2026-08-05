@@ -29,14 +29,18 @@
       "q": "Hôtel des Invalides, Paris, France",
       "lat": 48.8565,
       "lng": 2.3126,
-      "prefer": "polygon"
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: hull of R1463538 + W112452790 (Dôme); raw OSM multipolygon is U-shaped and excludes the dome"
     },
     {
       "id": "par-tuileries",
       "q": "Jardin des Tuileries, Paris, France",
       "lat": 48.8634,
       "lng": 2.3275,
-      "prefer": "polygon"
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: multipolygon Tuileries + Carrousel (Louvre–Concorde spine)"
     },
     {
       "id": "par-louvre",
@@ -61,10 +65,12 @@
     },
     {
       "id": "par-palais-royal",
-      "q": "Jardin du Palais Royal, Paris, France",
+      "q": "Palais-Royal, Paris, France",
       "lat": 48.8638,
       "lng": 2.3371,
-      "prefer": "polygon"
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: hull of garden + palace/Buren courtyard (not garden-only)"
     },
     {
       "id": "par-vincennes",
@@ -125,9 +131,11 @@
     {
       "id": "par-la-villette",
       "q": "Parc de la Villette, Paris, France",
-      "lat": 48.8938,
-      "lng": 2.3908,
-      "prefer": "polygon"
+      "lat": 48.89489,
+      "lng": 2.38844,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: full R7574623 multipolygon (2 rings); plain search often returns incomplete southern outline"
     },
     {
       "id": "par-orsay",
@@ -145,10 +153,12 @@
     },
     {
       "id": "par-vosges",
-      "q": "Place des Vosges, Paris, France",
+      "q": "Square Louis-XIII, Paris, France",
       "lat": 48.8556,
       "lng": 2.3655,
-      "prefer": "polygon"
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: Square Louis-XIII R571765 garden inside Place des Vosges"
     },
     {
       "id": "par-trocadero",
@@ -241,7 +251,7 @@
       "lng": 2.241,
       "prefer": "polygon",
       "preserve_existing": true,
-      "note": "MANUAL: CBD hull from Boulevard Patrick Devedjian ring (suburb is a node only)"
+      "note": "MANUAL: full Bd Patrick Devedjian ring hull (SW/W arc was missing)"
     },
     {
       "id": "par-disneyland",
@@ -400,6 +410,109 @@
       "lat": 41.8962446,
       "lng": 12.4823704,
       "prefer": "polygon"
+    },
+    {
+      "id": "par-belleville",
+      "q": "Parc de Belleville, Paris, France",
+      "lat": 48.8715,
+      "lng": 2.3848,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "OSM W154892778"
+    },
+    {
+      "id": "par-promenade-plantee",
+      "q": "Coulée Verte René-Dumont, Paris, France",
+      "lat": 48.847,
+      "lng": 2.375,
+      "prefer": "polyline",
+      "preserve_existing": true,
+      "note": "MANUAL spine; OSM is fragmented footways"
+    },
+    {
+      "id": "par-place-dauphine",
+      "q": "Place Dauphine, Paris, France",
+      "lat": 48.8565,
+      "lng": 2.3423,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "OSM W53567907 garden"
+    },
+    {
+      "id": "par-galeries-lafayette",
+      "q": "Galeries Lafayette, Boulevard Haussmann, Paris, France",
+      "lat": 48.8738,
+      "lng": 2.332,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: multipolygon of both Haussmann buildings (W69224062 + W69224141)"
+    },
+    {
+      "id": "par-opera",
+      "q": "Opéra Garnier, Paris, France",
+      "lat": 48.8719,
+      "lng": 2.3317,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: building outline W54667456 (simplified)"
+    },
+    {
+      "id": "par-luxor-obelisk",
+      "q": "Obélisque de Louxor, Place de la Concorde, Paris, France",
+      "lat": 48.86548,
+      "lng": 2.32113,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: monument base W72937686"
+    },
+    {
+      "id": "par-hotel-ville",
+      "q": "Hôtel de Ville, Paris, France",
+      "lat": 48.8566,
+      "lng": 2.3522,
+      "prefer": "polygon",
+      "note": "City hall building + square (OSM relation)"
+    },
+    {
+      "id": "par-chatelet",
+      "q": "Place du Châtelet, Paris, France",
+      "lat": 48.8575,
+      "lng": 2.3472,
+      "prefer": "polygon",
+      "note": "Pedestrian square polygon"
+    },
+    {
+      "id": "par-horloge",
+      "q": "Tour de l'Horloge Conciergerie, Paris, France",
+      "lat": 48.856193,
+      "lng": 2.346233,
+      "prefer": "polygon",
+      "preserve_existing": true,
+      "note": "MANUAL: Tour Carrée de l'Horloge W248434965 (not full Palais de Justice)"
+    },
+    {
+      "id": "par-notre-dame",
+      "q": "Cathédrale Notre-Dame de Paris, France",
+      "lat": 48.853,
+      "lng": 2.3499,
+      "prefer": "polygon",
+      "note": "Cathedral building outline"
+    },
+    {
+      "id": "par-sainte-chapelle",
+      "q": "Sainte-Chapelle, Paris, France",
+      "lat": 48.8554,
+      "lng": 2.345,
+      "prefer": "polygon",
+      "note": "Chapel building relation"
+    },
+    {
+      "id": "par-pantheon",
+      "q": "Panthéon, Place du Panthéon, Paris",
+      "lat": 48.8462,
+      "lng": 2.346,
+      "prefer": "polygon",
+      "note": "Building outline OSM W16407465 (not 5e arrondissement)"
     }
   ]
 }

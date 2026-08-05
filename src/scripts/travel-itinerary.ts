@@ -63,6 +63,12 @@ export function bootTravelItinerary(): void {
   /** Temporary single-leg (or stop) paint while hovering timeline without day route on. */
   let hoverPreview = false;
   let hoverPreviewDayId: string | null = null;
+  /**
+   * Mobile day-slider: swipe changes day and draws it on the map.
+   * Turns off when the user manually deactivates a day; later slides stay off
+   * until they manually turn a day on again.
+   */
+  let autoRouteOnSlide = true;
 
   const dayCards = () =>
     Array.from(root.querySelectorAll<HTMLElement>('[data-travel-day]'));
@@ -232,39 +238,75 @@ export function bootTravelItinerary(): void {
     return enabled;
   };
 
+  const slotIsOnMap = (enabled: Set<string>, slot: string): boolean =>
+    enabled.has(slot) || slot === 'other';
+
   /**
    * Primary stop ids filtered by enabled period switches.
    * Preserves order and intentional revisits.
+   * Note: filtering only hides those stops — it does not rewire the route
+   * (see legsForEnabledRoute: no bridges across disabled periods).
    */
   const filteredStopIds = (card: HTMLElement): string[] => {
     const enabled = enabledSlotsForCard(card);
     const stops = routeStopsForCard(card);
     if (!stops.length) return parseJsonArray<string>(card.dataset.routeIds);
     return stops
-      .filter((s) => enabled.has(s.slot) || s.slot === 'other')
+      .filter((s) => slotIsOnMap(enabled, s.slot))
       .map((s) => s.placeId);
   };
 
   /**
-   * Legs between consecutive filtered stops (authored pair, else walk fallback).
+   * Route geometry for the day with period switches applied.
+   * Only keeps original consecutive pairs where BOTH ends stay enabled —
+   * never invents a leg that jumps a disabled period (e.g. morning → evening
+   * when afternoon is off). The itinerary sequence is unchanged; off periods
+   * are visual/map hide only.
    */
-  const legsForStopIds = (
-    stopIds: string[],
+  const legsForEnabledRoute = (
+    card: HTMLElement,
     allLegs: ItineraryLegDef[],
-  ): ItineraryLegDef[] => {
-    const out: ItineraryLegDef[] = [];
-    for (let i = 0; i < stopIds.length - 1; i++) {
-      const from = stopIds[i]!;
-      const to = stopIds[i + 1]!;
-      out.push(
-        allLegs.find((l) => l.from === from && l.to === to) ?? {
-          from,
-          to,
+  ): { stopIds: string[]; legs: ItineraryLegDef[] } => {
+    const enabled = enabledSlotsForCard(card);
+    const stops = routeStopsForCard(card);
+
+    if (!stops.length) {
+      const stopIds = parseJsonArray<string>(card.dataset.routeIds);
+      const legs: ItineraryLegDef[] = [];
+      for (let i = 0; i < stopIds.length - 1; i++) {
+        const from = stopIds[i]!;
+        const to = stopIds[i + 1]!;
+        legs.push(
+          allLegs.find((l) => l.from === from && l.to === to) ?? {
+            from,
+            to,
+            mode: 'walk' as const,
+          },
+        );
+      }
+      return { stopIds, legs };
+    }
+
+    const stopIds = stops
+      .filter((s) => slotIsOnMap(enabled, s.slot))
+      .map((s) => s.placeId);
+
+    const legs: ItineraryLegDef[] = [];
+    for (let i = 0; i < stops.length - 1; i++) {
+      const a = stops[i]!;
+      const b = stops[i + 1]!;
+      if (!slotIsOnMap(enabled, a.slot) || !slotIsOnMap(enabled, b.slot)) {
+        continue;
+      }
+      legs.push(
+        allLegs.find((l) => l.from === a.placeId && l.to === b.placeId) ?? {
+          from: a.placeId,
+          to: b.placeId,
           mode: 'walk' as const,
         },
       );
     }
-    return out;
+    return { stopIds, legs };
   };
 
   const gmapsUrlForStops = (
@@ -384,14 +426,18 @@ export function bootTravelItinerary(): void {
     }
   };
 
-  const showDayRoute = async (card: HTMLElement, opts?: { fit?: boolean }) => {
+  const showDayRoute = async (
+    card: HTMLElement,
+    opts?: { fit?: boolean; scrollIntoView?: boolean },
+  ) => {
     const dayId = card.dataset.travelDay || '';
     const allLegs = parseJsonArray<ItineraryLegDef>(card.dataset.legs);
-    const stopIds = filteredStopIds(card);
+    const { stopIds, legs } = legsForEnabledRoute(card, allLegs);
     if (stopIds.length < 1) return;
 
-    const legs = legsForStopIds(stopIds, allLegs);
     const fit = opts?.fit !== false;
+    /** Page scroll to map — off for mobile day-slider auto-activate */
+    const scrollPage = opts?.scrollIntoView ?? fit;
 
     abort?.abort();
     abort = new AbortController();
@@ -402,7 +448,7 @@ export function bootTravelItinerary(): void {
 
     markDayActive(card, true);
 
-    if (fit) {
+    if (scrollPage) {
       document
         .querySelector('.travel__map-shell')
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -473,10 +519,9 @@ export function bootTravelItinerary(): void {
   const prefetchDayWalks = (card: HTMLElement) => {
     if (card.dataset.walkPrefetch === '1') return;
     card.dataset.walkPrefetch = '1';
-    const stopIds = filteredStopIds(card);
     const allLegs = parseJsonArray<ItineraryLegDef>(card.dataset.legs);
-    const legs = legsForStopIds(stopIds, allLegs);
-    if (stopIds.length < 2) return;
+    const { stopIds, legs } = legsForEnabledRoute(card, allLegs);
+    if (stopIds.length < 2 || legs.length < 1) return;
     const places = ensurePlaces(stopIds, placesFromMap(), card);
     void buildItineraryRoute(stopIds, legs, places).catch(() => {
       card.dataset.walkPrefetch = '0';
@@ -607,12 +652,16 @@ export function bootTravelItinerary(): void {
         card.classList.contains('is-route-active') &&
         !card.classList.contains('is-route-loading')
       ) {
+        // Manual off: stop auto-activating days on the mobile slider
+        autoRouteOnSlide = false;
         clearActiveDays();
         clearItineraryMap();
         setStopListActive(null);
         return;
       }
 
+      // Manual on: resume auto-activate when swiping days
+      autoRouteOnSlide = true;
       void showDayRoute(card);
       return;
     }
@@ -834,4 +883,102 @@ export function bootTravelItinerary(): void {
     attributes: true,
     attributeFilter: ['data-travel-locale'],
   });
+
+  // —— Mobile day slider: swipe day → activate route on map ——
+  const daysTrack = root.querySelector<HTMLElement>(
+    '.travel-city__itinerary-days',
+  );
+  const mobileItineraryMq = window.matchMedia('(max-width: 900px)');
+
+  const isMobileItineraryLayout = () => mobileItineraryMq.matches;
+
+  const nearestSlideDay = (): HTMLElement | null => {
+    if (!daysTrack) return null;
+    const cards = dayCards().filter((c) => daysTrack.contains(c));
+    if (!cards.length) return null;
+    const mid = daysTrack.scrollLeft + daysTrack.clientWidth / 2;
+    let best = cards[0]!;
+    let bestDist = Infinity;
+    for (const card of cards) {
+      const center = card.offsetLeft + card.offsetWidth / 2;
+      const dist = Math.abs(center - mid);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = card;
+      }
+    }
+    return best;
+  };
+
+  const activateSlideDay = (card: HTMLElement) => {
+    const dayId = card.dataset.travelDay || '';
+    if (!dayId) return;
+    if (
+      dayId === activeDayId &&
+      card.classList.contains('is-route-active') &&
+      !card.classList.contains('is-route-loading')
+    ) {
+      return;
+    }
+    void showDayRoute(card, { fit: true, scrollIntoView: false });
+  };
+
+  const syncSlideDayRoute = () => {
+    if (!isMobileItineraryLayout()) return;
+    if (!autoRouteOnSlide) return;
+    if (root.hidden) return;
+    const card = nearestSlideDay();
+    if (!card) return;
+    activateSlideDay(card);
+  };
+
+  let slideScrollTimer: number | null = null;
+  const onDaysTrackScroll = () => {
+    if (!isMobileItineraryLayout() || !autoRouteOnSlide) return;
+    if (slideScrollTimer != null) window.clearTimeout(slideScrollTimer);
+    // Debounce until snap settles (scrollend not everywhere)
+    slideScrollTimer = window.setTimeout(() => {
+      slideScrollTimer = null;
+      syncSlideDayRoute();
+    }, 120);
+  };
+
+  if (daysTrack) {
+    daysTrack.addEventListener('scroll', onDaysTrackScroll, { passive: true });
+    daysTrack.addEventListener(
+      'scrollend',
+      () => {
+        if (slideScrollTimer != null) {
+          window.clearTimeout(slideScrollTimer);
+          slideScrollTimer = null;
+        }
+        syncSlideDayRoute();
+      },
+      { passive: true },
+    );
+  }
+
+  // Entering itinerary view on mobile → (re)draw the visible day if auto is on.
+  // List view clears the map overlay, so always force a redraw on re-enter.
+  const panelVisibilityMo = new MutationObserver(() => {
+    if (root.hidden) return;
+    if (!isMobileItineraryLayout() || !autoRouteOnSlide) return;
+    requestAnimationFrame(() => {
+      const card = nearestSlideDay();
+      if (!card) return;
+      void showDayRoute(card, { fit: true, scrollIntoView: false });
+    });
+  });
+  panelVisibilityMo.observe(root, {
+    attributes: true,
+    attributeFilter: ['hidden'],
+  });
+
+  // If itinerary is already visible on boot (restored view), sync once layout is ready
+  if (!root.hidden && isMobileItineraryLayout() && autoRouteOnSlide) {
+    requestAnimationFrame(() => {
+      const card = nearestSlideDay();
+      if (card) void showDayRoute(card, { fit: true, scrollIntoView: false });
+    });
+  }
 }

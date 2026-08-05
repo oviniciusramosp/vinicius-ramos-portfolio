@@ -4,7 +4,7 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-08-05T02:19:35.880Z",
+  "generatedAt": "2026-08-04T22:17:28.694Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
   "count": 139,
   "byCity": {
@@ -71,7 +71,6 @@ const snapshot = {
       "lng": 2.295,
       "address": "Place Charles de Gaulle, 75008 Paris",
       "mapsQuery": "Arc de Triomphe Paris",
-      "rating": 5,
       "googleRating": 4.7,
       "favorite": true,
       "featured": false,
@@ -95,7 +94,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-8106-b611-cf9f74a08387",
@@ -185,7 +185,6 @@ const snapshot = {
       "address": "Port de la Conférence, 75008 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Bateau-mouche/@48.8629662,2.306493,16.25z",
       "mapsQuery": "Bateaux-Mouches Paris",
-      "rating": 5,
       "googleRating": 4.3,
       "favorite": true,
       "featured": false,
@@ -200,6 +199,13 @@ const snapshot = {
             "en": "Bateaux-Mouches",
             "pt-BR": "Bateaux-Mouches"
           }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlamPWEfHwgG-WxIJyciXZkNHIqWN1OUGuKzVr_pwYyn41CpGtEQL3kR5uwHa0Yr1T1KQuIbRHtL2MCzcO7IW9-cv2QmeyPhsHYjg7clzMXNkgqbanbMNgxvS56kOeh1UqVXw4lNMjbwNcI=s406-k-no",
+          "alt": {
+            "en": "Bateaux-Mouches",
+            "pt-BR": "Bateaux-Mouches"
+          }
         }
       ],
       "tags": [
@@ -207,7 +213,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-8146-8912-ef6f24f48a4f",
@@ -322,6 +329,13 @@ const snapshot = {
             "en": "Bien Élevé",
             "pt-BR": "Bien Élevé"
           }
+        },
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6r2hls0orPx9-kyg9ulL1N7Clk7PJ2L3_C1GqycCgTX2hB0FQ7trTjYU&s=10",
+          "alt": {
+            "en": "Bien Élevé",
+            "pt-BR": "Bien Élevé"
+          }
         }
       ],
       "tags": [
@@ -420,8 +434,8 @@ const snapshot = {
       "id": "par-bohemia",
       "city": "paris",
       "name": {
-        "en": "Bohemia Café",
-        "pt-BR": "Bohemia Café"
+        "en": "Baguett's Café Molière",
+        "pt-BR": "Baguett's Café Molière"
       },
       "category": "cafes",
       "description": {
@@ -431,7 +445,7 @@ const snapshot = {
       "lat": 48.8655,
       "lng": 2.335,
       "address": "30 Rue de Richelieu, 75001 Paris",
-      "mapsQuery": "Bohemia Café brunch Paris",
+      "mapsQuery": "Baguett's Café Molière Paris",
       "rating": 5,
       "googleRating": 4.7,
       "favorite": true,
@@ -439,13 +453,13 @@ const snapshot = {
       "subcategories": [
         "coffee-shop"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
           "alt": {
-            "en": "Bohemia Café",
-            "pt-BR": "Bohemia Café"
+            "en": "Baguett's Café Molière",
+            "pt-BR": "Baguett's Café Molière"
           }
         }
       ],
@@ -781,6 +795,13 @@ const snapshot = {
             "en": "Cédric Grolet",
             "pt-BR": "Cédric Grolet"
           }
+        },
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHUMAnnoa1qHK4CBkOUFhkT6bgEfPckQMSl9eauB91LSfFuLBNs-8_tq-m&s=10",
+          "alt": {
+            "en": "Cédric Grolet",
+            "pt-BR": "Cédric Grolet"
+          }
         }
       ],
       "tags": [
@@ -807,7 +828,6 @@ const snapshot = {
       "lng": 2.3522,
       "address": "Pl. Georges-Pompidou, 75004 Paris",
       "mapsQuery": "Centre Pompidou Paris",
-      "rating": 4,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -824,6 +844,20 @@ const snapshot = {
             "en": "Centre Pompidou",
             "pt-BR": "Centre Pompidou"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Apud_la_Centro_Georges-Pompidou_5.jpg/1280px-Apud_la_Centro_Georges-Pompidou_5.jpg",
+          "alt": {
+            "en": "Centre Pompidou",
+            "pt-BR": "Centre Pompidou"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Place_Georges-Pompidou%2C_Paris_24_April_2011.jpg/1280px-Place_Georges-Pompidou%2C_Paris_24_April_2011.jpg",
+          "alt": {
+            "en": "Centre Pompidou",
+            "pt-BR": "Centre Pompidou"
+          }
         }
       ],
       "tags": [
@@ -831,7 +865,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z",
+      "rating": 4
     },
     {
       "notionPageId": "3b22da8d-8134-81cf-9795-eb745c0a7f59",
@@ -1013,7 +1048,6 @@ const snapshot = {
       "lng": 2.1204,
       "address": "Place d'Armes, 78000 Versailles",
       "mapsQuery": "Château de Versailles",
-      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
@@ -1031,6 +1065,27 @@ const snapshot = {
             "en": "Château de Versailles",
             "pt-BR": "Château de Versailles"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Front_of_the_Palace_of_Versailles.jpg/1280px-Front_of_the_Palace_of_Versailles.jpg",
+          "alt": {
+            "en": "Château de Versailles",
+            "pt-BR": "Château de Versailles"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Garden_facade_of_the_Palace_of_Versailles_1.jpg/1280px-Garden_facade_of_the_Palace_of_Versailles_1.jpg",
+          "alt": {
+            "en": "Château de Versailles",
+            "pt-BR": "Château de Versailles"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Chateau_Versailles_Galerie_des_Glaces.jpg/1280px-Chateau_Versailles_Galerie_des_Glaces.jpg",
+          "alt": {
+            "en": "Château de Versailles",
+            "pt-BR": "Château de Versailles"
+          }
         }
       ],
       "tags": [
@@ -1038,7 +1093,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-8158-976f-c643d3e9a25e",
@@ -1178,8 +1234,8 @@ const snapshot = {
         "en": "One of the oldest public clocks in Paris. Look up on the tower.",
         "pt-BR": "Um dos relógios públicos mais antigos de Paris. Olhe a torre."
       },
-      "lat": 48.8559,
-      "lng": 2.3456,
+      "lat": 48.856193,
+      "lng": 2.346233,
       "address": "2 Bd du Palais, 75001 Paris",
       "mapsQuery": "Horloge Conciergerie Paris",
       "googleRating": 4.6,
@@ -1224,8 +1280,9 @@ const snapshot = {
       "address": "Cr du Commerce Saint-André, 75006 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Cr+du+Commerce+Saint-Andr%C3%A9,+75006+Paris/@48.853095,2.3383737,18.5z",
       "mapsQuery": "Cour du Commerce Saint-André Paris",
+      "rating": 5,
       "googleRating": 5,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "market-street",
@@ -1410,6 +1467,20 @@ const snapshot = {
             "en": "Eiffel Tower",
             "pt-BR": "Torre Eiffel"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Tour_Eiffel_vue_du_Champ-de-Mars.jpg/1280px-Tour_Eiffel_vue_du_Champ-de-Mars.jpg",
+          "alt": {
+            "en": "Eiffel Tower",
+            "pt-BR": "Torre Eiffel"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Eiffel_Tower_and_Pont_Alexandre_III_at_night.jpg/1280px-Eiffel_Tower_and_Pont_Alexandre_III_at_night.jpg",
+          "alt": {
+            "en": "Eiffel Tower",
+            "pt-BR": "Torre Eiffel"
+          }
         }
       ],
       "tags": [
@@ -1436,7 +1507,6 @@ const snapshot = {
       "lng": 2.2468,
       "address": "Esplanade du Général de Gaulle, 92800 Puteaux",
       "mapsQuery": "Esplanade du Général de Gaulle La Défense",
-      "rating": 4.5,
       "googleRating": 4.3,
       "favorite": false,
       "featured": false,
@@ -1459,7 +1529,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-816a-aa9f-d07336b4c86a",
@@ -1549,7 +1620,6 @@ const snapshot = {
       "lng": 2.3465,
       "address": "Forum des Halles, 75001 Paris",
       "mapsQuery": "Forum des Halles Paris",
-      "rating": 4.5,
       "googleRating": 3.9,
       "favorite": true,
       "featured": false,
@@ -1571,7 +1641,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-b5fa-f5297fdd269e",
@@ -1674,7 +1745,6 @@ const snapshot = {
       "lng": 2.332,
       "address": "40 Bd Haussmann, 75009 Paris",
       "mapsQuery": "Galeries Lafayette Haussmann",
-      "rating": 4.5,
       "googleRating": 4.5,
       "favorite": true,
       "featured": false,
@@ -1698,7 +1768,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-81ac-9795-e45cd007e199",
@@ -1717,7 +1788,6 @@ const snapshot = {
       "lng": 2.2359,
       "address": "1 Parvis de la Défense, 92040 Paris La Défense",
       "mapsQuery": "Grande Arche de la Défense",
-      "rating": 4.5,
       "googleRating": 4.4,
       "favorite": true,
       "featured": false,
@@ -1741,7 +1811,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-b37a-d612abd08cb1",
@@ -1900,6 +1971,20 @@ const snapshot = {
             "en": "Jeffrey Cagnes",
             "pt-BR": "Jeffrey Cagnes"
           }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmIIAjo_lSaDowJ0Wj5kcqK7UmcBq2Ty8ABY58LpM6-LspvvbIF2MHLI0UNHwAhhxnA7DjqUy4JmE9_7vwNfz6CYw238S4dxboNJ8Jd3VhID638h7ZKcvamVlstKkH3FL1_2BSgAnhY3zE=s406-k-no",
+          "alt": {
+            "en": "Jeffrey Cagnes",
+            "pt-BR": "Jeffrey Cagnes"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWln4CTyblSguxcNY_GFhJyz6wzOKURhN-eFyPVRcFWRGIdFG97yuAtlxea-Z6OqqK44TylGzbgfSpMZPCWcv5cJq_cPq6tP62fyqGBK4HRebunN4jLKCqymjpWkw0A_UadyGbtz_mGAIMWo=s348-k-no",
+          "alt": {
+            "en": "Jeffrey Cagnes",
+            "pt-BR": "Jeffrey Cagnes"
+          }
         }
       ],
       "tags": [
@@ -1971,6 +2056,13 @@ const snapshot = {
             "en": "L'Éclair de Génie",
             "pt-BR": "L'Éclair de Génie"
           }
+        },
+        {
+          "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHHZ35fyr0Lg5UrmGl62D3tuvTSrvNlhEfVlDPl7F0tkh9XLOAErt5vUMFFu6BDRQK9Ojsj6gGjqRnOCiAI-3Al3PpfVseDA1VdoyBf1ZdGwyhkLatzlLcEkyoGe7RZVoab6T4hyphenhyphenjPuLYt/s1600/eclair+de+genie+011.JPG",
+          "alt": {
+            "en": "L'Éclair de Génie",
+            "pt-BR": "L'Éclair de Génie"
+          }
         }
       ],
       "tags": [
@@ -1997,7 +2089,6 @@ const snapshot = {
       "lng": 2.241,
       "address": "La Défense, 92800 Puteaux",
       "mapsQuery": "La Défense Paris",
-      "rating": 4.5,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -2020,7 +2111,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-8181-92fa-d4524858f56f",
@@ -2098,6 +2190,13 @@ const snapshot = {
             "en": "La Maison d'Isabelle",
             "pt-BR": "La Maison d'Isabelle"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Croissant%2C_whole.jpg/1280px-Croissant%2C_whole.jpg",
+          "alt": {
+            "en": "La Maison d'Isabelle",
+            "pt-BR": "La Maison d'Isabelle"
+          }
         }
       ],
       "tags": [
@@ -2166,6 +2265,13 @@ const snapshot = {
             "en": "Le Bon Marché",
             "pt-BR": "Le Bon Marché"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Le_Bon_March%C3%A9%2C_Paris_3_November_2008_-_panoramio.jpg",
+          "alt": {
+            "en": "Le Bon Marché",
+            "pt-BR": "Le Bon Marché"
+          }
         }
       ],
       "tags": [
@@ -2204,6 +2310,20 @@ const snapshot = {
       "photos": [
         {
           "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWldBjMg13upIn99jRPyDfD4dh8tuB7AnKHDUd9No_zbcT2134mE43O_M6B6tzOIYeB9UCgTCHgEGek2iUPKLZB2hVjQbM1cxh0vmvbQKK2ha7r5XnvV-ydkGK_ZsIHejFQztzKN9siBV_4p=s392-k-no",
+          "alt": {
+            "en": "Le café by Maison Bergeron",
+            "pt-BR": "Le café by Maison Bergeron"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn4Maj78YqyPGePWag5UDplYQrvU8s5Z31S9h0PFhextMeMh7xBefhDv3AsgmSfjTYbsaUiEsu94ajLpKiKulG52d0FUt3guL3-VOOHs_OEU-smShuSqqjXGyDdVSLT6uN8CZtfwy0CPWT9=s457-k-no",
+          "alt": {
+            "en": "Le café by Maison Bergeron",
+            "pt-BR": "Le café by Maison Bergeron"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnT7AKRGTQTbTRcUttUVpK1BLrF1d78tFoN08989bk5-OrAxljHvsmxa2BIdFKuj9shVgiNFQfCeUf1DUaI8-rFmnux0LqF_MUF4PHL0LZOEv32jQJ73GMCwCAGiKWLnXKkXD18=s609-k-no",
           "alt": {
             "en": "Le café by Maison Bergeron",
             "pt-BR": "Le café by Maison Bergeron"
@@ -2376,6 +2496,27 @@ const snapshot = {
             "en": "Le Relais de l'Entrecôte",
             "pt-BR": "Le Relais de l'Entrecôte"
           }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm71U9_7fhHPjYvumKnKuOR3D3_qZ_F37yLg5Rjh2H3iFLpbaZDty9diVOoTXAo9oiYwgbZy5XfaMoUW-SiltSgRLbioXsFtUQdthYA8EZIUoiluiwZ2ZQXyFQulCIADYL-LGxD_f-eH-__=s457-k-no",
+          "alt": {
+            "en": "Le Relais de l'Entrecôte",
+            "pt-BR": "Le Relais de l'Entrecôte"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm3iXlVotabP5wg_1Y_eQNIgkBenXPLXyZzamqbl9tAoMk_jvt9dX9S55NSYmZDyJ4QOVstbFhmLBfsvZ2eAJLB3adprgRmUXKVN-D5UDbMOURU-_JLtMbIPINCWMGIj2UCqnaOjDSZPFas=w203-h161-k-no",
+          "alt": {
+            "en": "Le Relais de l'Entrecôte",
+            "pt-BR": "Le Relais de l'Entrecôte"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn3rLWNFxK0QeZeuyqspPy4yE4C2-kc8TG50feFN_JLZOdOP0fvidGputAj71KqUpwRXnhm1lHGzIfdNYWrlI1cxjITWVWlRmxfeLPtnyXgon8BMzI7geC7WMaoT5epkwAsjd0teVA_y0_I=s348-k-no",
+          "alt": {
+            "en": "Le Relais de l'Entrecôte",
+            "pt-BR": "Le Relais de l'Entrecôte"
+          }
         }
       ],
       "tags": [
@@ -2498,6 +2639,13 @@ const snapshot = {
       "photos": [
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/1280px-Louvre_Museum_Wikimedia_Commons.jpg",
+          "alt": {
+            "en": "Louvre",
+            "pt-BR": "Louvre"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Cour_Napol%C3%A9on_at_night_-_Louvre.jpg/1280px-Cour_Napol%C3%A9on_at_night_-_Louvre.jpg",
           "alt": {
             "en": "Louvre",
             "pt-BR": "Louvre"
@@ -2948,6 +3096,13 @@ const snapshot = {
             "en": "Montorgueil",
             "pt-BR": "Montorgueil"
           }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn64em6_9Zp6_Vz7GN6yII64mGDpsHSGo-YaYhUKkBGjE7NX3a0qGMZyoHUPmAuSFMvV30C3God4693dU3a4KArSkdsiVyXH4aBTaakYeEzaiswGcxyrG81vdSS1DEC40UzsNB7=s406-k-no",
+          "alt": {
+            "en": "Montorgueil",
+            "pt-BR": "Montorgueil"
+          }
         }
       ],
       "tags": [
@@ -3015,7 +3170,6 @@ const snapshot = {
       "lng": 2.32658,
       "address": "1 Rue de la Légion d'Honneur, 75007 Paris",
       "mapsQuery": "Musée d'Orsay Paris",
-      "rating": 5,
       "googleRating": 4.8,
       "favorite": false,
       "featured": false,
@@ -3034,7 +3188,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:12:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-8120-a0c2-e372020adf28",
@@ -3133,6 +3288,20 @@ const snapshot = {
       "photos": [
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/1280px-Notre-Dame_de_Paris%2C_4_October_2017.jpg",
+          "alt": {
+            "en": "Notre-Dame",
+            "pt-BR": "Notre-Dame"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Notre-Dame_de_Paris%2C_across_the_Seine%2C_before_reopening.jpg/1280px-Notre-Dame_de_Paris%2C_across_the_Seine%2C_before_reopening.jpg",
+          "alt": {
+            "en": "Notre-Dame",
+            "pt-BR": "Notre-Dame"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Notre-Dame_de_Paris_from_the_Pont_de_l%27Archev%C3%AAch%C3%A9_by_Night.jpg/1280px-Notre-Dame_de_Paris_from_the_Pont_de_l%27Archev%C3%AAch%C3%A9_by_Night.jpg",
           "alt": {
             "en": "Notre-Dame",
             "pt-BR": "Notre-Dame"
@@ -3273,13 +3442,12 @@ const snapshot = {
       "lng": 2.3371,
       "address": "8 Rue de Montpensier, 75001 Paris",
       "mapsQuery": "Palais-Royal Paris",
-      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
       "subcategories": [
-        "garden",
-        "architecture"
+        "park",
+        "garden"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Conseil_d%27Etat_Paris_WA.jpg",
       "photos": [
@@ -3296,7 +3464,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-81b3-b38b-d02867992400",
@@ -3623,16 +3792,16 @@ const snapshot = {
         "en": "Walk from Place de la République along the canals to Bassin de la Villette — a very Parisian outing. Stop by the water to eat (Jardin Villemin is a great spot). At the Bassin: bars and restaurants, including Paname Brewing Company. A bit further: Parc de la Villette. On the way back, Metro Line 2 has elevated panoramic views over the city.",
         "pt-BR": "Andar da Place de la République pelos canais até o Bassin de la Villette — atividade bem gostosa e parisiense. Pare na beira para comer (em frente ao Jardin Villemin é um bom spot). No Bassin: vários bares e restaurantes; Paname Brewing Company tem cerveja própria. Um pouco mais: La Villette. Na volta, a linha 2 do metrô tem vista panorâmica — anda sobre a cidade."
       },
-      "lat": 48.87515,
-      "lng": 2.36185,
+      "lat": 48.87489,
+      "lng": 2.36335,
       "address": "Canal Saint-Martin → Bassin de la Villette, Paris",
       "mapsQuery": "Canal Saint-Martin Paris",
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
       "subcategories": [
-        "french",
-        "bistro"
+        "avenue",
+        "park"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
       "photos": [
@@ -3720,6 +3889,20 @@ const snapshot = {
       "photos": [
         {
           "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl_F5T32X9QyZREvawZVe0bOJ2aylxLUkh2inyD3ANQM5IkiiFHLAQFUaYpmYl8d5pHi_RCF7ALb3W0d8y60PiKLZZtI4BS_BFTYl0hBrkNcU-kxkcLAYMTu3Ve3GB-vtEmg2PbFg=w203-h360-k-no",
+          "alt": {
+            "en": "Pâtisserie Michalak | Etienne Marcel",
+            "pt-BR": "Pâtisserie Michalak | Etienne Marcel"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnKZrjDWPOFc35n60b2v1NHIlCFvobPPTMNw8XnDVe3CxYGTVn3Ync_GGMmoYJjbljCFZnkIUQUD5VqotgUNPWPT-MhJUUgTrhyZoKCJHbMwEq5zC0c1YuhDsibIawEprBwULjqlKHy0B9T=s609-k-no",
+          "alt": {
+            "en": "Pâtisserie Michalak | Etienne Marcel",
+            "pt-BR": "Pâtisserie Michalak | Etienne Marcel"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWle5pSQjLlqxWH4yh_cxEjs87ocuACipxxNIl8cR7mVT8avg_F12uEzB3cSfYTYcdjl5w0TAb4eHMuZQ3aLkX3s_ypX8ayvxxW2nSxkuJtsTxqSnbBTXEFgovE6DqmWxQ2iiaDMnF3ejm4=s406-k-no",
           "alt": {
             "en": "Pâtisserie Michalak | Etienne Marcel",
             "pt-BR": "Pâtisserie Michalak | Etienne Marcel"
@@ -3873,7 +4056,6 @@ const snapshot = {
       "lng": 2.3126,
       "address": "Av. Winston Churchill, 75008 Paris",
       "mapsQuery": "Grand Palais Petit Palais Paris",
-      "rating": 4.5,
       "googleRating": 4.7,
       "favorite": true,
       "featured": false,
@@ -3897,7 +4079,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 4.5
     },
     {
       "notionPageId": "3b22da8d-8134-81d7-b51d-df58e133a710",
@@ -3928,6 +4111,13 @@ const snapshot = {
       "photos": [
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Various_Pierre_Herme_macarons.jpg/1280px-Various_Pierre_Herme_macarons.jpg",
+          "alt": {
+            "en": "Pierre Hermé",
+            "pt-BR": "Pierre Hermé"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/A_selection_of_Pierre_Herm%C3%A9_pastry_creations.jpg",
           "alt": {
             "en": "Pierre Hermé",
             "pt-BR": "Pierre Hermé"
@@ -4289,6 +4479,20 @@ const snapshot = {
             "en": "Promenade Plantée (Coulée Verte)",
             "pt-BR": "Promenade Plantée (Coulée Verte)"
           }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmbuIaftOyI4ips3fvQzyENQlRnD5RdmHJJzlkAMB4DOUUBw8AjOX6lv9JCEZ5H3TwZa8yNZ06oIWNFjTjLk-2UG9ywDa3a5Q1JOcE6-kwJP654rlVbVmRR92x9GI1CNk2pOOLZ=s391-k-no",
+          "alt": {
+            "en": "Promenade Plantée (Coulée Verte)",
+            "pt-BR": "Promenade Plantée (Coulée Verte)"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm7PSUASISQxXiOzBBLZnlXv6dVWmaEfwwH6w1dm_udp7Z5G7GnM5w4NJfz-pabJr1LpcskSHelSu4Zqtq8BeYrow1tBJXKBhGsHX5lrMShIijYa1hELQW4ASgq93j6V26bNQvM=s609-k-no",
+          "alt": {
+            "en": "Promenade Plantée (Coulée Verte)",
+            "pt-BR": "Promenade Plantée (Coulée Verte)"
+          }
         }
       ],
       "tags": [
@@ -4484,6 +4688,20 @@ const snapshot = {
             "en": "Saint-Eustache",
             "pt-BR": "Saint-Eustache"
           }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/%C3%89glise_Saint-Eustache_de_Paris_vue_des_Halles.jpg/1280px-%C3%89glise_Saint-Eustache_de_Paris_vue_des_Halles.jpg",
+          "alt": {
+            "en": "Saint-Eustache",
+            "pt-BR": "Saint-Eustache"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/South_facade_of_%C3%89glise_Saint-Eustache_de_Paris%2C_M.jpg/1280px-South_facade_of_%C3%89glise_Saint-Eustache_de_Paris%2C_M.jpg",
+          "alt": {
+            "en": "Saint-Eustache",
+            "pt-BR": "Saint-Eustache"
+          }
         }
       ],
       "tags": [
@@ -4563,6 +4781,20 @@ const snapshot = {
       "photos": [
         {
           "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnYJiEHyO5MHM2kAbH2cbi1w2LBAeYS_xuFSqotP3no10MQuYiU_R32a-643KZ1sg01A_8XjyDCM3BcfCm2LQQBvlkm-madcx7ywnHRtIuGa5QHAazhqJavA6Bd0X9xsVb45ACfoeb5bHB5=w408-h544-k-no",
+          "alt": {
+            "en": "Shakespeare and Company",
+            "pt-BR": "Shakespeare and Company"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk3CDv49kUl1PyWi8GAhIiMlga9dz2WwyRUt2om9v3q7EV_RLVP5w9gVGfthdxSMCvxOx6k46FS_lBngmkl3TSjiMzIJpH01iTtVBUFAc6CBJLZ_FUuZD1M8qPsi7kxtK2E04FLNB6Teaw=s696-k-no",
+          "alt": {
+            "en": "Shakespeare and Company",
+            "pt-BR": "Shakespeare and Company"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWletNv21VtmdV6MDwoYKjqJcq8L2XTs1maAYh-ou5Ih-eFfzNnpYLxBvCE8Evpy6OVrcyNpGiQ1uwt5DAEMt_3aLIeLdXFw7TD0O99UkekT3Bny9zwrwm8fv3q3MXO9AdrWu1L2hWXyDNo=s644-k-no",
           "alt": {
             "en": "Shakespeare and Company",
             "pt-BR": "Shakespeare and Company"
@@ -4708,7 +4940,6 @@ const snapshot = {
       "lng": 2.3275,
       "address": "Place de la Concorde, 75001 Paris",
       "mapsQuery": "Jardin des Tuileries Paris",
-      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
@@ -4731,7 +4962,8 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z",
+      "rating": 5
     },
     {
       "notionPageId": "3b22da8d-8134-8123-8f3f-c3514d2c05a7",

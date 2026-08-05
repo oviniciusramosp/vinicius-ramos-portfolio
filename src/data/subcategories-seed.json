@@ -53,8 +53,8 @@
     "bistro"
   ],
   "par-canals": [
-    "french",
-    "bistro"
+    "avenue",
+    "park"
   ],
   "par-royal-cambronne": [
     "brasserie",
@@ -175,8 +175,8 @@
     "viewpoint"
   ],
   "par-palais-royal": [
-    "garden",
-    "architecture"
+    "park",
+    "garden"
   ],
   "par-bnf": [
     "library",
@@ -339,6 +339,9 @@
   "par-mcdonalds-champs": [
     "burgers"
   ],
+  "par-mcdonalds-disney": [
+    "burgers"
+  ],
   "par-burger-king-opera": [
     "burgers"
   ],
@@ -378,6 +381,9 @@
   "par-disneyland": [
     "park",
     "show"
+  ],
+  "par-bella-notte": [
+    "italian"
   ],
   "par-versailles": [
     "palace",

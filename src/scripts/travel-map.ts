@@ -11,8 +11,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '@maplibre/maplibre-gl-leaflet';
 import {
   categoryColor,
-  categoryIconHtml,
   materialIconHtml,
+  placePinIconHtml,
 } from '../data/travel-categories';
 import { ROUTE_WAYPOINT_AREA_IDS } from '../data/travel-areas-policy';
 
@@ -53,6 +53,8 @@ export type MapPin = {
   href?: string;
   mapsUrl?: string;
   category?: string;
+  /** Subcategories — parks/cafés dots use these for the glyph */
+  subcategories?: string[] | null;
   featured?: boolean;
   /** @deprecated ignored — tourist pins use a 6-point star, not building icons */
   landmark?: string | null;
@@ -644,6 +646,8 @@ function starSvgHtml(): string {
 
 type PinVisual = {
   category?: string;
+  /** Subcategories for parks/cafés pin glyphs */
+  subcategories?: string[] | null;
   featured?: boolean;
   active?: boolean;
   /** Place-specific icon key for tourist stars (eiffel, arc, …) */
@@ -651,11 +655,17 @@ type PinVisual = {
 };
 
 /**
- * Default = colored circular dot; solid category glyph on hover.
+ * Default = colored circular dot; solid category/subcategory glyph on hover.
  * Tourist = 8-point star + place-specific solid glyph on hover (same UX as dots).
  */
 function pinHtml(visual: PinVisual = {}): string {
-  const { category, featured = false, active = false, landmark } = visual;
+  const {
+    category,
+    subcategories,
+    featured = false,
+    active = false,
+    landmark,
+  } = visual;
   const color = categoryColor(category);
   const isStar = category === 'tourist';
 
@@ -686,7 +696,7 @@ function pinHtml(visual: PinVisual = {}): string {
     );
   }
 
-  const glyph = categoryIconHtml(category);
+  const glyph = placePinIconHtml(category, subcategories);
 
   const classes = [
     'travel-pin',
@@ -728,16 +738,106 @@ function makeIcon(visual: PinVisual = {}): L.DivIcon {
  * - mid  (11–13): 10px rest
  * - near (≥ 13): 12px rest (former default)
  */
-function applyZoomPinMode(map: L.Map, container: HTMLElement) {
-  const z = map.getZoom();
-  container.classList.toggle('travel-map--zoom-far', z < 11);
-  container.classList.toggle('travel-map--zoom-mid', z >= 11 && z < 13);
-  container.classList.toggle('travel-map--zoom-near', z >= 13);
+/** Zoom density bucket — only this should change pin rest sizes (not pan). */
+function zoomPinBucket(z: number): 'far' | 'mid' | 'near' {
+  if (z < 11) return 'far';
+  if (z < 13) return 'mid';
+  return 'near';
 }
+
+function applyZoomPinMode(map: L.Map, container: HTMLElement) {
+  const bucket = zoomPinBucket(map.getZoom());
+  container.classList.toggle('travel-map--zoom-far', bucket === 'far');
+  container.classList.toggle('travel-map--zoom-mid', bucket === 'mid');
+  container.classList.toggle('travel-map--zoom-near', bucket === 'near');
+}
+
+function medianOf(nums: number[]): number {
+  if (nums.length === 0) return 0;
+  const sorted = [...nums].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[mid]!
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+/** Great-circle distance in km (WGS84 sphere). */
+function haversineKm(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
+  const R = 6371;
+  const toRad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * toRad;
+  const dLng = (lng2 - lng1) * toRad;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * toRad) *
+      Math.cos(lat2 * toRad) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(Math.min(1, a)));
+}
+
+/**
+ * Robust radius for city camera fit: median center + p75 × 2 (min 10 km).
+ * Drops far outliers (CDG/ORY, Disney, Versailles) while keeping the urban core.
+ */
+function centralFitRadiusKm(
+  pins: Array<{ lat: number; lng: number; category?: string }>,
+): { medLat: number; medLng: number; maxKm: number } | null {
+  const nonAirport = pins.filter((p) => p.category !== 'airport');
+  const sample = nonAirport.length > 0 ? nonAirport : pins;
+  if (sample.length === 0) return null;
+
+  const medLat = medianOf(sample.map((p) => p.lat));
+  const medLng = medianOf(sample.map((p) => p.lng));
+  if (sample.length < 4) {
+    return { medLat, medLng, maxKm: Number.POSITIVE_INFINITY };
+  }
+
+  const distances = sample
+    .map((p) => haversineKm(p.lat, p.lng, medLat, medLng))
+    .sort((a, b) => a - b);
+  const p75 = distances[Math.floor((distances.length - 1) * 0.75)] ?? distances.at(-1)!;
+  // Dense cores (Paris p75 ≈ 4 km): prefer intramuros; outer fringe drops out of fit.
+  const maxKm = Math.max(p75 * 1.45, 5.5);
+  return { medLat, medLng, maxKm };
+}
+
+/** True when a pin should contribute to the initial / filter city fit. */
+function pinIncludedInCityFit(
+  pin: { lat: number; lng: number; category?: string },
+  radius: { medLat: number; medLng: number; maxKm: number } | null,
+): boolean {
+  if (pin.category === 'airport') return false;
+  if (!radius || !Number.isFinite(radius.maxKm)) return true;
+  return (
+    haversineKm(pin.lat, pin.lng, radius.medLat, radius.medLng) <= radius.maxKm
+  );
+}
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+/** City page load: start wider, then ease-out zoom into the urban core. */
+const CITY_INTRO_DURATION_S = 1.45;
+const CITY_INTRO_EASE = 0.18;
+/** Extra pad + lower maxZoom for the pre-intro “wide” frame */
+const CITY_INTRO_START_PAD = 0.9;
+const CITY_INTRO_START_ZOOM_DELTA = 2.4;
+/** Final city fit padding — smaller = tighter / more zoom */
+const CITY_FIT_PAD = 0.02;
 
 function visualFor(pin: MapPin | undefined, active = false): PinVisual {
   return {
     category: pin?.category,
+    subcategories: pin?.subcategories,
     featured: pin?.featured,
     landmark: pin?.landmark,
     active,
@@ -1374,9 +1474,12 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   try {
     // Gesture-friendly: drag, touch pinch, trackpad pan+pinch (custom wheel)
     // MapLibre latitude limits are stricter than Leaflet — clamp + minZoom help sync.
+    // Extra SVG clip padding: blur/glow paths extend past geometry; default 0.1
+    // clips them mid-pan so areas/lines flash off then on.
+    const vectorRenderer = L.svg({ padding: 0.6 });
     map = L.map(container, {
       zoomControl: false,
-      attributionControl: true,
+      attributionControl: false,
       dragging: true,
       touchZoom: true,
       // Custom trackpad handler below (two-axis pan + pinch)
@@ -1390,6 +1493,7 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
       zoomSnap: 0,
       zoomDelta: 0.25,
       minZoom: 1,
+      renderer: vectorRenderer,
       maxBounds: L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180)),
       maxBoundsViscosity: 1,
     });
@@ -1416,16 +1520,53 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   const detachTrackpad = attachTrackpadGestures(map);
 
-  // Landmark icon ↔ dot + density sizing from zoom
-  const onZoomPinMode = () => applyZoomPinMode(map, container);
-  map.on('zoom zoomend', onZoomPinMode);
+  // Landmark icon ↔ dot + density sizing from zoom.
+  // Only react to real zoom changes — pan at the same zoom must not restyle pins.
+  let cameraMoving = false;
+  let cameraMoveGen = 0;
+  let lastZoomBucket = zoomPinBucket(map.getZoom());
+  const onZoomPinMode = () => {
+    if (cameraMoving) return;
+    const next = zoomPinBucket(map.getZoom());
+    if (next === lastZoomBucket) return;
+    lastZoomBucket = next;
+    applyZoomPinMode(map, container);
+  };
+  // zoomend only: continuous `zoom` during fly/pinch would thrash mid-nav
+  map.on('zoomend', onZoomPinMode);
   applyZoomPinMode(map, container);
+
+  const beginCameraMove = () => {
+    const gen = ++cameraMoveGen;
+    cameraMoving = true;
+    container.classList.add('is-camera-moving');
+    const end = () => {
+      if (gen !== cameraMoveGen) return;
+      cameraMoving = false;
+      container.classList.remove('is-camera-moving');
+      const next = zoomPinBucket(map.getZoom());
+      if (next !== lastZoomBucket) {
+        lastZoomBucket = next;
+        applyZoomPinMode(map, container);
+      }
+    };
+    map.once('moveend', end);
+    // flyTo can no-op when already at target and skip moveend
+    window.setTimeout(end, 1400);
+  };
 
   // MapLibre GL layer calls map.getCenter() on add — throws if no view yet.
   // Provisional center; real fitBounds/setView runs after pins are added.
+  // City pages start a bit wide so the load zoom-in doesn’t flash from a tight frame.
   const provisionalCenter: L.LatLngExpression = center ??
     (pins[0] ? [pins[0].lat, pins[0].lng] : [20, 0]);
-  const provisionalZoom = zoom ?? (mode === 'places' ? 12 : 2);
+  const basePlacesZoom = zoom ?? 12;
+  const provisionalZoom =
+    mode === 'places' && !prefersReducedMotion()
+      ? Math.max(8, basePlacesZoom - CITY_INTRO_START_ZOOM_DELTA)
+      : mode === 'places'
+        ? basePlacesZoom
+        : (zoom ?? 2);
   map.setView(provisionalCenter, provisionalZoom, { animate: false });
 
   // Vector basemap (OpenFreeMap) via MapLibre-in-Leaflet; pins stay Leaflet.
@@ -1476,8 +1617,12 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   const pinById = new Map(pins.map((p) => [p.id, p]));
   /** All pin anchors (incl. airports) */
   const latLngs: L.LatLngExpression[] = [];
-  /** Initial / filter fit — airports excluded so city zoom stays on the center */
+  /**
+   * Initial / filter fit — airports + far outliers excluded so the camera
+   * stays on the urban core (e.g. not CDG / Disney / Versailles).
+   */
   const boundsLatLngs: L.LatLngExpression[] = [];
+  const cityFitRadius = mode === 'places' ? centralFitRadiusKm(pins) : null;
   const locale =
     document.documentElement.dataset.travelLocale === 'pt-BR' ? 'pt-BR' : 'en';
 
@@ -1835,7 +1980,8 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   for (const pin of pins) {
     const label = pinLabel(pin);
 
-    const excludeFromFit = pin.category === 'airport';
+    const excludeFromFit =
+      mode === 'places' ? !pinIncludedInCityFit(pin, cityFitRadius) : false;
 
     // Region layer created hidden — only added on hover with fade-in
     if (pin.area) {
@@ -1863,20 +2009,8 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
       if (layer) {
         areas.set(pin.id, layer);
-        // Bounds from path data (multipolygon LayerGroups have no single getBounds)
-        if (pin.area.kind === 'multipolygon') {
-          for (const ring of pin.area.paths) {
-            for (const pt of ring) {
-              latLngs.push(pt as L.LatLngTuple);
-              if (!excludeFromFit) boundsLatLngs.push(pt as L.LatLngTuple);
-            }
-          }
-        } else {
-          for (const pt of pin.area.path) {
-            latLngs.push(pt as L.LatLngTuple);
-            if (!excludeFromFit) boundsLatLngs.push(pt as L.LatLngTuple);
-          }
-        }
+        // Area geometry is for hover highlight only — do NOT expand camera fit
+        // (metro polylines / large parks would pull zoom out of the city core).
       }
     }
 
@@ -2078,7 +2212,13 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   const fitLatLngsWithChrome = (
     pts: L.LatLngExpression[],
-    opts: { animate?: boolean; maxZoom?: number; duration?: number; pad?: number } = {},
+    opts: {
+      animate?: boolean;
+      maxZoom?: number;
+      duration?: number;
+      pad?: number;
+      easeLinearity?: number;
+    } = {},
   ) => {
     if (pts.length === 0) return;
     const maxZoom = opts.maxZoom ?? (mode === 'places' ? (zoom ?? 13) : 5);
@@ -2088,7 +2228,10 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
       recomputeChromePad();
       const target = chromeAwareCenter(pts[0], z);
       if (opts.animate) {
-        map.flyTo(target, z, { duration: opts.duration ?? 0.4 });
+        map.flyTo(target, z, {
+          duration: opts.duration ?? 0.4,
+          easeLinearity: opts.easeLinearity ?? 0.25,
+        });
       } else {
         map.setView(target, z, { animate: false });
       }
@@ -2103,7 +2246,7 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
       map.flyToBounds(bounds, {
         ...fitOpts,
         duration: opts.duration ?? 0.45,
-        easeLinearity: 0.25,
+        easeLinearity: opts.easeLinearity ?? 0.25,
       });
     } else {
       map.fitBounds(bounds, { ...fitOpts, animate: false });
@@ -2130,17 +2273,72 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     return map.unproject(map.project(pin, z).add(offset), z);
   };
 
+  /**
+   * City intro: open on a wider frame, then ease-out zoom into the core.
+   * Consumed by the first `syncUiChrome({ refit })` after page reveal
+   * (or the fallback timer below if reveal never fires).
+   */
+  let pendingIntroFit =
+    mode === 'places' && fitSource.length > 0 && !prefersReducedMotion();
+  let introFitTimer = 0;
+  /** True while the load flyToBounds is in progress (blocks hard snaps). */
+  let introFlyActive = false;
+  let introFlyGeneration = 0;
+
+  const cityTargetMaxZoom = zoom ?? 13;
+  const cityIntroStartMaxZoom = Math.max(
+    8,
+    cityTargetMaxZoom - CITY_INTRO_START_ZOOM_DELTA,
+  );
+
+  const runCityIntroFit = (pts: L.LatLngExpression[]) => {
+    if (pts.length === 0) return;
+    pendingIntroFit = false;
+    if (introFitTimer) {
+      window.clearTimeout(introFitTimer);
+      introFitTimer = 0;
+    }
+    const gen = ++introFlyGeneration;
+    introFlyActive = true;
+    map.once('moveend', () => {
+      if (gen === introFlyGeneration) introFlyActive = false;
+    });
+    fitLatLngsWithChrome(pts, {
+      animate: true,
+      duration: CITY_INTRO_DURATION_S,
+      easeLinearity: CITY_INTRO_EASE,
+      maxZoom: cityTargetMaxZoom,
+      pad: CITY_FIT_PAD,
+    });
+  };
+
+  const snapCityWideFrame = (pts: L.LatLngExpression[]) => {
+    fitLatLngsWithChrome(pts, {
+      animate: false,
+      maxZoom: cityIntroStartMaxZoom,
+      pad: CITY_INTRO_START_PAD,
+    });
+  };
+
+  const snapCityFinalFrame = (pts: L.LatLngExpression[]) => {
+    fitLatLngsWithChrome(pts, {
+      animate: false,
+      maxZoom: cityTargetMaxZoom,
+      pad: CITY_FIT_PAD,
+    });
+  };
+
   // Initial camera — free region ignores desktop sidebar overlay
   recomputeChromePad();
   if (mode === 'cities' && latLngs.length > 0) {
     fitLatLngsWithChrome(latLngs, { animate: false, maxZoom: 5, pad: 0.35 });
   } else if (mode === 'places' && fitSource.length > 0) {
-    // City zoom: ignore airports so ORY/CDG don't pull the viewport out
-    fitLatLngsWithChrome(fitSource, {
-      animate: false,
-      maxZoom: zoom ?? 13,
-      pad: 0.12,
-    });
+    // City zoom: core only (airports + far outliers out). Start wide for intro.
+    if (pendingIntroFit) {
+      snapCityWideFrame(fitSource);
+    } else {
+      snapCityFinalFrame(fitSource);
+    }
   } else if (center) {
     map.setView(chromeAwareCenter(center, zoom), zoom, { animate: false });
   } else if (latLngs.length > 0) {
@@ -2155,15 +2353,24 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     map.invalidateSize();
     recomputeChromePad();
     applyZoomPinMode(map, container);
-    // Second fit after layout/CSS (sidebar width) settles
+    // Second fit after layout/CSS (sidebar width) settles — keep wide if intro pending
     if (mode === 'places' && fitSource.length > 0) {
-      fitLatLngsWithChrome(fitSource, {
-        animate: false,
-        maxZoom: zoom ?? 13,
-        pad: 0.12,
-      });
+      if (pendingIntroFit) {
+        snapCityWideFrame(fitSource);
+      } else {
+        snapCityFinalFrame(fitSource);
+      }
     }
   });
+
+  // Fallback if post-reveal syncUiChrome never runs (or is delayed)
+  if (pendingIntroFit) {
+    introFitTimer = window.setTimeout(() => {
+      if (!pendingIntroFit) return;
+      recomputeChromePad();
+      runCityIntroFit(fitSource);
+    }, 900);
+  }
 
   let activeId: string | null = null;
   /** Pin kept active while side panel is open */
@@ -2313,14 +2520,22 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   };
 
   const collectFitPts = (): L.LatLngExpression[] => {
-    const pts: L.LatLngExpression[] = [];
+    const candidates: MapPin[] = [];
     markers.forEach((_marker, id) => {
       const show = !visibleIds || visibleIds.has(id);
       if (!show) return;
       const pin = pinById.get(id);
-      if (!pin || pin.category === 'airport') return;
-      pts.push([pin.lat, pin.lng]);
+      if (!pin) return;
+      candidates.push(pin);
     });
+    // Recompute radius on the currently visible set so filters still ignore outliers
+    const radius =
+      mode === 'places' ? centralFitRadiusKm(candidates) : cityFitRadius;
+    const pts: L.LatLngExpression[] = [];
+    for (const pin of candidates) {
+      if (mode === 'places' && !pinIncludedInCityFit(pin, radius)) continue;
+      pts.push([pin.lat, pin.lng]);
+    }
     if (pts.length === 0 && fitSource.length > 0) return fitSource;
     return pts;
   };
@@ -2330,45 +2545,102 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     if (!opts?.refit) return;
     const pts = collectFitPts();
     if (pts.length === 0) return;
+
+    // First post-reveal refit plays the load zoom-in (not an instant snap).
+    // If chrome settles mid-flight, re-target with the same ease-out curve.
+    if (mode === 'places' && (pendingIntroFit || introFlyActive)) {
+      runCityIntroFit(pts);
+      return;
+    }
+
     fitLatLngsWithChrome(pts, {
       animate: opts.animate ?? false,
       maxZoom: mode === 'places' ? (zoom ?? 14) : 5,
-      pad: 0.12,
+      pad: mode === 'places' ? CITY_FIT_PAD : 0.12,
     });
   };
 
   /**
    * Animate the camera so the pin sits in the free (unobstructed) map region.
-   * Always one continuous animation — never jump-then-pan (that flashes tiles).
+   * Same/near zoom → pan only (no pin size / density morph mid-nav).
+   * Meaningful zoom delta → flyTo.
    */
   const viewWithChrome = (
     latlng: L.LatLngExpression,
     z: number,
     animate: boolean,
     duration = 0.55,
+    easeLinearity = 0.25,
   ) => {
     recomputeChromePad();
-    const target = chromeAwareCenter(latlng, z);
+    const curZ = map.getZoom();
+    const targetZ = z;
+    const target = chromeAwareCenter(latlng, targetZ);
     if (!animate) {
-      map.setView(target, z, { animate: false });
+      map.stop();
+      map.setView(target, targetZ, { animate: false });
       return;
     }
-    // flyTo always runs a smooth pan+zoom curve. setView often falls back to
-    // an instant _resetView (e.g. large pan, zoom path failing) → map flash.
-    map.flyTo(target, z, {
+    // Caller owns beginCameraMove(); stop any in-flight fly first.
+    map.stop();
+    // Pan-only when zoom barely changes — flyTo with zoom thrash re-renders pins/SVG.
+    if (Math.abs(targetZ - curZ) < 0.4) {
+      map.panTo(target, {
+        animate: true,
+        duration,
+        easeLinearity,
+      });
+      return;
+    }
+    map.flyTo(target, targetZ, {
       duration,
-      easeLinearity: 0.25,
+      easeLinearity,
     });
   };
+
+  const isCoarsePointer = () =>
+    typeof window !== 'undefined' &&
+    window.matchMedia('(pointer: coarse)').matches;
 
   const ensureVisible = (id: string, animate = true) => {
     const pin = pinById.get(id);
     if (!pin) return;
     if (visibleIds && !visibleIds.has(id)) return;
 
-    const z = Math.max(map.getZoom(), 14);
-    const areaLayer = areas.get(id);
-    if (areaLayer) {
+    map.stop();
+    if (animate) beginCameraMove();
+
+    const curZ = map.getZoom();
+    // Keep current zoom when already useful for city detail — pan between
+    // pins must not change density (far/mid/near) or pin rest sizes.
+    const minDetailZ = 13;
+    const z =
+      curZ >= minDetailZ
+        ? curZ
+        : isCoarsePointer()
+          ? Math.min(15, Math.max(curZ, Math.min(14, curZ + 1.25)))
+          : Math.max(curZ, 14);
+
+    // Highlight after the camera settles when pan-only so the active pin
+    // doesn’t grow/morph mid-navigation.
+    const zoomDelta = Math.abs(z - curZ);
+    const panOnly = zoomDelta < 0.4;
+    if (!animate || !panOnly) {
+      highlight(id);
+    } else {
+      const gen = cameraMoveGen;
+      map.once('moveend', () => {
+        if (gen === cameraMoveGen) highlight(id);
+      });
+      // Safety if pan is a no-op
+      window.setTimeout(() => {
+        if (gen === cameraMoveGen && selectedId === id) highlight(id);
+      }, Math.round((isCoarsePointer() ? 0.65 : 0.55) * 1000) + 80);
+    }
+
+    // On mobile, always center the pin (not area bounds).
+    const areaLayer = !isCoarsePointer() ? areas.get(id) : undefined;
+    if (areaLayer && !panOnly) {
       const bounds = areaLayer.getBounds().pad(0.2);
       recomputeChromePad();
       const fitOpts = {
@@ -2385,9 +2657,14 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
         map.fitBounds(bounds, { ...fitOpts, animate: false });
       }
     } else {
-      viewWithChrome([pin.lat, pin.lng], z, animate);
+      viewWithChrome(
+        [pin.lat, pin.lng],
+        z,
+        animate,
+        isCoarsePointer() ? 0.65 : 0.55,
+        isCoarsePointer() ? 0.2 : 0.25,
+      );
     }
-    highlight(id);
   };
 
   const select = (id: string | null) => {
@@ -2397,7 +2674,9 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     selectedId = id;
     // Overlap-spread only while a pin is hovered or selected
     pinMotion.setSelected(id);
-    highlight(id);
+    // Open panel first (sets chrome padding), then one camera move.
+    // Highlight runs inside ensureVisible so is-active size morph starts under
+    // `is-camera-moving` (no competing CSS transitions mid-flight).
     container.dispatchEvent(
       new CustomEvent('travel:select', {
         bubbles: true,
@@ -2407,6 +2686,8 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     if (id) {
       // Camera respects chrome padding (form sheet bottom, etc.)
       ensureVisible(id, true);
+    } else {
+      highlight(null);
     }
   };
 
@@ -3193,6 +3474,14 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   const destroy = () => {
     try {
+      pendingIntroFit = false;
+      introFlyActive = false;
+      cameraMoving = false;
+      cameraMoveGen += 1;
+      if (introFitTimer) {
+        window.clearTimeout(introFitTimer);
+        introFitTimer = 0;
+      }
       unbindBasemapTints?.();
       unbindBasemapTints = null;
       clearItineraryRoute();
@@ -3203,11 +3492,12 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
       detachTrackpad();
       detachFullscreen();
       detachLocate();
-      map.off('zoom zoomend', onZoomPinMode);
+      map.off('zoomend', onZoomPinMode);
       container.classList.remove(
         'travel-map--zoom-far',
         'travel-map--zoom-mid',
         'travel-map--zoom-near',
+        'is-camera-moving',
       );
       container.removeEventListener('travel:highlight', onHighlight);
       container.removeEventListener('pointerleave', onMapPointerLeave);

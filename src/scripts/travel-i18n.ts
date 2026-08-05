@@ -103,7 +103,9 @@ export function applyTravelLocale(
       return;
     }
 
-    el.textContent = text;
+    // Tips (and any multi-line i18n) store newlines as the two-char sequence "\n"
+    // in data attributes so HTML attr normalization does not collapse them.
+    el.textContent = text.replace(/\\n/g, '\n');
   });
 
   document.documentElement.lang = loc === 'pt-BR' ? 'pt-BR' : 'en';

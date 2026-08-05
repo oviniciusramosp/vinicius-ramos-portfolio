@@ -6,19 +6,41 @@ import {
   computeDayBudget,
   itineraryForCity,
 } from './travel-itineraries';
-import { legsForDay } from './travel-itinerary-legs';
+import {
+  expandTimelineTransferParts,
+  legsForDay,
+} from './travel-itinerary-legs';
 import { getTransitLine, sliceLinePath } from './travel-transit-lines';
 import { getTravelCity, withResolvedArea } from './travel';
 
 describe('paris itinerary', () => {
   it('is registered for the paris city slug', () => {
-    expect(itineraryForCity('paris')?.id).toBe('paris-6-days');
+    expect(itineraryForCity('paris')?.id).toBe('paris-7-days');
     expect(itineraryForCity('porto')).toBeUndefined();
   });
 
-  it('has 6 days', () => {
-    expect(parisItinerary.days).toHaveLength(6);
-    expect(parisItinerary.days.map((d) => d.day)).toEqual([1, 2, 3, 4, 5, 6]);
+  it('has 7 days', () => {
+    expect(parisItinerary.days).toHaveLength(7);
+    expect(parisItinerary.days.map((d) => d.day)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+  });
+
+  it('day 7 is Disneyland Paris with Studios-first flow and fireworks', () => {
+    const d7 = parisItinerary.days[6]!;
+    expect(d7.id).toBe('paris-d7');
+    const primary = dayPrimaryRoutePlaceIds(d7);
+    expect(primary[0]).toBe('par-disneyland');
+    expect(primary).toContain('par-bella-notte');
+    expect(primary).toContain('par-mcdonalds-disney');
+    // Park pin appears for rope drop, afternoon, and fireworks
+    expect(primary.filter((id) => id === 'par-disneyland')).toHaveLength(3);
+    const ticketStops = d7.stops.filter(
+      (s) => s.placeId === 'par-disneyland' && s.countTicket !== false,
+    );
+    expect(ticketStops).toHaveLength(1);
+    const fireworks = d7.stops.find(
+      (s) => s.placeId === 'par-disneyland' && s.time === '22:20',
+    );
+    expect(fireworks?.countTicket).toBe(false);
   });
 
   it('every stop placeId exists on the Paris city', () => {
@@ -85,6 +107,21 @@ describe('paris itinerary', () => {
     expect(towerLeg?.hops?.length).toBe(2);
     const homeLeg = legs.find((l) => l.label === 'M6 + M13 + RER E');
     expect(homeLeg?.hops?.length).toBe(3);
+  });
+
+  it('day 1 RER E → M9 inserts walk between St-Lazare and St-Augustin', () => {
+    const legs = legsForDay('paris-d1');
+    const towerLeg = legs.find((l) => l.label === 'RER E + M9');
+    expect(towerLeg).toBeTruthy();
+    const parts = expandTimelineTransferParts(towerLeg!);
+    expect(parts.map((p) => p.mode)).toEqual(['transit', 'walk', 'transit']);
+    expect(parts[0]?.label.en).toBe('RER E');
+    expect(parts[1]?.label.en).toMatch(/Walk to M9/i);
+    expect(parts[2]?.label.en).toBe('M9');
+    // Same-station multi-hop (M14 + RER E) must not invent a walk
+    const ory = legs.find((l) => l.label === 'M14 + RER E');
+    const oryParts = expandTimelineTransferParts(ory!);
+    expect(oryParts.every((p) => p.mode === 'transit')).toBe(true);
   });
 
   it('day 1 offers ORY and CDG arrival variants', () => {

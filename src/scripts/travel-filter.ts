@@ -228,7 +228,7 @@ function bootCityFeed(root: HTMLElement): void {
   apply();
 }
 
-type PlacesView = 'grid' | 'list' | 'itinerary';
+type PlacesView = 'list' | 'itinerary';
 
 /** /travel/[slug] — category filter on place cards + map pins + view modes */
 function bootPlacesFeed(root: HTMLElement): void {
@@ -289,11 +289,9 @@ function bootPlacesFeed(root: HTMLElement): void {
   }
 
   let query = '';
-  let view: PlacesView =
-    (viewsRoot?.dataset.placesView as PlacesView | undefined) || 'list';
   let popoverOpen = false;
 
-  /** All feed cards (grid + list duplicates). Map uses unique place ids. */
+  /** All feed cards (list). Map uses unique place ids. */
   const cards = () =>
     Array.from(
       root.querySelectorAll<HTMLElement>(
@@ -320,8 +318,73 @@ function bootPlacesFeed(root: HTMLElement): void {
   const expandEn = expandToggle?.dataset.expandEn || 'Expand all';
   const expandPt = expandToggle?.dataset.expandPt || 'Expandir tudo';
 
-  /** Per-city open/closed map for list groups (survives navigation in the tab). */
-  const groupStateKey = `travel-list-groups:${location.pathname}`;
+  /** Per-city UI state (survives refresh in the same tab). */
+  const pathKey = location.pathname;
+  const groupStateKey = `travel-list-groups:${pathKey}`;
+  const viewStateKey = `travel-places-view:${pathKey}`;
+  const selectedPlaceKey = `travel-selected-place:${pathKey}`;
+
+  const readStoredView = (): PlacesView | null => {
+    try {
+      const v = sessionStorage.getItem(viewStateKey);
+      if (v === 'list' || v === 'itinerary') return v;
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeStoredView = (next: PlacesView) => {
+    try {
+      sessionStorage.setItem(viewStateKey, next);
+    } catch {
+      /* private mode / quota — ignore */
+    }
+  };
+
+  const readStoredPlace = (): string | null => {
+    try {
+      const id = sessionStorage.getItem(selectedPlaceKey);
+      return id && id.length > 0 ? id : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeStoredPlace = (id: string | null) => {
+    try {
+      if (id) sessionStorage.setItem(selectedPlaceKey, id);
+      else sessionStorage.removeItem(selectedPlaceKey);
+    } catch {
+      /* private mode / quota — ignore */
+    }
+  };
+
+  const placeExistsOnPage = (id: string): boolean =>
+    Boolean(
+      root.querySelector(
+        `.travel-place-card[data-place-id="${CSS.escape(id)}"]`,
+      ),
+    );
+
+  /** Re-select place after map boot / refresh. No-op if missing or filtered out. */
+  const restoreSelectedPlace = () => {
+    const id = readStoredPlace();
+    if (!id) return;
+    if (!placeExistsOnPage(id)) {
+      writeStoredPlace(null);
+      return;
+    }
+    const map = getTravelMapHandle();
+    if (!map) return;
+    map.select(id);
+    setListActive(id);
+  };
+
+  const storedView = readStoredView();
+  const initialView = storedView ?? viewsRoot?.dataset.placesView;
+  let view: PlacesView =
+    initialView === 'list' || initialView === 'itinerary' ? initialView : 'list';
 
   const readGroupState = (): Record<string, boolean> | null => {
     try {
@@ -429,6 +492,7 @@ function bootPlacesFeed(root: HTMLElement): void {
   const setView = (next: PlacesView) => {
     view = next;
     if (viewsRoot) viewsRoot.dataset.placesView = next;
+    writeStoredView(next);
 
     root.querySelectorAll<HTMLElement>('[data-view-panel]').forEach((panel) => {
       const isActive = panel.dataset.viewPanel === next;
@@ -487,7 +551,7 @@ function bootPlacesFeed(root: HTMLElement): void {
       if (countEl) countEl.textContent = String(groupVisible);
     }
 
-    // Empty state only for grid/list (itinerary has its own empty / cards)
+    // Empty state only for list (itinerary has its own empty / cards)
     if (empty) {
       if (view === 'itinerary') {
         empty.hidden = true;
@@ -500,7 +564,7 @@ function bootPlacesFeed(root: HTMLElement): void {
     if (view === 'itinerary') {
       getTravelMapHandle()?.setVisibleIds(null, { fit: fitMap });
     } else {
-      // Leaving itinerary (or list/grid apply): drop multi-modal overlay
+      // Leaving itinerary (or list apply): drop multi-modal overlay
       getTravelMapHandle()?.setItineraryRoute(null);
       getTravelMapHandle()?.setVisibleIds(visibleIds, { fit: fitMap });
     }
@@ -511,14 +575,16 @@ function bootPlacesFeed(root: HTMLElement): void {
 
   bindCardHover(cards(), 'placeId');
 
-  // Map remounts after filter bind (ClientRouter / debounce) — re-push visibility.
+  // Map remounts after filter bind (ClientRouter / debounce) — re-push visibility
+  // and re-apply the last selected place (refresh / SPA remount).
   // Ignore events after this feed was navigated away (stale listeners).
   document.addEventListener('travel:map-ready', () => {
     if (!root.isConnected) return;
     apply();
+    restoreSelectedPlace();
   });
 
-  // Feed card click → select pin + open side panel (grid + list)
+  // Feed card click → select pin + open side panel
   root.addEventListener('click', (e) => {
     const target = e.target as HTMLElement | null;
     if (!target) return;
@@ -549,12 +615,13 @@ function bootPlacesFeed(root: HTMLElement): void {
     setListActive(id);
   });
 
-  // Keep list highlight in sync when pin/panel selection changes
+  // Keep list highlight + session state in sync when pin/panel selection changes
   document
     .querySelector<HTMLElement>('[data-travel-map]')
     ?.addEventListener('travel:select', (e: Event) => {
       const id = (e as CustomEvent<{ id: string | null }>).detail?.id ?? null;
       setListActive(id);
+      writeStoredPlace(id);
     });
 
   search?.addEventListener('input', () => {
@@ -600,7 +667,7 @@ function bootPlacesFeed(root: HTMLElement): void {
     }
   });
 
-  // View mode: grid | list | itinerary
+  // View mode: list | itinerary
   viewButtons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -637,6 +704,9 @@ function bootPlacesFeed(root: HTMLElement): void {
   restoreGroupState();
   syncExpandToggle(allVisibleGroupsOpen());
   setView(view);
+  // If map already booted (HMR / late filter bind), restore selection now.
+  // Otherwise travel:map-ready will restore after pins exist.
+  if (getTravelMapHandle()) restoreSelectedPlace();
 }
 
 export function bootTravelFilter(): void {

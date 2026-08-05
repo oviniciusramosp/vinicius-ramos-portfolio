@@ -75,17 +75,9 @@
   cursor: pointer !important;
 }
 
+/* Basemap credit (Leaflet | OpenFreeMap | OSM) — hidden for a cleaner UI */
 .travel-map .leaflet-control-attribution {
-  background: var(--color-map-attr-bg, rgba(0, 0, 0, 0.55));
-  color: var(--color-map-attr-fg, rgba(255, 255, 255, 0.45));
-  font-size: 10px;
-  border-radius: 4px 0 0 0;
-  margin: 0;
-  padding: 2px 6px;
-}
-
-.travel-map .leaflet-control-attribution a {
-  color: var(--color-map-attr-link, rgba(255, 255, 255, 0.55));
+  display: none !important;
 }
 
 .travel-map .leaflet-control-zoom {
@@ -316,6 +308,34 @@ html[data-theme='light'] .travel-map-tooltip.leaflet-tooltip-right::before {
   transition:
     transform 0.25s cubic-bezier(0, 0, 0.25, 1),
     opacity 0.22s cubic-bezier(0.44, 0, 0.56, 1) !important;
+}
+
+/*
+ * During flyTo/pan-to-pin: freeze pin size morphs (dot→badge, zoom density).
+ * Competing CSS transitions + continuous marker reposition = mobile shake.
+ * Also drop filter: on star SVGs — filtered SVG under transform flashes.
+ */
+.travel-map.is-camera-moving .travel-pin__core,
+.travel-map.is-camera-moving .travel-pin__core--star,
+.travel-map.is-camera-moving .travel-pin__glyph,
+.travel-map.is-camera-moving .travel-pin__star-shape,
+.travel-map.is-camera-moving .travel-pin__pulse,
+.travel-map.is-camera-moving .travel-pin-icon,
+.travel-map.leaflet-dragging .travel-pin__core,
+.travel-map.leaflet-dragging .travel-pin__core--star,
+.travel-map.leaflet-dragging .travel-pin__glyph,
+.travel-map.leaflet-dragging .travel-pin__star-shape,
+.travel-map.leaflet-dragging .travel-pin__pulse,
+.travel-map.leaflet-dragging .travel-pin-icon {
+  transition: none !important;
+}
+
+.travel-map.is-camera-moving .travel-pin__star-svg,
+.travel-map.leaflet-dragging .travel-pin__star-svg,
+.travel-map.leaflet-zoom-anim .travel-pin__star-svg {
+  transition: none !important;
+  /* Keep a cheap shadow; multi drop-shadow re-rasters every frame while panning */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) !important;
 }
 
 .travel-pin-icon.is-filter-preview-dim {
@@ -813,20 +833,19 @@ html[data-theme='light'] .travel-map-tooltip.leaflet-tooltip-right::before {
 /*
  * Area / line fade: Leaflet writes presentation attrs on <path>;
  * CSS transitions those attributes for smooth enter/exit.
+ *
+ * Do NOT use filter:blur/drop-shadow on live paths during pan/zoom —
+ * browsers re-rasterize filtered SVG under transform and paths flash
+ * off/on (especially Safari/iOS + Chrome). Soft edge = fill opacity only.
  */
 .travel-map .leaflet-overlay-pane path.travel-area {
   pointer-events: none !important;
   transition:
     fill-opacity 0.35s cubic-bezier(0.44, 0, 0.56, 1),
     stroke-opacity 0.35s cubic-bezier(0.44, 0, 0.56, 1),
-    stroke-width 0.35s cubic-bezier(0.44, 0, 0.56, 1),
-    filter 0.35s cubic-bezier(0.44, 0, 0.56, 1);
+    stroke-width 0.35s cubic-bezier(0.44, 0, 0.56, 1);
 }
 
-/*
- * Polygons: fill only (no stroke). Light blur softens the edge when the
- * SVG pane allows overflow; otherwise the fill still has no hard rim.
- */
 .travel-map .leaflet-overlay-pane,
 .travel-map .leaflet-overlay-pane svg {
   overflow: visible !important;
@@ -835,28 +854,27 @@ html[data-theme='light'] .travel-map-tooltip.leaflet-tooltip-right::before {
 .travel-map .leaflet-overlay-pane path.travel-area--poly {
   stroke: none !important;
   stroke-width: 0 !important;
-  filter: none;
-}
-
-.travel-map .leaflet-overlay-pane path.travel-area--poly.is-visible {
-  filter: blur(1.5px);
-}
-
-/* Light basemap: less blur so fill color stays punchy at higher opacity */
-html[data-theme='light'] .travel-map .leaflet-overlay-pane path.travel-area--poly.is-visible {
-  filter: blur(0.6px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .travel-map .leaflet-overlay-pane path.travel-area--poly.is-visible {
-    filter: none;
-  }
+  filter: none !important;
 }
 
 .travel-map .leaflet-overlay-pane path.travel-area--line {
   fill: none !important;
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: none !important;
+}
+
+/*
+ * While the map moves: freeze path transitions + kill any residual filters /
+ * dash animations so SVG doesn’t flash during Leaflet’s SVG root re-layout.
+ * (leaflet-dragging / leaflet-zoom-anim are set by Leaflet itself.)
+ */
+.travel-map.is-camera-moving .leaflet-overlay-pane path,
+.travel-map.leaflet-dragging .leaflet-overlay-pane path,
+.travel-map.leaflet-zoom-anim .leaflet-overlay-pane path {
+  transition: none !important;
+  filter: none !important;
+  animation: none !important;
 }
 
 /* Metro / route station dots (appear with the line on hover) */
@@ -872,13 +890,15 @@ html[data-theme='light'] .travel-map .leaflet-overlay-pane path.travel-area--pol
   pointer-events: none !important;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 4px rgba(0, 143, 255, 0.45));
+  /* Glow via a second path would reintroduce filter flicker — keep clean stroke */
+  filter: none;
 }
 
 /* Multi-modal day itinerary legs */
 .travel-map .leaflet-overlay-pane path.travel-itinerary-leg {
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: none;
 }
 
 /* Base stroke (walk / solid transit) — hit target, no flow animation */
@@ -891,13 +911,11 @@ html[data-theme='light'] .travel-map .leaflet-overlay-pane path.travel-area--pol
 .travel-map .leaflet-overlay-pane path.travel-itinerary-leg--walk {
   /* Walk keeps its own dotted dash from JS; soft flow on the same stroke */
   animation: travel-leg-flow 2.4s linear infinite;
-  filter: drop-shadow(0 0 2px rgba(0, 143, 255, 0.18));
 }
 
 .travel-map .leaflet-overlay-pane path.travel-itinerary-leg--transit {
   /* Solid metro/RER — never dashed */
   animation: none;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.18));
 }
 
 /*
@@ -907,6 +925,7 @@ html[data-theme='light'] .travel-map .leaflet-overlay-pane path.travel-area--pol
 .travel-map .leaflet-overlay-pane path.travel-itinerary-leg--flow {
   pointer-events: none !important;
   animation: travel-leg-flow 2.8s linear infinite;
+  filter: none;
   filter: none;
 }
 

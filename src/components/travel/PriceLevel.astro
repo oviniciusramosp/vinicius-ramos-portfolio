@@ -1,0 +1,123 @@
+---
+/**
+ * Affordability chip: 3× attach_money icons (0–3 filled).
+ * 0 free → all light gray · 1 green · 2 yellow · 3 red
+ */
+import type { PriceLevel as Level } from '../../data/travel';
+
+interface Props {
+  level: Level;
+  /** Accessible name (EN), e.g. "Price per person" */
+  label?: string;
+  labelPt?: string;
+}
+
+const {
+  level,
+  label = 'Price per person',
+  labelPt = 'Preço por pessoa',
+} = Astro.props;
+
+const levelEn =
+  level === 0
+    ? 'free'
+    : level === 1
+      ? 'budget (€1–15)'
+      : level === 2
+        ? 'moderate (€16–39)'
+        : 'expensive (€40+)';
+const levelPt =
+  level === 0
+    ? 'grátis'
+    : level === 1
+      ? 'econômico (€1–15)'
+      : level === 2
+        ? 'moderado (€16–39)'
+        : 'caro (€40+)';
+
+const aria = `${label}: ${levelEn}`;
+const ariaPt = `${labelPt}: ${levelPt}`;
+---
+
+<span
+  class:list={['price-level', `price-level--${level}`]}
+  role="img"
+  aria-label={aria}
+  data-i18n-en={aria}
+  data-i18n-pt={ariaPt}
+  data-i18n-as="aria-label"
+  data-price-level={String(level)}
+>
+  {
+    [0, 1, 2].map((i) => (
+      <span
+        class:list={[
+          'material-symbols-rounded',
+          'price-level__icon',
+          i < level && 'is-filled',
+        ]}
+        aria-hidden="true"
+      >
+        attach_money
+      </span>
+    ))
+  }
+</span>
+
+<style>
+  .price-level {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0;
+    line-height: 1;
+    /* Empty icons — theme-aware light gray */
+    --price-empty: color-mix(in srgb, var(--color-text, #fff) 26%, transparent);
+    --price-fill: var(--price-empty);
+  }
+
+  .price-level--1 {
+    --price-fill: #34d399; /* green */
+  }
+
+  .price-level--2 {
+    --price-fill: #fbbf24; /* yellow */
+  }
+
+  .price-level--3 {
+    --price-fill: #f87171; /* red */
+  }
+
+  .price-level__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.72em;
+    height: 1em;
+    margin: 0;
+    /* Stronger overlap so $$$ reads as a tight cluster */
+    margin-inline-end: -0.28em;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--price-empty);
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 20;
+  }
+
+  .price-level__icon:last-child {
+    margin-inline-end: 0;
+  }
+
+  .price-level__icon.is-filled {
+    color: var(--price-fill);
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 20;
+  }
+</style>

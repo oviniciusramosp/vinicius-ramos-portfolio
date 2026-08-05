@@ -37,6 +37,34 @@ export interface MoneyInfo {
   note?: LString;
 }
 
+/**
+ * Structured free / reduced ticket deals (not the full adult price).
+ * Day budget still uses the full `ticket` amount; promos are card tips only.
+ */
+export type TicketPromoKind =
+  | 'first-sunday'
+  | 'first-friday-evening'
+  | 'eu-under-26'
+  | 'under-18'
+  | 'other';
+
+/** Calendar month 1–12 */
+export type MonthIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
+export interface TicketPromo {
+  kind: TicketPromoKind;
+  /** Short line shown under Ticket on the place card */
+  label: LString;
+  /** Months when it applies (1–12). Omit = all year */
+  months?: MonthIndex[];
+  /** Months excluded (e.g. Jul/Aug for Louvre free Friday) */
+  excludeMonths?: MonthIndex[];
+  /** Optional time window note (e.g. after 18:00) */
+  timeNote?: LString;
+  /** Free timed slot often required even when €0 */
+  bookRequired?: boolean;
+}
+
 export interface VisitInfo {
   /** Restaurants / cafés: typical spend per person (food + drink). */
   avgPricePerPerson?: MoneyInfo;
@@ -47,6 +75,11 @@ export interface VisitInfo {
   pricePerNight?: MoneyInfo;
   /** Entrance / event ticket (adult full price when applicable). */
   ticket?: MoneyInfo;
+  /**
+   * Free / reduced ticket deals (1st Sunday, EU &lt;26, etc.).
+   * Display-only — budgets keep using full `ticket` price.
+   */
+  ticketPromos?: TicketPromo[];
   /** Official ticket page for live prices */
   ticketUrl?: string;
   /** Suggested duration in minutes */
@@ -87,6 +120,63 @@ const free: MoneyInfo = {
   free: true,
 };
 
+// —— Recurring ticket promos (Paris national museums / CMN) ——
+
+/** Winter free Sundays for many CMN monuments (Nov–Mar). */
+const MONTHS_WINTER_FREE_SUNDAY: MonthIndex[] = [11, 12, 1, 2, 3];
+
+const PROMO_UNDER_18: TicketPromo = {
+  kind: 'under-18',
+  label: L('Free under 18', 'Grátis <18'),
+};
+
+const PROMO_EU_UNDER_26: TicketPromo = {
+  kind: 'eu-under-26',
+  label: L(
+    'Free for EU/EEA 18–25 (ID; free timed slot often required)',
+    'Grátis UE/EEE 18–25 (ID; horário grátis costuma ser obrigatório)',
+  ),
+  bookRequired: true,
+};
+
+const PROMO_FIRST_SUNDAY_YEAR: TicketPromo = {
+  kind: 'first-sunday',
+  label: L(
+    'Free first Sunday of the month (book ahead — crowded)',
+    'Grátis no 1º domingo do mês (reserve — lotado)',
+  ),
+  bookRequired: true,
+};
+
+const PROMO_FIRST_SUNDAY_WINTER: TicketPromo = {
+  kind: 'first-sunday',
+  label: L(
+    'Free first Sunday Nov–Mar (book when required)',
+    'Grátis no 1º domingo nov–mar (reserve se pedir)',
+  ),
+  months: MONTHS_WINTER_FREE_SUNDAY,
+  bookRequired: true,
+};
+
+const PROMO_LOUVRE_FIRST_FRIDAY: TicketPromo = {
+  kind: 'first-friday-evening',
+  label: L(
+    'Free first Friday after 18:00 (not Jul/Aug; book ahead)',
+    'Grátis 1ª sexta após 18h (exceto jul/ago; reserve)',
+  ),
+  excludeMonths: [7, 8],
+  timeNote: L('After 18:00', 'Após 18h'),
+  bookRequired: true,
+};
+
+type MuseumVisitOpts = Partial<VisitInfo> & {
+  /**
+   * National museum / CMN-style site: auto-attach under-18 + EU under-26 promos.
+   * Private attractions (Montparnasse, Fondation LV, …) leave this false.
+   */
+  national?: boolean;
+};
+
 // —— Category-ish builders ——
 
 function parkVisit(partial: Partial<VisitInfo> = {}): VisitInfo {
@@ -106,8 +196,8 @@ function parkVisit(partial: Partial<VisitInfo> = {}): VisitInfo {
 }
 
 /**
- * @param typical - average / typical spend per person (used in budgets & cards)
- * @param upper - optional upper bound (kept for data; not used as the main price)
+ * @param typical - average / typical spend per person (day budget uses this via min)
+ * @param upper - upper bound — shown on place cards as part of the min–max range
  */
 function restaurantVisit(
   typical: number,
@@ -127,8 +217,8 @@ function restaurantVisit(
 }
 
 /**
- * @param typical - average / typical spend per person
- * @param upper - optional upper bound
+ * @param typical - average / typical spend per person (day budget uses this via min)
+ * @param upper - upper bound — shown on place cards as part of the min–max range
  */
 function cafeVisit(
   typical: number,
@@ -149,14 +239,20 @@ function cafeVisit(
 
 function museumVisit(
   price: number | { min: number; max?: number; free?: boolean },
-  partial: Partial<VisitInfo> = {},
+  partial: MuseumVisitOpts = {},
 ): VisitInfo {
+  const { national = false, ticketPromos: extraPromos, ...rest } = partial;
   const ticket: MoneyInfo =
     typeof price === 'number'
       ? money(price)
       : price.free
         ? free
         : money(price.min, price.max);
+
+  const basePromos: TicketPromo[] = national
+    ? [PROMO_UNDER_18, PROMO_EU_UNDER_26]
+    : [];
+  const ticketPromos = [...basePromos, ...(extraPromos ?? [])];
 
   return {
     ticket,
@@ -169,7 +265,8 @@ function museumVisit(
       'Book a timed ticket online — same price, less queue.',
       'Reserve horário online — mesmo preço, menos fila.',
     ),
-    ...partial,
+    ...rest,
+    ...(ticketPromos.length ? { ticketPromos } : {}),
   };
 }
 
@@ -661,6 +758,7 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     ),
   }),
   'par-louvre': museumVisit(32, {
+    national: true,
     ticketUrl: 'https://www.ticket.louvre.fr/en',
     durationMin: 150,
     durationMax: 300,
@@ -670,45 +768,63 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
       'Wednesday or Friday evening; free first Friday after 18:00 (not Jul/Aug)',
       'Quarta ou sexta à noite; grátis 1ª sexta após 18h (exceto jul/ago)',
     ),
+    ticketPromos: [PROMO_LOUVRE_FIRST_FRIDAY],
     tips: L(
-      'Closed Tuesdays. Book timed entry. Pick wings in advance — you will not see everything.',
-      'Fecha terça. Reserve horário. Escolha alas antes — você não vê tudo.',
+      'Closed Tuesdays. Book timed entry. Pick wings in advance — you will not see everything. No free first-Sunday (unlike Orsay).',
+      'Fecha terça. Reserve horário. Escolha alas antes — você não vê tudo. Sem 1º domingo grátis (diferente do Orsay).',
     ),
     osmRef: 'relation/7515426',
   }),
   'par-orsay': museumVisit(16, {
+    national: true,
     ticketUrl: 'https://www.musee-orsay.fr/en/visit',
     durationMin: 120,
     durationMax: 210,
     bestTime: L('Opening or Thursday late opening', 'Abertura ou quinta com horário estendido'),
     bestDay: L(
-      'Tuesday–Thursday; free first Sunday (crowded) — book even if free',
-      'Ter–qui; grátis 1º domingo (lotado) — reserve mesmo se for grátis',
+      'Tuesday–Thursday; free first Sunday all year (crowded) — book even if free',
+      'Ter–qui; grátis 1º domingo o ano todo (lotado) — reserve mesmo se for grátis',
     ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_YEAR],
     osmRef: 'way/63178753',
     tips: L(
-      'Closed Monday. Famous clock window for photos; Impressionists upstairs.',
-      'Fecha segunda. Relógio famoso para fotos; impressionistas no andar de cima.',
+      'Closed Monday. Famous clock window for photos; Impressionists upstairs. Free Sunday requires online booking.',
+      'Fecha segunda. Relógio famoso para fotos; impressionistas no andar de cima. Domingo grátis exige reserva online.',
     ),
   }),
   'par-orangerie': museumVisit(12.5, {
+    national: true,
     ticketUrl: 'https://www.musee-orangerie.fr/en',
     durationMin: 60,
     durationMax: 100,
     bestTime: L('Opening hour', 'Horário de abertura'),
     bestDay: L(
-      'Weekday; free first Sunday (book ahead)',
-      'Dia de semana; grátis 1º domingo (reserve)',
+      'Weekday; free first Sunday all year (book ahead)',
+      'Dia de semana; grátis 1º domingo o ano todo (reserve)',
     ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_YEAR],
     osmRef: 'way/54188996',
     tips: L(
-      'Monet Water Lilies oval rooms are the highlight. Pair with Tuileries walk.',
-      'Salas ovais dos Nenúfares do Monet são o destaque. Combine com as Tuileries.',
+      'Monet Water Lilies oval rooms are the highlight. Pair with Tuileries walk. Free Sunday: online slot required.',
+      'Salas ovais dos Nenúfares do Monet são o destaque. Combine com as Tuileries. Domingo grátis: horário online obrigatório.',
     ),
   }),
+  'par-luxor-obelisk': {
+    ticket: free,
+    durationMin: 10,
+    durationMax: 25,
+    bestTime: L('Golden hour on the Concorde–Champs axis', 'Golden hour no eixo Concorde–Champs'),
+    bestDay: L('Any day', 'Qualquer dia'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Best as a stop on the Tuileries → Concorde → Champs walk. Night lighting is strong.',
+      'Melhor como parada no passeio Tuileries → Concorde → Champs. A iluminação noturna é forte.',
+    ),
+  },
   'par-fondation-lv': museumVisit(
     { min: 16, max: 20 },
     {
+      // Private foundation — no national free-Sunday / EU-under-26 auto promos
       ticketUrl: 'https://www.fondationlouisvuitton.fr/en/tickets',
       durationMin: 90,
       durationMax: 150,
@@ -721,6 +837,7 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     },
   ),
   'par-chateau-vincennes': museumVisit(13, {
+    national: true,
     ticketUrl: 'https://www.chateau-de-vincennes.fr/en',
     durationMin: 75,
     durationMax: 120,
@@ -729,76 +846,98 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
       'Weekday; free first Sundays Nov–Mar (check site)',
       'Dia de semana; grátis 1ºs domingos nov–mar (confira site)',
     ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_WINTER],
     tips: L(
-      'Medieval keep + walls. Free under 18 / EU under 26 residents.',
-      'Donjon medieval + muralhas. Grátis <18 / residentes UE <26.',
+      'Medieval keep + walls. CMN monument — free under 18 / EU under 26 with ID.',
+      'Donjon medieval + muralhas. Monumento CMN — grátis <18 / UE <26 com ID.',
     ),
   }),
   'par-arc-triomphe': museumVisit(16, {
+    national: true,
     ticketUrl: 'https://www.paris-arc-de-triomphe.fr/en/',
     durationMin: 45,
     durationMax: 75,
     bestTime: L('Sunset from the terrace', 'Pôr do sol no terraço'),
-    bestDay: L('Weekday late afternoon', 'Fim de tarde em dia de semana'),
+    bestDay: L(
+      'Weekday late afternoon; free first Sunday Nov–Mar (crowded)',
+      'Fim de tarde em dia de semana; grátis 1º domingo nov–mar (lotado)',
+    ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_WINTER],
     osmRef: 'way/226413508',
     tips: L(
-      'Use the underground passage — never cross the roundabout at street level.',
-      'Use a passagem subterrânea — nunca atravesse a rotatória no nível da rua.',
+      'Use the underground passage — never cross the roundabout at street level. Tomb of the Unknown Soldier is free at street level.',
+      'Use a passagem subterrânea — nunca atravesse a rotatória no nível da rua. Túmulo do Soldado Desconhecido é grátis no nível da rua.',
     ),
   }),
   'par-sainte-chapelle': museumVisit(13, {
+    national: true,
     ticketUrl: 'https://www.sainte-chapelle.fr/en/',
     durationMin: 45,
     durationMax: 75,
     bestTime: L('Bright daylight for the stained glass', 'Dia claro para os vitrais'),
-    bestDay: L('Weekday morning', 'Manhã de dia de semana'),
+    bestDay: L(
+      'Weekday morning; free first Sunday Nov–Mar (security queue still long)',
+      'Manhã de dia de semana; grátis 1º domingo nov–mar (fila de segurança ainda longa)',
+    ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_WINTER],
     osmRef: 'relation/3344870',
     tips: L(
-      'Upper chapel is the wow. Security queue can be long — book ahead.',
-      'A capela superior é o show. Fila de segurança pode ser longa — reserve.',
+      'Upper chapel is the wow. Security queue can be long — book ahead even on free Sundays.',
+      'A capela superior é o show. Fila de segurança pode ser longa — reserve mesmo no domingo grátis.',
     ),
   }),
   'par-pantheon': museumVisit(13, {
+    national: true,
     ticketUrl: 'https://www.paris-pantheon.fr/en/',
     durationMin: 60,
     durationMax: 90,
     bestTime: L('Morning in the Latin Quarter loop', 'Manhã no circuito do Quartier Latin'),
+    bestDay: L(
+      'Weekday; free first Sunday Nov–Mar',
+      'Dia de semana; grátis 1º domingo nov–mar',
+    ),
+    ticketPromos: [PROMO_FIRST_SUNDAY_WINTER],
     tips: L(
       'Dome climb when open is worth it for views. Crypt for great names of France.',
       'Subida à cúpula (quando aberta) vale pela vista. Cripta com nomes da França.',
     ),
   }),
   'par-invalides': museumVisit(16, {
+    national: true,
     ticketUrl: 'https://www.musee-armee.fr/en/',
     durationMin: 90,
     durationMax: 150,
+    bestDay: L('Weekday morning', 'Manhã de dia de semana'),
     tips: L(
-      'Army museum + Napoleon’s tomb under the golden dome.',
-      'Museu do Exército + túmulo de Napoleão sob a cúpula dourada.',
+      'Army museum + Napoleon’s tomb under the golden dome. EU under 26 free with ID.',
+      'Museu do Exército + túmulo de Napoleão sob a cúpula dourada. UE <26 grátis com ID.',
     ),
   }),
   'par-pompidou': museumVisit(15, {
+    national: true,
     ticketUrl: 'https://www.centrepompidou.fr/en/',
     durationMin: 90,
     durationMax: 150,
     bestTime: L('Late afternoon; roof views near closing', 'Fim da tarde; vista do topo perto de fechar'),
     tips: L(
-      'Modern art + exterior escalators. Check renovation / partial closure notices.',
-      'Arte moderna + escadas externas. Confira avisos de reforma / fechamento parcial.',
+      'Modern art + exterior escalators. Major renovation / long closure through ~2030 — confirm before you go.',
+      'Arte moderna + escadas externas. Reforma grande / fechamento longo até ~2030 — confira antes de ir.',
     ),
   }),
   'par-montparnasse': museumVisit(22, {
+    // Private tower — no national free days
     ticketUrl: 'https://www.tourmontparnasse.net/en/',
     durationMin: 45,
     durationMax: 75,
     bestTime: L('Sunset into early evening', 'Pôr do sol até o início da noite'),
     bestDay: L('Clear-sky days only', 'Só em dias de céu limpo'),
     tips: L(
-      'Best classic view of the Eiffel Tower skyline. Go for weather, not just the clock.',
-      'Melhor vista clássica da Torre no skyline. Vá pelo clima, não só pelo horário.',
+      'Best classic view of the Eiffel Tower skyline. Go for weather, not just the clock. No free first-Sunday.',
+      'Melhor vista clássica da Torre no skyline. Vá pelo clima, não só pelo horário. Sem 1º domingo grátis.',
     ),
   }),
   'par-opera': museumVisit(15, {
+    // Self-guided palace tour — not a standard CMN free-Sunday monument
     ticketUrl: 'https://www.operadeparis.fr/en/visits/palais-garnier',
     durationMin: 60,
     durationMax: 100,
@@ -1184,6 +1323,28 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     crowdProfile: 'local',
     tips: L('Tourist McDo — useful, not a food destination.', 'McDo turístico — útil, não é destino gastronômico.'),
   },
+  'par-mcdonalds-disney': {
+    avgPricePerPerson: money(8, 16),
+    durationMin: 20,
+    durationMax: 45,
+    bestTime: L('After park close / late evening', 'Depois do parque fechar / noite'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'In Disney Village — outside the paid park gates, next to the RER / hotels strip.\nNo park ticket needed. Open later than most in-park restaurants.\nNearby Village options: Five Guys, Starbucks. Park re-entry works for fireworks later.',
+      'Na Disney Village — fora dos portões pagos, na faixa RER / hotéis.\nNão precisa de ingresso do parque. Abre mais tarde que a maioria dos restaurantes de dentro.\nOpções perto no Village: Five Guys, Starbucks. Dá para reentrar no parque para os fogos.',
+    ),
+  },
+  'par-bella-notte': {
+    avgPricePerPerson: money(11, 18),
+    durationMin: 30,
+    durationMax: 60,
+    bestTime: L('Lunch 12:00–14:00', 'Almoço 12h–14h'),
+    crowdProfile: 'tourist-heavy',
+    tips: L(
+      'Inside Disneyland Park (Fantasyland) — Mickey-shaped individual pizza ~€11.\nCounter service; queues peak at lunch. Park ticket required.',
+      'Dentro do Disneyland Park (Fantasyland) — pizza individual em formato do Mickey ~€11.\nSelf-service; fila no horário de almoço. Precisa de ingresso do parque.',
+    ),
+  },
   'par-burger-king-opera': {
     avgPricePerPerson: money(8, 15),
     durationMin: 15,
@@ -1297,8 +1458,8 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     bestDay: L('Weekday outside school holidays', 'Dia de semana fora de férias escolares'),
     crowdProfile: 'tourist-heavy',
     tips: L(
-      'RER A → Marne-la-Vallée–Chessy (~40 min from Châtelet / Gare de Lyon) + ~2 min walk to the gates. Metro-Train-RER ticket ~€2.50–2.55 one way (2026 flat Île-de-France fare). Buy dated park tickets online — not sold at the gate on most days. Two parks: Disneyland Park + Disney Adventure World (ex-Studios).',
-      'RER A → Marne-la-Vallée–Chessy (~40 min de Châtelet / Gare de Lyon) + ~2 min a pé até os portões. Bilhete Metro-Train-RER ~€2,50–2,55 ida (tarifa plana Île-de-France 2026). Compre ingresso datado online — na maioria dos dias não vende na porta. Dois parques: Disneyland Park + Disney Adventure World (ex-Studios).',
+      'RER A → Marne-la-Vallée–Chessy (~40 min from Châtelet / Gare de Lyon) + ~2 min walk to the gates.\n~€5/person round trip (Metro-Train-RER flat fare × 2).\nBuy a dated 1-day 2-park ticket online (official Disney site or GetYourGuide) — not sold at the gate on most days.\nOpens 09:30 — arrive ~30 min early. Start at Disney Adventure World (ex-Studios): Nemo + Ratatouille first, then Disneyland Park.\nFireworks ~22:30 (end ~23:30); leave ~10 min before the end for the RER. Last train toward Paris ~00:00.\nDisney Village (McDonald’s / Five Guys / Starbucks) is outside the gates — exit/re-entry OK.',
+      'RER A → Marne-la-Vallée–Chessy (~40 min de Châtelet / Gare de Lyon) + ~2 min a pé até os portões.\n~€5/pessoa ida e volta (tarifa plana Metro-Train-RER × 2).\nCompre ingresso datado de 1 dia / 2 parques online (site oficial ou GetYourGuide) — na maioria dos dias não vende na porta.\nAbre 09h30 — chegue ~30 min antes. Comece no Disney Adventure World (ex-Studios): Nemo + Ratatouille primeiro, depois Disneyland Park.\nFogos ~22h30 (terminam ~23h30); saia ~10 min antes do fim para o RER. Último trem para Paris ~00h.\nDisney Village (McDonald’s / Five Guys / Starbucks) fica fora dos portões — dá pra sair e voltar.',
     ),
   },
   'par-versailles': {
@@ -1310,6 +1471,17 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
         'Passport com horário (domínio); a partir das 15h costuma ser mais barato',
       ),
     ),
+    ticketPromos: [
+      PROMO_UNDER_18,
+      PROMO_EU_UNDER_26,
+      {
+        kind: 'other',
+        label: L(
+          'Gardens free most days (fountain-show days may charge)',
+          'Jardins grátis na maioria dos dias (dias de fontes podem cobrar)',
+        ),
+      },
+    ],
     ticketUrl: 'https://en.chateauversailles.fr/plan-your-visit/tickets-and-prices',
     durationMin: 240,
     durationMax: 480,
@@ -1318,8 +1490,8 @@ export const visitByPlaceId: Record<string, VisitInfo> = {
     bestDay: L('Tue–Fri; closed Monday', 'Ter–sex; fecha segunda'),
     crowdProfile: 'tourist-heavy',
     tips: L(
-      'Best: RER C → Versailles Château–Rive Gauche + ~10 min walk to Place d’Armes. Alternatives: SNCF N/U → Versailles Chantiers (~18 min walk) or L → Rive Droite (~17 min walk). Book Passport timed slot online (Palace + Trianon + gardens; shows on fountain days). Gardens free most days; free under 18 / EU under 26 (still need a free timed slot). Closed Mon + 1 Jan / 1 May / 25 Dec.',
-      'Melhor: RER C → Versailles Château–Rive Gauche + ~10 min a pé até a Place d’Armes. Alternativas: SNCF N/U → Versailles Chantiers (~18 min a pé) ou L → Rive Droite (~17 min a pé). Reserve Passport com horário online (Palácio + Trianon + jardins; shows nos dias de fontes). Jardins grátis na maioria dos dias; grátis <18 / UE <26 (ainda precisa de horário gratuito). Fecha seg + 1 jan / 1 mai / 25 dez.',
+      'Best: RER C → Versailles Château–Rive Gauche + ~10 min walk to Place d’Armes.\nAlternatives: SNCF N/U → Versailles Chantiers (~18 min walk) or L → Rive Droite (~17 min walk).\nBook Passport timed slot online (Palace + Trianon + gardens; shows on fountain days).\nGardens free most days; free under 18 / EU under 26 (still need a free timed slot).\nClosed Mon + 1 Jan / 1 May / 25 Dec.',
+      'Melhor: RER C → Versailles Château–Rive Gauche + ~10 min a pé até a Place d’Armes.\nAlternativas: SNCF N/U → Versailles Chantiers (~18 min a pé) ou L → Rive Droite (~17 min a pé).\nReserve Passport com horário online (Palácio + Trianon + jardins; shows nos dias de fontes).\nJardins grátis na maioria dos dias; grátis <18 / UE <26 (ainda precisa de horário gratuito).\nFecha seg + 1 jan / 1 mai / 25 dez.',
     ),
   },
   'par-baron-rouge': {
@@ -1580,9 +1752,9 @@ export function formatMoney(m: MoneyInfo, locale: Locale = 'en'): string {
 }
 
 /**
- * Average / typical price per person for food.
- * Curated ranges store min = typical average, max = upper bound —
- * show the typical (min), not the expensive end or a high midpoint.
+ * Typical / average price only (single figure) — for day-budget math.
+ * Place cards use `formatMoney` (full min–max range) instead.
+ * Curated food ranges store min = typical, max = upper bound.
  */
 export function formatMoneyTypical(
   m: MoneyInfo,
@@ -1598,6 +1770,25 @@ export function formatMoneyTypical(
 
   const fmt = Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.00$/, '');
   return `${sym}${fmt}`;
+}
+
+/**
+ * Price-per-person affordability level for the $ $ $ chip (0–3).
+ * - 0 free (all icons light gray)
+ * - 1 €1–15 green
+ * - 2 €16–39 yellow
+ * - 3 €40+ red
+ * Uses typical spend (`min`, same as formatMoneyTypical).
+ */
+export type PriceLevel = 0 | 1 | 2 | 3;
+
+export function priceLevelFromMoney(m: MoneyInfo): PriceLevel {
+  if (m.free) return 0;
+  const n = m.min ?? m.max;
+  if (n == null || !Number.isFinite(n) || n <= 0) return 0;
+  if (n <= 15) return 1;
+  if (n <= 39) return 2;
+  return 3;
 }
 
 export function formatDuration(
@@ -1645,10 +1836,19 @@ export type VisitFieldKey =
   | 'avgPrice'
   | 'pricePerNight'
   | 'ticket'
+  | 'ticketPromo'
   | 'duration'
   | 'bestTime'
   | 'bestDay'
   | 'tips';
+
+/** One display line for a structured ticket promo. */
+export function formatTicketPromo(
+  promo: TicketPromo,
+  locale: Locale = 'en',
+): string {
+  return promo.label[locale] ?? promo.label.en;
+}
 
 export function visitFieldsForDisplay(
   visit: VisitInfo,
@@ -1659,7 +1859,8 @@ export function visitFieldsForDisplay(
   if (visit.avgPricePerPerson) {
     out.push({
       key: 'avgPrice',
-      value: formatMoneyTypical(visit.avgPricePerPerson, locale),
+      // Place card: full range. Day budget uses moneyTypicalEur (min) separately.
+      value: formatMoney(visit.avgPricePerPerson, locale),
       note: visit.avgPricePerPerson.note
         ? visit.avgPricePerPerson.note[locale] ?? visit.avgPricePerPerson.note.en
         : undefined,
@@ -1676,12 +1877,17 @@ export function visitFieldsForDisplay(
     });
   }
   if (visit.ticket) {
+    const promoNote =
+      visit.ticketPromos && visit.ticketPromos.length > 0
+        ? visit.ticketPromos.map((p) => formatTicketPromo(p, locale)).join(' · ')
+        : undefined;
+    const moneyNote = visit.ticket.note
+      ? visit.ticket.note[locale] ?? visit.ticket.note.en
+      : undefined;
     out.push({
       key: 'ticket',
       value: formatMoney(visit.ticket, locale),
-      note: visit.ticket.note
-        ? visit.ticket.note[locale] ?? visit.ticket.note.en
-        : undefined,
+      note: [moneyNote, promoNote].filter(Boolean).join(' · ') || undefined,
     });
   }
   const dur = formatDuration(visit, locale);
