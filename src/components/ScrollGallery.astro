@@ -55,8 +55,9 @@ export type ScrollGalleryItem = {
    * `quote` — testimonial: role + Blatant name + optional avatar · hairline · body.
    * `article` — feature layout with quote-style date + Blatant title.
    * `social` — image-first portrait card (educational posts / Stories); no + chrome.
+   * `device` — image-first phone screenshot (taller aspect); 1-up mobile / 2-up desktop.
    */
-  kind?: 'feature' | 'quote' | 'article' | 'social';
+  kind?: 'feature' | 'quote' | 'article' | 'social' | 'device';
 };
 
 interface Props {
@@ -93,6 +94,7 @@ const showHeader = Boolean(title || cta);
 const hasQuoteItems = items.some((item) => item.kind === 'quote');
 const hasArticleItems = items.some((item) => item.kind === 'article');
 const hasSocialItems = items.some((item) => item.kind === 'social');
+const hasDeviceItems = items.some((item) => item.kind === 'device');
 
 /** Glue last words so card copy never orphans a single word on the last line */
 function prepItem(item: ScrollGalleryItem): ScrollGalleryItem {
@@ -126,6 +128,7 @@ const displayItems = items.map(prepItem);
     hasQuoteItems && 'scroll-gallery-section--quotes',
     hasArticleItems && 'scroll-gallery-section--articles',
     hasSocialItems && 'scroll-gallery-section--social',
+    hasDeviceItems && 'scroll-gallery-section--device',
     className,
   ]}
   data-scroll-gallery-section
@@ -187,9 +190,12 @@ const displayItems = items.map(prepItem);
               const isQuote = item.kind === 'quote';
               const isArticle = item.kind === 'article';
               const isSocial = item.kind === 'social';
+              const isDevice = item.kind === 'device';
+              /** Image-first cards: no copy chrome, full-bleed art */
+              const isImageFirst = isSocial || isDevice;
               const imageFit =
                 item.imageFit ??
-                (isSocial || isArticle ? 'cover' : 'contain');
+                (isImageFirst || isArticle ? 'cover' : 'contain');
               const actionLabel =
                 item.actionLabel ??
                 (item.label ? `Learn more about ${item.label}` : item.imageAlt ?? 'Open');
@@ -207,6 +213,7 @@ const displayItems = items.map(prepItem);
                     isQuote && 'gallery-item--quote',
                     isArticle && 'gallery-item--article',
                     isSocial && 'gallery-item--social',
+                    isDevice && 'gallery-item--device',
                     entrance && 'is-entrance',
                   ]}
                   style={entrance ? `--stagger: ${index}` : undefined}
@@ -219,6 +226,7 @@ const displayItems = items.map(prepItem);
                       !isQuote && 'card-hover',
                       isQuote && 'card--quote',
                       isSocial && 'card--social',
+                      isDevice && 'card--device',
                     ]}
                   >
                     <div
@@ -227,10 +235,11 @@ const displayItems = items.map(prepItem);
                         item.image && 'image-inline',
                         isQuote && 'feature-card-content--quote',
                         isSocial && 'feature-card-content--social',
+                        isDevice && 'feature-card-content--device',
                       ]}
                     >
                       {
-                        !isSocial && (
+                        !isImageFirst && (
                           <div class="feature-card-copy-container feature-card-copy">
                             {
                               isQuote ? (
@@ -306,10 +315,11 @@ const displayItems = items.map(prepItem);
                           <figure
                             class:list={[
                               'feature-card-image-container',
-                              !isSocial &&
+                              !isImageFirst &&
                                 item.imageObjectPosition === 'center' &&
                                 'feature-card-image-container--center',
                               isSocial && 'feature-card-image-container--social',
+                              isDevice && 'feature-card-image-container--device',
                               isArticle && 'feature-card-image-container--article',
                               isArticle &&
                                 imageFit === 'contain' &&
@@ -320,6 +330,7 @@ const displayItems = items.map(prepItem);
                               class={[
                                 'feature-card-image',
                                 isSocial && 'feature-card-image--social',
+                                isDevice && 'feature-card-image--device',
                                 isArticle && 'feature-card-image--article',
                                 isArticle &&
                                   imageFit === 'contain' &&
@@ -329,14 +340,14 @@ const displayItems = items.map(prepItem);
                                 .join(' ')}
                               src={item.image}
                               alt={item.imageAlt ?? item.label ?? ''}
-                              preset="gallery"
+                              preset={isDevice ? 'phone' : 'gallery'}
                               loading="lazy"
                               decoding="async"
                               draggable="false"
                               objectFit={imageFit}
                               objectPosition={
                                 item.imageObjectPosition ??
-                                (isSocial || isArticle
+                                (isImageFirst || isArticle
                                   ? 'center'
                                   : 'bottom center')
                               }
@@ -352,9 +363,10 @@ const displayItems = items.map(prepItem);
                     </div>
 
                     {
-                      /* Articles: full-card hit target only (no + / chevron chrome) */
+                      /* Articles: full-card hit target only (no + / chevron chrome).
+                         Social / device are image-first — no control chrome. */
                       !isQuote &&
-                        !isSocial &&
+                        !isImageFirst &&
                         (isArticle && item.href && !item.modalId ? (
                           <a
                             class="card-control card-control--bare"
@@ -761,6 +773,18 @@ const displayItems = items.map(prepItem);
     max-width: var(--social-card-width);
   }
 
+  /*
+   * Phone screenshots — taller aspect than social posts.
+   * Mobile: ~1 phone + peek · ≥810px: ~2 phones + peek of next.
+   */
+  .gallery-item--device {
+    --device-card-width: min(72vw, 300px);
+    flex: 0 0 var(--device-card-width);
+    width: var(--device-card-width);
+    min-width: var(--device-card-width);
+    max-width: var(--device-card-width);
+  }
+
   @media (min-width: 810px) {
     .gallery-item--quote {
       --quote-card-width: min(48vw, 400px);
@@ -769,9 +793,25 @@ const displayItems = items.map(prepItem);
     .gallery-item--social {
       --social-card-width: min(32vw, 300px);
     }
+
+    .gallery-item--device {
+      --device-card-width: min(40vw, 360px);
+    }
+  }
+
+  @media (min-width: 1194px) {
+    .gallery-item--device {
+      /* Content column is padded; keep ~2 phones visible */
+      --device-card-width: min(28vw, 380px);
+    }
   }
 
   .scroll-gallery-section--social {
+    --feature-card-min-height: 0;
+    padding-block: 16px 24px;
+  }
+
+  .scroll-gallery-section--device {
     --feature-card-min-height: 0;
     padding-block: 16px 24px;
   }
@@ -789,7 +829,25 @@ const displayItems = items.map(prepItem);
     background: var(--color-surface, #131219);
   }
 
+  /* Phone UI shots — same specificity trap as social; aspect ≈ iPhone frame */
+  .feature-card .card.card--device {
+    position: relative;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 0.486;
+    border-radius: 12px;
+    background: transparent;
+  }
+
   .feature-card-content--social {
+    position: relative;
+    display: block;
+    min-height: 0;
+    height: 100%;
+    grid-template-rows: none;
+  }
+
+  .feature-card-content--device {
     position: relative;
     display: block;
     min-height: 0;
@@ -814,6 +872,18 @@ const displayItems = items.map(prepItem);
     justify-content: stretch;
   }
 
+  .feature-card-image-container.feature-card-image-container--device {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    flex: none;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
   .feature-card-image.feature-card-image--social {
     position: absolute;
     inset: 0;
@@ -822,7 +892,21 @@ const displayItems = items.map(prepItem);
     max-height: none;
   }
 
+  .feature-card-image.feature-card-image--device {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+  }
+
   .feature-card-image.feature-card-image--social :global(img) {
+    object-fit: cover;
+    object-position: center;
+    max-height: none;
+  }
+
+  .feature-card-image.feature-card-image--device :global(img) {
     object-fit: cover;
     object-position: center;
     max-height: none;

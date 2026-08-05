@@ -264,7 +264,8 @@ export type CaseBlock =
   | {
       /**
        * Apple-style ScrollGallery shell (`incentive-gallery-dark` when theme dark).
-       * Use for image-first social posts (`kind: 'social'`), articles, or features.
+       * Use for image-first social posts (`kind: 'social'`), phone screenshots
+       * (`kind: 'device'` — 1-up mobile / 2-up desktop), articles, or features.
        */
       type: 'scroll-gallery';
       title?: string;
@@ -279,7 +280,7 @@ export type CaseBlock =
         body?: string;
         image?: string;
         imageAlt?: string;
-        kind?: 'feature' | 'quote' | 'article' | 'social';
+        kind?: 'feature' | 'quote' | 'article' | 'social' | 'device';
       }[];
     };
 
@@ -498,30 +499,30 @@ export const projects: Project[] = [
           'The app is built around three everyday habits: catch what matters in the market, learn the fundamentals for free, and read price with context instead of panic. **News**, a **free course**, **real-time charts**, and indicators sit in one place so beginners are not left alone with a blank exchange screen.',
         ],
       },
+      /**
+       * App screens (news · course · charts) — same ScrollGallery shell as the
+       * educational posts under “The engine behind the feed”.
+       * 1 phone on mobile · ~2 phones on tablet/desktop (+ paddlenav).
+       */
       {
-        type: 'gallery',
-        layout: 'triple',
-        images: [
-          {
-            src: `${CB}/app-news.png`,
-            alt: 'Crypto Bros news feed on iPhone',
-            fit: 'cover',
-            aspect: '0.486',
-          },
-          {
-            src: `${CB}/app-course.png`,
-            alt: 'Crypto Bros free course screen',
-            fit: 'cover',
-            aspect: '0.486',
-          },
-          {
-            src: `${CB}/app-charts.png`,
-            alt: 'Crypto Bros real-time price chart',
-            fit: 'cover',
-            aspect: '0.486',
-            hideOn: 'mobile',
-          },
-        ],
+        type: 'scroll-gallery',
+        theme: 'dark',
+        short: true,
+        entrance: false,
+        ariaLabel: 'Crypto Bros app screens',
+        items: (
+          [
+            ['app-news.png', 'Crypto Bros news feed on iPhone'],
+            ['app-course.png', 'Crypto Bros free course screen'],
+            ['app-charts.png', 'Crypto Bros real-time price chart'],
+          ] as const
+        ).map(([file, alt], i) => ({
+          id: `cb-app-${i + 1}`,
+          kind: 'device' as const,
+          image: `${CB}/${file}`,
+          imageAlt: alt,
+          label: alt,
+        })),
       },
       {
         type: 'section',

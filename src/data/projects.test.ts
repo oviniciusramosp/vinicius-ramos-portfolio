@@ -186,6 +186,45 @@ describe('crypto-bros educational posts slider', () => {
   });
 });
 
+describe('crypto-bros Learning in the loop app screens slider', () => {
+  it('includes a short dark device scroll-gallery with the three app screens', () => {
+    const project = getProject('crypto-bros');
+    expect(project).toBeDefined();
+    const gallery = project!.blocks?.find(
+      (b) => b.type === 'scroll-gallery' && b.ariaLabel === 'Crypto Bros app screens',
+    );
+    expect(gallery, 'missing Crypto Bros app screens scroll-gallery').toBeDefined();
+    if (!gallery || gallery.type !== 'scroll-gallery') return;
+
+    expect(gallery.theme).toBe('dark');
+    expect(gallery.short).toBe(true);
+    expect(gallery.items).toHaveLength(3);
+
+    const expected = [
+      '/projects/crypto-bros/app-news.png',
+      '/projects/crypto-bros/app-course.png',
+      '/projects/crypto-bros/app-charts.png',
+    ];
+    for (const [i, item] of gallery.items.entries()) {
+      expect(item.kind, item.id).toBe('device');
+      expect(item.image, item.id).toBe(expected[i]);
+      expect(
+        publicAssetExists(item.image!),
+        `missing app screen asset: ${item.image}`,
+      ).toBe(true);
+    }
+
+    // No longer a static triple grid (charts was hideOn mobile)
+    const triple = project!.blocks?.find(
+      (b) =>
+        b.type === 'gallery' &&
+        b.layout === 'triple' &&
+        b.images.some((img) => img.src.includes('app-news')),
+    );
+    expect(triple, 'app screens should not remain a triple gallery').toBeUndefined();
+  });
+});
+
 describe('project helpers', () => {
   it('getProject returns a match or undefined', () => {
     const first = projects[0];
