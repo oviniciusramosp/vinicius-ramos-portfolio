@@ -4,11 +4,11 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-08-05T08:32:27.651Z",
+  "generatedAt": "2026-08-05T14:03:33.800Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
-  "count": 139,
+  "count": 147,
   "byCity": {
-    "paris": 119,
+    "paris": 127,
     "sao-paulo": 20
   },
   "places": [
@@ -52,7 +52,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8188-be63-da9c5c870463",
@@ -95,7 +95,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8106-b611-cf9f74a08387",
@@ -137,7 +137,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8182-89d8-c960f5ffe0a2",
@@ -214,7 +214,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8146-8912-ef6f24f48a4f",
@@ -254,7 +254,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811e-bd16-e07ee37bb477",
@@ -280,10 +280,24 @@ const snapshot = {
         "library",
         "architecture"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg/3840px-Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg",
+      "coverUrl": "https://images.adsttc.com/media/images/6166/a1ef/f91c/81b2/4700/01ba/newsletter/2017-06-01_15_19_21-bnf.jpg?1634116065",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg/3840px-Biblioth%C3%A8que_Mitterrand_Mai_2022.jpg",
+          "url": "https://images.adsttc.com/media/images/6166/a1ef/f91c/81b2/4700/01ba/newsletter/2017-06-01_15_19_21-bnf.jpg?1634116065",
+          "alt": {
+            "en": "Bibliothèque nationale",
+            "pt-BR": "Biblioteca Nacional"
+          }
+        },
+        {
+          "url": "https://arquitecturaviva.com/assets/uploads/obras/41197/av_medium__av_112727.webp?h=af96c42b",
+          "alt": {
+            "en": "Bibliothèque nationale",
+            "pt-BR": "Biblioteca Nacional"
+          }
+        },
+        {
+          "url": "https://fernandoeichenberg.files.wordpress.com/2017/02/labrouste3.jpg",
           "alt": {
             "en": "Bibliothèque nationale",
             "pt-BR": "Biblioteca Nacional"
@@ -295,7 +309,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8178-bc57-cedd667246aa",
@@ -343,7 +357,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8119-9aef-da1467e8e5cc",
@@ -385,7 +399,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8100-bb32-e5a5762d6f2c",
@@ -427,7 +441,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8186-b24b-fe459bcf0908",
@@ -453,10 +467,24 @@ const snapshot = {
       "subcategories": [
         "coffee-shop"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
+          "alt": {
+            "en": "Bohemia Café",
+            "pt-BR": "Bohemia Café"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnTwGN1CH81ziHiPdcK-UxvVd-ZWiUn86C4inc2ccG4wXglUwpEgpuBeIseJCk33NXFpC4MFBbdZecym65zx2t-YsBtlw8IT9tFZPJrHhQFz_5XQDWrn3V5eGgX0XnC7bwosP2BmPNRJZlD=s927-k-no",
+          "alt": {
+            "en": "Bohemia Café",
+            "pt-BR": "Bohemia Café"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkM8UGnc0zCL78U-xyIPGBhkSkccxzOteDVjBwD7emxAfP11Qskpt0AOgn1yfrGau8pnmOVh6aqotjgdEn6ewYN_soQmvhCi9XT85s_m9Kx9DCbW6iUxjI9lG4dHgzLBrHrL7eTIOl2c8iD=s914-k-no",
           "alt": {
             "en": "Bohemia Café",
             "pt-BR": "Bohemia Café"
@@ -468,7 +496,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8146-a125-d98e9c28911f",
@@ -508,7 +536,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cb-8ecf-da52a6f27007",
@@ -520,8 +548,8 @@ const snapshot = {
       },
       "category": "parks",
       "description": {
-        "en": "Huge beautiful park east of Paris. Lakes, long walks, and the green lung next to Vincennes town.",
-        "pt-BR": "Parque grande e bonito a leste de Paris. Lagos, caminhadas longas e o pulmão verde ao lado da cidade de Vincennes."
+        "en": "Huge east-side park next to Vincennes town — lakes and long walks. People say it is lovely; good half-day with the town + castle.",
+        "pt-BR": "Parque grande a leste, ao lado da cidade de Vincennes — lagos e caminhadas. Dizem que é gostoso; bom meio dia com o centro e o castelo."
       },
       "lat": 48.828,
       "lng": 2.433,
@@ -548,7 +576,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c2-be48-cee9ffcb26f8",
@@ -585,7 +613,55 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:12:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-81af-bd5b-f5e2ba10a4ec",
+      "id": "par-bourse-commerce",
+      "city": "paris",
+      "name": {
+        "en": "Bourse de Commerce",
+        "pt-BR": "Bourse de Commerce"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Pinault Collection in the restored circular exchange — contemporary art under a dramatic glass dome near Les Halles.",
+        "pt-BR": "Coleção Pinault na bolsa circular restaurada — arte contemporânea sob cúpula de vidro perto de Les Halles."
+      },
+      "lat": 48.8627,
+      "lng": 2.3426,
+      "address": "2 Rue de Viarmes, 75001 Paris",
+      "mapsQuery": "Bourse de Commerce Pinault Collection Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "museum",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Bourse_Commerce_-_Paris_I_%28FR75%29_-_2021-06-05_-_1.jpg/1280px-Bourse_Commerce_-_Paris_I_%28FR75%29_-_2021-06-05_-_1.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Bourse_Commerce_-_Paris_I_%28FR75%29_-_2021-06-05_-_1.jpg/1280px-Bourse_Commerce_-_Paris_I_%28FR75%29_-_2021-06-05_-_1.jpg",
+          "alt": {
+            "en": "Bourse de Commerce",
+            "pt-BR": "Bourse de Commerce"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Bourse_de_Commerce_P1060092.JPG/1280px-Bourse_de_Commerce_P1060092.JPG",
+          "alt": {
+            "en": "Bourse de Commerce",
+            "pt-BR": "Bourse de Commerce"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817d-ab50-c602d6c7aafa",
@@ -627,7 +703,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815b-8e68-d0d4ddf3ce54",
@@ -667,7 +743,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8108-a74f-fbbea699bcf0",
@@ -689,10 +765,17 @@ const snapshot = {
       "googleRating": 4.1,
       "favorite": false,
       "featured": false,
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_chocolate_p1150797.jpg/1280px-Hot_chocolate_p1150797.jpg",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlfGFQJNkrIfykELlKzkUwUxZ-mepdxjRa1sd_Uou20bQHozTUgfCRWhsJWIDIC8ItvmefamDbqINS9_lBy-YF9wdUQgMaKuq_GZ_woM2sM87GZn_jM7aQOekyeRoq3vZHUvxr6KCtYATg=s348-k-no",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_chocolate_p1150797.jpg/1280px-Hot_chocolate_p1150797.jpg",
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlfGFQJNkrIfykELlKzkUwUxZ-mepdxjRa1sd_Uou20bQHozTUgfCRWhsJWIDIC8ItvmefamDbqINS9_lBy-YF9wdUQgMaKuq_GZ_woM2sM87GZn_jM7aQOekyeRoq3vZHUvxr6KCtYATg=s348-k-no",
+          "alt": {
+            "en": "Café de Flore",
+            "pt-BR": "Café de Flore"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmi4YtD6ALn5sDzxAIkBJSI9sJUoc6pbv1JVfz2nvH_BOZkyQjCnNqkcS0mvj3WeZEmDy6yl67-tg2q5Ii6PlYSI4bAeJG4K9LUu2B9bDZf6X--DsOt5r0JXXtnSZzCZVFmRfOK_73ZXMOy=s425-k-no",
           "alt": {
             "en": "Café de Flore",
             "pt-BR": "Café de Flore"
@@ -704,7 +787,54 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:11:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-81ea-b1ac-f6ef92695f00",
+      "id": "par-petit-palais-cafe",
+      "city": "paris",
+      "name": {
+        "en": "Café du Petit Palais",
+        "pt-BR": "Café do Petit Palais"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Café inside the Petit Palais — go for the room and garden courtyard more than for a destination pastry. On the Champs-Élysées side.",
+        "pt-BR": "Café dentro do Petit Palais — vale pelo ambiente e pátio, não tanto pela confeitaria em si. Fica na Champs-Élysées."
+      },
+      "lat": 48.86605,
+      "lng": 2.31455,
+      "address": "Avenue Winston-Churchill, 75008 Paris",
+      "mapsQuery": "Café du Petit Palais Paris",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Petit_Palais_%40_Paris_%2834081852943%29.jpg/1280px-Petit_Palais_%40_Paris_%2834081852943%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Petit_Palais_%40_Paris_%2834081852943%29.jpg/1280px-Petit_Palais_%40_Paris_%2834081852943%29.jpg",
+          "alt": {
+            "en": "Café du Petit Palais",
+            "pt-BR": "Café do Petit Palais"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Petit_Palais_%40_Paris_%2834892238375%29.jpg/1280px-Petit_Palais_%40_Paris_%2834892238375%29.jpg",
+          "alt": {
+            "en": "Café du Petit Palais",
+            "pt-BR": "Café do Petit Palais"
+          }
+        }
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8126-8a77-e38e235ac122",
@@ -760,7 +890,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f6-b65b-fa92bba59ffe",
@@ -809,7 +939,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8144-bb8e-fdd9487f5453",
@@ -866,7 +996,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cf-9795-eb745c0a7f59",
@@ -908,7 +1038,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f9-a398-c8b35f9121ab",
@@ -949,7 +1079,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812f-8647-f11d46655697",
@@ -992,7 +1122,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814d-acf3-cdc374276d9e",
@@ -1029,7 +1159,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:14:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8128-b259-de0a311429d8",
@@ -1094,7 +1224,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8158-976f-c643d3e9a25e",
@@ -1106,8 +1236,8 @@ const snapshot = {
       },
       "category": "tourist",
       "description": {
-        "en": "Medieval castle next to the Bois. Keep, walls, and history on the east side of Paris.",
-        "pt-BR": "Castelo medieval ao lado do bosque. Torre, muralhas e história no leste de Paris."
+        "en": "Medieval castle next to the Bois — keep and walls on the east side. Still on the “never been inside” list for us.",
+        "pt-BR": "Castelo medieval ao lado do bosque — torre e muralhas no leste de Paris. Ainda na lista do “nunca entramos”."
       },
       "lat": 48.84291,
       "lng": 2.43581,
@@ -1136,7 +1266,48 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-8122-9e12-debf2624657d",
+      "id": "par-alain-miam",
+      "city": "paris",
+      "name": {
+        "en": "Chez Alain Miam Miam",
+        "pt-BR": "Chez Alain Miam Miam"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Famous sandwich stall at Marché des Enfants Rouges — long queues, generous fillings. Worth it if you are already at the market.",
+        "pt-BR": "Barraca famosa de lanche no Marché des Enfants Rouges — fila longa, recheio generoso. Vale se já estiver na feira."
+      },
+      "lat": 48.8631,
+      "lng": 2.3619,
+      "address": "39 Rue de Bretagne, 75003 Paris",
+      "mapsQuery": "Chez Alain Miam Miam Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "bistro"
+      ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMAd6auG6O4KUWeuPpeXVLW8_l_lZzvf1YdAV0v2J8wA20ru7IzgGhMq6sX5ruThNNhEIWVJ1LSho8ANt_GEFbosLGS5k2YEYOEBZwnlZbYYUKt14y1U-dOxMFdF3VSQngxpYcJVDY6cKC=s608-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMAd6auG6O4KUWeuPpeXVLW8_l_lZzvf1YdAV0v2J8wA20ru7IzgGhMq6sX5ruThNNhEIWVJ1LSho8ANt_GEFbosLGS5k2YEYOEBZwnlZbYYUKt14y1U-dOxMFdF3VSQngxpYcJVDY6cKC=s608-k-no",
+          "alt": {
+            "en": "Chez Alain Miam Miam",
+            "pt-BR": "Chez Alain Miam Miam"
+          }
+        }
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815b-b972-db58c563175b",
@@ -1162,10 +1333,24 @@ const snapshot = {
         "french",
         "bistro"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkIe7QSXGZAGi6gUhru8fh8NlNDUPU7Lb3h-rQSgup96I81raRIUFUhxCmGFUPSbj0M957oZR3YlbOGZ-3lS64hI6j86rDhVNJBy4qj5LSTNpiL6NGl8jZqNxcdYn4YRQlZ_TOdD3n2N3cf=s783-k-no",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Paris_Hotel_de_Sens_dsc04028.jpg",
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkIe7QSXGZAGi6gUhru8fh8NlNDUPU7Lb3h-rQSgup96I81raRIUFUhxCmGFUPSbj0M957oZR3YlbOGZ-3lS64hI6j86rDhVNJBy4qj5LSTNpiL6NGl8jZqNxcdYn4YRQlZ_TOdD3n2N3cf=s783-k-no",
+          "alt": {
+            "en": "Chez Elo",
+            "pt-BR": "Chez Elo"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkKqoXNB6sLasst3S7FOsgHI4idBeBWUBiyWcvUDafrnf0lHbjmKR2C8Y6gOtoo7HD4_kqFBHdRWjIFGLmW0PZ1vnYmAKABW7M00uz6RTxLqCEZdUDOZRt0_Z2WL9vwTS6l957gI6ggM6VH=s696-k-no",
+          "alt": {
+            "en": "Chez Elo",
+            "pt-BR": "Chez Elo"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWktsoY9DctS3p-b0UJQ2tXkQPE9E-76_25Y8lLr_xAT94aKRrfBwz73U4b1T9yCKghOUL7_N1cInhzGJuXq3pwpbVAnZsFePrGkS5ZkegHbSnFISvme0QdUuSohjVTC33GHfssrBoCSPmBv=s914-k-no",
           "alt": {
             "en": "Chez Elo",
             "pt-BR": "Chez Elo"
@@ -1177,7 +1362,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bf-b1a4-d3732706bf0c",
@@ -1219,7 +1404,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8132-9313-d4b302d44881",
@@ -1260,7 +1445,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8196-9cf1-c5f26eeff8f6",
@@ -1272,25 +1457,40 @@ const snapshot = {
       },
       "category": "parks",
       "description": {
-        "en": "Covered passage with history and good wandering.",
-        "pt-BR": "Passagem coberta com história e boa para vaguear."
+        "en": "Only worth it if you are lunching or dining at a restaurant in the passage. Do not detour just to walk through.",
+        "pt-BR": "Só se for almoçar/jantar num restaurante da passagem. Não compensa só passar por passar."
       },
       "lat": 48.8530736,
       "lng": 2.3390876,
       "address": "Cr du Commerce Saint-André, 75006 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Cr+du+Commerce+Saint-Andr%C3%A9,+75006+Paris/@48.853095,2.3383737,18.5z",
       "mapsQuery": "Cour du Commerce Saint-André Paris",
+      "rating": 5,
       "googleRating": 5,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "market-street",
         "architecture"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Plaque_Sainte-Beuve%2C_2_cour_du_Commerce-Saint-Andr%C3%A9%2C_Paris_6e.jpg",
+      "coverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJfzCM8dK9-9DFYUJkH5aqh7oRnrpz1U4kQ61kjKb78oG1MrKrHVodKXFs&s=10",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Plaque_Sainte-Beuve%2C_2_cour_du_Commerce-Saint-Andr%C3%A9%2C_Paris_6e.jpg",
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJfzCM8dK9-9DFYUJkH5aqh7oRnrpz1U4kQ61kjKb78oG1MrKrHVodKXFs&s=10",
+          "alt": {
+            "en": "Cour du Commerce Saint-André",
+            "pt-BR": "Cour du Commerce Saint-André"
+          }
+        },
+        {
+          "url": "https://worldinparis.com/wp-content/uploads/2020/12/Cour-du-Commerce-Saint-Andre-Paris.jpg",
+          "alt": {
+            "en": "Cour du Commerce Saint-André",
+            "pt-BR": "Cour du Commerce Saint-André"
+          }
+        },
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsrMuMijTCb1mS7bTN39gh_WRDGNfngQa76GaR4pNUmF3BdRElZG0cjk4&s=10",
           "alt": {
             "en": "Cour du Commerce Saint-André",
             "pt-BR": "Cour du Commerce Saint-André"
@@ -1302,7 +1502,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-9743-dc555a35fc82",
@@ -1344,7 +1544,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8194-b5c9-efb1ec38dbcf",
@@ -1385,7 +1585,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814a-b14a-c78d8e747a22",
@@ -1427,7 +1627,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81e1-abd8-fb2fd843e6df",
@@ -1487,7 +1687,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8110-861d-cd755b0ef776",
@@ -1529,7 +1729,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-816a-aa9f-d07336b4c86a",
@@ -1554,12 +1754,29 @@ const snapshot = {
       "subcategories": [
         "burgers"
       ],
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlZHut6hJ7Om0V81zIPFT3TZ7Xb_5QXRfbIyVphCKmC2U4O7TadlESSFsyvq_VIapZQRb21UcM2sEZvB9JP7bc4n_sDjV2q6buyBxHHLpxPZxW9C2BhkrbqyVCcTpM16EBt_Wg5KirBmAzO=s811-k-no",
+      "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlZHut6hJ7Om0V81zIPFT3TZ7Xb_5QXRfbIyVphCKmC2U4O7TadlESSFsyvq_VIapZQRb21UcM2sEZvB9JP7bc4n_sDjV2q6buyBxHHLpxPZxW9C2BhkrbqyVCcTpM16EBt_Wg5KirBmAzO=s811-k-no",
+          "alt": {
+            "en": "Five Guys Rivoli",
+            "pt-BR": "Five Guys Rivoli"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlgE1IykNGZpQnc9Rp8mcUVzU5VuMd-FataC9FYCX1-nqdNh3Mk7vKrW9f7b5kxfKJ1VAeaVv0zS7QPc3vjfWe9AwIaxSux0pLnIN9WyI-qdKpITDxoIicaivZqQ97ifHjZTeqKsM9PAMpN=s696-k-no",
+          "alt": {
+            "en": "Five Guys Rivoli",
+            "pt-BR": "Five Guys Rivoli"
+          }
+        }
+      ],
       "tags": [
         "🍔 Chains"
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ea-a9e8-f7516dce0c14",
@@ -1600,7 +1817,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81e3-924e-f54fcd13bedd",
@@ -1641,7 +1858,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-b5fa-f5297fdd269e",
@@ -1683,7 +1900,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8109-80be-d9160bba8d6d",
@@ -1725,7 +1942,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8180-a458-dbba843a6a0b",
@@ -1753,8 +1970,29 @@ const snapshot = {
         "architecture",
         "viewpoint"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk2dTfnFwYmaCMI15pWCi6kWGlluB6psWrBDDRlD1aZEdYm74Y9uTQGYtn5VQc0A0LXB_arnw6kqZzojAw2Wwg5HiIm5HJQmIgabfmUmmtwSX-0G6HxFjaXr_Ky2qbobXWFRMTfQOnAbybS=s457-k-no",
       "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk2dTfnFwYmaCMI15pWCi6kWGlluB6psWrBDDRlD1aZEdYm74Y9uTQGYtn5VQc0A0LXB_arnw6kqZzojAw2Wwg5HiIm5HJQmIgabfmUmmtwSX-0G6HxFjaXr_Ky2qbobXWFRMTfQOnAbybS=s457-k-no",
+          "alt": {
+            "en": "Galeries Lafayette",
+            "pt-BR": "Galeries Lafayette"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmFA0m_Tq9gL2HBn69LmCAycdFhiOtIHOaCDXvHKucCySEHOMv3IVZUP37dgPQjJngZzUjKKF8MNQ0kCNdH6H9QbquzUE3444w79wl9HZk8ZLJeD4zgWWnosybHg_L5Ns0NWHiglJ4-e_Pd=s368-k-no",
+          "alt": {
+            "en": "Galeries Lafayette",
+            "pt-BR": "Galeries Lafayette"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnpDnIfK5asZ6qWUlPU3m3c58amXonxkkcAcmuZbeeOH4uL5wJuZiVpsYRFFShqeUfx1Zgp2KAN0O2ZR_wgDX6g-ch7xd1UO18lkx0ojFmtIIx35rJxWfkgU7KIhBqcrVbOmcv32y8HLOyL=s365-k-no",
+          "alt": {
+            "en": "Galeries Lafayette",
+            "pt-BR": "Galeries Lafayette"
+          }
+        },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/GaleriesLafayetteNuit.jpg/1280px-GaleriesLafayetteNuit.jpg",
           "alt": {
@@ -1768,7 +2006,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ac-9795-e45cd007e199",
@@ -1811,7 +2049,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-b37a-d612abd08cb1",
@@ -1852,7 +2090,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cc-8115-d9561918a242",
@@ -1895,7 +2133,56 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-81ce-99ee-ed1834e5371f",
+      "id": "par-jardin-plantes",
+      "city": "paris",
+      "name": {
+        "en": "Jardin des Plantes",
+        "pt-BR": "Jardin des Plantes"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Botanical garden + natural-history museums. Best entry via Fontaine Cuvier (Rue Cuvier side).",
+        "pt-BR": "Jardim botânico + museus de história natural. Entrada pela Fontaine Cuvier (lado da Rue Cuvier)."
+      },
+      "lat": 48.84455,
+      "lng": 2.35595,
+      "address": "57 Rue Cuvier, 75005 Paris",
+      "mapsQuery": "Fontaine Cuvier Jardin des Plantes Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "garden",
+        "museum"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Cuvierfountain.JPG/1280px-Cuvierfountain.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Cuvierfountain.JPG/1280px-Cuvierfountain.JPG",
+          "alt": {
+            "en": "Jardin des Plantes",
+            "pt-BR": "Jardin des Plantes"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Paris_-_Jardin_des_plantes_-_AL_Jussieu.jpg/1280px-Paris_-_Jardin_des_plantes_-_AL_Jussieu.jpg",
+          "alt": {
+            "en": "Jardin des Plantes",
+            "pt-BR": "Jardin des Plantes"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8184-857a-debb7174a9dd",
@@ -1936,7 +2223,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818c-a6fe-cd48efc57676",
@@ -1991,7 +2278,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815f-a6cd-d5852522babd",
@@ -2021,7 +2308,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:30:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812a-aa90-cfe850c75517",
@@ -2069,7 +2356,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-810d-b204-fcb77d97bf44",
@@ -2111,7 +2398,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8181-92fa-d4524858f56f",
@@ -2153,7 +2440,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813a-8094-f75ca84af6fe",
@@ -2203,7 +2490,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-ab0b-e2e8532fd87d",
@@ -2278,7 +2565,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8180-80b5-c8edba5fc788",
@@ -2334,7 +2621,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8196-99d6-f4d8dc0d9bad",
@@ -2376,7 +2663,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8104-a2eb-de5d953b1689",
@@ -2417,7 +2704,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8157-b718-ef0b51da1f7c",
@@ -2459,7 +2746,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-819a-b5e0-cd7f54283f65",
@@ -2523,7 +2810,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c3-a24e-f98771a2b395",
@@ -2535,8 +2822,8 @@ const snapshot = {
       },
       "category": "restaurants",
       "description": {
-        "en": "Very Parisian terrace vibe in the 15th: afternoon drink watching the street, open square, Metro Line 6 passing in front.",
-        "pt-BR": "Restaurante com vibe bem parisiense no 15ème: tomar algo à tarde olhando o movimento da rua, praça aberta, linha 6 passando na frente."
+        "en": "Nice enough to sit and have a beer on the square (Line 6 rolling by). Pleasant, nothing special.",
+        "pt-BR": "Gostoso pra sentar e tomar uma cerveja na praça (linha 6 passando). Mas não tem nada demais."
       },
       "lat": 48.84767,
       "lng": 2.30097,
@@ -2546,8 +2833,8 @@ const snapshot = {
       "favorite": false,
       "featured": false,
       "subcategories": [
-        "brasserie",
-        "french"
+        "french",
+        "brasserie"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg/3840px-Place_Cambronne_-_Paris_XV_%28FR75%29_-_2021-08-09_-_3.jpg",
       "photos": [
@@ -2564,7 +2851,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ea-bf48-c15a7028a923",
@@ -2606,7 +2893,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ee-9474-f352df91b845",
@@ -2656,7 +2943,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8179-aa03-f90cbc01ef22",
@@ -2697,7 +2984,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8193-a628-d65f651c5ae0",
@@ -2709,8 +2996,8 @@ const snapshot = {
       },
       "category": "parks",
       "description": {
-        "en": "Quiet museum house in Passy with a garden pause.",
-        "pt-BR": "Casa-museu quieta em Passy com pausa no jardim."
+        "en": "Only if you are already nearby — tiny house-museum. Decent Tower view, but Paris has many better ones, and it sits in a quiet pocket with little around it.",
+        "pt-BR": "Só se estiver passando perto — é super pequeno. Tem boa vista da Torre, mas Paris tem dezenas melhores, e o ponto não tem muita coisa em volta."
       },
       "lat": 48.8554541,
       "lng": 2.2809102,
@@ -2738,7 +3025,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c7-ab5c-c7c59792e520",
@@ -2778,7 +3065,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8105-8810-c284c88bb906",
@@ -2818,7 +3105,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c3-92c1-e1bbe7c8d268",
@@ -2830,8 +3117,8 @@ const snapshot = {
       },
       "category": "markets",
       "description": {
-        "en": "Paris’s oldest covered market — multicultural lunch stalls in the Marais.",
-        "pt-BR": "Mercado coberto mais antigo de Paris — barracas de almoço multiculturais no Marais."
+        "en": "Paris’s oldest covered market — solid lunch-stall option in the Marais. Pair with Chez Alain Miam Miam if you want the famous sandwich.",
+        "pt-BR": "Mercado coberto mais antigo de Paris — boa opção de feira/almoço no Marais. Combine com o Chez Alain Miam Miam se quiser o lanche famoso."
       },
       "lat": 48.86305,
       "lng": 2.36185,
@@ -2858,7 +3145,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ce-a379-f480c9f06fe7",
@@ -2898,7 +3185,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bd-bf31-ed1064f5fa53",
@@ -2938,7 +3225,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-8100-ecb0e5c9e038",
@@ -2978,7 +3265,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8121-9375-fc736aaffc1d",
@@ -3019,7 +3306,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81dc-9ef2-ecba3e893a3c",
@@ -3034,10 +3321,10 @@ const snapshot = {
         "en": "Hill village vibe. Wander before the Sacré-Cœur crowds peak.",
         "pt-BR": "Clima de vilarejo na colina. Vagueie antes do pico no Sacré-Cœur."
       },
-      "lat": 48.8867,
-      "lng": 2.3431,
-      "address": "Montmartre, 75018 Paris",
-      "mapsQuery": "Montmartre Paris",
+      "lat": 48.8864,
+      "lng": 2.3408,
+      "address": "Place du Tertre, 75018 Paris",
+      "mapsQuery": "Place du Tertre Montmartre Paris",
       "rating": 5,
       "googleRating": 4.7,
       "favorite": true,
@@ -3061,7 +3348,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:42:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818f-aad7-f4f2712642b7",
@@ -3109,7 +3396,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8171-a21d-c582df2dd93a",
@@ -3150,7 +3437,55 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-8192-a5ce-d74969412ad5",
+      "id": "par-carnavalet",
+      "city": "paris",
+      "name": {
+        "en": "Musée Carnavalet",
+        "pt-BR": "Musée Carnavalet"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Museum of the history of Paris — free permanent collections in a beautiful Marais mansion. Great rainy-day pick.",
+        "pt-BR": "Museu da história de Paris — coleções permanentes grátis num hôtel particulier lindo do Marais. Ótimo para dia de chuva."
+      },
+      "lat": 48.8574,
+      "lng": 2.3621,
+      "address": "23 Rue de Sévigné, 75003 Paris",
+      "mapsQuery": "Musée Carnavalet Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "museum",
+        "architecture"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Carnavalet_Par%C3%ADs_10.JPG/1280px-Carnavalet_Par%C3%ADs_10.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Carnavalet_Par%C3%ADs_10.JPG/1280px-Carnavalet_Par%C3%ADs_10.JPG",
+          "alt": {
+            "en": "Musée Carnavalet",
+            "pt-BR": "Musée Carnavalet"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Mus%C3%A9e_Carnavalet%2C_jardin%2C_3%C3%A8me_arrondissement%2C_Paris._PH10620.jpg/1280px-Mus%C3%A9e_Carnavalet%2C_jardin%2C_3%C3%A8me_arrondissement%2C_Paris._PH10620.jpg",
+          "alt": {
+            "en": "Musée Carnavalet",
+            "pt-BR": "Musée Carnavalet"
+          }
+        }
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812b-a455-e26bfafad545",
@@ -3188,7 +3523,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8120-a0c2-e372020adf28",
@@ -3225,7 +3560,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:12:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c1-9fc7-e8388f798f8c",
@@ -3255,7 +3590,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813a-bbc2-d5cd01140d22",
@@ -3312,7 +3647,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817a-804d-c2f67214f522",
@@ -3355,7 +3690,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8176-9eab-c3b95f164df4",
@@ -3392,7 +3727,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:14:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8117-9846-cd4ddc9bff40",
@@ -3422,7 +3757,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813f-bb5a-cb63d4b10d31",
@@ -3446,8 +3781,8 @@ const snapshot = {
       "favorite": true,
       "featured": false,
       "subcategories": [
-        "garden",
-        "architecture"
+        "park",
+        "garden"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Conseil_d%27Etat_Paris_WA.jpg",
       "photos": [
@@ -3464,7 +3799,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81b3-b38b-d02867992400",
@@ -3486,8 +3821,29 @@ const snapshot = {
       "googleRating": 4.3,
       "favorite": false,
       "featured": false,
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg/1280px-Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlN6yqsU_F4tbdnk1G9FMc8f5N3_ravL1qDpTjW5bdA-DL9NQTfDKm4_hDQR_-oHRFRrUYFv4plzsfzUj6eGN8t6iX85kP4uTz2pmuXjeZV2HIUdZQAXkiYOwXPUBPMGOoXWJSQ=s464-k-no",
       "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlN6yqsU_F4tbdnk1G9FMc8f5N3_ravL1qDpTjW5bdA-DL9NQTfDKm4_hDQR_-oHRFRrUYFv4plzsfzUj6eGN8t6iX85kP4uTz2pmuXjeZV2HIUdZQAXkiYOwXPUBPMGOoXWJSQ=s464-k-no",
+          "alt": {
+            "en": "Paname Brewing Company",
+            "pt-BR": "Paname Brewing Company"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkgf4SFQ8fwUAo2jFiVuDAOWxuN1uLrga4u123qL3-i2Bxx6MTN91Vabdg_LLuoNsVmX6WO35cPrfTvO1lqdZtYps_IMJHfAGnRWpiSKPUdGz5I0_bv-Q5ecuM9lhyzXoIOPGJNV3G0gyE=s464-k-no",
+          "alt": {
+            "en": "Paname Brewing Company",
+            "pt-BR": "Paname Brewing Company"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk11UOT3_HEY3qKAwPeGynK9POJefynHk1NPKV9ydpZz0sihrBHRBrcnj6qOrZKqXCWKNKGwjDGfS_LlP2VATv5yvjDQWpsCfHYtAL3EyT-Mq9bDzyEllm3OCuUA_tq0uM23DeDTGedoTC6=s406-k-no",
+          "alt": {
+            "en": "Paname Brewing Company",
+            "pt-BR": "Paname Brewing Company"
+          }
+        },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg/1280px-Paname_Tap_House_%28Quartier_Crim%C3%A9e%29_01.jpg",
           "alt": {
@@ -3501,7 +3857,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:12:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c6-8299-f60a1225270c",
@@ -3543,7 +3899,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8174-90fa-d549adb7f0fe",
@@ -3555,8 +3911,8 @@ const snapshot = {
       },
       "category": "parks",
       "description": {
-        "en": "Beautiful modern park in the 15th. Lawns, themed gardens, and open sky by the Seine.",
-        "pt-BR": "Parque moderno e bonito no 15ème. Gramados, jardins temáticos e céu aberto à beira do Sena."
+        "en": "Modern-architecture park — interesting on its own, but not classic Paris vibes. Balloon ride on site makes the detour more worth it.",
+        "pt-BR": "Parque de arquitetura moderna — bem interessante, mas foge um pouco da pegada Paris. Tem passeio de balão; vale mais a pena se for fazer isso."
       },
       "lat": 48.84119,
       "lng": 2.27454,
@@ -3583,7 +3939,55 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-81d8-92bd-c9f5956fad0f",
+      "id": "par-clichy-batignolles",
+      "city": "paris",
+      "name": {
+        "en": "Parc Clichy-Batignolles",
+        "pt-BR": "Parc Clichy-Batignolles"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Modern green space in the 17th (Martin Luther King) — lakes, lawns, and a calmer contemporary Paris park feel. Nice if you want something less touristy.",
+        "pt-BR": "Parque moderno no 17ème (Martin Luther King) — lagos, gramados e clima mais contemporâneo. Gostoso se quiser algo menos turístico."
+      },
+      "lat": 48.8911,
+      "lng": 2.3142,
+      "address": "147 Rue Cardinet, 75017 Paris",
+      "mapsQuery": "Parc Clichy-Batignolles Martin Luther King Paris",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "park",
+        "garden"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Parc_Clichy-Batignolles_-_Martin-Luther-King_%40_Paris_%2826959477591%29.jpg/1280px-Parc_Clichy-Batignolles_-_Martin-Luther-King_%40_Paris_%2826959477591%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Parc_Clichy-Batignolles_-_Martin-Luther-King_%40_Paris_%2826959477591%29.jpg/1280px-Parc_Clichy-Batignolles_-_Martin-Luther-King_%40_Paris_%2826959477591%29.jpg",
+          "alt": {
+            "en": "Parc Clichy-Batignolles",
+            "pt-BR": "Parc Clichy-Batignolles"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Cerisiers_en_fleur_au_Parc_Martin_Luther_King_%28Clichy-Batignolles%29.jpg/1280px-Cerisiers_en_fleur_au_Parc_Martin_Luther_King_%28Clichy-Batignolles%29.jpg",
+          "alt": {
+            "en": "Parc Clichy-Batignolles",
+            "pt-BR": "Parc Clichy-Batignolles"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81d5-9bef-d4556934dc4e",
@@ -3614,7 +4018,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:30:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8106-9b9a-e71d8fb09275",
@@ -3654,7 +4058,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8142-9ab4-ee61c9c4bd83",
@@ -3694,7 +4098,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a4-a5a1-c7b19546c40d",
@@ -3735,39 +4139,47 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8199-a0d2-eaa8a12eed5a",
       "id": "par-bakery-gaite",
       "city": "paris",
       "name": {
-        "en": "Paris Bakery & Co Gaîté",
-        "pt-BR": "Paris Bakery & Co Gaîté"
+        "en": "Paris Bakery & Co (flan pickup)",
+        "pt-BR": "Paris Bakery & Co (retirada do flan)"
       },
       "category": "cafes",
       "description": {
-        "en": "Bakery stop near Montparnasse / Gaîté.",
-        "pt-BR": "Parada de padaria perto de Montparnasse / Gaîté."
+        "en": "Famous flan — buy online ahead of time. Two shops (Gaîté 14e + Convention 15e); pickup is usually at Convention, not the Gaîté pin people often share. Very worth it.",
+        "pt-BR": "Flan famoso — compre no site com antecedência. Tem dois pontos (Gaîté 14e + Convention 15e); a retirada costuma ser na Convention, não no pino da Gaîté que o mapa costuma mostrar. Vale muito a pena."
       },
-      "lat": 48.8385671,
-      "lng": 2.3227985,
-      "address": "49 Rue de la Gaîté, 75014 Paris",
+      "lat": 48.84715,
+      "lng": 2.28895,
+      "address": "4 Rue de la Convention, 75015 Paris",
       "mapsUrl": "https://maps.app.goo.gl/D6J9toZBdG54v6bF8",
-      "mapsQuery": "Paris Bakery and Co Gaite",
-      "googleRating": 3.6,
+      "mapsQuery": "Paris Bakery and Co Convention Paris",
+      "googleRating": 4.5,
       "favorite": false,
       "featured": false,
       "subcategories": [
-        "bakery"
+        "bakery",
+        "pastry"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Typical_French_bakery_pastries.jpg/1280px-Typical_French_bakery_pastries.jpg",
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Flan_p%C3%A2tissier_ou_flan_parisien.jpg/1280px-Flan_p%C3%A2tissier_ou_flan_parisien.jpg",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Typical_French_bakery_pastries.jpg/1280px-Typical_French_bakery_pastries.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Flan_p%C3%A2tissier_ou_flan_parisien.jpg/1280px-Flan_p%C3%A2tissier_ou_flan_parisien.jpg",
           "alt": {
-            "en": "Paris Bakery & Co Gaîté",
-            "pt-BR": "Paris Bakery & Co Gaîté"
+            "en": "Paris Bakery & Co (flan pickup)",
+            "pt-BR": "Paris Bakery & Co (retirada do flan)"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Flan_p%C3%A2tissier_bron.jpg/1280px-Flan_p%C3%A2tissier_bron.jpg",
+          "alt": {
+            "en": "Paris Bakery & Co (flan pickup)",
+            "pt-BR": "Paris Bakery & Co (retirada do flan)"
           }
         }
       ],
@@ -3776,7 +4188,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8137-bcd0-fbf74b120941",
@@ -3799,11 +4211,25 @@ const snapshot = {
       "favorite": false,
       "featured": false,
       "subcategories": [
-        "french",
-        "bistro"
+        "avenue",
+        "park"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
+      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlBugDTNivZP8Wem_yRewzLbdSRUGGLeEqkS0TGCUQD0omvkA26ZJMl95tJQR0rjZE3_xcqZsM0vb9Xp5FdZNO_xWG9BgXYwJZKAnUlS3oy5oyTkx5z7rhDm3gR7TC_JHlDmGeh=s348-k-no",
       "photos": [
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlBugDTNivZP8Wem_yRewzLbdSRUGGLeEqkS0TGCUQD0omvkA26ZJMl95tJQR0rjZE3_xcqZsM0vb9Xp5FdZNO_xWG9BgXYwJZKAnUlS3oy5oyTkx5z7rhDm3gR7TC_JHlDmGeh=s348-k-no",
+          "alt": {
+            "en": "Paris canals walk",
+            "pt-BR": "Canais de Paris"
+          }
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkk4R_BfIDVevAV-jdAf2j2hlJiVHA7llQcQJUfkRguGTE5GgBsmJvVhegPfpNFtfZF_5mdidpGn4ngdCGBMY9Eq255dgAgw0Hj9ytM9deTf5JMwbU7-yYXoSiFxCRY2q5K7wpD=s522-k-no",
+          "alt": {
+            "en": "Paris canals walk",
+            "pt-BR": "Canais de Paris"
+          }
+        },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
           "alt": {
@@ -3817,7 +4243,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bb-9de5-e9b2a552d969",
@@ -3858,7 +4284,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-816a-8f7e-d920e81d9632",
@@ -3913,7 +4339,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811d-96c4-cb2783e4523c",
@@ -3954,7 +4380,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8118-93d3-cf3233e1717f",
@@ -3995,7 +4421,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8122-9e2a-e7f986f285a1",
@@ -4036,7 +4462,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81b2-98dc-c5b46cf00756",
@@ -4048,8 +4474,8 @@ const snapshot = {
       },
       "category": "tourist",
       "description": {
-        "en": "Exhibition palaces on the Seine. Check what is open.",
-        "pt-BR": "Palácios de exposição no Sena. Veja o que está aberto."
+        "en": "Twin exhibition palaces on the Champs-Élysées / Seine side. Petit Palais permanent collections are often free; Grand Palais depends on the show. Café inside the Petit is worth it for the room alone.",
+        "pt-BR": "Palácios de exposição na Champs-Élysées / Sena. Coleções permanentes do Petit costumam ser grátis; Grand depende da mostra. O café de dentro do Petit vale pelo ambiente."
       },
       "lat": 48.8661,
       "lng": 2.3126,
@@ -4061,13 +4487,20 @@ const snapshot = {
       "featured": false,
       "subcategories": [
         "museum",
-        "palace",
-        "architecture"
+        "architecture",
+        "palace"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg/1280px-France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg",
       "photos": [
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg/1280px-France-000296_-_Paris%27_Grand_Palais_%2814525102530%29.jpg",
+          "alt": {
+            "en": "Petit & Grand Palais",
+            "pt-BR": "Petit e Grand Palais"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Petit_Palais_%40_Paris_%2834081687993%29.jpg/1280px-Petit_Palais_%40_Paris_%2834081687993%29.jpg",
           "alt": {
             "en": "Petit & Grand Palais",
             "pt-BR": "Petit e Grand Palais"
@@ -4079,7 +4512,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81d7-b51d-df58e133a710",
@@ -4128,7 +4561,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817a-870f-fca4d03942a5",
@@ -4158,7 +4591,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:30:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818c-a5a9-f4df530c3983",
@@ -4195,7 +4628,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:12:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-810f-9b80-d76f07ab36fc",
@@ -4236,7 +4669,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814c-948d-d930f225a2a5",
@@ -4279,7 +4712,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811d-9cb2-d9284af3fa9a",
@@ -4320,7 +4753,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-9925-c3707c480824",
@@ -4361,7 +4794,47 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-81b5-b3ce-f47623c04719",
+      "id": "par-point-alph",
+      "city": "paris",
+      "name": {
+        "en": "Point Alph (Versailles market)",
+        "pt-BR": "Point Alph (feira de Versalhes)"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Market stop in Versailles — handy if you are already at the château / Notre-Dame market area.",
+        "pt-BR": "Parada de feira em Versalhes — boa se já estiver no castelo / área do Marché Notre-Dame."
+      },
+      "lat": 48.80663,
+      "lng": 2.13201,
+      "address": "Place du Marché Notre-Dame, 78000 Versailles",
+      "mapsQuery": "Point Alph Marché Notre-Dame Versailles",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "market"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Place_du_march%C3%A9_Notre-Dame.jpg/1280px-Place_du_march%C3%A9_Notre-Dame.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Place_du_march%C3%A9_Notre-Dame.jpg/1280px-Place_du_march%C3%A9_Notre-Dame.jpg",
+          "alt": {
+            "en": "Point Alph (Versailles market)",
+            "pt-BR": "Point Alph (feira de Versalhes)"
+          }
+        }
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a2-a034-f114e32efead",
@@ -4402,7 +4875,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8134-9eff-c5444662a14b",
@@ -4444,7 +4917,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-88ba-f484a5508909",
@@ -4499,7 +4972,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fa-9ca0-f0bb3c22856f",
@@ -4567,7 +5040,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fa-b732-e8112645b5d0",
@@ -4609,7 +5082,56 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
+    },
+    {
+      "notionPageId": "3b32da8d-8134-813f-94a3-e213c6fa96c2",
+      "id": "par-mouffetard",
+      "city": "paris",
+      "name": {
+        "en": "Rue Mouffetard walk",
+        "pt-BR": "Caminhada Rue Mouffetard"
+      },
+      "category": "parks",
+      "description": {
+        "en": "One of the nicest Latin Quarter walks: start at Fontaine Guy Lartigue (bottom of the street / Place Saint-Médard) and stroll up Rue Mouffetard toward the Panthéon.",
+        "pt-BR": "Uma das caminhadas mais gostosas do Quartier Latin: comece na Fontaine Guy Lartigue (pé da rua / Place Saint-Médard) e suba a Rue Mouffetard até o Panteão."
+      },
+      "lat": 48.8438,
+      "lng": 2.3495,
+      "address": "Rue Mouffetard, 75005 Paris",
+      "mapsQuery": "Rue Mouffetard Paris",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood",
+        "avenue",
+        "market-street"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Rue_Mouffetard.JPG/1280px-Rue_Mouffetard.JPG",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Rue_Mouffetard.JPG/1280px-Rue_Mouffetard.JPG",
+          "alt": {
+            "en": "Rue Mouffetard walk",
+            "pt-BR": "Caminhada Rue Mouffetard"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Paris_-_Crepe_seller%2C_Rue_Mouffetard_-_2008.jpg/1280px-Paris_-_Crepe_seller%2C_Rue_Mouffetard_-_2008.jpg",
+          "alt": {
+            "en": "Rue Mouffetard walk",
+            "pt-BR": "Caminhada Rue Mouffetard"
+          }
+        }
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8147-9445-d30524d99037",
@@ -4653,7 +5175,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-819b-99b9-d6eb7caf31bc",
@@ -4708,7 +5230,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8163-a9be-e6f5d13af28b",
@@ -4735,10 +5257,24 @@ const snapshot = {
         "church",
         "monument"
       ],
-      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Sainte_Chapelle_-_Upper_level_1.jpg",
+      "coverUrl": "https://i0.wp.com/www.citiestotravel.com/wp-content/uploads/2025/03/Sainte-Chapelle-in-Parijs-scaled.webp?fit=2560%2C1431&ssl=1",
       "photos": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Sainte_Chapelle_-_Upper_level_1.jpg",
+          "url": "https://i0.wp.com/www.citiestotravel.com/wp-content/uploads/2025/03/Sainte-Chapelle-in-Parijs-scaled.webp?fit=2560%2C1431&ssl=1",
+          "alt": {
+            "en": "Sainte-Chapelle",
+            "pt-BR": "Sainte-Chapelle"
+          }
+        },
+        {
+          "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVqla-c2qJv_UwrXhkCLgabdR5YQMTcFQ5attcxFLZ_bArKTKo-zMBm-w&s=10",
+          "alt": {
+            "en": "Sainte-Chapelle",
+            "pt-BR": "Sainte-Chapelle"
+          }
+        },
+        {
+          "url": "https://aws-tiqets-cdn.imgix.net/images/content/048dbd2ab26143b59a1648e8c0883c4b.jpg?auto=format%2Ccompress&fit=crop&q=70",
           "alt": {
             "en": "Sainte-Chapelle",
             "pt-BR": "Sainte-Chapelle"
@@ -4750,7 +5286,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8199-9f0f-d4b0b1dad058",
@@ -4805,7 +5341,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:32:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817c-9775-df592e34168c",
@@ -4835,7 +5371,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z"
+      "lastEdited": "2026-08-05T13:30:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811e-b3a5-dd31a1946cd5",
@@ -4877,7 +5413,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8139-b4a1-ff6dfba9ce0e",
@@ -4920,7 +5456,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z"
+      "lastEdited": "2026-08-05T13:34:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8113-ad1a-f4b390299966",
@@ -4962,7 +5498,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-05T01:39:00.000Z"
+      "lastEdited": "2026-08-05T13:33:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8123-8f3f-c3514d2c05a7",
@@ -4974,8 +5510,8 @@ const snapshot = {
       },
       "category": "parks",
       "description": {
-        "en": "Cozy calm town on the edge of Paris. Pedestrian feel, local shops, restaurants, and cafés — plus a great park and a medieval castle nearby.",
-        "pt-BR": "Cidadezinha nos arredores de Paris, acolhedora e calma. Calçadão, lojinhas, restaurantes, cafés e coisas locais — além de parque grande e castelo medieval."
+        "en": "Pretty little town on the edge of Paris — small, walkable, local shops and cafés. Pair with the Bois park and the medieval castle (we have never gone inside either, honestly). If you go, bring the family.",
+        "pt-BR": "Cidadezinha super bonitinha na beira de Paris — pequena, com calçadão e clima local. Tem o parque (dizem que é gostoso) e o castelo medieval (nunca entramos). Se forem, quero ir junto."
       },
       "lat": 48.84745,
       "lng": 2.43967,
@@ -5002,7 +5538,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z"
+      "lastEdited": "2026-08-05T13:35:00.000Z"
     },
     {
       "notionPageId": "3812da8d-8134-8021-b639-f0b4e1f0d172",
