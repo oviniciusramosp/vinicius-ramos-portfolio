@@ -4,7 +4,7 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-08-04T22:17:28.694Z",
+  "generatedAt": "2026-08-05T08:32:27.651Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
   "count": 139,
   "byCity": {
@@ -71,6 +71,7 @@ const snapshot = {
       "lng": 2.295,
       "address": "Place Charles de Gaulle, 75008 Paris",
       "mapsQuery": "Arc de Triomphe Paris",
+      "rating": 5,
       "googleRating": 4.7,
       "favorite": true,
       "featured": false,
@@ -94,8 +95,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8106-b611-cf9f74a08387",
@@ -185,6 +185,7 @@ const snapshot = {
       "address": "Port de la Conférence, 75008 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Bateau-mouche/@48.8629662,2.306493,16.25z",
       "mapsQuery": "Bateaux-Mouches Paris",
+      "rating": 5,
       "googleRating": 4.3,
       "favorite": true,
       "featured": false,
@@ -213,8 +214,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8146-8912-ef6f24f48a4f",
@@ -434,8 +434,8 @@ const snapshot = {
       "id": "par-bohemia",
       "city": "paris",
       "name": {
-        "en": "Baguett's Café Molière",
-        "pt-BR": "Baguett's Café Molière"
+        "en": "Bohemia Café",
+        "pt-BR": "Bohemia Café"
       },
       "category": "cafes",
       "description": {
@@ -445,7 +445,7 @@ const snapshot = {
       "lat": 48.8655,
       "lng": 2.335,
       "address": "30 Rue de Richelieu, 75001 Paris",
-      "mapsQuery": "Baguett's Café Molière Paris",
+      "mapsQuery": "Bohemia Café brunch Paris",
       "rating": 5,
       "googleRating": 4.7,
       "favorite": true,
@@ -453,13 +453,13 @@ const snapshot = {
       "subcategories": [
         "coffee-shop"
       ],
-      "coverUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
       "photos": [
         {
-          "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUZDpMSZqgtkyRxREKF0vm26-EhpWQCNaCQN2AiBG1RQK7pwDeTSsrr5n57c_kOhiFIE9Pv7_Y7EvVz4IWHOa4r2_2Hi6NhuS4Srco3_uvD8eDpkiHIU6ftoXXgi-r1HosNpp93w=s1219-k-no",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cafe_gourmand.JPG",
           "alt": {
-            "en": "Baguett's Café Molière",
-            "pt-BR": "Baguett's Café Molière"
+            "en": "Bohemia Café",
+            "pt-BR": "Bohemia Café"
           }
         }
       ],
@@ -828,6 +828,7 @@ const snapshot = {
       "lng": 2.3522,
       "address": "Pl. Georges-Pompidou, 75004 Paris",
       "mapsQuery": "Centre Pompidou Paris",
+      "rating": 4,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -865,8 +866,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z",
-      "rating": 4
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cf-9795-eb745c0a7f59",
@@ -1048,6 +1048,7 @@ const snapshot = {
       "lng": 2.1204,
       "address": "Place d'Armes, 78000 Versailles",
       "mapsQuery": "Château de Versailles",
+      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
@@ -1093,8 +1094,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8158-976f-c643d3e9a25e",
@@ -1234,8 +1234,8 @@ const snapshot = {
         "en": "One of the oldest public clocks in Paris. Look up on the tower.",
         "pt-BR": "Um dos relógios públicos mais antigos de Paris. Olhe a torre."
       },
-      "lat": 48.856193,
-      "lng": 2.346233,
+      "lat": 48.8559,
+      "lng": 2.3456,
       "address": "2 Bd du Palais, 75001 Paris",
       "mapsQuery": "Horloge Conciergerie Paris",
       "googleRating": 4.6,
@@ -1280,9 +1280,8 @@ const snapshot = {
       "address": "Cr du Commerce Saint-André, 75006 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Cr+du+Commerce+Saint-Andr%C3%A9,+75006+Paris/@48.853095,2.3383737,18.5z",
       "mapsQuery": "Cour du Commerce Saint-André Paris",
-      "rating": 5,
       "googleRating": 5,
-      "favorite": true,
+      "favorite": false,
       "featured": false,
       "subcategories": [
         "market-street",
@@ -1507,6 +1506,7 @@ const snapshot = {
       "lng": 2.2468,
       "address": "Esplanade du Général de Gaulle, 92800 Puteaux",
       "mapsQuery": "Esplanade du Général de Gaulle La Défense",
+      "rating": 4.5,
       "googleRating": 4.3,
       "favorite": false,
       "featured": false,
@@ -1529,8 +1529,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-816a-aa9f-d07336b4c86a",
@@ -1620,6 +1619,7 @@ const snapshot = {
       "lng": 2.3465,
       "address": "Forum des Halles, 75001 Paris",
       "mapsQuery": "Forum des Halles Paris",
+      "rating": 4.5,
       "googleRating": 3.9,
       "favorite": true,
       "featured": false,
@@ -1641,8 +1641,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:15:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-b5fa-f5297fdd269e",
@@ -1745,6 +1744,7 @@ const snapshot = {
       "lng": 2.332,
       "address": "40 Bd Haussmann, 75009 Paris",
       "mapsQuery": "Galeries Lafayette Haussmann",
+      "rating": 4.5,
       "googleRating": 4.5,
       "favorite": true,
       "featured": false,
@@ -1768,8 +1768,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ac-9795-e45cd007e199",
@@ -1788,6 +1787,7 @@ const snapshot = {
       "lng": 2.2359,
       "address": "1 Parvis de la Défense, 92040 Paris La Défense",
       "mapsQuery": "Grande Arche de la Défense",
+      "rating": 4.5,
       "googleRating": 4.4,
       "favorite": true,
       "featured": false,
@@ -1811,8 +1811,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-b37a-d612abd08cb1",
@@ -2089,6 +2088,7 @@ const snapshot = {
       "lng": 2.241,
       "address": "La Défense, 92800 Puteaux",
       "mapsQuery": "La Défense Paris",
+      "rating": 4.5,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -2111,8 +2111,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8181-92fa-d4524858f56f",
@@ -3170,6 +3169,7 @@ const snapshot = {
       "lng": 2.32658,
       "address": "1 Rue de la Légion d'Honneur, 75007 Paris",
       "mapsQuery": "Musée d'Orsay Paris",
+      "rating": 5,
       "googleRating": 4.8,
       "favorite": false,
       "featured": false,
@@ -3188,8 +3188,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:12:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8120-a0c2-e372020adf28",
@@ -3442,12 +3441,13 @@ const snapshot = {
       "lng": 2.3371,
       "address": "8 Rue de Montpensier, 75001 Paris",
       "mapsQuery": "Palais-Royal Paris",
+      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
       "subcategories": [
-        "park",
-        "garden"
+        "garden",
+        "architecture"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Conseil_d%27Etat_Paris_WA.jpg",
       "photos": [
@@ -3464,8 +3464,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:16:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81b3-b38b-d02867992400",
@@ -3792,16 +3791,16 @@ const snapshot = {
         "en": "Walk from Place de la République along the canals to Bassin de la Villette — a very Parisian outing. Stop by the water to eat (Jardin Villemin is a great spot). At the Bassin: bars and restaurants, including Paname Brewing Company. A bit further: Parc de la Villette. On the way back, Metro Line 2 has elevated panoramic views over the city.",
         "pt-BR": "Andar da Place de la République pelos canais até o Bassin de la Villette — atividade bem gostosa e parisiense. Pare na beira para comer (em frente ao Jardin Villemin é um bom spot). No Bassin: vários bares e restaurantes; Paname Brewing Company tem cerveja própria. Um pouco mais: La Villette. Na volta, a linha 2 do metrô tem vista panorâmica — anda sobre a cidade."
       },
-      "lat": 48.87489,
-      "lng": 2.36335,
+      "lat": 48.87515,
+      "lng": 2.36185,
       "address": "Canal Saint-Martin → Bassin de la Villette, Paris",
       "mapsQuery": "Canal Saint-Martin Paris",
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
       "subcategories": [
-        "avenue",
-        "park"
+        "french",
+        "bistro"
       ],
       "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Canal_Saint-Martin_Paris_FRA_001.jpg/1280px-Canal_Saint-Martin_Paris_FRA_001.jpg",
       "photos": [
@@ -4056,6 +4055,7 @@ const snapshot = {
       "lng": 2.3126,
       "address": "Av. Winston Churchill, 75008 Paris",
       "mapsQuery": "Grand Palais Petit Palais Paris",
+      "rating": 4.5,
       "googleRating": 4.7,
       "favorite": true,
       "featured": false,
@@ -4079,8 +4079,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 4.5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81d7-b51d-df58e133a710",
@@ -4940,6 +4939,7 @@ const snapshot = {
       "lng": 2.3275,
       "address": "Place de la Concorde, 75001 Paris",
       "mapsQuery": "Jardin des Tuileries Paris",
+      "rating": 5,
       "googleRating": 4.6,
       "favorite": true,
       "featured": false,
@@ -4962,8 +4962,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T22:17:00.000Z",
-      "rating": 5
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8123-8f3f-c3514d2c05a7",
