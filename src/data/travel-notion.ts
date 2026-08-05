@@ -267,12 +267,21 @@ export function mergeNotionPlaces<
       used.add(local.id);
       // Notion editorial fields win; keep local-only technical extras
       // (area, routeStops, landmark) that Notion does not own.
+      // When local owns a map `area`, also keep local lat/lng so a stale Notion
+      // pin cannot drift off the authored/OSM geometry (CI pull → area tests).
+      const keepLocalPin = Boolean(local.area);
       return {
         ...local,
         ...fromNotion,
         // Keep geometry/route tech local when Notion has no override
         area: local.area,
         routeStops: local.routeStops,
+        ...(keepLocalPin
+          ? {
+              lat: (local as { lat?: number }).lat ?? fromNotion.lat,
+              lng: (local as { lng?: number }).lng ?? fromNotion.lng,
+            }
+          : {}),
         // Landmark / subcategories: Notion wins when set, else local
         landmark: fromNotion.landmark ?? local.landmark,
         subcategories: fromNotion.subcategories?.length
