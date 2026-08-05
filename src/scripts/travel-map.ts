@@ -15,6 +15,12 @@ import {
   placePinIconHtml,
 } from '../data/travel-categories';
 import { ROUTE_WAYPOINT_AREA_IDS } from '../data/travel-areas-policy';
+import {
+  getStyleForMap,
+  initBasemapCaching,
+  ensureStyleCached,
+  VECTOR_STYLE_URLS,
+} from './map-basemap-cache';
 
 /**
  * Transit line id → place id of the “full line” map entity
@@ -174,8 +180,11 @@ export type TravelMapHandle = {
   ) => void;
   /** Temporary opacity preview (chip hover) — does not change base filter */
   setFilterPreview: (preview: FilterPreviewState) => void;
-  /** Places mode: open side panel for place id (or clear) */
-  select: (id: string | null) => void;
+  /**
+   * Places mode: open side panel for place id (or clear).
+   * `camera: false` skips ensureVisible (use on restore so load intro owns the zoom).
+   */
+  select: (id: string | null, opts?: { camera?: boolean }) => void;
   /** Draw / clear multi-stop route preview polyline + stop numbers */
   setRoutePreview: (state: RoutePreviewState | null) => void;
   /**
@@ -227,11 +236,24 @@ export type TravelMapBasemapTheme = 'dark' | 'light';
 /**
  * Free vector basemaps (OpenFreeMap) — water/park layers are styleable.
  * Dark = portfolio night map; light = OSM Bright (Google Maps–like).
+ * Style JSON is warmed in memory + SW-cached (see map-basemap-cache).
  * @see https://openfreemap.org/quick_start/
  */
 const VECTOR_STYLES: Record<TravelMapBasemapTheme, string> = {
-  dark: 'https://tiles.openfreemap.org/styles/dark',
-  light: 'https://tiles.openfreemap.org/styles/bright',
+  dark: VECTOR_STYLE_URLS.dark,
+  light: VECTOR_STYLE_URLS.light,
+};
+
+/** MapLibre constructor opts — faster remount paint + larger session tile cache */
+const MAPLIBRE_PERF = {
+  // Skip fade-in of new tiles (remount / pan feel snappier)
+  fadeDuration: 0,
+  // Skip schema validation for known OpenFreeMap styles
+  validateStyle: false,
+  // Keep more tiles after pan/zoom so SPA remounts refill from GL cache longer
+  maxTileCacheZoomLevels: 8,
+  // Cross-origin fonts not used; slightly cheaper glyph path when possible
+  localIdeographFontFamily: false as const,
 };
 const VECTOR_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://openfreemap.org">OpenFreeMap</a> &copy; <a href="https://openmaptiles.org">OpenMapTiles</a>';
@@ -359,7 +381,40 @@ const POI_LAYERS_EXCLUDE_BUS = [
   'poi_r20',
 ] as const;
 
-/** Hide highway shields and bus-stop POIs on the vector basemap. */
+/**
+ * Raise minzoom so suburbs / nearby towns don’t label the wide city overview.
+ * Dark (Liberty) + Bright (OSM Bright) layer ids.
+ * Values ≈ when names become useful while exploring the core on foot scale.
+ */
+const PLACE_LABEL_MINZOOM: Record<string, number> = {
+  // Dark / OpenFreeMap dark
+  place_other: 13.5, // neighbourhood / hamlet
+  place_suburb: 13.2,
+  place_village: 12.5,
+  place_town: 11.5,
+  place_city: 10,
+  place_city_large: 8.5,
+  // Bright / OpenFreeMap bright
+  label_other: 13.5,
+  label_village: 12.5,
+  label_town: 11.5,
+  label_city: 9.5,
+  label_city_capital: 8.5,
+};
+
+function setLayerMinZoom(glMap: maplibregl.Map, layerId: string, minzoom: number) {
+  if (!glMap.getLayer(layerId)) return;
+  try {
+    const max =
+      (glMap.getLayer(layerId) as { maxzoom?: number } | undefined)?.maxzoom ??
+      24;
+    glMap.setLayerZoomRange(layerId, minzoom, max);
+  } catch {
+    /* layer may not support zoom range */
+  }
+}
+
+/** Hide highway shields and bus-stop POIs; push place labels to nearer zoom. */
 function hideBasemapClutter(glMap: maplibregl.Map) {
   for (const id of HIDDEN_HIGHWAY_INDICATOR_LAYERS) {
     setLayout(glMap, id, 'visibility', 'none');
@@ -400,6 +455,10 @@ function hideBasemapClutter(glMap: maplibregl.Map) {
     } catch {
       /* keep layer if filter shape is unsupported */
     }
+  }
+
+  for (const [id, minz] of Object.entries(PLACE_LABEL_MINZOOM)) {
+    setLayerMinZoom(glMap, id, minz);
   }
 }
 
@@ -1571,42 +1630,151 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   // Vector basemap (OpenFreeMap) via MapLibre-in-Leaflet; pins stay Leaflet.
   let basemapTheme: TravelMapBasemapTheme = readDocumentBasemapTheme();
+  // Warm SW + style memory (often ready by the time attach runs below)
+  initBasemapCaching(basemapTheme);
   // maplibre-gl-leaflet layer (plugin has incomplete typings)
   let glLayer: { getMaplibreMap?: () => maplibregl.Map | null } | null = null;
   let glMap: maplibregl.Map | null = null;
   let unbindBasemapTints: (() => void) | null = null;
+  /** Bumped on destroy so in-flight style attach is ignored */
+  let basemapAttachGen = 0;
 
-  try {
-    glLayer = L.maplibreGL({
-      style: VECTOR_STYLES[basemapTheme],
-      attribution: VECTOR_ATTR,
-      interactive: false,
-      pane: 'tilePane',
-    }).addTo(map);
+  const attachBasemap = (style: string | object, gen: number) => {
+    if (gen !== basemapAttachGen) return;
+    try {
+      // Remove prior GL layer if theme race re-attaches (should be rare)
+      if (glLayer) {
+        try {
+          map.removeLayer(glLayer as unknown as L.Layer);
+        } catch {
+          /* ignore */
+        }
+        unbindBasemapTints?.();
+        unbindBasemapTints = null;
+        glMap = null;
+        glLayer = null;
+      }
+      glLayer = L.maplibreGL({
+        style,
+        attribution: VECTOR_ATTR,
+        interactive: false,
+        pane: 'tilePane',
+        ...MAPLIBRE_PERF,
+      }).addTo(map);
 
-    glMap = glLayer.getMaplibreMap?.() ?? null;
-    if (glMap) {
-      unbindBasemapTints = bindBasemapTints(glMap, () => basemapTheme);
+      glMap = glLayer.getMaplibreMap?.() ?? null;
+      if (glMap) {
+        unbindBasemapTints = bindBasemapTints(glMap, () => basemapTheme);
+        // Intro must wait until vector basemap has painted (not just pin dots).
+        armBasemapReady(glMap);
+      } else {
+        // No GL map — don't block intro forever
+        markBasemapReady();
+      }
+    } catch (err) {
+      console.error('[travel-map] MapLibre basemap failed', err);
+      markBasemapReady();
     }
-  } catch (err) {
-    console.error('[travel-map] MapLibre basemap failed', err);
+  };
+
+  /** City intro waits for basemap paint + page reveal (wired after pins). */
+  let basemapReady = false;
+  let pageVisibleForIntro = false;
+  let basemapReadyTimer = 0;
+  /** Pin focus deferred until after load intro (restore selection). */
+  let deferredPinCameraId: string | null = null;
+  /** Late-bound: set after intro helpers exist (pins + fitSource). */
+  let tryRunCityIntro: () => void = () => {};
+
+  const markBasemapReady = () => {
+    if (basemapReady) return;
+    basemapReady = true;
+    if (basemapReadyTimer) {
+      window.clearTimeout(basemapReadyTimer);
+      basemapReadyTimer = 0;
+    }
+    tryRunCityIntro();
+  };
+
+  const armBasemapReady = (gl: maplibregl.Map) => {
+    const onReady = () => markBasemapReady();
+    if (gl.isStyleLoaded()) {
+      gl.once('idle', onReady);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!basemapReady && gl.isStyleLoaded()) markBasemapReady();
+        });
+      });
+    } else {
+      gl.once('load', () => {
+        gl.once('idle', onReady);
+      });
+    }
+    if (basemapReadyTimer) window.clearTimeout(basemapReadyTimer);
+    basemapReadyTimer = window.setTimeout(onReady, 2800);
+  };
+
+  {
+    const styleUrl = VECTOR_STYLES[basemapTheme];
+    const gen = basemapAttachGen;
+    const warm = getStyleForMap(styleUrl);
+    if (typeof warm !== 'string') {
+      // SPA remount / warm tab — zero style network
+      attachBasemap(warm, gen);
+    } else {
+      // Single fetch shared with memory cache (no parallel MapLibre URL fetch)
+      void ensureStyleCached(styleUrl)
+        .then((json) => {
+          try {
+            attachBasemap(structuredClone(json), gen);
+          } catch {
+            attachBasemap(styleUrl, gen);
+          }
+        })
+        .catch(() => attachBasemap(styleUrl, gen));
+    }
   }
 
   const setBasemapTheme = (theme: TravelMapBasemapTheme) => {
     if (theme === basemapTheme) return;
     basemapTheme = theme;
+    // Invalidate in-flight cold attach so a late dark style can’t overwrite light
+    basemapAttachGen += 1;
+    const gen = basemapAttachGen;
     // Re-tint any area currently on the map (poly opacity differs light vs dark)
     areas.forEach((layer, id) => {
       if (!map.hasLayer(layer)) return;
       setLayerStyle(layer, pinById.get(id), true);
     });
-    if (!glMap) return;
-    try {
-      glMap.setStyle(VECTOR_STYLES[theme]);
-      // style.load (bound above) re-applies water/park tints for basemapTheme
-    } catch (err) {
-      console.error('[travel-map] basemap theme switch failed', err);
+    const nextUrl = VECTOR_STYLES[theme];
+    const apply = (style: string | object) => {
+      if (gen !== basemapAttachGen) return;
+      if (!glMap) {
+        // GL not ready yet — attach with the desired theme when cache resolves
+        attachBasemap(style, gen);
+        return;
+      }
+      try {
+        glMap.setStyle(style);
+        // style.load (bound above) re-applies water/park tints for basemapTheme
+      } catch (err) {
+        console.error('[travel-map] basemap theme switch failed', err);
+      }
+    };
+    const warm = getStyleForMap(nextUrl);
+    if (typeof warm !== 'string') {
+      apply(warm);
+      return;
     }
+    void ensureStyleCached(nextUrl)
+      .then((json) => {
+        try {
+          apply(structuredClone(json));
+        } catch {
+          apply(nextUrl);
+        }
+      })
+      .catch(() => apply(nextUrl));
   };
 
   const markers = new Map<string, L.Marker>();
@@ -2274,13 +2442,14 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   };
 
   /**
-   * City intro: open on a wider frame, then ease-out zoom into the core.
-   * Consumed by the first `syncUiChrome({ refit })` after page reveal
-   * (or the fallback timer below if reveal never fires).
+   * City intro: hold a wide frame (no anim), then one ease-out zoom-in after
+   * basemap has painted AND the page is visible. Never restarts.
    */
   let pendingIntroFit =
     mode === 'places' && fitSource.length > 0 && !prefersReducedMotion();
-  let introFitTimer = 0;
+  let cancelIntroVisibility: (() => void) | null = null;
+  /** Intro fly already started or finished — never run again for this map. */
+  let introConsumed = !pendingIntroFit;
   /** True while the load flyToBounds is in progress (blocks hard snaps). */
   let introFlyActive = false;
   let introFlyGeneration = 0;
@@ -2293,16 +2462,28 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   const runCityIntroFit = (pts: L.LatLngExpression[]) => {
     if (pts.length === 0) return;
+    if (introConsumed) return;
+    if (introFlyActive) return;
     pendingIntroFit = false;
-    if (introFitTimer) {
-      window.clearTimeout(introFitTimer);
-      introFitTimer = 0;
-    }
+    introConsumed = true;
+    map.stop();
     const gen = ++introFlyGeneration;
     introFlyActive = true;
-    map.once('moveend', () => {
-      if (gen === introFlyGeneration) introFlyActive = false;
-    });
+    let introFinished = false;
+    const finishIntro = () => {
+      if (gen !== introFlyGeneration || introFinished) return;
+      introFinished = true;
+      introFlyActive = false;
+      // Optional pin focus after city zoom (restore selection). Zoom is already
+      // near target so this is mostly a soft pan, not a second city zoom-in.
+      const pinId = deferredPinCameraId;
+      deferredPinCameraId = null;
+      if (pinId && selectedId === pinId) {
+        ensureVisible(pinId, true);
+      }
+    };
+    map.once('moveend', finishIntro);
+    window.setTimeout(finishIntro, Math.round(CITY_INTRO_DURATION_S * 1000) + 120);
     fitLatLngsWithChrome(pts, {
       animate: true,
       duration: CITY_INTRO_DURATION_S,
@@ -2310,6 +2491,16 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
       maxZoom: cityTargetMaxZoom,
       pad: CITY_FIT_PAD,
     });
+  };
+
+  // Wire late-bound intro starter (basemap arm may already have fired)
+  tryRunCityIntro = () => {
+    if (mode !== 'places') return;
+    if (!pendingIntroFit || introConsumed) return;
+    if (!basemapReady || !pageVisibleForIntro) return;
+    recomputeChromePad();
+    const pts = collectFitPts();
+    runCityIntroFit(pts.length > 0 ? pts : fitSource);
   };
 
   const snapCityWideFrame = (pts: L.LatLngExpression[]) => {
@@ -2333,7 +2524,7 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
   if (mode === 'cities' && latLngs.length > 0) {
     fitLatLngsWithChrome(latLngs, { animate: false, maxZoom: 5, pad: 0.35 });
   } else if (mode === 'places' && fitSource.length > 0) {
-    // City zoom: core only (airports + far outliers out). Start wide for intro.
+    // City zoom: core only. Hold wide (instant) until basemap+reveal intro.
     if (pendingIntroFit) {
       snapCityWideFrame(fitSource);
     } else {
@@ -2363,14 +2554,22 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     }
   });
 
-  // Fallback if post-reveal syncUiChrome never runs (or is delayed)
+  // Page reveal → allow intro (still needs basemapReady)
   if (pendingIntroFit) {
-    introFitTimer = window.setTimeout(() => {
-      if (!pendingIntroFit) return;
-      recomputeChromePad();
-      runCityIntroFit(fitSource);
-    }, 900);
+    void import('./page-reveal').then(({ whenPageVisible }) => {
+      cancelIntroVisibility = whenPageVisible(() => {
+        pageVisibleForIntro = true;
+        map.invalidateSize();
+        recomputeChromePad();
+        tryRunCityIntro();
+      });
+    });
+  } else {
+    pageVisibleForIntro = true;
   }
+
+  // Basemap may have finished before tryRunCityIntro was wired
+  if (basemapReady) tryRunCityIntro();
 
   let activeId: string | null = null;
   /** Pin kept active while side panel is open */
@@ -2546,12 +2745,12 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     const pts = collectFitPts();
     if (pts.length === 0) return;
 
-    // First post-reveal refit plays the load zoom-in (not an instant snap).
-    // If chrome settles mid-flight, re-target with the same ease-out curve.
-    if (mode === 'places' && (pendingIntroFit || introFlyActive)) {
-      runCityIntroFit(pts);
+    // Load intro owns the first camera move (gated on basemap + page).
+    if (mode === 'places' && pendingIntroFit) {
+      tryRunCityIntro();
       return;
     }
+    if (introFlyActive) return;
 
     fitLatLngsWithChrome(pts, {
       animate: opts.animate ?? false,
@@ -2606,6 +2805,13 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     const pin = pinById.get(id);
     if (!pin) return;
     if (visibleIds && !visibleIds.has(id)) return;
+
+    // Don't steal the city load zoom (restore used to fly here first)
+    if (pendingIntroFit) {
+      highlight(id);
+      deferredPinCameraId = id;
+      return;
+    }
 
     map.stop();
     if (animate) beginCameraMove();
@@ -2667,7 +2873,7 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     }
   };
 
-  const select = (id: string | null) => {
+  const select = (id: string | null, opts?: { camera?: boolean }) => {
     if (id && visibleIds && !visibleIds.has(id)) {
       id = null;
     }
@@ -2675,20 +2881,29 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
     // Overlap-spread only while a pin is hovered or selected
     pinMotion.setSelected(id);
     // Open panel first (sets chrome padding), then one camera move.
-    // Highlight runs inside ensureVisible so is-active size morph starts under
-    // `is-camera-moving` (no competing CSS transitions mid-flight).
     container.dispatchEvent(
       new CustomEvent('travel:select', {
         bubbles: true,
         detail: { id },
       }),
     );
-    if (id) {
-      // Camera respects chrome padding (form sheet bottom, etc.)
-      ensureVisible(id, true);
-    } else {
+    if (!id) {
+      deferredPinCameraId = null;
       highlight(null);
+      return;
     }
+
+    const wantCamera = opts?.camera !== false;
+    // During load intro: open panel + highlight only — never fly (that was
+    // zoom #1 with basemap still empty; intro is zoom #2).
+    if (!wantCamera || pendingIntroFit || introFlyActive) {
+      highlight(id);
+      if (wantCamera && (pendingIntroFit || introFlyActive)) {
+        deferredPinCameraId = id;
+      }
+      return;
+    }
+    ensureVisible(id, true);
   };
 
   const flyTo = (id: string) => {
@@ -2717,6 +2932,11 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
     // Default fit for search/category changes; skip for view-mode toggles
     if (opts?.fit === false) return;
+
+    // City load intro owns the first camera move. Filter re-apply on
+    // `travel:map-ready` used to fire a second animated fitBounds and looked
+    // like the zoom-in running twice on refresh.
+    if (mode === 'places' && (pendingIntroFit || introFlyActive)) return;
 
     const visibleLatLngs = collectFitPts();
     if (visibleLatLngs.length > 0) {
@@ -3474,13 +3694,19 @@ export function createTravelMap(options: TravelMapOptions): TravelMapHandle | nu
 
   const destroy = () => {
     try {
+      // Invalidate in-flight style attach / theme switch
+      basemapAttachGen += 1;
       pendingIntroFit = false;
+      introConsumed = true;
       introFlyActive = false;
+      deferredPinCameraId = null;
       cameraMoving = false;
       cameraMoveGen += 1;
-      if (introFitTimer) {
-        window.clearTimeout(introFitTimer);
-        introFitTimer = 0;
+      cancelIntroVisibility?.();
+      cancelIntroVisibility = null;
+      if (basemapReadyTimer) {
+        window.clearTimeout(basemapReadyTimer);
+        basemapReadyTimer = 0;
       }
       unbindBasemapTints?.();
       unbindBasemapTints = null;
@@ -3766,13 +3992,12 @@ function bootTravelMapNow(): void {
   // Filter may have bound before this remount — re-apply pin visibility
   document.dispatchEvent(new CustomEvent('travel:map-ready'));
 
-  // Layout often settles only after page-mask reveal / desktop flex height
+  // Chrome pad after layout settle (intro is owned inside createTravelMap).
   void import('./page-reveal').then(({ whenPageVisible }) => {
     cancelPostReveal = whenPageVisible(() => {
-      window.dispatchEvent(new Event('resize'));
-      // Second pass: re-measure sidebar chrome + center free region
       requestAnimationFrame(() => {
         window.dispatchEvent(new Event('resize'));
+        // animate:false only — never start a second zoom; intro is one-shot
         activeHandle?.syncUiChrome({ refit: true, animate: false });
       });
     });
@@ -3780,6 +4005,9 @@ function bootTravelMapNow(): void {
 }
 
 export function bootTravelMap(): void {
+  // Kick style + SW as early as possible (before 32ms remount debounce)
+  initBasemapCaching(readDocumentBasemapTheme());
+
   if (bootTimer) window.clearTimeout(bootTimer);
   const gen = ++bootGeneration;
   // 32ms absorbs double fire from index + city scripts / immediate + page-load

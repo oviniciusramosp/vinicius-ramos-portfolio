@@ -56,6 +56,9 @@ const canonical = canonicalUrl(Astro.url.pathname);
 const ogImage = absoluteUrl(image || site.ogImage);
 const ogImageAlt = imageAlt || site.ogImageAlt;
 const isDefaultOg = !image || absoluteUrl(image) === absoluteUrl(site.ogImage);
+const pathNorm = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isTravel =
+  pathNorm === '/travel' || pathNorm.startsWith('/travel/');
 
 const jsonLdPayload =
   jsonLd == null
@@ -135,6 +138,19 @@ const jsonLdPayload =
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    {
+      isTravel && (
+        <>
+          {/* MapLibre basemap (OpenFreeMap) — style / tiles / glyphs / sprites */}
+          <link
+            rel="preconnect"
+            href="https://tiles.openfreemap.org"
+            crossorigin
+          />
+          <link rel="dns-prefetch" href="https://tiles.openfreemap.org" />
+        </>
+      )
+    }
 
     <!-- Icons: SVG first (brand V), then ICO fallback, then Apple touch -->
     <link rel="icon" href={site.faviconSvg} type="image/svg+xml" />

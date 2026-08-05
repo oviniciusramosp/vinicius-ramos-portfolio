@@ -71,8 +71,6 @@ export const placeCategoriesOffByDefault: ReadonlySet<PlaceCategory> = new Set([
 ]);
 
 export const placeCategoryOrder: PlaceCategory[] = [
-  'airport',
-  'transport',
   'parks',
   'cafes',
   'restaurants',
@@ -82,6 +80,9 @@ export const placeCategoryOrder: PlaceCategory[] = [
   'photo',
   'tourist',
   'lodging',
+  // Transit last — practical, not the main browse focus
+  'airport',
+  'transport',
 ];
 
 /**

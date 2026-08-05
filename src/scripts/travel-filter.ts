@@ -377,7 +377,8 @@ function bootPlacesFeed(root: HTMLElement): void {
     }
     const map = getTravelMapHandle();
     if (!map) return;
-    map.select(id);
+    // camera:false — load city zoom-in owns the first fly; pin focus waits
+    map.select(id, { camera: false });
     setListActive(id);
   };
 
@@ -578,9 +579,11 @@ function bootPlacesFeed(root: HTMLElement): void {
   // Map remounts after filter bind (ClientRouter / debounce) — re-push visibility
   // and re-apply the last selected place (refresh / SPA remount).
   // Ignore events after this feed was navigated away (stale listeners).
+  // fitMap: false — city page owns the load zoom-in; a second animated fit
+  // here made the intro look like it fired twice on refresh.
   document.addEventListener('travel:map-ready', () => {
     if (!root.isConnected) return;
-    apply();
+    apply({ fitMap: false });
     restoreSelectedPlace();
   });
 
