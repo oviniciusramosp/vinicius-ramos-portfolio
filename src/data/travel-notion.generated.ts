@@ -4,7 +4,7 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-08-04T20:00:44.148Z",
+  "generatedAt": "2026-08-05T02:19:35.880Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
   "count": 139,
   "byCity": {
@@ -52,7 +52,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8188-be63-da9c5c870463",
@@ -71,8 +71,9 @@ const snapshot = {
       "lng": 2.295,
       "address": "Place Charles de Gaulle, 75008 Paris",
       "mapsQuery": "Arc de Triomphe Paris",
+      "rating": 5,
       "googleRating": 4.7,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "landmark": "arc",
       "subcategories": [
@@ -94,7 +95,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8106-b611-cf9f74a08387",
@@ -136,7 +137,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8182-89d8-c960f5ffe0a2",
@@ -184,8 +185,9 @@ const snapshot = {
       "address": "Port de la Conférence, 75008 Paris",
       "mapsUrl": "https://www.google.fr/maps/place/Bateau-mouche/@48.8629662,2.306493,16.25z",
       "mapsQuery": "Bateaux-Mouches Paris",
+      "rating": 5,
       "googleRating": 4.3,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "boat"
@@ -205,7 +207,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8146-8912-ef6f24f48a4f",
@@ -245,7 +247,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811e-bd16-e07ee37bb477",
@@ -286,7 +288,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8178-bc57-cedd667246aa",
@@ -327,7 +329,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8119-9aef-da1467e8e5cc",
@@ -369,7 +371,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8100-bb32-e5a5762d6f2c",
@@ -411,7 +413,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8186-b24b-fe459bcf0908",
@@ -452,7 +454,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8146-a125-d98e9c28911f",
@@ -492,7 +494,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cb-8ecf-da52a6f27007",
@@ -532,7 +534,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c2-be48-cee9ffcb26f8",
@@ -569,7 +571,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:31:00.000Z"
+      "lastEdited": "2026-08-04T22:12:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817d-ab50-c602d6c7aafa",
@@ -611,7 +613,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815b-8e68-d0d4ddf3ce54",
@@ -651,7 +653,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8108-a74f-fbbea699bcf0",
@@ -688,7 +690,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:30:00.000Z"
+      "lastEdited": "2026-08-04T22:11:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8126-8a77-e38e235ac122",
@@ -744,7 +746,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f6-b65b-fa92bba59ffe",
@@ -786,7 +788,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8144-bb8e-fdd9487f5453",
@@ -805,6 +807,7 @@ const snapshot = {
       "lng": 2.3522,
       "address": "Pl. Georges-Pompidou, 75004 Paris",
       "mapsQuery": "Centre Pompidou Paris",
+      "rating": 4,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -828,7 +831,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cf-9795-eb745c0a7f59",
@@ -870,7 +873,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f9-a398-c8b35f9121ab",
@@ -911,7 +914,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812f-8647-f11d46655697",
@@ -954,7 +957,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814d-acf3-cdc374276d9e",
@@ -991,7 +994,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:33:00.000Z"
+      "lastEdited": "2026-08-04T22:14:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8128-b259-de0a311429d8",
@@ -1010,8 +1013,9 @@ const snapshot = {
       "lng": 2.1204,
       "address": "Place d'Armes, 78000 Versailles",
       "mapsQuery": "Château de Versailles",
+      "rating": 5,
       "googleRating": 4.6,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "landmark": "monument",
       "subcategories": [
@@ -1034,7 +1038,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8158-976f-c643d3e9a25e",
@@ -1076,7 +1080,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815b-b972-db58c563175b",
@@ -1117,7 +1121,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bf-b1a4-d3732706bf0c",
@@ -1159,7 +1163,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8132-9313-d4b302d44881",
@@ -1200,7 +1204,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8196-9cf1-c5f26eeff8f6",
@@ -1242,7 +1246,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-9743-dc555a35fc82",
@@ -1284,7 +1288,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8194-b5c9-efb1ec38dbcf",
@@ -1325,7 +1329,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814a-b14a-c78d8e747a22",
@@ -1367,7 +1371,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81e1-abd8-fb2fd843e6df",
@@ -1413,7 +1417,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8110-861d-cd755b0ef776",
@@ -1432,6 +1436,7 @@ const snapshot = {
       "lng": 2.2468,
       "address": "Esplanade du Général de Gaulle, 92800 Puteaux",
       "mapsQuery": "Esplanade du Général de Gaulle La Défense",
+      "rating": 4.5,
       "googleRating": 4.3,
       "favorite": false,
       "featured": false,
@@ -1454,7 +1459,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-816a-aa9f-d07336b4c86a",
@@ -1484,7 +1489,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ea-a9e8-f7516dce0c14",
@@ -1525,7 +1530,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81e3-924e-f54fcd13bedd",
@@ -1544,8 +1549,9 @@ const snapshot = {
       "lng": 2.3465,
       "address": "Forum des Halles, 75001 Paris",
       "mapsQuery": "Forum des Halles Paris",
+      "rating": 4.5,
       "googleRating": 3.9,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "mall"
@@ -1565,7 +1571,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-b5fa-f5297fdd269e",
@@ -1607,7 +1613,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8109-80be-d9160bba8d6d",
@@ -1649,7 +1655,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8180-a458-dbba843a6a0b",
@@ -1668,8 +1674,9 @@ const snapshot = {
       "lng": 2.332,
       "address": "40 Bd Haussmann, 75009 Paris",
       "mapsQuery": "Galeries Lafayette Haussmann",
+      "rating": 4.5,
       "googleRating": 4.5,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "department",
@@ -1691,7 +1698,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ac-9795-e45cd007e199",
@@ -1710,8 +1717,9 @@ const snapshot = {
       "lng": 2.2359,
       "address": "1 Parvis de la Défense, 92040 Paris La Défense",
       "mapsQuery": "Grande Arche de la Défense",
+      "rating": 4.5,
       "googleRating": 4.4,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "landmark": "monument",
       "subcategories": [
@@ -1733,7 +1741,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-b37a-d612abd08cb1",
@@ -1774,7 +1782,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81cc-8115-d9561918a242",
@@ -1817,7 +1825,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8184-857a-debb7174a9dd",
@@ -1858,7 +1866,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818c-a6fe-cd48efc57676",
@@ -1899,7 +1907,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-815f-a6cd-d5852522babd",
@@ -1929,7 +1937,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812a-aa90-cfe850c75517",
@@ -1970,7 +1978,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-810d-b204-fcb77d97bf44",
@@ -1989,6 +1997,7 @@ const snapshot = {
       "lng": 2.241,
       "address": "La Défense, 92800 Puteaux",
       "mapsQuery": "La Défense Paris",
+      "rating": 4.5,
       "googleRating": 4.4,
       "favorite": false,
       "featured": false,
@@ -2011,7 +2020,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8181-92fa-d4524858f56f",
@@ -2053,7 +2062,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813a-8094-f75ca84af6fe",
@@ -2096,7 +2105,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a6-ab0b-e2e8532fd87d",
@@ -2164,7 +2173,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8180-80b5-c8edba5fc788",
@@ -2206,7 +2215,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8196-99d6-f4d8dc0d9bad",
@@ -2248,7 +2257,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8104-a2eb-de5d953b1689",
@@ -2289,7 +2298,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8157-b718-ef0b51da1f7c",
@@ -2331,7 +2340,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-819a-b5e0-cd7f54283f65",
@@ -2374,7 +2383,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c3-a24e-f98771a2b395",
@@ -2415,7 +2424,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ea-bf48-c15a7028a923",
@@ -2457,7 +2466,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ee-9474-f352df91b845",
@@ -2500,7 +2509,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8179-aa03-f90cbc01ef22",
@@ -2541,7 +2550,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8193-a628-d65f651c5ae0",
@@ -2582,7 +2591,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c7-ab5c-c7c59792e520",
@@ -2622,7 +2631,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8105-8810-c284c88bb906",
@@ -2662,7 +2671,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c3-92c1-e1bbe7c8d268",
@@ -2702,7 +2711,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81ce-a379-f480c9f06fe7",
@@ -2742,7 +2751,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bd-bf31-ed1064f5fa53",
@@ -2782,7 +2791,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-8100-ecb0e5c9e038",
@@ -2822,7 +2831,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8121-9375-fc736aaffc1d",
@@ -2863,7 +2872,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81dc-9ef2-ecba3e893a3c",
@@ -2905,7 +2914,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818f-aad7-f4f2712642b7",
@@ -2946,7 +2955,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8171-a21d-c582df2dd93a",
@@ -2987,7 +2996,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-812b-a455-e26bfafad545",
@@ -3006,6 +3015,7 @@ const snapshot = {
       "lng": 2.32658,
       "address": "1 Rue de la Légion d'Honneur, 75007 Paris",
       "mapsQuery": "Musée d'Orsay Paris",
+      "rating": 5,
       "googleRating": 4.8,
       "favorite": false,
       "featured": false,
@@ -3024,7 +3034,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:31:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8120-a0c2-e372020adf28",
@@ -3061,7 +3071,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:31:00.000Z"
+      "lastEdited": "2026-08-04T22:12:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c1-9fc7-e8388f798f8c",
@@ -3091,7 +3101,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813a-bbc2-d5cd01140d22",
@@ -3134,7 +3144,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817a-804d-c2f67214f522",
@@ -3177,7 +3187,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8176-9eab-c3b95f164df4",
@@ -3214,7 +3224,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:33:00.000Z"
+      "lastEdited": "2026-08-04T22:14:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8117-9846-cd4ddc9bff40",
@@ -3244,7 +3254,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-813f-bb5a-cb63d4b10d31",
@@ -3263,8 +3273,9 @@ const snapshot = {
       "lng": 2.3371,
       "address": "8 Rue de Montpensier, 75001 Paris",
       "mapsQuery": "Palais-Royal Paris",
+      "rating": 5,
       "googleRating": 4.6,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "garden",
@@ -3285,7 +3296,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81b3-b38b-d02867992400",
@@ -3322,7 +3333,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:31:00.000Z"
+      "lastEdited": "2026-08-04T22:12:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81c6-8299-f60a1225270c",
@@ -3364,7 +3375,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8174-90fa-d549adb7f0fe",
@@ -3404,7 +3415,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81d5-9bef-d4556934dc4e",
@@ -3435,7 +3446,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8106-9b9a-e71d8fb09275",
@@ -3475,7 +3486,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8142-9ab4-ee61c9c4bd83",
@@ -3515,7 +3526,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a4-a5a1-c7b19546c40d",
@@ -3556,7 +3567,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8199-a0d2-eaa8a12eed5a",
@@ -3597,7 +3608,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8137-bcd0-fbf74b120941",
@@ -3638,7 +3649,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81bb-9de5-e9b2a552d969",
@@ -3679,7 +3690,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-816a-8f7e-d920e81d9632",
@@ -3720,7 +3731,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811d-96c4-cb2783e4523c",
@@ -3761,7 +3772,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8118-93d3-cf3233e1717f",
@@ -3802,7 +3813,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8122-9e2a-e7f986f285a1",
@@ -3843,7 +3854,7 @@ const snapshot = {
       ],
       "conhecido": false,
       "date": null,
-      "lastEdited": "2026-08-04T20:00:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81b2-98dc-c5b46cf00756",
@@ -3862,8 +3873,9 @@ const snapshot = {
       "lng": 2.3126,
       "address": "Av. Winston Churchill, 75008 Paris",
       "mapsQuery": "Grand Palais Petit Palais Paris",
+      "rating": 4.5,
       "googleRating": 4.7,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "museum",
@@ -3885,7 +3897,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81d7-b51d-df58e133a710",
@@ -3927,7 +3939,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817a-870f-fca4d03942a5",
@@ -3957,7 +3969,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-818c-a5a9-f4df530c3983",
@@ -3994,7 +4006,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:31:00.000Z"
+      "lastEdited": "2026-08-04T22:12:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-810f-9b80-d76f07ab36fc",
@@ -4035,7 +4047,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-814c-948d-d930f225a2a5",
@@ -4078,7 +4090,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811d-9cb2-d9284af3fa9a",
@@ -4119,7 +4131,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fe-9925-c3707c480824",
@@ -4160,7 +4172,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81a2-a034-f114e32efead",
@@ -4201,7 +4213,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8134-9eff-c5444662a14b",
@@ -4243,7 +4255,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81f3-88ba-f484a5508909",
@@ -4284,7 +4296,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fa-9ca0-f0bb3c22856f",
@@ -4352,7 +4364,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-81fa-b732-e8112645b5d0",
@@ -4394,7 +4406,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8147-9445-d30524d99037",
@@ -4438,7 +4450,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-819b-99b9-d6eb7caf31bc",
@@ -4479,7 +4491,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8163-a9be-e6f5d13af28b",
@@ -4521,7 +4533,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8199-9f0f-d4b0b1dad058",
@@ -4562,7 +4574,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-817c-9775-df592e34168c",
@@ -4592,7 +4604,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:15:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-811e-b3a5-dd31a1946cd5",
@@ -4634,7 +4646,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8139-b4a1-ff6dfba9ce0e",
@@ -4677,7 +4689,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-04T22:17:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8113-ad1a-f4b390299966",
@@ -4696,8 +4708,9 @@ const snapshot = {
       "lng": 2.3275,
       "address": "Place de la Concorde, 75001 Paris",
       "mapsQuery": "Jardin des Tuileries Paris",
+      "rating": 5,
       "googleRating": 4.6,
-      "favorite": false,
+      "favorite": true,
       "featured": false,
       "subcategories": [
         "garden",
@@ -4718,7 +4731,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:59:00.000Z"
+      "lastEdited": "2026-08-05T01:39:00.000Z"
     },
     {
       "notionPageId": "3b22da8d-8134-8123-8f3f-c3514d2c05a7",
@@ -4758,7 +4771,7 @@ const snapshot = {
       ],
       "conhecido": true,
       "date": null,
-      "lastEdited": "2026-08-04T19:58:00.000Z"
+      "lastEdited": "2026-08-04T22:16:00.000Z"
     },
     {
       "notionPageId": "3812da8d-8134-8021-b639-f0b4e1f0d172",
