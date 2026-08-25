@@ -4,14 +4,2048 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-08-24T18:36:39.237Z",
+  "generatedAt": "2026-08-25T01:07:05.188Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
-  "count": 147,
+  "count": 215,
   "byCity": {
+    "lisboa": 68,
     "paris": 127,
     "sao-paulo": 20
   },
   "places": [
+    {
+      "notionPageId": "3c62da8d-8134-813c-9b4e-f7b5014aab03",
+      "id": "lis-casa-bacalhau",
+      "city": "lisboa",
+      "name": {
+        "en": "A Casa do Bacalhau",
+        "pt-BR": "A Casa do Bacalhau"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "The Codfish House. Still to visit.",
+        "pt-BR": "A Casa do Bacalhau. Ainda para conhecer."
+      },
+      "lat": 38.732208,
+      "lng": -9.106445,
+      "address": "A Casa do Bacalhau",
+      "mapsQuery": "A Casa do Bacalhau Lisboa",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8156-a96d-ff1675d7955a",
+      "id": "lis-adega-gravatas",
+      "city": "lisboa",
+      "name": {
+        "en": "Adega das Gravatas",
+        "pt-BR": "Adega das Gravatas"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Uber tip: one of the best octopuses in Lisbon.",
+        "pt-BR": "Segundo o Uber, um dos melhores polvos de Lisboa."
+      },
+      "lat": 38.760493,
+      "lng": -9.18776,
+      "address": "Adega das Gravatas",
+      "mapsQuery": "Adega das Gravatas Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8185-9c4d-f457eb53fea5",
+      "id": "lis-adega-saraiva",
+      "city": "lisboa",
+      "name": {
+        "en": "Adega do Saraiva",
+        "pt-BR": "Adega do Saraiva"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Further out (Sintra / Cascais side). Still to visit.",
+        "pt-BR": "Mais longe (lado Sintra / Cascais). Ainda para conhecer."
+      },
+      "lat": 38.815104,
+      "lng": -9.42406,
+      "address": "Adega do Saraiva",
+      "mapsQuery": "Adega do Saraiva",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8109-98df-fd697c4ceafb",
+      "id": "lis-alfama",
+      "city": "lisboa",
+      "name": {
+        "en": "Alfama",
+        "pt-BR": "Alfama"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Miradouros, tile walls, and wandering without a plan.",
+        "pt-BR": "Miradouros, azulejos e caminhar sem plano."
+      },
+      "lat": 38.712498,
+      "lng": -9.130323,
+      "address": "Alfama, 1100 Lisboa, Portugal",
+      "mapsQuery": "Alfama Lisboa",
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T20:02:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8163-af07-e9464a7f72cb",
+      "id": "lis-amoreiras-360",
+      "city": "lisboa",
+      "name": {
+        "en": "Amoreiras 360 Panoramic View",
+        "pt-BR": "Amoreiras 360º Panoramic View"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Rooftop over the Amoreiras towers. City and river in one spin.",
+        "pt-BR": "Terraço nas torres das Amoreiras. Cidade e rio numa volta só."
+      },
+      "lat": 38.723757,
+      "lng": -9.161325,
+      "address": "Amoreiras 360 Panoramic View",
+      "mapsQuery": "Amoreiras 360 Panoramic View Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8181-b241-fa0cdf85a66a",
+      "id": "lis-as-colunas",
+      "city": "lisboa",
+      "name": {
+        "en": "As Colunas",
+        "pt-BR": "As Colunas"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Still to visit. West of the center.",
+        "pt-BR": "Ainda para conhecer. A oeste do centro."
+      },
+      "lat": 38.756738,
+      "lng": -9.221972,
+      "address": "As Colunas",
+      "mapsQuery": "As Colunas Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81bf-8072-f33268f368f8",
+      "id": "lis-atira-te-ao-rio",
+      "city": "lisboa",
+      "name": {
+        "en": "Atira-te ao Rio",
+        "pt-BR": "Atira-te ao Rio"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Best sunset in Lisbon, Cacilhas side. Book.",
+        "pt-BR": "Melhor pôr do sol de Lisboa. Reservar."
+      },
+      "lat": 38.685062,
+      "lng": -9.157351,
+      "address": "Atira-te ao Rio",
+      "mapsQuery": "Atira-te ao Rio Almada",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81be-a220-e3c44d2577a5",
+      "id": "lis-av-liberdade",
+      "city": "lisboa",
+      "name": {
+        "en": "Avenida da Liberdade",
+        "pt-BR": "Avenida da Liberdade"
+      },
+      "category": "parks",
+      "description": {
+        "en": "One of the most beautiful avenues in Lisbon. Restaurants and famous shops along the trees.",
+        "pt-BR": "Uma das avenidas mais bonitas de Lisboa, com ótimos restaurantes e lojas famosas."
+      },
+      "lat": 38.720537,
+      "lng": -9.145902,
+      "address": "Avenida da Liberdade",
+      "mapsQuery": "Avenida da Liberdade Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "avenue"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8153-a88e-c3926e42be6c",
+      "id": "lis-baan-saraivas",
+      "city": "lisboa",
+      "name": {
+        "en": "Baan Saraiva's",
+        "pt-BR": "Baan Saraiva's"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Very good Thai in Lisbon.",
+        "pt-BR": "Comida Thai bem gostosa."
+      },
+      "lat": 38.731696,
+      "lng": -9.152464,
+      "address": "Baan Saraiva's",
+      "mapsQuery": "Baan Saraiva's Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8132-8609-d3dd34c0b246",
+      "id": "lis-baixa-chiado",
+      "city": "lisboa",
+      "name": {
+        "en": "Baixa-Chiado",
+        "pt-BR": "Baixa-Chiado"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "The downhill / uphill pair: grid of Baixa and the Chiado hill.",
+        "pt-BR": "A dupla: a malha da Baixa e a colina do Chiado."
+      },
+      "lat": 38.710539,
+      "lng": -9.142084,
+      "address": "Baixa-Chiado",
+      "mapsQuery": "Baixa-Chiado Lisboa",
+      "googleRating": 4.2,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "neighborhood"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8109-b1d0-f927b7f21958",
+      "id": "lis-torre-belem",
+      "city": "lisboa",
+      "name": {
+        "en": "Belém Tower",
+        "pt-BR": "Torre de Belém"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Manueline fortress in the river. Go early for the light and a shorter queue.",
+        "pt-BR": "Fortaleza manuelina no rio. Vá cedo pela luz e pela fila menor."
+      },
+      "lat": 38.691584,
+      "lng": -9.215977,
+      "address": "Belém Tower",
+      "mapsQuery": "Torre de Belém Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": true,
+      "landmark": "monument",
+      "subcategories": [
+        "monument",
+        "tower"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8161-9b60-dab8f2b360be",
+      "id": "lis-belem",
+      "city": "lisboa",
+      "name": {
+        "en": "Belém waterfront",
+        "pt-BR": "Orla de Belém"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The river walk that ties Jerónimos, the nata line, the tower, and MAAT.",
+        "pt-BR": "A orla que liga Jerónimos, a fila dos nata, a torre e o MAAT."
+      },
+      "lat": 38.6979,
+      "lng": -9.2065,
+      "address": "Belém, 1400 Lisboa, Portugal",
+      "mapsQuery": "Belém Lisboa orla",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "avenue"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8139-8370-fa97554c35d7",
+      "id": "lis-bread-friends",
+      "city": "lisboa",
+      "name": {
+        "en": "Bread & Friends Marquês",
+        "pt-BR": "Bread & Friends Marquês"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Pretty café. Famous NY Roll croissant. Fine to try, though other things on the menu are better.",
+        "pt-BR": "Café bem bonito de Lisboa. Tem o NY Roll (croissant em rolo) bem famoso, é uma opção para provar, apesar de ter coisas mais gostosas."
+      },
+      "lat": 38.727388,
+      "lng": -9.148447,
+      "address": "Bread & Friends Marquês",
+      "mapsQuery": "Bread & Friends Marquês Lisboa",
+      "googleRating": 4.3,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "pastry"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-813f-b101-e50729d5784e",
+      "id": "lis-carmo",
+      "city": "lisboa",
+      "name": {
+        "en": "Carmo Archaeological Museum",
+        "pt-BR": "Museu Arqueológico do Carmo"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Open-air Gothic nave, ruined by the 1755 earthquake. Still the sky for a roof.",
+        "pt-BR": "Nave gótica a céu aberto, ruína do terremoto de 1755. O teto ainda é o céu."
+      },
+      "lat": 38.712038,
+      "lng": -9.140613,
+      "address": "Carmo Archaeological Museum",
+      "mapsQuery": "Museu Arqueológico do Carmo Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "church",
+        "museum"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-815d-922f-fd2fcb3e41ba",
+      "id": "lis-pastel-bacalhau",
+      "city": "lisboa",
+      "name": {
+        "en": "Casa Portuguesa do Pastel de Bacalhau",
+        "pt-BR": "Casa Portuguesa do Pastel de Bacalhau"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "The famous codfish cake with Serra cheese, on Rua Augusta.",
+        "pt-BR": "O pastel de bacalhau com queijo da Serra, na Rua Augusta."
+      },
+      "lat": 38.710248,
+      "lng": -9.137453,
+      "address": "Casa Portuguesa do Pastel de Bacalhau",
+      "mapsQuery": "Casa Portuguesa do Pastel de Bacalhau Lisboa",
+      "googleRating": 4.1,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-815f-bddd-f648c3191f42",
+      "id": "lis-vasco-da-gama",
+      "city": "lisboa",
+      "name": {
+        "en": "Centro Vasco da Gama",
+        "pt-BR": "Centro Vasco da Gama"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "One of the better malls in Lisbon. Prices beat much of Europe. Ask about tax-free before flying back to Brazil.",
+        "pt-BR": "Uma das melhores opções para fazer compras em Lisboa. Preços em Portugal são melhores do que no restante da Europa. Consultar o Taxfree para ganhar desconto no valor das compras na hora da volta para o Brasil."
+      },
+      "lat": 38.768511,
+      "lng": -9.097127,
+      "address": "Centro Vasco da Gama",
+      "mapsQuery": "Centro Vasco da Gama Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "mall"
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8149-b9cc-ef941b2b3ad2",
+      "id": "lis-chafariz-largo-mastro",
+      "city": "lisboa",
+      "name": {
+        "en": "Chafariz do Largo do Mastro",
+        "pt-BR": "Chafariz do Largo do Mastro"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Old fountain in a small square above Intendente. Neighborhood Lisbon.",
+        "pt-BR": "Chafariz antigo num largo acima do Intendente. Lisboa de bairro."
+      },
+      "lat": 38.721383,
+      "lng": -9.138843,
+      "address": "Chafariz do Largo do Mastro",
+      "mapsQuery": "Chafariz do Largo do Mastro Lisboa",
+      "googleRating": 2.8,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "square"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8192-a2fa-d39a15611bda",
+      "id": "lis-colombo",
+      "city": "lisboa",
+      "name": {
+        "en": "Colombo Shopping Centre",
+        "pt-BR": "Centro Colombo"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Big mall next to Benfica stadium. Easy if you are already on that side of town.",
+        "pt-BR": "Shopping muito bom de Lisboa, ao lado do estádio do Benfica."
+      },
+      "lat": 38.753681,
+      "lng": -9.188254,
+      "address": "Colombo Shopping Centre",
+      "mapsQuery": "Centro Colombo Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "mall"
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8176-9376-e09256ec3b6a",
+      "id": "lis-crush-doughnuts",
+      "city": "lisboa",
+      "name": {
+        "en": "Crush Doughnuts",
+        "pt-BR": "Crush Doughnuts"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Handmade doughnuts and coffee. Worth the detour to the north of the center.",
+        "pt-BR": "Donuts deliciosos em Lisboa."
+      },
+      "lat": 38.734844,
+      "lng": -9.154097,
+      "address": "Crush Doughnuts",
+      "mapsQuery": "Crush Doughnuts Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "pastry",
+        "coffee-shop"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8180-8058-d426b1606e91",
+      "id": "lis-don-costini",
+      "city": "lisboa",
+      "name": {
+        "en": "Don Costini",
+        "pt-BR": "Don Costini Restaurante Italiano"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Italian with an open back patio. Get the francesinha here.",
+        "pt-BR": "Restaurante com parte aberta aos fundos. Comida boa, recomendo a francesinha daqui."
+      },
+      "lat": 38.707682,
+      "lng": -9.146581,
+      "address": "Don Costini",
+      "mapsQuery": "Don Costini Restaurante Italiano Lisboa",
+      "googleRating": 4.1,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "italian"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-815d-a411-c4ed757ee773",
+      "id": "lis-el-corte-ingles",
+      "city": "lisboa",
+      "name": {
+        "en": "El Corte Inglés Lisboa",
+        "pt-BR": "El Corte Inglés Lisboa"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Multi-floor department store with a strong food hall. Bring your passport for tax-free; they have a desk that walks you through it.",
+        "pt-BR": "Como um shopping de muitos andares com bom mercado. Levar o passaporte para fazer compras e pedir o reembolso de taxas depois. Eles possuem um balcão para orientar e facilitar o processo."
+      },
+      "lat": 38.733281,
+      "lng": -9.153778,
+      "address": "El Corte Inglés Lisboa",
+      "mapsQuery": "El Corte Inglés Lisboa",
+      "googleRating": 4.3,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "department"
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81ad-a0a7-e8ac6d1ff775",
+      "id": "lis-embaixada",
+      "city": "lisboa",
+      "name": {
+        "en": "EmbaiXada",
+        "pt-BR": "EmbaiXada"
+      },
+      "category": "shopping",
+      "description": {
+        "en": "Concept store in a Príncipe Real palace. Design, clothes, gifts.",
+        "pt-BR": "Concept store num palácio do Príncipe Real. Design, roupa, presentes."
+      },
+      "lat": 38.716873,
+      "lng": -9.148468,
+      "address": "EmbaiXada",
+      "mapsQuery": "EmbaiXada Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "shopping"
+      ],
+      "tags": [
+        "🛍️ Shopping"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81c6-b2a4-fa82fa07ae97",
+      "id": "lis-jardim-imperio",
+      "city": "lisboa",
+      "name": {
+        "en": "Empire Square Garden",
+        "pt-BR": "Jardim da Praça do Império"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The tiled parterre between Jerónimos and the river.",
+        "pt-BR": "O jardim de mosaicos entre os Jerónimos e o rio."
+      },
+      "lat": 38.695995,
+      "lng": -9.205993,
+      "address": "Empire Square Garden",
+      "mapsQuery": "Praça do Império Lisboa",
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "square"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81f4-a00e-c6736e8a6809",
+      "id": "lis-estadio-benfica",
+      "city": "lisboa",
+      "name": {
+        "en": "Estádio da Luz",
+        "pt-BR": "Estádio do Sport Lisboa e Benfica"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Benfica’s stadium. Match day or the museum if the pitch is empty.",
+        "pt-BR": "Estádio do Benfica. Dia de jogo, ou o museu se o campo estiver vazio."
+      },
+      "lat": 38.75269,
+      "lng": -9.184692,
+      "address": "Estádio da Luz",
+      "mapsQuery": "Estádio da Luz Benfica Lisboa",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8125-b1b1-ed6784890b7d",
+      "id": "lis-faz-frio",
+      "city": "lisboa",
+      "name": {
+        "en": "Faz Frio",
+        "pt-BR": "Faz Frio"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Uber recommendation, near Príncipe Real / Bairro Alto.",
+        "pt-BR": "Recomendação Uber."
+      },
+      "lat": 38.716018,
+      "lng": -9.146924,
+      "address": "Faz Frio",
+      "mapsQuery": "Faz Frio Lisboa",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-814c-8f1d-d8b0a04d3fdd",
+      "id": "lis-floresta-salitre",
+      "city": "lisboa",
+      "name": {
+        "en": "Floresta do Salitre",
+        "pt-BR": "Floresta do Salitre"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Still to visit, near Avenida da Liberdade.",
+        "pt-BR": "Ainda para conhecer, perto da Avenida da Liberdade."
+      },
+      "lat": 38.719818,
+      "lng": -9.146519,
+      "address": "Floresta do Salitre",
+      "mapsQuery": "Floresta do Salitre Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8181-a4c5-f60538ccad31",
+      "id": "lis-ginjinha-sem-rival",
+      "city": "lisboa",
+      "name": {
+        "en": "Ginjinha Sem Rival",
+        "pt-BR": "Ginjinha Sem Rival"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "One of Lisbon’s classic ginjinhas: sour-cherry liqueur, optionally with a chocolate cup.",
+        "pt-BR": "Uma das ginjinhas mais tradicionais de Lisboa (licor de cereja com copinho de chocolate)."
+      },
+      "lat": 38.71508,
+      "lng": -9.139624,
+      "address": "Ginjinha Sem Rival",
+      "mapsQuery": "Ginjinha Sem Rival Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "pastry"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8137-b8a7-c9aff4b4dd29",
+      "id": "lis-lis",
+      "city": "lisboa",
+      "name": {
+        "en": "Humberto Delgado Airport (LIS)",
+        "pt-BR": "Aeroporto Humberto Delgado (LIS)"
+      },
+      "category": "airport",
+      "description": {
+        "en": "Main Lisbon airport, metro-linked to the center.",
+        "pt-BR": "Principal aeroporto de Lisboa, ligado ao centro por metro."
+      },
+      "lat": 38.7756,
+      "lng": -9.1354,
+      "address": "Alameda das Comunidades Portuguesas, 1700-111 Lisboa, Portugal",
+      "mapsQuery": "Aeroporto Humberto Delgado Lisboa LIS",
+      "googleRating": 3.6,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "✈️ Airport"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-813f-883f-dcf57bb410e6",
+      "id": "lis-hygge-kaffe",
+      "city": "lisboa",
+      "name": {
+        "en": "Hygge Kaffe",
+        "pt-BR": "Hygge Kaffe"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Cozy brunch café. Tostas and pancakes.",
+        "pt-BR": "Café aconchegante de Lisboa. Ótimo para um brunch, com opções deliciosas de tostas e panquecas."
+      },
+      "lat": 38.731551,
+      "lng": -9.149079,
+      "address": "Hygge Kaffe",
+      "mapsQuery": "Hygge Kaffe Lisboa",
+      "googleRating": 4.8,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81a7-837b-e16b96989029",
+      "id": "lis-imperial-campo-ourique",
+      "city": "lisboa",
+      "name": {
+        "en": "Imperial de Campo de Ourique",
+        "pt-BR": "Imperial de Campo de Ourique"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Neighborhood restaurant in Campo de Ourique. Still to visit.",
+        "pt-BR": "Restaurante de bairro em Campo de Ourique. Ainda para conhecer."
+      },
+      "lat": 38.719144,
+      "lng": -9.16826,
+      "address": "Imperial de Campo de Ourique",
+      "mapsQuery": "Imperial de Campo de Ourique Lisboa",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8189-942d-de9e680252a8",
+      "id": "lis-jardim-julio-castilho",
+      "city": "lisboa",
+      "name": {
+        "en": "Jardim Júlio de Castilho",
+        "pt-BR": "Jardim Júlio de Castilho"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Small garden beside Santa Luzia, same river view, a bit more shade.",
+        "pt-BR": "Jardim ao lado de Santa Luzia, mesma vista do rio, um pouco mais de sombra."
+      },
+      "lat": 38.711745,
+      "lng": -9.130285,
+      "address": "Jardim Júlio de Castilho",
+      "mapsQuery": "Jardim Júlio de Castilho Lisboa",
+      "googleRating": 4.8,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "viewpoint"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-811b-bbcb-fdc354fd0111",
+      "id": "lis-jeronimos",
+      "city": "lisboa",
+      "name": {
+        "en": "Jerónimos Monastery",
+        "pt-BR": "Mosteiro dos Jerónimos"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "One of the most beautiful buildings in the city. Manueline Gothic, once a monastery and an orphanage.",
+        "pt-BR": "É uma construção lindíssima e antiga, uma das mais bonitas da cidade. Estilo gótico, arquitetura toda detalhada. Já foi mosteiro e orfanato, antes de virar patrimônio."
+      },
+      "lat": 38.697891,
+      "lng": -9.206704,
+      "address": "Jerónimos Monastery",
+      "mapsQuery": "Mosteiro dos Jerónimos Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "church",
+        "architecture",
+        "monument"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-819b-8cfb-d9f78eb4261c",
+      "id": "lis-entrecote",
+      "city": "lisboa",
+      "name": {
+        "en": "La Brasserie de L'Entrecôte",
+        "pt-BR": "La Brasserie de L'Entrecôte"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Solid mall lunch: steak-frites, the sauce is the point.",
+        "pt-BR": "Ótima opção para almoçar no shopping com um entrecôte delicioso!"
+      },
+      "lat": 38.750019,
+      "lng": -9.180174,
+      "address": "La Brasserie de L'Entrecôte",
+      "mapsQuery": "La Brasserie de L'Entrecôte Colombo Lisboa",
+      "googleRating": 4.2,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "french",
+        "meat"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8116-8faf-caa58b88b51a",
+      "id": "lis-laurentina",
+      "city": "lisboa",
+      "name": {
+        "en": "Laurentina",
+        "pt-BR": "Laurentina"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Octopus in cream and octopus salad.",
+        "pt-BR": "Polvo na nata e salada de polvo."
+      },
+      "lat": 38.737155,
+      "lng": -9.151343,
+      "address": "Laurentina",
+      "mapsQuery": "Laurentina Lisboa",
+      "googleRating": 4.5,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-819c-9a9f-ff43a2d4ff7d",
+      "id": "lis-se",
+      "city": "lisboa",
+      "name": {
+        "en": "Lisbon Cathedral",
+        "pt-BR": "Sé de Lisboa"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Romanesque fortress-church at the foot of Alfama.",
+        "pt-BR": "Sé românica no pé da Alfama."
+      },
+      "lat": 38.709834,
+      "lng": -9.132953,
+      "address": "Lisbon Cathedral",
+      "mapsQuery": "Sé de Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "church"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-819f-8aee-df6d8cd2dc3a",
+      "id": "lis-marrecreo",
+      "city": "lisboa",
+      "name": {
+        "en": "M'arrecreo Pizzeria",
+        "pt-BR": "M'arrecreo Pizzeria"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Great Lisbon pizza. There is a folded slice you walk with in your hand. Do that.",
+        "pt-BR": "Pizza deliciosa de Lisboa. Possui uma versão que a pizza vem dobrada e você sai andando com ela na mão. Super recomendo!"
+      },
+      "lat": 38.71397,
+      "lng": -9.144023,
+      "address": "M'arrecreo Pizzeria",
+      "mapsQuery": "M'arrecreo Pizzeria Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "italian"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-819c-8295-c519aa4e34f7",
+      "id": "lis-maat",
+      "city": "lisboa",
+      "name": {
+        "en": "MAAT",
+        "pt-BR": "MAAT, Museu de Arte, Arquitetura e Tecnologia"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Walk the riverfront in front of the museum even if you skip the ticket.",
+        "pt-BR": "Caminhar na orla em frente ao museu."
+      },
+      "lat": 38.695856,
+      "lng": -9.193312,
+      "address": "MAAT",
+      "mapsQuery": "MAAT Lisboa",
+      "googleRating": 4.3,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "museum",
+        "architecture"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81e9-b27b-cb32b13fe117",
+      "id": "lis-maria-catita",
+      "city": "lisboa",
+      "name": {
+        "en": "Maria Catita",
+        "pt-BR": "Maria Catita"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Uber recommendation, Baixa side.",
+        "pt-BR": "Indicação do Uber."
+      },
+      "lat": 38.709283,
+      "lng": -9.134343,
+      "address": "Maria Catita",
+      "mapsQuery": "Maria Catita Lisboa",
+      "googleRating": 4.7,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-812e-bfaa-f83e744f5741",
+      "id": "lis-marques-pombal",
+      "city": "lisboa",
+      "name": {
+        "en": "Marquês de Pombal",
+        "pt-BR": "Marquês de Pombal"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "The 18th-century rebuild starts here. Liberdade — the city’s postcard avenue — in front, Parque Eduardo VII behind.",
+        "pt-BR": "Marquês de Pombal foi uma das principais pessoas nas reformas realizadas na cidade no séc. 18. Aqui começa a Avenida da Liberdade (cartão postal da cidade) e atrás fica o Jardim Eduardo VII."
+      },
+      "lat": 38.725255,
+      "lng": -9.150029,
+      "address": "Marquês de Pombal",
+      "mapsQuery": "Marquês de Pombal Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "monument"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81f8-8722-f9637e330d48",
+      "id": "lis-miradouro-penha-franca",
+      "city": "lisboa",
+      "name": {
+        "en": "Miradouro da Penha de França",
+        "pt-BR": "Miradouro da Penha de França"
+      },
+      "category": "photo",
+      "description": {
+        "en": "East-side view over the river and the castle, without the Alfama crowds.",
+        "pt-BR": "Vista do lado leste sobre o rio e o castelo, sem a fila da Alfama."
+      },
+      "lat": 38.73088,
+      "lng": -9.131626,
+      "address": "Miradouro da Penha de França",
+      "mapsQuery": "Miradouro da Penha de França Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-813d-9eaf-d38950b17ce7",
+      "id": "lis-miradouro-senhora-monte",
+      "city": "lisboa",
+      "name": {
+        "en": "Miradouro da Senhora do Monte",
+        "pt-BR": "Miradouro da Senhora do Monte"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Graça’s wide view over the castle and the river. Sunset magnet.",
+        "pt-BR": "A vista larga da Graça sobre o castelo e o rio. Imã de pôr do sol."
+      },
+      "lat": 38.719209,
+      "lng": -9.132777,
+      "address": "Miradouro da Senhora do Monte",
+      "mapsQuery": "Miradouro da Senhora do Monte Lisboa",
+      "googleRating": 4.8,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81bd-b64b-da3564e5dd9a",
+      "id": "lis-miradouro-santa-luzia",
+      "city": "lisboa",
+      "name": {
+        "en": "Miradouro de Santa Luzia",
+        "pt-BR": "Miradouro de Santa Luzia"
+      },
+      "category": "photo",
+      "description": {
+        "en": "The postcard Alfama terrace. Tiles, bougainvillea, river.",
+        "pt-BR": "Mirante com vista linda de Lisboa."
+      },
+      "lat": 38.711696,
+      "lng": -9.130197,
+      "address": "Miradouro de Santa Luzia",
+      "mapsQuery": "Miradouro de Santa Luzia Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-813f-a9e4-dc5e77530c43",
+      "id": "lis-miradouro-sao-pedro-alcantara",
+      "city": "lisboa",
+      "name": {
+        "en": "Miradouro de São Pedro de Alcântara",
+        "pt-BR": "Miradouro de São Pedro de Alcântara"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Classic Bairro Alto lookout. Tram parked on the street beside it.",
+        "pt-BR": "Mirante bem bonito de Lisboa, com um bondinho estacionado na rua ao lado."
+      },
+      "lat": 38.715309,
+      "lng": -9.144176,
+      "address": "Miradouro de São Pedro de Alcântara",
+      "mapsQuery": "Miradouro de São Pedro de Alcântara Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8124-be8b-ca0ac14c5dd7",
+      "id": "lis-miradouro-recolhimento",
+      "city": "lisboa",
+      "name": {
+        "en": "Miradouro do Recolhimento",
+        "pt-BR": "Miradouro do Recolhimento"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Quiet Alfama viewpoint, less crowded than Santa Luzia.",
+        "pt-BR": "Mirante quieto da Alfama, menos cheio que Santa Luzia."
+      },
+      "lat": 38.712826,
+      "lng": -9.131664,
+      "address": "Miradouro do Recolhimento",
+      "mapsQuery": "Miradouro do Recolhimento Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8121-b707-f7157c9fe7ed",
+      "id": "lis-padrao-descobrimentos",
+      "city": "lisboa",
+      "name": {
+        "en": "Monument to the Discoveries",
+        "pt-BR": "Padrão dos Descobrimentos"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Ship-prow monument on the Belém waterfront. Climb for the Tagus view.",
+        "pt-BR": "Monumento em forma de proa na orla de Belém. Suba para a vista do Tejo."
+      },
+      "lat": 38.693597,
+      "lng": -9.205711,
+      "address": "Monument to the Discoveries",
+      "mapsQuery": "Padrão dos Descobrimentos Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "monument"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81db-a982-e2869ed5081c",
+      "id": "lis-panteao-nacional",
+      "city": "lisboa",
+      "name": {
+        "en": "National Pantheon",
+        "pt-BR": "Panteão Nacional"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Paid entry, worth it for the view from the dome.",
+        "pt-BR": "Panteão de Lisboa. Tem que pagar para entrar, mas tem uma vista legal do topo dele."
+      },
+      "lat": 38.714994,
+      "lng": -9.124683,
+      "address": "National Pantheon",
+      "mapsQuery": "Panteão Nacional Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "church",
+        "monument"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81ef-85bd-fdd2fafb413d",
+      "id": "lis-velho-eurico",
+      "city": "lisboa",
+      "name": {
+        "en": "O Velho Eurico",
+        "pt-BR": "O Velho Eurico"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Mouraria tasca. Still to visit.",
+        "pt-BR": "Tasca na Mouraria. Ainda para conhecer."
+      },
+      "lat": 38.712736,
+      "lng": -9.135378,
+      "address": "O Velho Eurico",
+      "mapsQuery": "O Velho Eurico Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-810a-8d5c-df725d9bb721",
+      "id": "lis-oriente",
+      "city": "lisboa",
+      "name": {
+        "en": "Oriente Station",
+        "pt-BR": "Estação do Oriente"
+      },
+      "category": "transport",
+      "description": {
+        "en": "Calatrava station (same architect as Museu do Amanhã in Rio). Trains and buses under the glass and steel.",
+        "pt-BR": "Feita pelo mesmo arquiteto do Museu do Amanhã no Rio. Estação de ônibus e de trem."
+      },
+      "lat": 38.767173,
+      "lng": -9.099085,
+      "address": "Oriente Station",
+      "mapsQuery": "Estação do Oriente Lisboa",
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "architecture"
+      ],
+      "tags": [
+        "🚆 Transport"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81c4-8bfe-e0ba1bab045e",
+      "id": "lis-palacio-sao-vicente",
+      "city": "lisboa",
+      "name": {
+        "en": "Palácio de São Vicente",
+        "pt-BR": "Palácio de São Vicente"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Also called Palácio da Mitra. Baroque palace on the edge of Alfama.",
+        "pt-BR": "Também chamado Palácio da Mitra. Palácio barroco na borda da Alfama."
+      },
+      "lat": 38.71511,
+      "lng": -9.128721,
+      "address": "Palácio de São Vicente",
+      "mapsQuery": "Palácio de São Vicente Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "palace"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81a0-9175-fb8afe9191bf",
+      "id": "lis-parque-eduardo-vii",
+      "city": "lisboa",
+      "name": {
+        "en": "Parque Eduardo VII",
+        "pt-BR": "Parque Eduardo VII"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The sloping lawn above Marquês de Pombal. Green break from the avenue.",
+        "pt-BR": "O gramado inclinado acima do Marquês de Pombal. Pausa verde depois da avenida."
+      },
+      "lat": 38.7283,
+      "lng": -9.152683,
+      "address": "Parque Eduardo VII",
+      "mapsQuery": "Parque Eduardo VII Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "park"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81ce-bb2e-f01c77c9efc7",
+      "id": "lis-eduardo-vii-deck",
+      "city": "lisboa",
+      "name": {
+        "en": "Parque Eduardo VII observation deck",
+        "pt-BR": "Miradouro do Parque Eduardo VII"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Top of the park looking down the lawn toward Marquês and the river.",
+        "pt-BR": "Topo do parque, olhando o gramado até o Marquês e o rio."
+      },
+      "lat": 38.730299,
+      "lng": -9.15443,
+      "address": "Parque Eduardo VII observation deck",
+      "mapsQuery": "Miradouro Parque Eduardo VII Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-816a-b136-ed6f5f187773",
+      "id": "lis-pasteis-belem",
+      "city": "lisboa",
+      "name": {
+        "en": "Pastéis de Belém",
+        "pt-BR": "Pastéis de Belém"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "The original pastel de nata factory. Line for takeaway, sit inside if you can.",
+        "pt-BR": "A fábrica original do pastel de nata. Fila no balcão, sente se conseguir."
+      },
+      "lat": 38.69751,
+      "lng": -9.203228,
+      "address": "Pastéis de Belém",
+      "mapsQuery": "Pastéis de Belém Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "pastry"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81e3-8e0a-e35820939674",
+      "id": "lis-ponto-final",
+      "city": "lisboa",
+      "name": {
+        "en": "Ponto Final",
+        "pt-BR": "Ponto Final"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Best sunset in Lisbon, next door to Atira-te ao Rio. Book.",
+        "pt-BR": "Melhor pôr do sol de Lisboa. Fazer reserva."
+      },
+      "lat": 38.685002,
+      "lng": -9.157564,
+      "address": "Ponto Final",
+      "mapsQuery": "Ponto Final Almada",
+      "googleRating": 4.3,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81e0-ab73-d7f42d376780",
+      "id": "lis-portela-cafes",
+      "city": "lisboa",
+      "name": {
+        "en": "Portela Cafés António A. Aguiar",
+        "pt-BR": "Portela Cafés | António A. Aguiar"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Good Lisbon café. Order the tostas, very buttery.",
+        "pt-BR": "Bom café de Lisboa. Pedir as tostas que são bem amanteigadas e deliciosas."
+      },
+      "lat": 38.730705,
+      "lng": -9.150569,
+      "address": "Portela Cafés António A. Aguiar",
+      "mapsQuery": "Portela Cafés António A. Aguiar Lisboa",
+      "googleRating": 4.2,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "coffee-shop"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8125-81f1-c5ebca2b9872",
+      "id": "lis-praca-comercio",
+      "city": "lisboa",
+      "name": {
+        "en": "Praça do Comércio",
+        "pt-BR": "Praça do Comércio"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "One of the great squares in Europe, on the Tagus, where the royal palace stood before 1755. Yellow arcades, the Rua Augusta arch, José I in the middle, sunset on the river.",
+        "pt-BR": "Uma das praças mais emblemáticas de Lisboa e uma das maiores da Europa. Localizada à beira do rio Tejo, ela ocupa o espaço do antigo Palácio Real, destruído pelo terremoto de 1755. Com seu impressionante arco da Rua Augusta, edifícios amarelos simétricos e a estátua equestre de D. José I no centro, a praça é um símbolo da reconstrução da cidade e do poderio marítimo português. É um local vibrante, ideal para passeios à beira-rio, cafés históricos e apreciar a vista do pôr do sol."
+      },
+      "lat": 38.707283,
+      "lng": -9.136361,
+      "address": "Praça do Comércio",
+      "mapsQuery": "Praça do Comércio Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "square"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8109-9702-f282762a1444",
+      "id": "lis-jardim-principe-real",
+      "city": "lisboa",
+      "name": {
+        "en": "Príncipe Real Garden",
+        "pt-BR": "Jardim do Príncipe Real"
+      },
+      "category": "parks",
+      "description": {
+        "en": "Pretty square under a cedar. Some days a little market sets up there.",
+        "pt-BR": "Uma praça bem bonitinha em Lisboa. Dependendo do dia está rolando uma feirinha nela."
+      },
+      "lat": 38.7163,
+      "lng": -9.148717,
+      "address": "Príncipe Real Garden",
+      "mapsQuery": "Jardim do Príncipe Real Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "square"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-810e-a880-cbdb2fb645f6",
+      "id": "lis-queluz-palace",
+      "city": "lisboa",
+      "name": {
+        "en": "Queluz National Palace",
+        "pt-BR": "Palácio Nacional de Queluz"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "A bit outside Lisbon, easy by car. Beautiful palace and a lovely garden.",
+        "pt-BR": "Um pouco mais afastado de Lisboa mas dá para ir de carro. Um palácio bem bonito com um jardim lindo."
+      },
+      "lat": 38.75065,
+      "lng": -9.259252,
+      "address": "Queluz National Palace",
+      "mapsQuery": "Palácio Nacional de Queluz",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "garden",
+        "palace"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81fe-b16b-de1e3583a05e",
+      "id": "lis-restauradores",
+      "city": "lisboa",
+      "name": {
+        "en": "Restauradores Monument",
+        "pt-BR": "Monumento dos Restauradores"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Obelisk at the top of Avenida da Liberdade, marking the 1640 restoration of independence.",
+        "pt-BR": "Obelisco no topo da Avenida da Liberdade, marca da restauração de 1640."
+      },
+      "lat": 38.715705,
+      "lng": -9.141662,
+      "address": "Restauradores Monument",
+      "mapsQuery": "Monumento dos Restauradores Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "square",
+        "monument"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8108-813f-fa8ef132fddb",
+      "id": "lis-rossio-fonte-sul",
+      "city": "lisboa",
+      "name": {
+        "en": "Rossio south fountain",
+        "pt-BR": "Fonte sul do Rossio"
+      },
+      "category": "photo",
+      "description": {
+        "en": "Baroque fountain on Praça de D. Pedro IV. Easy meeting point in Baixa.",
+        "pt-BR": "Fonte barroca na Praça de D. Pedro IV. Ponto fácil de encontro na Baixa."
+      },
+      "lat": 38.713377,
+      "lng": -9.13919,
+      "address": "Rossio south fountain",
+      "mapsQuery": "Fonte do Rossio Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "square"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-813e-9126-f412a41cd170",
+      "id": "lis-rua-augusta",
+      "city": "lisboa",
+      "name": {
+        "en": "Rua Augusta",
+        "pt-BR": "Rua Augusta"
+      },
+      "category": "parks",
+      "description": {
+        "en": "The street of the arch: brands, souvenirs, and a mix of restaurants.",
+        "pt-BR": "Famosa rua por conta do arco, lojas de marcas, lojas de souvenir, além de vários tipos de restaurantes."
+      },
+      "lat": 38.710656,
+      "lng": -9.137672,
+      "address": "Rua Augusta",
+      "mapsQuery": "Rua Augusta Lisboa",
+      "googleRating": 4.6,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "avenue"
+      ],
+      "tags": [
+        "🌳 Parks"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-816c-8829-d6dc1f5b2669",
+      "id": "lis-arco-rua-augusta",
+      "city": "lisboa",
+      "name": {
+        "en": "Rua Augusta Arch",
+        "pt-BR": "Arco da Rua Augusta"
+      },
+      "category": "photo",
+      "description": {
+        "en": "The triumphal arch onto Praça do Comércio. Elevator to the top for the axis view.",
+        "pt-BR": "O arco triunfal para a Praça do Comércio. Elevador no topo para o eixo da rua."
+      },
+      "lat": 38.708445,
+      "lng": -9.136824,
+      "address": "Rua Augusta Arch",
+      "mapsQuery": "Arco da Rua Augusta Lisboa",
+      "googleRating": 4.7,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "monument",
+        "viewpoint"
+      ],
+      "tags": [
+        "📷 Photo"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81fe-846b-ea1b8d470564",
+      "id": "lis-castelo-sao-jorge",
+      "city": "lisboa",
+      "name": {
+        "en": "São Jorge Castle",
+        "pt-BR": "Castelo de São Jorge"
+      },
+      "category": "tourist",
+      "description": {
+        "en": "Moorish castle on the hill. Walls, peacocks, and the whole city below.",
+        "pt-BR": "Castelo mouro no alto. Muralhas, pavões e a cidade inteira embaixo."
+      },
+      "lat": 38.713909,
+      "lng": -9.133476,
+      "address": "São Jorge Castle",
+      "mapsQuery": "Castelo de São Jorge Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "castle",
+        "viewpoint"
+      ],
+      "tags": [
+        "⭐ Tourist"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8128-8dcf-c79fbc33c493",
+      "id": "lis-simpli-coffee",
+      "city": "lisboa",
+      "name": {
+        "en": "Simpli Coffee",
+        "pt-BR": "Simpli Coffee"
+      },
+      "category": "cafes",
+      "description": {
+        "en": "Good café with croissants and savory snacks.",
+        "pt-BR": "Café bom com opções de croissant e lanches bem saborosos."
+      },
+      "lat": 38.732199,
+      "lng": -9.146397,
+      "address": "Simpli Coffee",
+      "mapsQuery": "Simpli Coffee Lisboa",
+      "googleRating": 4.5,
+      "favorite": true,
+      "featured": false,
+      "subcategories": [
+        "bakery",
+        "coffee-shop"
+      ],
+      "tags": [
+        "☕️ Cafés"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81b8-bbdd-fc6ba1f79cc3",
+      "id": "lis-tasquinha-lagarto",
+      "city": "lisboa",
+      "name": {
+        "en": "Tasquinha do Lagarto",
+        "pt-BR": "Tasquinha do Lagarto"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Old-school tasca. Still on the list to try.",
+        "pt-BR": "Tasca clássica. Ainda na lista para conhecer."
+      },
+      "lat": 38.734505,
+      "lng": -9.16463,
+      "address": "Tasquinha do Lagarto",
+      "mapsQuery": "Tasquinha do Lagarto Lisboa",
+      "googleRating": 4.6,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-81e2-9c1f-d5044412efb6",
+      "id": "lis-terraco-editorial",
+      "city": "lisboa",
+      "name": {
+        "en": "Terraço Editorial",
+        "pt-BR": "Terraço Editorial"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Lunch. Still to visit.",
+        "pt-BR": "Almoço. Ainda para conhecer."
+      },
+      "lat": 38.712754,
+      "lng": -9.136665,
+      "address": "Terraço Editorial",
+      "mapsQuery": "Terraço Editorial Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8192-87d2-dddbf2529c10",
+      "id": "lis-time-out",
+      "city": "lisboa",
+      "name": {
+        "en": "Time Out Market",
+        "pt-BR": "Time Out Market"
+      },
+      "category": "markets",
+      "description": {
+        "en": "Mercado da Ribeira food hall. Many counters, one ticket for a crash course in Lisbon food.",
+        "pt-BR": "O Mercado da Ribeira, Time Out, com várias opções de restaurantes para pedir."
+      },
+      "lat": 38.707061,
+      "lng": -9.145669,
+      "address": "Av. 24 de Julho 49, 1200-479 Lisboa, Portugal",
+      "mapsQuery": "Time Out Market Lisboa",
+      "googleRating": 4.4,
+      "favorite": true,
+      "featured": true,
+      "subcategories": [
+        "market"
+      ],
+      "tags": [
+        "🧺 Markets"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T22:21:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-817e-8f17-cb8f9a15c2a2",
+      "id": "lis-whome-bairro-alto",
+      "city": "lisboa",
+      "name": {
+        "en": "WHome Modern Retreat",
+        "pt-BR": "WHome Modern Retreat"
+      },
+      "category": "lodging",
+      "description": {
+        "en": "60 m² 1-bedroom apartment on Rua da Barroca, 2nd floor, no lift. Heart of Bairro Alto — walk to Chiado, Rossio and Cais do Sodré.",
+        "pt-BR": "Apartamento de 60 m², 1 quarto, na Rua da Barroca, 2.º andar sem elevador. No meio do Bairro Alto — a pé para o Chiado, o Rossio e o Cais do Sodré."
+      },
+      "lat": 38.71113,
+      "lng": -9.14457,
+      "address": "Rua da Barroca 11, 2.º E, 1200-047 Lisboa, Portugal",
+      "mapsQuery": "Rua da Barroca 11 Lisboa",
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "hotel"
+      ],
+      "coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Lisboa_-_Bairro_Alto_%285420829357%29.jpg/1280px-Lisboa_-_Bairro_Alto_%285420829357%29.jpg",
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Lisboa_-_Bairro_Alto_%285420829357%29.jpg/1280px-Lisboa_-_Bairro_Alto_%285420829357%29.jpg",
+          "alt": {
+            "en": "WHome Modern Retreat",
+            "pt-BR": "WHome Modern Retreat"
+          }
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Lisbon_%2842931870092%29.jpg/1280px-Lisbon_%2842931870092%29.jpg",
+          "alt": {
+            "en": "WHome Modern Retreat",
+            "pt-BR": "WHome Modern Retreat"
+          }
+        }
+      ],
+      "tags": [
+        "🛏️ Stay"
+      ],
+      "conhecido": true,
+      "date": null,
+      "lastEdited": "2026-08-24T21:53:00.000Z"
+    },
+    {
+      "notionPageId": "3c62da8d-8134-8131-9713-e34ca659b8c0",
+      "id": "lis-ze-da-mouraria",
+      "city": "lisboa",
+      "name": {
+        "en": "Zé da Mouraria",
+        "pt-BR": "Zé da Mouraria"
+      },
+      "category": "restaurants",
+      "description": {
+        "en": "Uber tip: the best bacalhau in Lisbon.",
+        "pt-BR": "Segundo o Uber, melhor bacalhau de Lisboa."
+      },
+      "lat": 38.716111,
+      "lng": -9.134966,
+      "address": "Zé da Mouraria",
+      "mapsQuery": "Zé da Mouraria Lisboa",
+      "googleRating": 4.4,
+      "favorite": false,
+      "featured": false,
+      "subcategories": [
+        "seafood"
+      ],
+      "tags": [
+        "🍽️ Restaurants"
+      ],
+      "conhecido": false,
+      "date": null,
+      "lastEdited": "2026-08-24T22:22:00.000Z"
+    },
     {
       "notionPageId": "3b22da8d-8134-81e4-ab35-d64a511cc0ac",
       "id": "par-amorino",
