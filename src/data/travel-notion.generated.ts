@@ -4,7 +4,7 @@
  */
 
 const snapshot = {
-  "generatedAt": "2026-10-25T15:33:09.009Z",
+  "generatedAt": "2026-10-25T20:22:37.622Z",
   "databaseId": "3812da8d81348023afe1ef676eb515f7",
   "count": 215,
   "byCity": {
